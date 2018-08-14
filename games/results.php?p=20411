@@ -1,0 +1,550 @@
+<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01//EN'  'http://www.w3.org/TR/html4/strict.dtd'> 
+		<html>
+		<head>
+			<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+			<meta name="resource-type" content="document"> 
+			<meta name="description" content="Scrabble statistics, results, and tournament listings"> 
+			<meta name="keywords" content="scrabble, scrabble tiles, scrabble statistics, scrabble results, stats, tournaments, upcoming, players, competitive, games "> 
+			<title>Joshua Castellano - Recent Tourneys - cross-tables.com</title>
+<script type='text/javascript' src=' http://yui.yahooapis.com/2.5.0/build/yahoo-dom-event/yahoo-dom-event.js'></script>
+<link type='text/css' rel='stylesheet' href='http://yui.yahooapis.com/2.5.0/build/reset-fonts-grids/reset-fonts-grids.css' >
+<link type='text/css' rel='stylesheet' href='http://yui.yahooapis.com/2.5.0/build/grids/grids.css' >
+<link type='text/css' rel='stylesheet' href='http://yui.yahooapis.com/2.5.0/build/assets/skins/sam/skin.css' >
+<link type='text/css' rel='stylesheet' href='http://yui.yahooapis.com/2.5.0/build/assets/skins/sam/menu.css' >
+			
+				<link rel='stylesheet' type='text/css' href='xt.css'> 
+																				<!--<link rel='stylesheet' type='text/css' href='niftycorners.css'> -->
+
+<script type='text/javascript' src=' http://yui.yahooapis.com/2.5.0/build/container/container_core-min.js'></script>
+<script type='text/javascript' src=' http://yui.yahooapis.com/2.5.0/build/menu/menu-min.js'></script>
+<script type='text/javascript' src=' http://yui.yahooapis.com/2.5.0/build/element/element-beta-min.js'></script>
+<script type='text/javascript' src=' http://yui.yahooapis.com/2.5.0/build/button/button-min.js'></script>
+<script type='text/javascript' src=' http://yui.yahooapis.com/2.5.0/build/utilities/utilities.js'></script>
+<script type='text/javascript' src=' http://yui.yahooapis.com/2.5.0/build/connection/connection-min.js'></script>
+<script type='text/javascript' src=' http://yui.yahooapis.com/2.5.0/build/container/container-min.js'></script>
+<script type='text/javascript' src=' http://yui.yahooapis.com/2.5.0/build/autocomplete/autocomplete-min.js'></script>
+				<script type='text/javascript' src='xt.js'></script>
+				<script type='text/javascript' src='acplayer.js'></script>
+				<script type='text/javascript' src='nifty.js'></script>
+
+	
+	       <script type='text/javascript'>
+
+	            // Initialize and render the menu bar when it is available in the DOM
+	            YAHOO.util.Event.onContentReady('xtmenus', function () {
+
+	                // Instantiate and render the menu bar
+	                var oMenuBar = new YAHOO.widget.MenuBar('xtmenus', { autosubmenudisplay: true, showdelay: 0, hidedelay: 750, lazyload: true });
+
+	                /*
+	                     Call the "render" method with no arguments since the markup for 
+	                     this menu already exists in the DOM.
+	                */
+
+	                oMenuBar.render();
+
+	            });
+				
+				function loadcomplete()
+				{
+					initfindplayerdialog();
+					//focusfirst($selectfirst);
+				}
+
+			</script>
+				
+				<script type='text/javascript' src=' http://yui.yahooapis.com/2.5.0/build/connection/connection-min.js'></script>
+
+	<script type="text/javascript">
+
+			YAHOO.util.Event.on(window, "load", startglowhandlers, { id: "xtdatatable", infotype: "tournament summary", urlbase: "tourneyinfo" }); 
+
+			function noresults()
+			{
+				alert('No game-by-game results are available');
+			}
+			
+		</script>				       <script type='text/javascript'>
+			function openfinddialog()
+			{
+				YAHOO.findplayerdialog.show();
+			}
+			
+			function initfindplayerdialog() 
+			{
+				// Define various event handlers for Dialog
+				var handlefindplayerCancel = function() {
+					this.cancel();
+
+				};
+				
+				// Make the dialog visible
+				YAHOO.util.Dom.setStyle('findplayerdialog', 'display', 'block');
+				
+				// Instantiate the Dialog
+				YAHOO.findplayerdialog = new YAHOO.widget.Dialog("findplayerdialog", 
+																			{ width : "350px",
+																			  visible : false, 
+																			  context: ['xtmenus', 'tl', 'bl'],
+																			  constraintoviewport : true,
+																			  buttons : [ { text:"Cancel", handler:handlefindplayerCancel } ],
+																			  effect:{effect:YAHOO.widget.ContainerEffect.FADE,duration:0.25},
+																			  postmethod: 'form'
+																			 } );
+				
+				var kl = new YAHOO.util.KeyListener(document, { keys: [27] },                               
+		                                              { fn:YAHOO.findplayerdialog.hide, 
+		                                                scope:YAHOO.findplayerdialog,
+		                                                correctScope:true } ); 
+				YAHOO.findplayerdialog.cfg.queueProperty("keylisteners", [ kl ]); 		
+				
+				YAHOO.findplayerdialog.validate = function() {
+					var data = this.getData();
+					
+					if (data.p==0) {
+						document.location = "players.php?query="+document.getElementById('findplayername').value
+						//alert("Please type a player name to search for "+document.getElementById('findplayername').value);
+						return false;
+					} else {
+						return true;
+					}
+				};
+
+				// Hook up the auto-completion behavior
+				var selectionevent = new YAHOO.util.CustomEvent("playerautoselected"); 
+				addplayerautocomplete("findplayername", "findplayernameContainer", "findplayerid", selectionevent, false);
+				
+				selectionevent.subscribe(gotplayer);
+				
+				// Render the Dialog
+				YAHOO.findplayerdialog.render();
+			}
+			
+			function gotplayer()
+			{
+//				document.title = '**'+(document.getElementById('findplayerid').value)+'**';
+//				return;
+				if (document.getElementById('findplayerid').value != 0)
+				{
+					document.getElementById('foundplayer').innerHTML = document.getElementById('findplayername').value;
+					YAHOO.util.Dom.setStyle('newplayerloading', 'display', 'block');
+					document.findplayerform.submit();
+				}
+			}
+		</script>
+
+				
+			<link rel="search" type="application/opensearchdescription+xml" href="searchbar.xml" title="cross-tables">
+		</head>
+		<body class='yui-skin-sam' 
+			id='yahoo-com' 
+			onload='loadcomplete();'>
+		
+		<!-- the id on the containing div determines the page width. -->
+		<!-- #doc = 750px; #doc2 = 950px; #doc3 = 100%; #doc4 = 974px -->
+		<div id="fb-root"></div>
+		<script type='text/javascript'>(function(d, s, id) {
+		  var js, fjs = d.getElementsByTagName(s)[0];
+		  if (d.getElementById(id)) return;
+		  js = d.createElement(s); js.id = id;
+		  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=203920133011073";
+		  fjs.parentNode.insertBefore(js, fjs);
+		}(document, 'script', 'facebook-jssdk'));</script>
+
+		<div id='custom-doc850'>					
+			<div id='hd'>
+
+					<div class='siteheader' id='siteheader'>
+							<span>
+					<a href='/'>
+											SCRABBLE&reg; tournaments, statistics, and community
+															</a>
+				</span>
+				<div class='logo'>
+					<a href='/'>
+													<img src="/i/logo-tile.png" height='40' align='top'>
+					    					</a>
+					<a href='/'>
+																		cross-tables.com
+																</a>
+				</div>
+					</div>
+	   <div id='xtmenus' class='yuimenubar yuimenubarnav'>
+			<div class='bd'>
+				<ul class='first-of-type'>
+					<li class='yuimenubaritem first-of-type'><a class='yuimenubaritemlabel' href='/'>
+													Home
+												</a>
+					</li>
+				
+					<li class='yuimenubaritem'>
+						<a class='yuimenubaritemlabel' href='javascript:void(0);'>
+							Find						</a>
+						<div id='find' class='yuimenu'>
+							<div class='bd'>
+								<ul class='first-of-type'>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='javascript:openfinddialog();'>Find a Player...</a></li>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='tourneys.php'>Find a Past Tournament...</a></li>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='bystate.php'>Find Top Players by State</a></li>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='bycountry.php'>Find Top Players by Country</a></li>
+								</ul>
+							</div>
+						</div>      
+					</li>
+
+					<li class='yuimenubaritem'>
+						<a class='yuimenubaritemlabel' href='javascript:void(0);'>
+							History						</a>
+						<div id='history' class='yuimenu'>
+							<div class='bd'>
+								<ul class='first-of-type'>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='annolistself.php'>Recent Annotated Games</a></li>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='annoupload.php'>Upload an Annotated Game</a></li>
+									<!-- <li class='yuimenuitem'><a class='yuimenuitemlabel' href='annolist.php'>See a Random Annotated Game</a></li> -->
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='leaders.php'>All-time Leaders</a></li>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='club700.php'>The 700 Club</a></li>
+								</ul>
+							</div>
+						</div>      
+					
+					</li>
+
+					<li class='yuimenubaritem'>
+						<a class='yuimenubaritemlabel' href='javascript:void(0);'>
+							Play						</a>
+						<div id='maps' class='yuimenu'>
+							<div class='bd'>
+								<ul>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='map.php'>Map of Upcoming Tournaments</a></li>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='mapclubs.php'>Map of SCRABBLE Clubs</a></li>
+								</ul>
+							</div>
+						</div>      
+					</li>
+
+					<li class='yuimenubaritem'>
+						<a class='yuimenubaritemlabel' href='javascript:void(0);'>
+							Learn						</a>
+						<div id='words' class='yuimenu'>
+							<div class='bd'>
+								<ul>
+									<!--<li class='yuimenuitem'><a class='yuimenuitemlabel' href=''>Dictionary Lookup</a></li>-->
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='study.php'>Study Tools</a></li>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='leaves.php'>Leave Evaluator</a></li>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='http://www.scrabbleplayershandbook.com' target='_blank'>Scrabble Player's Handbook</a></li>
+								</ul>
+							</div>
+						</div>      
+					</li>
+
+					<li class='yuimenubaritem'>
+						<a class='yuimenubaritemlabel' href='javascript:void(0);'>
+							About						</a>
+						<div id='about' class='yuimenu'>
+							<div class='bd'>
+								<ul>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='credits.php'>About cross-tables.com</a></li>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='donate.php'><b>Donate to cross-tables.com</b></a></li>
+								</ul>
+							</div>
+						</div>      
+					</li>
+
+					<li class='yuimenubaritem' style="width: 22%">
+													<a class='yuimenubaritemlabel' href="https://www.facebook.com/v2.8/dialog/oauth?client_id=203920133011073&state=a2de4ff2a53873031aaa0b6587c2f934&response_type=code&sdk=php-sdk-5.5.0&redirect_uri=http%3A%2F%2Fwww.cross-tables.com%2Ffb-callback.php&scope=email">
+								<span style='color: #3b5998'>Sign in with Facebook</span>
+							</a>
+											</li>
+				</ul>            
+			</div>
+		</div>
+
+
+	<div class='playerheader'>
+		    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	    <script type='text/javascript'>
+	      google.charts.load('current', {'packages':['annotationchart']});
+	      google.charts.setOnLoadCallback(drawTopChart);
+	      function drawTopChart() {
+	        var data = new google.visualization.DataTable();
+	        data.addColumn('date', 'Date');
+	        data.addColumn('number', 'TWL Rating');
+	        data.addRows([
+			  	            [new Date(2013, 7, 30), 
+				    1533],
+			  	            [new Date(2013, 7, 31), 
+				    1503],
+			  	            [new Date(2013, 8, 15), 
+				    1487],
+			  	            [new Date(2013, 9, 6), 
+				    1528],
+			  	            [new Date(2013, 9, 13), 
+				    1547],
+			  	            [new Date(2013, 10, 24), 
+				    1558],
+			  	            [new Date(2013, 11, 21), 
+				    1565],
+			  	            [new Date(2013, 11, 22), 
+				    1533],
+			  	            [new Date(2013, 11, 23), 
+				    1512],
+			  	            [new Date(2013, 11, 23), 
+				    1523],
+			  	            [new Date(2013, 11, 27), 
+				    1528],
+			  	            [new Date(2013, 11, 28), 
+				    1549],
+			  	            [new Date(2014, 0, 1), 
+				    1504],
+			  	            [new Date(2014, 1, 9), 
+				    1490],
+			  	            [new Date(2014, 1, 14), 
+				    1487],
+			  	            [new Date(2014, 1, 14), 
+				    1527],
+			  	            [new Date(2014, 4, 10), 
+				    1538],
+			  	            [new Date(2014, 4, 24), 
+				    1566],
+			  	            [new Date(2014, 5, 15), 
+				    1589],
+			  	            [new Date(2014, 8, 14), 
+				    1566],
+			  	            [new Date(2014, 8, 20), 
+				    1553],
+			  	            [new Date(2014, 9, 5), 
+				    1562],
+			  	            [new Date(2014, 9, 31), 
+				    1539],
+			  	            [new Date(2014, 10, 22), 
+				    1557],
+			  	            [new Date(2014, 11, 30), 
+				    1575],
+			  	            [new Date(2014, 11, 31), 
+				    1605],
+			  	            [new Date(2015, 0, 11), 
+				    1636],
+			  	            [new Date(2015, 1, 8), 
+				    1656],
+			  	            [new Date(2015, 4, 3), 
+				    1641],
+			  	        ]);
+
+	        var chart = new google.visualization.AnnotationChart(document.getElementById('top_chart_div'));
+
+	        var options = {
+	          displayAnnotations: true,
+	          fill: 10,
+	          displayRangeSelector: false,
+	          displayZoomButtons: false,
+	          displayLegendValues: true,
+	          displayLegendDots: false,
+	        };
+
+	        chart.draw(data, options);
+			// if (typeof drawChart == 'function') { 
+			//   drawChart(); 
+			// }
+	      }
+	    </script>
+		<div class='playergraphblock'>
+							<div>
+					<b>TWL rating</b>
+					    <form method='POST' action='/results.php?p=20411' style='display: inline'>
+					        <input type='hidden' name='newlexicon' value='1'>
+					        <input type='submit' value='Switch to CSW'>
+					    </form>
+				</div>
+								    	<div id='top_chart_div' style='width: 200px; height: 110px;'></div>
+		    		</div>
+		<div class='playerpicblock'>
+		<img class='playerpic' src='http://www.scrabbleplayers.org/players/c/castellano_joshua_AA003397.jpg' alt='Joshua Castellano'>
+	</div>
+	
+<!--see bottom of file for old non-table layout -->
+
+	<table class='playercontentblock'>
+		<tr>
+			<td colspan='4'>
+				<div class='playername'>Joshua Castellano | 					<span class='residence'>Ithaca, <a href='bystate.php?st=NY'>NY</a> (USA)</span> 
+					<span class='deceased'></span>
+									</div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div class='playerheaderinfo'>
+					<div class='header'>Rating</div>
+											<div class='stat'>1641 / <span class='cswrating'>1933</span></div>
+										<div class='comment'>(Peak: 1933)</div>
+					<div class='comment'>&nbsp;</div>
+				</div>
+			</td>
+			<td>
+				<div class='playerheaderinfo'>
+					<div class='header'>Ranking</div>
+															<div class='stat cswrating'>35th</div>
+															<div class='comment'>&nbsp;</div>
+					<div class='comment'>&nbsp;</div>
+									</div>
+			</td>
+			<td>
+				<div class='playerheaderinfo'>
+					<div class='header'>Lifetime record</div>
+					<div class='stat'>687-581-8 (0.542)</div>
+					<div class='comment'>&nbsp;</div>
+					<div class='comment'>Career earnings: $435</div>
+				</div>
+			</td>
+			<td>
+				<div class='playerheaderinfo'>
+					<div class='header'>Avg. score</div>
+					<div class='stat'>406-394</div>
+					<div class='comment'>&nbsp;</div>
+					<div class='comment'>&nbsp;</div>
+				</div>
+			</td>
+		</tr>
+			<tr>
+				<td colspan='4'>
+		</table>
+	</div>
+
+		
+		<div id="xtplayermenus" class="yuimenubar yuimenubarnav">
+			<div class="bd">
+
+				<ul class="first-of-type">			<li class="yuimenubaritem"><a class="yuimenubaritemlabel xtmenuchecked" href="results.php?p=20411">Results</a>
+			</li>			<li class="yuimenubaritem"><a class="yuimenubaritemlabel " href="upcoming.php?p=20411">Upcoming</a>
+			</li>			<li class="yuimenubaritem"><a class="yuimenubaritemlabel " href="daddy.php?p=20411">Head-to-Head</a>
+			</li>			<li class="yuimenubaritem"><a class="yuimenubaritemlabel " href="profile.php?p=20411">Profile</a>
+			</li>			<li class="yuimenubaritem"><a class="yuimenubaritemlabel " href="histratings.php?p=20411">Historical Info</a>
+			</li>			<li class="yuimenubaritem"><a class="yuimenubaritemlabel " href="graph.php?p=20411">Graph</a>
+			</li>			<li class="yuimenubaritem"><a class="yuimenubaritemlabel " href="anno.php?p=20411">Annotated Games</a>
+			</li>			<li class="yuimenubaritem"><a class="yuimenubaritemlabel " href="games.php?p=20411">Game-by-Game</a>
+			</li>				</ul>            
+			</div>
+		</div>
+		
+       <script type="text/javascript">
+
+            // Initialize and render the menu bar when it is available in the DOM
+            YAHOO.util.Event.onContentReady("xtplayermenus", function () {
+
+                // Instantiate and render the menu bar
+                var oInfoMenuBar = new YAHOO.widget.MenuBar("xtplayermenus", { autosubmenudisplay: true, hidedelay: 0, lazyload: true });
+                oInfoMenuBar.render();
+
+            });
+
+		</script>	
+			</div>
+			<div id='bd'>
+			
+						<div id="xtresultsmenus" class="yuimenubar yuimenubarnav">
+			<div class="bd">
+
+				<ul class="first-of-type">
+<li class='yuimenuitem'><a class='yuimenuitemlabel ' href='results.php?p=20411&amp;tsel=c'>All Tourneys</a></li>
+<li class='yuimenuitem'><a class='yuimenuitemlabel xtmenuchecked' href='results.php?p=20411&amp;tsel=r'>Recent Tourneys</a></li>
+<li class='yuimenuitem'><a class='yuimenuitemlabel ' href='results.php?p=20411&amp;tsel=m'>Major Tourneys</a></li>
+<li class='yuimenuitem'><a class='yuimenuitemlabel ' href='results.php?p=20411&amp;tsel=w'>First-Place Finishes</a></li>
+				</ul>            
+			</div>
+		</div>
+
+       <script type="text/javascript">
+
+            // Initialize and render the menu bar when it is available in the DOM
+            YAHOO.util.Event.onContentReady("xtresultsmenus", function () {
+
+                // Instantiate and render the menu bar
+                var oInfoMenuBar = new YAHOO.widget.MenuBar("xtresultsmenus", { autosubmenudisplay: true, hidedelay: 0, lazyload: true });
+                oInfoMenuBar.render();
+
+            });
+
+		</script>
+<div class='datalabel'>Recent Tourneys</div>		
+		<table id='xtdatatable' class='xtdatatable'>
+		<tbody> 
+		<tr class='headerrow'>
+			<td class='tdr'>Details/</td>
+			<td colspan='8'></td><td class='tdr'><a href='results.php?p=20411&amp;s=p'>Place</a></td>			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td colspan='3' class='tdc'>--RATINGS--</td>
+			<td>&nbsp;</td><td class='tdr'><a href='results.php?p=20411&amp;s=pm'>Prize</a></td>		</tr>
+		<tr class='headerrow'>
+			<td class='tdr'>Zoom</td>
+			<td class='tdr'>#</td><td class='tdl'><a href='results.php?p=20411&amp;s=tn'>Location</a></td><td>Date <a href='results.php?p=20411&amp;rsort=1'><img src='/i/up-arrow.gif' alt='reverse sort'></a></td><td class='tdr'><a href='results.php?p=20411&amp;s=w'>W</a></td><td class='tdr'><a href='results.php?p=20411&amp;s=l'>L</a></td><td class='tdr'><a href='results.php?p=20411&amp;s=t'>T</a></td><td class='tdr'><a href='results.php?p=20411&amp;s=b'>B</a></td><td class='tdr'><a href='results.php?p=20411&amp;s=sp'>Spread</a></td><td class='tdr' colspan='2'><a href='results.php?p=20411&amp;s=p'>(Division)</a></td><td class='tdr'><a href='results.php?p=20411&amp;s=sd'>Seed</a></td><td class='tdr'><a href='results.php?p=20411&amp;s=or'>Old</a></td><td class='tdr'><a href='results.php?p=20411&amp;s=pr'>Perf</a></td><td class='tdr'><a href='results.php?p=20411&amp;s=nr'>New</a></td><td class='tdr'><a href='results.php?p=20411&amp;s=cr'>Credits</a></td><td class='tdr'><a href='results.php?p=20411&amp;s=pm'>Money</a></td>
+
+<tr class='row1 csw-tourney' id='row1'><td><span id='toggle9949' class='expanderclosed' onclick='toggle("gbg", "bygame", "t", 20411, 9949, 9949, "game-by-game details");' >&nbsp;</span><span class='anchorfield' id='anchor9949-div--1' style='width: 15px;'>&nbsp;</span></td><td class='tdr'>1</td><td class='tourney-name'><a href='tourney.php?t=9949&amp;div=1' title='Syracuse Scrabble, NY (CSW)'>Syracuse Scrabble, NY (CSW)</a></td><td>08/26/17</td><td class='tdr w'>4</td><td class='tdr l'>4</td><td class='tdr t'>&nbsp;</td><td class='tdr b'>&nbsp;</td><td class='tdr'>+110</td><td colspan=2 class='tdr'>4 of 6 (1)</td><td class='tdr'>4</td><td class='tdr rating'>1758</td><td class='tdr rating'>1611</td><td class='tdr ratingdown newrating rating'>1744</td><td class='tdr'>&nbsp;</td><td class='tdr'>&nbsp;<span class='moneyknown' title='prize money is estimated'>E</span></td></tr><tr><td colspan='17'><div id='gbg9949'></div></td></tr>
+
+<tr class='row0 csw-tourney' id='row2'><td><span id='toggle9955' class='expanderclosed' onclick='toggle("gbg", "bygame", "t", 20411, 9955, 9955, "game-by-game details");' >&nbsp;</span><span class='anchorfield' id='anchor9955-div--1' style='width: 15px;'>&nbsp;</span></td><td class='tdr'>2</td><td class='tourney-name'><a href='tourney.php?t=9955&amp;div=1' title='Gaithersburg, MD (CSW)'>Gaithersburg, MD (CSW)</a></td><td>09/02/17</td><td class='tdr w'>5</td><td class='tdr l'>3</td><td class='tdr t'>&nbsp;</td><td class='tdr b'>&nbsp;</td><td class='tdr'>+155</td><td colspan=2 class='tdr'>2 of 4 (1)</td><td class='tdr'>1</td><td class='tdr rating'>1744</td><td class='tdr rating'>1744</td><td class='tdr ratingup newrating rating'>1745</td><td class='tdr'>&nbsp;</td><td class='tdr'>&nbsp;<span class='moneyknown' title='prize money is estimated'>E</span></td></tr><tr><td colspan='17'><div id='gbg9955'></div></td></tr>
+
+<tr class='row1 csw-tourney' id='row3'><td><span id='toggle10004' class='expanderclosed' onclick='toggle("gbg", "bygame", "t", 20411, 10004, 10004, "game-by-game details");' >&nbsp;</span><span class='anchorfield' id='anchor10004-div--1' style='width: 15px;'>&nbsp;</span></td><td class='tdr'>3</td><td class='tourney-name'><a href='tourney.php?t=10004&amp;div=1' title='Lake George, NY Main Event (CSW)'>Lake George, NY Main Event (CSW)</a></td><td>10/13/17</td><td class='tdr w'>8</td><td class='tdr l'>7</td><td class='tdr t'>&nbsp;</td><td class='tdr b'>&nbsp;</td><td class='tdr'>+132</td><td colspan=2 class='tdr'>10 of 21 (1)</td><td class='tdr'>8</td><td class='tdr rating'>1745</td><td class='tdr rating'>1759</td><td class='tdr ratingup newrating rating'>1748</td><td class='tdr'>&nbsp;</td><td class='tdr'>&nbsp;<span class='moneyknown' title='prize money is estimated'>E</span></td></tr><tr><td colspan='17'><div id='gbg10004'></div></td></tr>
+
+<tr class='row0 csw-tourney' id='row4'><td><span id='toggle10028' class='expanderclosed' onclick='toggle("gbg", "bygame", "t", 20411, 10028, 10028, "game-by-game details");' >&nbsp;</span><span class='anchorfield' id='anchor10028-div--1' style='width: 15px;'>&nbsp;</span></td><td class='tdr'>4</td><td class='tourney-name'><a href='tourney.php?t=10028&amp;div=1' title='Syracuse, NY (CSW)'>Syracuse, NY (CSW)</a></td><td>11/04/17</td><td class='tdr w'>4</td><td class='tdr l'>4</td><td class='tdr t'>&nbsp;</td><td class='tdr b'>&nbsp;</td><td class='tdr'>+603</td><td colspan=2 class='tdr'>2 of 4 (1)</td><td class='tdr'>3</td><td class='tdr rating'>1748</td><td class='tdr rating'>1694</td><td class='tdr ratingdown newrating rating'>1743</td><td class='tdr'>&nbsp;</td><td class='tdr'>&nbsp;<span class='moneyknown' title='prize money is estimated'>E</span></td></tr><tr><td colspan='17'><div id='gbg10028'></div></td></tr>
+
+<tr class='row1 csw-tourney' id='row5'><td><span id='toggle10056' class='expanderclosed' onclick='toggle("gbg", "bygame", "t", 20411, 10056, 10056, "game-by-game details");' >&nbsp;</span><span class='anchorfield' id='anchor10056-div--1' style='width: 15px;'>&nbsp;</span></td><td class='tdr'>5</td><td class='tourney-name'><a href='tourney.php?t=10056&amp;div=1' title='Gaithersburg, MD (CSW)'>Gaithersburg, MD (CSW)</a></td><td>11/25/17</td><td class='tdr w'>5</td><td class='tdr l'>3</td><td class='tdr t'>&nbsp;</td><td class='tdr b'>&nbsp;</td><td class='tdr'>+289</td><td colspan=2 class='tdr'>2 of 4 (1)</td><td class='tdr'>1</td><td class='tdr rating'>1743</td><td class='tdr rating'>1720</td><td class='tdr ratingdown newrating rating'>1740</td><td class='tdr'>&nbsp;</td><td class='tdr'>&nbsp;<span class='moneyknown' title='prize money is estimated'>E</span></td></tr><tr><td colspan='17'><div id='gbg10056'></div></td></tr>
+
+<tr class='row0 csw-tourney' id='row6'><td><span id='toggle10077' class='expanderclosed' onclick='toggle("gbg", "bygame", "t", 20411, 10077, 10077, "game-by-game details");' >&nbsp;</span><span class='anchorfield' id='anchor10077-div--1' style='width: 15px;'>&nbsp;</span></td><td class='tdr'>6</td><td class='tourney-name'><a href='tourney.php?t=10077&amp;div=1' title='Gaithersburg, MD (CSW)'>Gaithersburg, MD (CSW)</a></td><td>12/16/17</td><td class='tdr w'>7</td><td class='tdr l'>1</td><td class='tdr t'>&nbsp;</td><td class='tdr b'>&nbsp;</td><td class='tdr'>+595</td><td colspan=2 class='tdr'><b>1 of 4 (1)</b></td><td class='tdr'>2</td><td class='tdr rating'>1740</td><td class='tdr rating'>2314</td><td class='tdr ratingup newrating rating'>1799</td><td class='tdr'>&nbsp;</td><td class='tdr'>&nbsp;<span class='moneyknown' title='prize money is estimated'>E</span></td></tr><tr><td colspan='17'><div id='gbg10077'></div></td></tr>
+
+<tr class='row1 csw-tourney' id='row7'><td><span id='toggle10093' class='expanderclosed' onclick='toggle("gbg", "bygame", "t", 20411, 10093, 10093, "game-by-game details");' >&nbsp;</span><span class='anchorfield' id='anchor10093-div--1' style='width: 15px;'>&nbsp;</span></td><td class='tdr'>7</td><td class='tourney-name'><a href='tourney.php?t=10093&amp;div=1' title='Albany, NY (CSW) Early Bird #1'>Albany, NY (CSW) Early Bird #1</a></td><td>12/28/17</td><td class='tdr w'>3</td><td class='tdr l'>5</td><td class='tdr t'>&nbsp;</td><td class='tdr b'>&nbsp;</td><td class='tdr'>-180</td><td colspan=2 class='tdr'>9 of 10 (1)</td><td class='tdr'>5</td><td class='tdr rating'>1799</td><td class='tdr rating'>1624</td><td class='tdr ratingdown newrating rating'>1778</td><td class='tdr'>&nbsp;</td><td class='tdr'>&nbsp;<span class='moneyknown' title='prize money is estimated'>E</span></td></tr><tr><td colspan='17'><div id='gbg10093'></div></td></tr>
+
+<tr class='row0 csw-tourney' id='row8'><td><span id='toggle10094' class='expanderclosed' onclick='toggle("gbg", "bygame", "t", 20411, 10094, 10094, "game-by-game details");' >&nbsp;</span><span class='anchorfield' id='anchor10094-div--1' style='width: 15px;'>&nbsp;</span></td><td class='tdr'>8</td><td class='tourney-name'><a href='tourney.php?t=10094&amp;div=1' title='Albany, NY (CSW) Early Bird #2'>Albany, NY (CSW) Early Bird #2</a></td><td>12/29/17</td><td class='tdr w'>5</td><td class='tdr l'>0</td><td class='tdr t'>&nbsp;</td><td class='tdr b'>&nbsp;</td><td class='tdr'>+422</td><td colspan=2 class='tdr'><b>1 of 10 (1)</b></td><td class='tdr'>6</td><td class='tdr rating'>1778</td><td class='tdr rating'>2701</td><td class='tdr ratingup newrating rating'>1840</td><td class='tdr'>&nbsp;</td><td class='tdr'>&nbsp;<span class='moneyknown' title='prize money is estimated'>E</span></td></tr><tr><td colspan='17'><div id='gbg10094'></div></td></tr>
+
+<tr class='row1 csw-tourney' id='row9'><td><span id='toggle10098' class='expanderclosed' onclick='toggle("gbg", "bygame", "t", 20411, 10098, 10098, "game-by-game details");' >&nbsp;</span><span class='anchorfield' id='anchor10098-div--1' style='width: 15px;'>&nbsp;</span></td><td class='tdr'>9</td><td class='tourney-name'><a href='tourney.php?t=10098&amp;div=1' title='Albany, NY Main Event (CSW)'>Albany, NY Main Event (CSW)</a></td><td>01/01/18</td><td class='tdr w'>12</td><td class='tdr l'>10</td><td class='tdr t'>&nbsp;</td><td class='tdr b'>&nbsp;</td><td class='tdr'>+806</td><td colspan=2 class='tdr'>6 of 18 (1)</td><td class='tdr'>6</td><td class='tdr rating'>1840</td><td class='tdr rating'>1735</td><td class='tdr ratingdown newrating rating'>1815</td><td class='tdr'>&nbsp;</td><td class='tdr'>&nbsp;<span class='moneyknown' title='prize money is estimated'>E</span></td></tr><tr><td colspan='17'><div id='gbg10098'></div></td></tr>
+
+<tr class='row0 csw-tourney' id='row10'><td><span id='toggle10110' class='expanderclosed' onclick='toggle("gbg", "bygame", "t", 20411, 10110, 10110, "game-by-game details");' >&nbsp;</span><span class='anchorfield' id='anchor10110-div--1' style='width: 15px;'>&nbsp;</span></td><td class='tdr'>10</td><td class='tourney-name'><a href='tourney.php?t=10110&amp;div=1' title='New Orleans, LA (CSW)'>New Orleans, LA (CSW)</a></td><td>01/13/18</td><td class='tdr w'>10</td><td class='tdr l'>10</td><td class='tdr t'>&nbsp;</td><td class='tdr b'>&nbsp;</td><td class='tdr'>-435</td><td colspan=2 class='tdr'>19 of 30 (1)</td><td class='tdr'>20</td><td class='tdr rating'>1815</td><td class='tdr rating'>1881</td><td class='tdr ratingup newrating rating'>1830</td><td class='tdr'>&nbsp;</td><td class='tdr'>&nbsp;<span class='moneyknown' title='prize money is estimated'>E</span></td></tr><tr><td colspan='17'><div id='gbg10110'></div></td></tr>
+
+<tr class='row1 csw-tourney' id='row11'><td><span id='toggle10136' class='expanderclosed' onclick='toggle("gbg", "bygame", "t", 20411, 10136, 10136, "game-by-game details");' >&nbsp;</span><span class='anchorfield' id='anchor10136-div--1' style='width: 15px;'>&nbsp;</span></td><td class='tdr'>11</td><td class='tourney-name'><a href='tourney.php?t=10136&amp;div=1' title='Hood River, OR (CSW)'>Hood River, OR (CSW)</a></td><td>02/17/18</td><td class='tdr w'>8</td><td class='tdr l'>11</td><td class='tdr t'>1</td><td class='tdr b'>&nbsp;</td><td class='tdr'>-589</td><td colspan=2 class='tdr'>13 of 20 (1)</td><td class='tdr'>12</td><td class='tdr rating'>1830</td><td class='tdr rating'>1761</td><td class='tdr ratingdown newrating rating'>1817</td><td class='tdr'>&nbsp;</td><td class='tdr'>&nbsp;<span class='moneyknown' title='prize money is estimated'>E</span></td></tr><tr><td colspan='17'><div id='gbg10136'></div></td></tr>
+
+<tr class='row0 csw-tourney' id='row12'><td><span id='toggle10167' class='expanderclosed' onclick='toggle("gbg", "bygame", "t", 20411, 10167, 10167, "game-by-game details");' >&nbsp;</span><span class='anchorfield' id='anchor10167-div--1' style='width: 15px;'>&nbsp;</span></td><td class='tdr'>12</td><td class='tourney-name'><a href='tourney.php?t=10167&amp;div=1' title='Poughkeepsie, NY (CSW)'>Poughkeepsie, NY (CSW)</a></td><td>03/10/18</td><td class='tdr w'>9</td><td class='tdr l'>5</td><td class='tdr t'>&nbsp;</td><td class='tdr b'>&nbsp;</td><td class='tdr'>+548</td><td colspan=2 class='tdr'>6 of 14 (1)</td><td class='tdr'>7</td><td class='tdr rating'>1817</td><td class='tdr rating'>1920</td><td class='tdr ratingup newrating rating'>1831</td><td class='tdr'>&nbsp;</td><td class='tdr'>&nbsp;<span class='moneyknown' title='prize money is estimated'>E</span></td></tr><tr><td colspan='17'><div id='gbg10167'></div></td></tr>
+
+<tr class='row1 csw-tourney' id='row13'><td><span id='toggle10171' class='expanderclosed' onclick='toggle("gbg", "bygame", "t", 20411, 10171, 10171, "game-by-game details");' >&nbsp;</span><span class='anchorfield' id='anchor10171-div--1' style='width: 15px;'>&nbsp;</span></td><td class='tdr'>13</td><td class='tourney-name'><a href='tourney.php?t=10171&amp;div=1' title='Ithaca, NY (CSW)'>Ithaca, NY (CSW)</a></td><td>03/15/18</td><td class='tdr w'>4</td><td class='tdr l'>1</td><td class='tdr t'>&nbsp;</td><td class='tdr b'>&nbsp;</td><td class='tdr'>+1206</td><td colspan=2 class='tdr'>2 of 6 (1)</td><td class='tdr'>2</td><td class='tdr rating'>1831</td><td class='tdr rating'>1765</td><td class='tdr ratingdown newrating rating'>1829</td><td class='tdr'>&nbsp;</td><td class='tdr'>&nbsp;<span class='moneyknown' title='prize money is estimated'>E</span></td></tr><tr><td colspan='17'><div id='gbg10171'></div></td></tr>
+
+<tr class='row0 csw-tourney' id='row14'><td><span id='toggle10173' class='expanderclosed' onclick='toggle("gbg", "bygame", "t", 20411, 10173, 10173, "game-by-game details");' >&nbsp;</span><span class='anchorfield' id='anchor10173-div--1' style='width: 15px;'>&nbsp;</span></td><td class='tdr'>14</td><td class='tourney-name'><a href='tourney.php?t=10173&amp;div=1' title='Syracuse, NY (CSW)'>Syracuse, NY (CSW)</a></td><td>03/17/18</td><td class='tdr w'>4</td><td class='tdr l'>4</td><td class='tdr t'>&nbsp;</td><td class='tdr b'>&nbsp;</td><td class='tdr'>+177</td><td colspan=2 class='tdr'>4 of 6 (1)</td><td class='tdr'>5</td><td class='tdr rating'>1829</td><td class='tdr rating'>1868</td><td class='tdr ratingup newrating rating'>1833</td><td class='tdr'>&nbsp;</td><td class='tdr'>&nbsp;<span class='moneyknown' title='prize money is estimated'>E</span></td></tr><tr><td colspan='17'><div id='gbg10173'></div></td></tr>
+
+<tr class='row1 csw-tourney' id='row15'><td><span id='toggle10192' class='expanderclosed' onclick='toggle("gbg", "bygame", "t", 20411, 10192, 10192, "game-by-game details");' >&nbsp;</span><span class='anchorfield' id='anchor10192-div--1' style='width: 15px;'>&nbsp;</span></td><td class='tdr'>15</td><td class='tourney-name'><a href='tourney.php?t=10192&amp;div=1' title='Gaithersburg, MD (CSW)'>Gaithersburg, MD (CSW)</a></td><td>03/31/18</td><td class='tdr w'>4</td><td class='tdr l'>4</td><td class='tdr t'>&nbsp;</td><td class='tdr b'>2</td><td class='tdr'>+148</td><td colspan=2 class='tdr'>2 of 5 (1)</td><td class='tdr'>3</td><td class='tdr rating'>1833</td><td class='tdr rating'>1756</td><td class='tdr ratingdown newrating rating'>1826</td><td class='tdr'>&nbsp;</td><td class='tdr'>&nbsp;<span class='moneyknown' title='prize money is estimated'>E</span></td></tr><tr><td colspan='17'><div id='gbg10192'></div></td></tr>
+
+<tr class='row0 csw-tourney' id='row16'><td><span id='toggle10195' class='expanderclosed' onclick='toggle("gbg", "bygame", "t", 20411, 10195, 10195, "game-by-game details");' >&nbsp;</span><span class='anchorfield' id='anchor10195-div--1' style='width: 15px;'>&nbsp;</span></td><td class='tdr'>16</td><td class='tourney-name'><a href='tourney.php?t=10195&amp;div=1' title='Gaithersburg, MD (CSW)'>Gaithersburg, MD (CSW)</a></td><td>04/07/18</td><td class='tdr w'>5</td><td class='tdr l'>3</td><td class='tdr t'>&nbsp;</td><td class='tdr b'>&nbsp;</td><td class='tdr'>+244</td><td colspan=2 class='tdr'><b>1 of 4 (1)</b></td><td class='tdr'>1</td><td class='tdr rating'>1826</td><td class='tdr rating'>1812</td><td class='tdr  newrating rating'>1826</td><td class='tdr'>&nbsp;</td><td class='tdr'>&nbsp;<span class='moneyknown' title='prize money is estimated'>E</span></td></tr><tr><td colspan='17'><div id='gbg10195'></div></td></tr>
+
+<tr class='row1 csw-tourney' id='row17'><td><span id='toggle10297' class='expanderclosed' onclick='toggle("gbg", "bygame", "t", 20411, 10297, 10297, "game-by-game details");' >&nbsp;</span><span class='anchorfield' id='anchor10297-div--1' style='width: 15px;'>&nbsp;</span></td><td class='tdr'>17</td><td class='tourney-name'><a href='tourney.php?t=10297&amp;div=1' title='Bethesda, MD (CSW)'>Bethesda, MD (CSW)</a></td><td>06/16/18</td><td class='tdr w'>6</td><td class='tdr l'>2</td><td class='tdr t'>&nbsp;</td><td class='tdr b'>&nbsp;</td><td class='tdr'>+489</td><td colspan=2 class='tdr'><b>1 of 4 (1)</b></td><td class='tdr'>1</td><td class='tdr rating'>1826</td><td class='tdr rating'>1983</td><td class='tdr ratingup newrating rating'>1839</td><td class='tdr'>&nbsp;</td><td class='tdr'>&nbsp;<span class='moneyknown' title='prize money is estimated'>E</span></td></tr><tr><td colspan='17'><div id='gbg10297'></div></td></tr>
+
+<tr class='row0 csw-tourney' id='row18'><td><span id='toggle10314' class='expanderclosed' onclick='toggle("gbg", "bygame", "t", 20411, 10314, 10314, "game-by-game details");' >&nbsp;</span><span class='anchorfield' id='anchor10314-div--1' style='width: 15px;'>&nbsp;</span></td><td class='tdr'>18</td><td class='tourney-name'><a href='tourney.php?t=10314&amp;div=1' title='Albany, NY (CSW) Early Bird #2'>Albany, NY (CSW) Early Bird #2</a></td><td>06/29/18</td><td class='tdr w'>5</td><td class='tdr l'>1</td><td class='tdr t'>&nbsp;</td><td class='tdr b'>&nbsp;</td><td class='tdr'>+426</td><td colspan=2 class='tdr'><b>1 of 4 (1)</b></td><td class='tdr'>1</td><td class='tdr rating'>1839</td><td class='tdr rating'>2081</td><td class='tdr ratingup newrating rating'>1852</td><td class='tdr'>&nbsp;</td><td class='tdr'>&nbsp;<span class='moneyknown' title='prize money is estimated'>E</span></td></tr><tr><td colspan='17'><div id='gbg10314'></div></td></tr>
+
+<tr class='row1 csw-tourney' id='row19'><td><span id='toggle10316' class='expanderclosed' onclick='toggle("gbg", "bygame", "t", 20411, 10316, 10316, "game-by-game details");' >&nbsp;</span><span class='anchorfield' id='anchor10316-div--1' style='width: 15px;'>&nbsp;</span></td><td class='tdr'>19</td><td class='tourney-name'><a href='tourney.php?t=10316&amp;div=1' title='Albany, NY Main Event (CSW)'>Albany, NY Main Event (CSW)</a></td><td>06/29/18</td><td class='tdr w'>18</td><td class='tdr l'>3</td><td class='tdr t'>&nbsp;</td><td class='tdr b'>&nbsp;</td><td class='tdr'>+1310</td><td colspan=2 class='tdr'><b>1 of 12 (1)</b></td><td class='tdr'>4</td><td class='tdr rating'>1852</td><td class='tdr rating'>2317</td><td class='tdr ratingup newrating rating'>1919</td><td class='tdr'>&nbsp;</td><td class='tdr'>&nbsp;<span class='moneyknown' title='prize money is estimated'>E</span></td></tr><tr><td colspan='17'><div id='gbg10316'></div></td></tr>
+
+<tr class='row0 csw-tourney' id='row20'><td><span id='toggle10337' class='expanderclosed' onclick='toggle("gbg", "bygame", "t", 20411, 10337, 10337, "game-by-game details");' >&nbsp;</span><span class='anchorfield' id='anchor10337-div--1' style='width: 15px;'>&nbsp;</span></td><td class='tdr'>20</td><td class='tourney-name'><a href='tourney.php?t=10337&amp;div=1' title='Gaithersburg, MD (CSW)'>Gaithersburg, MD (CSW)</a></td><td>07/21/18</td><td class='tdr w'>6</td><td class='tdr l'>2</td><td class='tdr t'>&nbsp;</td><td class='tdr b'>&nbsp;</td><td class='tdr'>+315</td><td colspan=2 class='tdr'>2 of 6 (1)</td><td class='tdr'>2</td><td class='tdr rating'>1919</td><td class='tdr rating'>2043</td><td class='tdr ratingup newrating rating'>1928</td><td class='tdr'>&nbsp;</td><td class='tdr'>&nbsp;<span class='moneyknown' title='prize money is estimated'>E</span></td></tr><tr><td colspan='17'><div id='gbg10337'></div></td></tr>
+
+<tr class='row1 csw-tourney' id='row21'><td><span id='toggle10355' class='expanderclosed' onclick='toggle("gbg", "bygame", "t", 20411, 10355, 10355, "game-by-game details");' >&nbsp;</span><span class='anchorfield' id='anchor10355-div--1' style='width: 15px;'>&nbsp;</span></td><td class='tdr'>21</td><td class='tourney-name'><a href='tourney.php?t=10355&amp;div=1' title='North American Scrabble Championship (CSW)'>North American Scrabble Championshi...</a></td><td>08/04/18</td><td class='tdr w'>18</td><td class='tdr l'>13</td><td class='tdr t'>&nbsp;</td><td class='tdr b'>&nbsp;</td><td class='tdr'>+435</td><td colspan=2 class='tdr'>15 of 72 (1)</td><td class='tdr'>12</td><td class='tdr rating'>1928</td><td class='tdr rating'>1926</td><td class='tdr ratingup newrating rating'>1933</td><td class='tdr'>&nbsp;</td><td class='tdr'>&nbsp;<span class='moneyknown' title='prize money is estimated'>E</span></td></tr><tr><td colspan='17'><div id='gbg10355'></div></td></tr></table>			<div id='infobox'>
+			</div>						<!--dialog that allows searching for a player. -->
+		<div id='findplayerdialog' style='display: none;'>
+			<div class='hd'>Find A Player</div>
+			<div class='bd'>
+				<form name='findplayerform' method='GET' action='results.php'><p>
+				<input type='hidden' id='findplayerid' name='p' value='0'>
+				<label for='autocompleteplayer'>Player name:</label>
+					<div id='autocompleteplayer' style='list-style: none;'> 
+					    <input id='findplayername' type='text'> 
+					    <div id='findplayernameContainer'></div> 
+					</div> 
+					<p>&nbsp;
+				<div id='newplayerloading'>Loading results for <span id='foundplayer'></span>...</div>
+				</form>
+			</div>
+		</div>	
+
+
+		
+			</div>
+				<div id='ft'>
+				
+					Copyright &copy; 2005-2018 Seth Lipkin and Keith Smith<br>Some data copyright &copy; 1999-2009 National Scrabble Association and &copy; 2009-2018 North American Scrabble Players Association<br>SCRABBLE&reg; is a registered trademark of Hasbro, Inc. in the USA and Canada.<br>Current time: 2018-08-13 21:56:05 Server IP: 162.144.19.21			
+				</div>
+		</div>
+
+    </body>
+		</html>
+		
