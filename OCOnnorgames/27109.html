@@ -1,0 +1,1277 @@
+<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01//EN'  'http://www.w3.org/TR/html4/strict.dtd'> 
+		<html>
+		<head>
+			<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+			<meta name="resource-type" content="document"> 
+			<meta name="description" content="Scrabble statistics, results, and tournament listings"> 
+			<meta name="keywords" content="scrabble, scrabble tiles, scrabble statistics, scrabble results, stats, tournaments, upcoming, players, competitive, games "> 
+			<title>Annotated Game - cross-tables.com</title>
+<script type='text/javascript' src=' http://yui.yahooapis.com/2.5.0/build/yahoo-dom-event/yahoo-dom-event.js'></script>
+<link type='text/css' rel='stylesheet' href='http://yui.yahooapis.com/2.5.0/build/reset-fonts-grids/reset-fonts-grids.css' >
+<link type='text/css' rel='stylesheet' href='http://yui.yahooapis.com/2.5.0/build/grids/grids.css' >
+<link type='text/css' rel='stylesheet' href='http://yui.yahooapis.com/2.5.0/build/assets/skins/sam/skin.css' >
+<link type='text/css' rel='stylesheet' href='http://yui.yahooapis.com/2.5.0/build/assets/skins/sam/menu.css' >
+			
+				<link rel='stylesheet' type='text/css' href='xt.css'> 
+																				<!--<link rel='stylesheet' type='text/css' href='niftycorners.css'> -->
+
+<script type='text/javascript' src=' http://yui.yahooapis.com/2.5.0/build/container/container_core-min.js'></script>
+<script type='text/javascript' src=' http://yui.yahooapis.com/2.5.0/build/menu/menu-min.js'></script>
+<script type='text/javascript' src=' http://yui.yahooapis.com/2.5.0/build/element/element-beta-min.js'></script>
+<script type='text/javascript' src=' http://yui.yahooapis.com/2.5.0/build/button/button-min.js'></script>
+<script type='text/javascript' src=' http://yui.yahooapis.com/2.5.0/build/utilities/utilities.js'></script>
+<script type='text/javascript' src=' http://yui.yahooapis.com/2.5.0/build/connection/connection-min.js'></script>
+<script type='text/javascript' src=' http://yui.yahooapis.com/2.5.0/build/container/container-min.js'></script>
+<script type='text/javascript' src=' http://yui.yahooapis.com/2.5.0/build/autocomplete/autocomplete-min.js'></script>
+				<script type='text/javascript' src='xt.js'></script>
+				<script type='text/javascript' src='acplayer.js'></script>
+				<script type='text/javascript' src='nifty.js'></script>
+
+	
+	       <script type='text/javascript'>
+
+	            // Initialize and render the menu bar when it is available in the DOM
+	            YAHOO.util.Event.onContentReady('xtmenus', function () {
+
+	                // Instantiate and render the menu bar
+	                var oMenuBar = new YAHOO.widget.MenuBar('xtmenus', { autosubmenudisplay: true, showdelay: 0, hidedelay: 750, lazyload: true });
+
+	                /*
+	                     Call the "render" method with no arguments since the markup for 
+	                     this menu already exists in the DOM.
+	                */
+
+	                oMenuBar.render();
+
+	            });
+				
+				function loadcomplete()
+				{
+					initfindplayerdialog();
+					//focusfirst($selectfirst);
+				}
+
+			</script>
+				
+					<style type='text/css'>
+		.tile, .tileunseen { width: 20px; height: 20px;  }
+	</style>
+	<script type='text/javascript'>
+		YAHOO.util.Event.on(window, 'load', showinitialmove); 
+		
+		var gMove=0;
+		var gLastMove=-1;
+		var hashParts;
+		var isIE = document.all;
+		var maxmove=27;
+
+		var letplays = Array( 
+		Array( 1, 'HUNGER', 3, 7, 1, 28, 'EGHNRU', 0, 28, 0, [] )
+		,Array( 2, 'FUB', 7, 6, 1, 17, 'BEFIRTU', 1, 28, 17, [] )
+		,Array( 3, 'AUNE', 5, 8, 1, 50, 'AENU', 0, 50, 17, [] )
+		,Array( 4, 'TITC.', 3, 3, 0, 37, 'CEIRTTT', 1, 50, 37, [] )
+		,Array( 5, 'LA.EENER', 1, 3, 1, 109, 'AEEELNR', 0, 109, 37, [] )
+		,Array( 6, 'R.FTED', 2, 4, 1, 76, 'CDEFRTT', 1, 109, 76, ['TIFTED#, which I kinda know but not well enough'] )
+		,Array( 7, 'POO..', 7, 0, 0, 133, 'OOP', 0, 133, 76, [] )
+		,Array( 8, '---', 0, 0, 0, 76, 'CLNNQST', 1, 133, 76, [] )
+		,Array( 9, 'AIA', 9, 5, 1, 144, 'AAI', 0, 144, 76, [] )
+		,Array( 10, '.ENTISED', 7, 0, 1, 162, 'DEEINST', 1, 144, 162, [] )
+		,Array( 11, 'NAV', 0, 2, 1, 170, 'ANV', 0, 170, 162, [] )
+		,Array( 12, 'RUBLI', 3, 9, 1, 197, '?BILRUW', 1, 170, 197, [] )
+		,Array( 13, 'WOLD', 9, 4, 1, 200, 'DLOW', 0, 200, 197, [] )
+		,Array( 14, 'W.X', 6, 1, 1, 219, '??ALWXZ', 1, 200, 219, [] )
+		,Array( 15, 'KAE', 10, 3, 1, 230, 'AEK', 0, 230, 219, [] )
+		,Array( 16, 'ZA', 12, 2, 1, 267, '??AJLVZ', 1, 230, 267, [] )
+		,Array( 17, 'PROG', 14, 2, 0, 252, 'GOPR', 0, 252, 267, [] )
+		,Array( 18, 'J..', 5, 2, 0, 277, '??AJLOV', 1, 252, 277, ['4J RAJ looks very good here with just one A unseen.'] )
+		,Array( 19, '---', 0, 0, 0, 252, 'OOO', 0, 252, 277, [] )
+		,Array( 20, 'sALVORs', 7, 10, 1, 350, '??ALORV', 1, 252, 350, ['Matthew challenged both words, forgot to add the +10'] )
+		,Array( 21, 'YI.', 0, 0, 0, 270, 'IY', 0, 270, 350, [] )
+		,Array( 22, 'IT', 12, 1, 1, 375, 'EHIOOTT', 1, 270, 375, ['Probably just J12 HOOT to block'] )
+		,Array( 23, 'MIS.IONS', 13, 7, 0, 342, 'IIMNOSS', 0, 342, 375, [] )
+		,Array( 24, 'TOESHOE.', 6, 14, 1, 461, 'EEHOOST', 1, 342, 461, ['Lucky pull there.'] )
+		,Array( 25, 'CY.E', 11, 7, 1, 384, 'ACDEMQY', 0, 384, 461, [] )
+		,Array( 26, 'GI.', 12, 12, 0, 477, 'GI', 1, 384, 477, [] )
+		,Array( 27, '---', 0, 0, 0, 509, '', 0, 384, 509, [] )
+			);
+
+		function showitems(tag, vis, move)
+		{
+			gLastMove = '';
+			var els = document.getElementsByTagName(tag);
+
+			for (var img=0; img<els.length; img++)
+			{
+				el = els[img];
+
+				var classname;
+							
+				  for (var k=0; k<el.attributes.length; k++) {
+				    if (el.attributes.item(k).nodeName == 'class') {
+				      classname = el.attributes.item(k).nodeValue;
+				  } }
+				
+	//			var classname = el.getAttribute('class');
+				
+				if (classname && classname.substr(0,4) == 'move')
+				{
+					var movenum = parseInt(classname.substr(4));
+					el.style.display = (movenum <= move) ? vis : 'none';
+					
+					if (movenum == move) 
+					{
+						gLastMove = gLastMove + ' ' + el.innerHTML;
+					}
+				}
+			}
+		}
+		
+		function clearmoveselectors()
+		{
+			var id=0;
+			
+			while (true)
+			{
+				var el = document.getElementById('moveselector' + id);
+				
+				if (!el) break;
+				YAHOO.util.Dom.removeClass(el, 'movecurselector');
+				++id;
+			}
+		}
+		
+		function cleargrid()
+		{
+		    for (var r=0; r<15; ++r) for (var c=0; c<15; ++c) 
+		    {
+		        var el = document.getElementById('cell' + r + '-' + c);
+		        
+		        el.innerHTML = '&nbsp;';
+		        el.style.display = 'none';
+				YAHOO.util.Dom.removeClass(el, 'tilejustplayed');
+		    }
+			
+			var distro = Array(9,2,2,4,12,2,3,2,9,1,1,4,2,6,8,2,1,6,4,6,4,2,2,1,2,1,2);
+
+			for (var i=0; i<27; ++i)
+			{
+				var count = distro[i];
+				
+				if (i==26) 	idlett = 'blank';
+				else		idlett = inttoascii(i+65);
+				
+				for (var let=0; let<count; ++let)
+				{
+					var poolid = 'pool' + idlett + let;
+					YAHOO.util.Dom.setStyle(poolid, 'display', 'block');
+				}
+			}
+		}
+		
+		function showmove(move)
+		{
+		    gMove = move; 
+		    document.getElementById('rack0').innerHTML = '&nbsp;';
+		    document.getElementById('rack1').innerHTML = '&nbsp;';
+			YAHOO.util.Dom.setStyle('lastmoveblock', 'display', 'none');
+			YAHOO.util.Dom.setStyle('notesblock', 'display', 'none');
+			//showitems('div', 'block', move);
+			showitems('td', '' /* the default! */, move);
+			
+			cleargrid();
+			clearmoveselectors();
+
+			YAHOO.util.Dom.addClass('moveselector' + move, 'movecurselector');
+			
+			var lettersused = Array();
+			for (var i=0; i<27; ++i) lettersused[i] = 0;
+			
+			for (var tile=0 ; tile<7; ++tile)
+				YAHOO.util.Dom.setStyle('racktile' + tile, 'display', 'none');
+
+			var rackcount = Array(7, 7);
+			var bagsize = 86;
+			
+			for (var m=0; m<letplays.length; ++m)
+			{
+				var moveinfo = letplays[m];
+				if (moveinfo[0] <= move)
+				{
+					var word = moveinfo[1];
+					var r = moveinfo[2];
+					var c = moveinfo[3];
+					var rdelta = moveinfo[4] ? 1 : 0;
+					var cdelta = moveinfo[4] ? 0 : 1;
+					var challenge = false;
+					
+					if (word != '---')
+					{
+						if (word.substr(0,5)=='-chl-')
+						{
+							word = word.substr(5);
+							challenge = true;
+						}
+							
+						for (var lc=0; lc<word.length; ++lc)
+						{
+							var l = word.charAt(lc);
+
+							if (l!='.')
+							{
+								// Show on board
+					   				var el = document.getElementById('cell' + r + '-' + c);
+				    				el.innerHTML = l;
+				    				el.style.display = challenge ? 'none' : 'block';
+									if (moveinfo[0] == move)
+										YAHOO.util.Dom.addClass(el, 'tilejustplayed');
+
+
+								// Remove from pool (or add back, for challenges!)
+									var ltridx = getletterindex(l);
+									var idlett = (ltridx==26) ? 'blank' : l;
+									
+									if (!challenge)
+									{
+										var poolid = 'pool' + idlett + lettersused[ltridx];
+										YAHOO.util.Dom.setStyle(poolid, 'display', 'none');
+										++lettersused[ltridx];
+										--rackcount[moveinfo[7]];
+									}
+									else
+									{
+										--lettersused[ltridx];
+										var poolid = 'pool' + idlett + lettersused[ltridx];
+										YAHOO.util.Dom.setStyle(poolid, 'display', 'block');
+										++rackcount[moveinfo[7]];
+									}
+							}
+							
+							r += rdelta;
+							c += cdelta;
+						}
+
+						//replenish (or give back, after challenge)
+							var tiletransfer = Math.min(bagsize, 7-rackcount[moveinfo[7]]);
+							bagsize -= tiletransfer;
+							rackcount[moveinfo[7]] += tiletransfer;
+
+					}
+				}
+				
+				if (moveinfo[0] == move)
+				{
+	    			document.getElementById('score0').innerHTML = moveinfo[8];
+	    			document.getElementById('score1').innerHTML = moveinfo[9];
+				}
+				
+				if (moveinfo[0] == move && moveinfo[10].length)
+				{
+					var thenotes = '';
+					for (var i=0; i<moveinfo[10].length; ++i)
+						thenotes += '<' + 'li>' + moveinfo[10][i] + '<' + '/li>';
+					document.getElementById('notelist').innerHTML = '<' + 'ul>' + thenotes + '<' + '/ul>';
+					YAHOO.util.Dom.setStyle('notesblock', 'display', 'block');
+				}
+				
+				if (moveinfo[0] == move)
+				{
+					//new Ajax.Updater('comments', 'http://www.haloscan.com/comments/slipkin/NAME/?m=1', {asynchronous:true, evalScripts:true});
+					//	document.getElementById('comments').innerHTML = '<span class="post-comment-link"><' + 'script src="" type="text/javascript"></'+'script>>';
+				}
+				
+				if (moveinfo[0] == move+1) 
+				{
+					document.getElementById('rack' + moveinfo[7]).innerHTML = moveinfo[6];
+				}
+				
+				if (moveinfo[0] == move)
+				{
+					document.getElementById('lastrack').innerHTML = moveinfo[6];
+
+					if (gLastMove)
+					{
+						document.getElementById('lastmove').innerHTML = gLastMove;
+						YAHOO.util.Dom.setStyle('lastmoveblock', 'display', 'block');
+					}
+				}
+				
+				if (moveinfo[0] == move+1)
+				{
+					var tile;
+					
+					for (tile=0; tile<moveinfo[6].length; ++tile)
+					{
+						var l;
+						l = moveinfo[6].charAt(tile);
+						var ltridx = getletterindex(l);
+						var idlett = (ltridx==26) ? 'blank' : l;
+						var poolid = 'pool' + idlett + lettersused[ltridx];
+						var rackid = 'racktile' + tile;
+						
+						document.getElementById(rackid).innerHTML = l;
+						YAHOO.util.Dom.setStyle(rackid, 'display', 'block');
+						
+						YAHOO.util.Dom.setStyle(poolid, 'display', 'none');
+						++lettersused[ltridx];
+					}
+
+					var unknowntiles = rackcount[moveinfo[7]] - tile;
+					if (unknowntiles > 0)
+					{
+						document.getElementById('partialrackwarning').innerHTML = ", including <b>" + unknowntiles + "</" + "b> unknown " + ((unknowntiles==1)?"tile":"tiles")+ " from current player's rack";
+					}
+					YAHOO.util.Dom.setStyle('partialrackwarning', 'display', unknowntiles ? 'inline' : 'none');
+					
+					for ( ; tile<7; ++tile)
+					{
+						YAHOO.util.Dom.setStyle('racktile' + tile, 'display', 'none');
+					}
+					
+				}
+			}
+
+			hashParts[0] = move;
+			location.hash = hashParts.join('#');
+		}
+	
+		function inttoascii(i)
+		{
+			// convert i into a 2-digit hex string
+			var h = i . toString (16);
+			if (h . length == 1)
+				h = '0' + h;
+
+			// insert a % character into the string
+			h = '%' + h;
+
+			// determine the character represented by the escape code
+			h = unescape (h);
+			
+			return h;
+		}
+		
+		function getletterindex(l)
+		{
+			if (l=='?') return 26;	// blank is 26
+			
+			// loop through all possible ASCII values
+			var i;
+			for (i = 0; i < 256; ++ i)
+			{
+				// if the characters match, we've found the ASCII value
+				if (inttoascii(i) == l)
+					break;
+			}
+			
+			if (i > 90) return 26;	// a lower-case letter indicates a blank!
+			return i-65;	// A=0, B=1, etc.
+		}
+		
+		function nextmove()
+		{
+			if (gMove >= maxmove) { alert('There are no more moves to show'); return; }
+			gMove++;
+			showmove(gMove);
+			
+	//		if (gMove >= maxmove) document.getElementById('btn_forward').disable = true;
+		}
+		
+		function prevmove()
+		{
+			if (!gMove) { alert('You\'re already at the start of the game'); return; }
+			gMove--;		
+			showmove(gMove);
+		}
+		
+		function setDisplay(id, display)
+		{
+			document.getElementById(id).style.display = display;
+		}
+
+		function printableView()
+		{
+			document.querySelector(".thegrid").style.background = "url(/annotated/i/board-bw.png)";
+			setDisplay("btn_printable", "none");
+			setDisplay("btn_normal", "block");
+		}
+
+		function normalView()
+		{
+			document.querySelector(".thegrid").style.background = "url(/annotated/i/board.jpg)";
+			setDisplay("btn_normal", "none");
+			setDisplay("btn_printable", "block");
+		}
+
+		function showinitialmove()
+		{
+			hashParts = location.hash.substr(1).split('#');
+			var firstChar = hashParts[0].substr(0,1);
+
+			if (firstChar < '0' || firstChar > '9')
+				hashParts.splice(0,0,firstChar);	//"0");
+				
+			if (location.hash) gMove = parseInt(hashParts[0]);
+			if (gMove > maxmove) gMove = maxmove;
+			
+			if (gMove)
+			{
+				showmove(gMove-1);
+				nextmove();
+			}
+			else
+				showmove(0);
+		}
+		</script>
+				       <script type='text/javascript'>
+			function openfinddialog()
+			{
+				YAHOO.findplayerdialog.show();
+			}
+			
+			function initfindplayerdialog() 
+			{
+				// Define various event handlers for Dialog
+				var handlefindplayerCancel = function() {
+					this.cancel();
+
+				};
+				
+				// Make the dialog visible
+				YAHOO.util.Dom.setStyle('findplayerdialog', 'display', 'block');
+				
+				// Instantiate the Dialog
+				YAHOO.findplayerdialog = new YAHOO.widget.Dialog("findplayerdialog", 
+																			{ width : "350px",
+																			  visible : false, 
+																			  context: ['xtmenus', 'tl', 'bl'],
+																			  constraintoviewport : true,
+																			  buttons : [ { text:"Cancel", handler:handlefindplayerCancel } ],
+																			  effect:{effect:YAHOO.widget.ContainerEffect.FADE,duration:0.25},
+																			  postmethod: 'form'
+																			 } );
+				
+				var kl = new YAHOO.util.KeyListener(document, { keys: [27] },                               
+		                                              { fn:YAHOO.findplayerdialog.hide, 
+		                                                scope:YAHOO.findplayerdialog,
+		                                                correctScope:true } ); 
+				YAHOO.findplayerdialog.cfg.queueProperty("keylisteners", [ kl ]); 		
+				
+				YAHOO.findplayerdialog.validate = function() {
+					var data = this.getData();
+					
+					if (data.p==0) {
+						document.location = "players.php?query="+document.getElementById('findplayername').value
+						//alert("Please type a player name to search for "+document.getElementById('findplayername').value);
+						return false;
+					} else {
+						return true;
+					}
+				};
+
+				// Hook up the auto-completion behavior
+				var selectionevent = new YAHOO.util.CustomEvent("playerautoselected"); 
+				addplayerautocomplete("findplayername", "findplayernameContainer", "findplayerid", selectionevent, false);
+				
+				selectionevent.subscribe(gotplayer);
+				
+				// Render the Dialog
+				YAHOO.findplayerdialog.render();
+			}
+			
+			function gotplayer()
+			{
+//				document.title = '**'+(document.getElementById('findplayerid').value)+'**';
+//				return;
+				if (document.getElementById('findplayerid').value != 0)
+				{
+					document.getElementById('foundplayer').innerHTML = document.getElementById('findplayername').value;
+					YAHOO.util.Dom.setStyle('newplayerloading', 'display', 'block');
+					document.findplayerform.submit();
+				}
+			}
+		</script>
+
+				
+			<link rel="search" type="application/opensearchdescription+xml" href="searchbar.xml" title="cross-tables">
+		</head>
+		<body class='yui-skin-sam' 
+			id='yahoo-com' 
+			onload='loadcomplete();'>
+		
+		<!-- the id on the containing div determines the page width. -->
+		<!-- #doc = 750px; #doc2 = 950px; #doc3 = 100%; #doc4 = 974px -->
+		<div id="fb-root"></div>
+		<script type='text/javascript'>(function(d, s, id) {
+		  var js, fjs = d.getElementsByTagName(s)[0];
+		  if (d.getElementById(id)) return;
+		  js = d.createElement(s); js.id = id;
+		  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=203920133011073";
+		  fjs.parentNode.insertBefore(js, fjs);
+		}(document, 'script', 'facebook-jssdk'));</script>
+
+		<div id='custom-doc850'>					
+			<div id='hd'>
+
+					<div class='siteheader' id='siteheader'>
+							<span>
+					<a href='/'>
+											SCRABBLE&reg; tournaments, statistics, and community
+															</a>
+				</span>
+				<div class='logo'>
+					<a href='/'>
+													<img src="/i/logo-tile.png" height='40' align='top'>
+					    					</a>
+					<a href='/'>
+																		cross-tables.com
+																</a>
+				</div>
+					</div>
+	   <div id='xtmenus' class='yuimenubar yuimenubarnav'>
+			<div class='bd'>
+				<ul class='first-of-type'>
+					<li class='yuimenubaritem first-of-type'><a class='yuimenubaritemlabel' href='/'>
+													Home
+												</a>
+					</li>
+				
+					<li class='yuimenubaritem'>
+						<a class='yuimenubaritemlabel' href='javascript:void(0);'>
+							Find						</a>
+						<div id='find' class='yuimenu'>
+							<div class='bd'>
+								<ul class='first-of-type'>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='javascript:openfinddialog();'>Find a Player...</a></li>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='tourneys.php'>Find a Past Tournament...</a></li>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='bystate.php'>Find Top Players by State</a></li>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='bycountry.php'>Find Top Players by Country</a></li>
+								</ul>
+							</div>
+						</div>      
+					</li>
+
+					<li class='yuimenubaritem'>
+						<a class='yuimenubaritemlabel' href='javascript:void(0);'>
+							History						</a>
+						<div id='history' class='yuimenu'>
+							<div class='bd'>
+								<ul class='first-of-type'>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='annolistself.php'>Recent Annotated Games</a></li>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='annoupload.php'>Upload an Annotated Game</a></li>
+									<!-- <li class='yuimenuitem'><a class='yuimenuitemlabel' href='annolist.php'>See a Random Annotated Game</a></li> -->
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='leaders.php'>All-time Leaders</a></li>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='club700.php'>The 700 Club</a></li>
+								</ul>
+							</div>
+						</div>      
+					
+					</li>
+
+					<li class='yuimenubaritem'>
+						<a class='yuimenubaritemlabel' href='javascript:void(0);'>
+							Play						</a>
+						<div id='maps' class='yuimenu'>
+							<div class='bd'>
+								<ul>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='map.php'>Map of Upcoming Tournaments</a></li>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='mapclubs.php'>Map of SCRABBLE Clubs</a></li>
+								</ul>
+							</div>
+						</div>      
+					</li>
+
+					<li class='yuimenubaritem'>
+						<a class='yuimenubaritemlabel' href='javascript:void(0);'>
+							Learn						</a>
+						<div id='words' class='yuimenu'>
+							<div class='bd'>
+								<ul>
+									<!--<li class='yuimenuitem'><a class='yuimenuitemlabel' href=''>Dictionary Lookup</a></li>-->
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='study.php'>Study Tools</a></li>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='leaves.php'>Leave Evaluator</a></li>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='http://www.scrabbleplayershandbook.com' target='_blank'>Scrabble Player's Handbook</a></li>
+								</ul>
+							</div>
+						</div>      
+					</li>
+
+					<li class='yuimenubaritem'>
+						<a class='yuimenubaritemlabel' href='javascript:void(0);'>
+							About						</a>
+						<div id='about' class='yuimenu'>
+							<div class='bd'>
+								<ul>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='credits.php'>About cross-tables.com</a></li>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='donate.php'><b>Donate to cross-tables.com</b></a></li>
+								</ul>
+							</div>
+						</div>      
+					</li>
+
+					<li class='yuimenubaritem' style="width: 22%">
+													<a class='yuimenubaritemlabel' href="https://www.facebook.com/v2.8/dialog/oauth?client_id=203920133011073&state=63e327a574205d9c89a14bb5386a0181&response_type=code&sdk=php-sdk-5.5.0&redirect_uri=http%3A%2F%2Fwww.cross-tables.com%2Ffb-callback.php&scope=email">
+								<span style='color: #3b5998'>Sign in with Facebook</span>
+							</a>
+											</li>
+				</ul>            
+			</div>
+		</div>
+
+
+	
+			</div>
+			<div id='bd'>
+			
+					<div>
+		<div class='infoblock'>
+				<!-- <div style='float: right; padding-right: 10px;'>Go to a <a href='annotated.php?random'>random tournament game</a></div> -->
+			Matthew O'Connor <a href='anno.php?p=18086' class='showallanno'>(games)</a> vs. Will Anderson <a href='anno.php?p=19535' class='showallanno'>(games)</a>							 | <a href='tourney.php?t=9972'>Rhinebeck, NY</a> (09/17/17) | Round 5			
+			<p>Dictionary: <b>CSW15</b>		</div>
+	</div>
+		  <div style='float: right; padding-right: 5px;'>
+		  <p>
+	        <input type='button' value='Printable' id='btn_printable' onclick='printableView();'>
+	        <input type='button' value='Normal' id='btn_normal' onclick='normalView();' style='display: none;'>
+		  </p>
+		  </div>
+	    <p>
+	      <input type='button' value='Back' id='btn_previous' onclick='prevmove();'>
+	      <input type='button' value='Forward' id='btn_forward' onclick='nextmove();'>
+	      <!--<a href=''>Original .gcg file</a>-->
+<a href='javascript:void(0);' onclick='showmove(0);' id='moveselector0' class='moveselector'>start</a> <a href='javascript:void(0);' onclick='showmove(1);' id='moveselector1' class='moveselector'>1</a> <a href='javascript:void(0);' onclick='showmove(2);' id='moveselector2' class='moveselector'>2</a> <a href='javascript:void(0);' onclick='showmove(3);' id='moveselector3' class='moveselector'>3</a> <a href='javascript:void(0);' onclick='showmove(4);' id='moveselector4' class='moveselector'>4</a> <a href='javascript:void(0);' onclick='showmove(5);' id='moveselector5' class='moveselector'>5</a> <a href='javascript:void(0);' onclick='showmove(6);' id='moveselector6' class='moveselector'>6</a> <a href='javascript:void(0);' onclick='showmove(7);' id='moveselector7' class='moveselector'>7</a> <a href='javascript:void(0);' onclick='showmove(8);' id='moveselector8' class='moveselector'>8</a> <a href='javascript:void(0);' onclick='showmove(9);' id='moveselector9' class='moveselector'>9</a> <a href='javascript:void(0);' onclick='showmove(10);' id='moveselector10' class='moveselector'>10</a> <a href='javascript:void(0);' onclick='showmove(11);' id='moveselector11' class='moveselector'>11</a> <a href='javascript:void(0);' onclick='showmove(12);' id='moveselector12' class='moveselector'>12</a> <a href='javascript:void(0);' onclick='showmove(13);' id='moveselector13' class='moveselector'>13</a> <a href='javascript:void(0);' onclick='showmove(14);' id='moveselector14' class='moveselector'>14</a> <a href='javascript:void(0);' onclick='showmove(15);' id='moveselector15' class='moveselector'>15</a> <a href='javascript:void(0);' onclick='showmove(16);' id='moveselector16' class='moveselector'>16</a> <a href='javascript:void(0);' onclick='showmove(17);' id='moveselector17' class='moveselector'>17</a> <a href='javascript:void(0);' onclick='showmove(18);' id='moveselector18' class='moveselector'>18</a> <a href='javascript:void(0);' onclick='showmove(19);' id='moveselector19' class='moveselector'>19</a> <a href='javascript:void(0);' onclick='showmove(20);' id='moveselector20' class='moveselector'>20</a> <a href='javascript:void(0);' onclick='showmove(21);' id='moveselector21' class='moveselector'>21</a> <a href='javascript:void(0);' onclick='showmove(22);' id='moveselector22' class='moveselector'>22</a> <a href='javascript:void(0);' onclick='showmove(23);' id='moveselector23' class='moveselector'>23</a> <a href='javascript:void(0);' onclick='showmove(24);' id='moveselector24' class='moveselector'>24</a> <a href='javascript:void(0);' onclick='showmove(25);' id='moveselector25' class='moveselector'>25</a> <a href='javascript:void(0);' onclick='showmove(26);' id='moveselector26' class='moveselector'>26</a> <a href='javascript:void(0);' onclick='showmove(27);' id='moveselector27' class='moveselector'>27</a> <a href='javascript:void(0);' onclick='showmove(27);' id='moveselector29' class='moveselector'>final</a> 	    <table class='boardgrid' onclick='nextmove();'><tr><td class='boardcell'>
+	    <div class='thegrid'>
+<div class='tile' id='cell0-0' style='display: none; top: 17px; left: 17px;'>
+</div>
+<div class='tile' id='cell0-1' style='display: none; top: 17px; left: 43px;'>
+</div>
+<div class='tile' id='cell0-2' style='display: none; top: 17px; left: 69px;'>
+</div>
+<div class='tile' id='cell0-3' style='display: none; top: 17px; left: 95px;'>
+</div>
+<div class='tile' id='cell0-4' style='display: none; top: 17px; left: 121px;'>
+</div>
+<div class='tile' id='cell0-5' style='display: none; top: 17px; left: 147px;'>
+</div>
+<div class='tile' id='cell0-6' style='display: none; top: 17px; left: 173px;'>
+</div>
+<div class='tile' id='cell0-7' style='display: none; top: 17px; left: 199px;'>
+</div>
+<div class='tile' id='cell0-8' style='display: none; top: 17px; left: 225px;'>
+</div>
+<div class='tile' id='cell0-9' style='display: none; top: 17px; left: 251px;'>
+</div>
+<div class='tile' id='cell0-10' style='display: none; top: 17px; left: 277px;'>
+</div>
+<div class='tile' id='cell0-11' style='display: none; top: 17px; left: 303px;'>
+</div>
+<div class='tile' id='cell0-12' style='display: none; top: 17px; left: 329px;'>
+</div>
+<div class='tile' id='cell0-13' style='display: none; top: 17px; left: 355px;'>
+</div>
+<div class='tile' id='cell0-14' style='display: none; top: 17px; left: 381px;'>
+</div>
+<div class='tile' id='cell1-0' style='display: none; top: 43px; left: 17px;'>
+</div>
+<div class='tile' id='cell1-1' style='display: none; top: 43px; left: 43px;'>
+</div>
+<div class='tile' id='cell1-2' style='display: none; top: 43px; left: 69px;'>
+</div>
+<div class='tile' id='cell1-3' style='display: none; top: 43px; left: 95px;'>
+</div>
+<div class='tile' id='cell1-4' style='display: none; top: 43px; left: 121px;'>
+</div>
+<div class='tile' id='cell1-5' style='display: none; top: 43px; left: 147px;'>
+</div>
+<div class='tile' id='cell1-6' style='display: none; top: 43px; left: 173px;'>
+</div>
+<div class='tile' id='cell1-7' style='display: none; top: 43px; left: 199px;'>
+</div>
+<div class='tile' id='cell1-8' style='display: none; top: 43px; left: 225px;'>
+</div>
+<div class='tile' id='cell1-9' style='display: none; top: 43px; left: 251px;'>
+</div>
+<div class='tile' id='cell1-10' style='display: none; top: 43px; left: 277px;'>
+</div>
+<div class='tile' id='cell1-11' style='display: none; top: 43px; left: 303px;'>
+</div>
+<div class='tile' id='cell1-12' style='display: none; top: 43px; left: 329px;'>
+</div>
+<div class='tile' id='cell1-13' style='display: none; top: 43px; left: 355px;'>
+</div>
+<div class='tile' id='cell1-14' style='display: none; top: 43px; left: 381px;'>
+</div>
+<div class='tile' id='cell2-0' style='display: none; top: 69px; left: 17px;'>
+</div>
+<div class='tile' id='cell2-1' style='display: none; top: 69px; left: 43px;'>
+</div>
+<div class='tile' id='cell2-2' style='display: none; top: 69px; left: 69px;'>
+</div>
+<div class='tile' id='cell2-3' style='display: none; top: 69px; left: 95px;'>
+</div>
+<div class='tile' id='cell2-4' style='display: none; top: 69px; left: 121px;'>
+</div>
+<div class='tile' id='cell2-5' style='display: none; top: 69px; left: 147px;'>
+</div>
+<div class='tile' id='cell2-6' style='display: none; top: 69px; left: 173px;'>
+</div>
+<div class='tile' id='cell2-7' style='display: none; top: 69px; left: 199px;'>
+</div>
+<div class='tile' id='cell2-8' style='display: none; top: 69px; left: 225px;'>
+</div>
+<div class='tile' id='cell2-9' style='display: none; top: 69px; left: 251px;'>
+</div>
+<div class='tile' id='cell2-10' style='display: none; top: 69px; left: 277px;'>
+</div>
+<div class='tile' id='cell2-11' style='display: none; top: 69px; left: 303px;'>
+</div>
+<div class='tile' id='cell2-12' style='display: none; top: 69px; left: 329px;'>
+</div>
+<div class='tile' id='cell2-13' style='display: none; top: 69px; left: 355px;'>
+</div>
+<div class='tile' id='cell2-14' style='display: none; top: 69px; left: 381px;'>
+</div>
+<div class='tile' id='cell3-0' style='display: none; top: 95px; left: 17px;'>
+</div>
+<div class='tile' id='cell3-1' style='display: none; top: 95px; left: 43px;'>
+</div>
+<div class='tile' id='cell3-2' style='display: none; top: 95px; left: 69px;'>
+</div>
+<div class='tile' id='cell3-3' style='display: none; top: 95px; left: 95px;'>
+</div>
+<div class='tile' id='cell3-4' style='display: none; top: 95px; left: 121px;'>
+</div>
+<div class='tile' id='cell3-5' style='display: none; top: 95px; left: 147px;'>
+</div>
+<div class='tile' id='cell3-6' style='display: none; top: 95px; left: 173px;'>
+</div>
+<div class='tile' id='cell3-7' style='display: none; top: 95px; left: 199px;'>
+</div>
+<div class='tile' id='cell3-8' style='display: none; top: 95px; left: 225px;'>
+</div>
+<div class='tile' id='cell3-9' style='display: none; top: 95px; left: 251px;'>
+</div>
+<div class='tile' id='cell3-10' style='display: none; top: 95px; left: 277px;'>
+</div>
+<div class='tile' id='cell3-11' style='display: none; top: 95px; left: 303px;'>
+</div>
+<div class='tile' id='cell3-12' style='display: none; top: 95px; left: 329px;'>
+</div>
+<div class='tile' id='cell3-13' style='display: none; top: 95px; left: 355px;'>
+</div>
+<div class='tile' id='cell3-14' style='display: none; top: 95px; left: 381px;'>
+</div>
+<div class='tile' id='cell4-0' style='display: none; top: 121px; left: 17px;'>
+</div>
+<div class='tile' id='cell4-1' style='display: none; top: 121px; left: 43px;'>
+</div>
+<div class='tile' id='cell4-2' style='display: none; top: 121px; left: 69px;'>
+</div>
+<div class='tile' id='cell4-3' style='display: none; top: 121px; left: 95px;'>
+</div>
+<div class='tile' id='cell4-4' style='display: none; top: 121px; left: 121px;'>
+</div>
+<div class='tile' id='cell4-5' style='display: none; top: 121px; left: 147px;'>
+</div>
+<div class='tile' id='cell4-6' style='display: none; top: 121px; left: 173px;'>
+</div>
+<div class='tile' id='cell4-7' style='display: none; top: 121px; left: 199px;'>
+</div>
+<div class='tile' id='cell4-8' style='display: none; top: 121px; left: 225px;'>
+</div>
+<div class='tile' id='cell4-9' style='display: none; top: 121px; left: 251px;'>
+</div>
+<div class='tile' id='cell4-10' style='display: none; top: 121px; left: 277px;'>
+</div>
+<div class='tile' id='cell4-11' style='display: none; top: 121px; left: 303px;'>
+</div>
+<div class='tile' id='cell4-12' style='display: none; top: 121px; left: 329px;'>
+</div>
+<div class='tile' id='cell4-13' style='display: none; top: 121px; left: 355px;'>
+</div>
+<div class='tile' id='cell4-14' style='display: none; top: 121px; left: 381px;'>
+</div>
+<div class='tile' id='cell5-0' style='display: none; top: 147px; left: 17px;'>
+</div>
+<div class='tile' id='cell5-1' style='display: none; top: 147px; left: 43px;'>
+</div>
+<div class='tile' id='cell5-2' style='display: none; top: 147px; left: 69px;'>
+</div>
+<div class='tile' id='cell5-3' style='display: none; top: 147px; left: 95px;'>
+</div>
+<div class='tile' id='cell5-4' style='display: none; top: 147px; left: 121px;'>
+</div>
+<div class='tile' id='cell5-5' style='display: none; top: 147px; left: 147px;'>
+</div>
+<div class='tile' id='cell5-6' style='display: none; top: 147px; left: 173px;'>
+</div>
+<div class='tile' id='cell5-7' style='display: none; top: 147px; left: 199px;'>
+</div>
+<div class='tile' id='cell5-8' style='display: none; top: 147px; left: 225px;'>
+</div>
+<div class='tile' id='cell5-9' style='display: none; top: 147px; left: 251px;'>
+</div>
+<div class='tile' id='cell5-10' style='display: none; top: 147px; left: 277px;'>
+</div>
+<div class='tile' id='cell5-11' style='display: none; top: 147px; left: 303px;'>
+</div>
+<div class='tile' id='cell5-12' style='display: none; top: 147px; left: 329px;'>
+</div>
+<div class='tile' id='cell5-13' style='display: none; top: 147px; left: 355px;'>
+</div>
+<div class='tile' id='cell5-14' style='display: none; top: 147px; left: 381px;'>
+</div>
+<div class='tile' id='cell6-0' style='display: none; top: 173px; left: 17px;'>
+</div>
+<div class='tile' id='cell6-1' style='display: none; top: 173px; left: 43px;'>
+</div>
+<div class='tile' id='cell6-2' style='display: none; top: 173px; left: 69px;'>
+</div>
+<div class='tile' id='cell6-3' style='display: none; top: 173px; left: 95px;'>
+</div>
+<div class='tile' id='cell6-4' style='display: none; top: 173px; left: 121px;'>
+</div>
+<div class='tile' id='cell6-5' style='display: none; top: 173px; left: 147px;'>
+</div>
+<div class='tile' id='cell6-6' style='display: none; top: 173px; left: 173px;'>
+</div>
+<div class='tile' id='cell6-7' style='display: none; top: 173px; left: 199px;'>
+</div>
+<div class='tile' id='cell6-8' style='display: none; top: 173px; left: 225px;'>
+</div>
+<div class='tile' id='cell6-9' style='display: none; top: 173px; left: 251px;'>
+</div>
+<div class='tile' id='cell6-10' style='display: none; top: 173px; left: 277px;'>
+</div>
+<div class='tile' id='cell6-11' style='display: none; top: 173px; left: 303px;'>
+</div>
+<div class='tile' id='cell6-12' style='display: none; top: 173px; left: 329px;'>
+</div>
+<div class='tile' id='cell6-13' style='display: none; top: 173px; left: 355px;'>
+</div>
+<div class='tile' id='cell6-14' style='display: none; top: 173px; left: 381px;'>
+</div>
+<div class='tile' id='cell7-0' style='display: none; top: 199px; left: 17px;'>
+</div>
+<div class='tile' id='cell7-1' style='display: none; top: 199px; left: 43px;'>
+</div>
+<div class='tile' id='cell7-2' style='display: none; top: 199px; left: 69px;'>
+</div>
+<div class='tile' id='cell7-3' style='display: none; top: 199px; left: 95px;'>
+</div>
+<div class='tile' id='cell7-4' style='display: none; top: 199px; left: 121px;'>
+</div>
+<div class='tile' id='cell7-5' style='display: none; top: 199px; left: 147px;'>
+</div>
+<div class='tile' id='cell7-6' style='display: none; top: 199px; left: 173px;'>
+</div>
+<div class='tile' id='cell7-7' style='display: none; top: 199px; left: 199px;'>
+</div>
+<div class='tile' id='cell7-8' style='display: none; top: 199px; left: 225px;'>
+</div>
+<div class='tile' id='cell7-9' style='display: none; top: 199px; left: 251px;'>
+</div>
+<div class='tile' id='cell7-10' style='display: none; top: 199px; left: 277px;'>
+</div>
+<div class='tile' id='cell7-11' style='display: none; top: 199px; left: 303px;'>
+</div>
+<div class='tile' id='cell7-12' style='display: none; top: 199px; left: 329px;'>
+</div>
+<div class='tile' id='cell7-13' style='display: none; top: 199px; left: 355px;'>
+</div>
+<div class='tile' id='cell7-14' style='display: none; top: 199px; left: 381px;'>
+</div>
+<div class='tile' id='cell8-0' style='display: none; top: 225px; left: 17px;'>
+</div>
+<div class='tile' id='cell8-1' style='display: none; top: 225px; left: 43px;'>
+</div>
+<div class='tile' id='cell8-2' style='display: none; top: 225px; left: 69px;'>
+</div>
+<div class='tile' id='cell8-3' style='display: none; top: 225px; left: 95px;'>
+</div>
+<div class='tile' id='cell8-4' style='display: none; top: 225px; left: 121px;'>
+</div>
+<div class='tile' id='cell8-5' style='display: none; top: 225px; left: 147px;'>
+</div>
+<div class='tile' id='cell8-6' style='display: none; top: 225px; left: 173px;'>
+</div>
+<div class='tile' id='cell8-7' style='display: none; top: 225px; left: 199px;'>
+</div>
+<div class='tile' id='cell8-8' style='display: none; top: 225px; left: 225px;'>
+</div>
+<div class='tile' id='cell8-9' style='display: none; top: 225px; left: 251px;'>
+</div>
+<div class='tile' id='cell8-10' style='display: none; top: 225px; left: 277px;'>
+</div>
+<div class='tile' id='cell8-11' style='display: none; top: 225px; left: 303px;'>
+</div>
+<div class='tile' id='cell8-12' style='display: none; top: 225px; left: 329px;'>
+</div>
+<div class='tile' id='cell8-13' style='display: none; top: 225px; left: 355px;'>
+</div>
+<div class='tile' id='cell8-14' style='display: none; top: 225px; left: 381px;'>
+</div>
+<div class='tile' id='cell9-0' style='display: none; top: 251px; left: 17px;'>
+</div>
+<div class='tile' id='cell9-1' style='display: none; top: 251px; left: 43px;'>
+</div>
+<div class='tile' id='cell9-2' style='display: none; top: 251px; left: 69px;'>
+</div>
+<div class='tile' id='cell9-3' style='display: none; top: 251px; left: 95px;'>
+</div>
+<div class='tile' id='cell9-4' style='display: none; top: 251px; left: 121px;'>
+</div>
+<div class='tile' id='cell9-5' style='display: none; top: 251px; left: 147px;'>
+</div>
+<div class='tile' id='cell9-6' style='display: none; top: 251px; left: 173px;'>
+</div>
+<div class='tile' id='cell9-7' style='display: none; top: 251px; left: 199px;'>
+</div>
+<div class='tile' id='cell9-8' style='display: none; top: 251px; left: 225px;'>
+</div>
+<div class='tile' id='cell9-9' style='display: none; top: 251px; left: 251px;'>
+</div>
+<div class='tile' id='cell9-10' style='display: none; top: 251px; left: 277px;'>
+</div>
+<div class='tile' id='cell9-11' style='display: none; top: 251px; left: 303px;'>
+</div>
+<div class='tile' id='cell9-12' style='display: none; top: 251px; left: 329px;'>
+</div>
+<div class='tile' id='cell9-13' style='display: none; top: 251px; left: 355px;'>
+</div>
+<div class='tile' id='cell9-14' style='display: none; top: 251px; left: 381px;'>
+</div>
+<div class='tile' id='cell10-0' style='display: none; top: 277px; left: 17px;'>
+</div>
+<div class='tile' id='cell10-1' style='display: none; top: 277px; left: 43px;'>
+</div>
+<div class='tile' id='cell10-2' style='display: none; top: 277px; left: 69px;'>
+</div>
+<div class='tile' id='cell10-3' style='display: none; top: 277px; left: 95px;'>
+</div>
+<div class='tile' id='cell10-4' style='display: none; top: 277px; left: 121px;'>
+</div>
+<div class='tile' id='cell10-5' style='display: none; top: 277px; left: 147px;'>
+</div>
+<div class='tile' id='cell10-6' style='display: none; top: 277px; left: 173px;'>
+</div>
+<div class='tile' id='cell10-7' style='display: none; top: 277px; left: 199px;'>
+</div>
+<div class='tile' id='cell10-8' style='display: none; top: 277px; left: 225px;'>
+</div>
+<div class='tile' id='cell10-9' style='display: none; top: 277px; left: 251px;'>
+</div>
+<div class='tile' id='cell10-10' style='display: none; top: 277px; left: 277px;'>
+</div>
+<div class='tile' id='cell10-11' style='display: none; top: 277px; left: 303px;'>
+</div>
+<div class='tile' id='cell10-12' style='display: none; top: 277px; left: 329px;'>
+</div>
+<div class='tile' id='cell10-13' style='display: none; top: 277px; left: 355px;'>
+</div>
+<div class='tile' id='cell10-14' style='display: none; top: 277px; left: 381px;'>
+</div>
+<div class='tile' id='cell11-0' style='display: none; top: 303px; left: 17px;'>
+</div>
+<div class='tile' id='cell11-1' style='display: none; top: 303px; left: 43px;'>
+</div>
+<div class='tile' id='cell11-2' style='display: none; top: 303px; left: 69px;'>
+</div>
+<div class='tile' id='cell11-3' style='display: none; top: 303px; left: 95px;'>
+</div>
+<div class='tile' id='cell11-4' style='display: none; top: 303px; left: 121px;'>
+</div>
+<div class='tile' id='cell11-5' style='display: none; top: 303px; left: 147px;'>
+</div>
+<div class='tile' id='cell11-6' style='display: none; top: 303px; left: 173px;'>
+</div>
+<div class='tile' id='cell11-7' style='display: none; top: 303px; left: 199px;'>
+</div>
+<div class='tile' id='cell11-8' style='display: none; top: 303px; left: 225px;'>
+</div>
+<div class='tile' id='cell11-9' style='display: none; top: 303px; left: 251px;'>
+</div>
+<div class='tile' id='cell11-10' style='display: none; top: 303px; left: 277px;'>
+</div>
+<div class='tile' id='cell11-11' style='display: none; top: 303px; left: 303px;'>
+</div>
+<div class='tile' id='cell11-12' style='display: none; top: 303px; left: 329px;'>
+</div>
+<div class='tile' id='cell11-13' style='display: none; top: 303px; left: 355px;'>
+</div>
+<div class='tile' id='cell11-14' style='display: none; top: 303px; left: 381px;'>
+</div>
+<div class='tile' id='cell12-0' style='display: none; top: 329px; left: 17px;'>
+</div>
+<div class='tile' id='cell12-1' style='display: none; top: 329px; left: 43px;'>
+</div>
+<div class='tile' id='cell12-2' style='display: none; top: 329px; left: 69px;'>
+</div>
+<div class='tile' id='cell12-3' style='display: none; top: 329px; left: 95px;'>
+</div>
+<div class='tile' id='cell12-4' style='display: none; top: 329px; left: 121px;'>
+</div>
+<div class='tile' id='cell12-5' style='display: none; top: 329px; left: 147px;'>
+</div>
+<div class='tile' id='cell12-6' style='display: none; top: 329px; left: 173px;'>
+</div>
+<div class='tile' id='cell12-7' style='display: none; top: 329px; left: 199px;'>
+</div>
+<div class='tile' id='cell12-8' style='display: none; top: 329px; left: 225px;'>
+</div>
+<div class='tile' id='cell12-9' style='display: none; top: 329px; left: 251px;'>
+</div>
+<div class='tile' id='cell12-10' style='display: none; top: 329px; left: 277px;'>
+</div>
+<div class='tile' id='cell12-11' style='display: none; top: 329px; left: 303px;'>
+</div>
+<div class='tile' id='cell12-12' style='display: none; top: 329px; left: 329px;'>
+</div>
+<div class='tile' id='cell12-13' style='display: none; top: 329px; left: 355px;'>
+</div>
+<div class='tile' id='cell12-14' style='display: none; top: 329px; left: 381px;'>
+</div>
+<div class='tile' id='cell13-0' style='display: none; top: 355px; left: 17px;'>
+</div>
+<div class='tile' id='cell13-1' style='display: none; top: 355px; left: 43px;'>
+</div>
+<div class='tile' id='cell13-2' style='display: none; top: 355px; left: 69px;'>
+</div>
+<div class='tile' id='cell13-3' style='display: none; top: 355px; left: 95px;'>
+</div>
+<div class='tile' id='cell13-4' style='display: none; top: 355px; left: 121px;'>
+</div>
+<div class='tile' id='cell13-5' style='display: none; top: 355px; left: 147px;'>
+</div>
+<div class='tile' id='cell13-6' style='display: none; top: 355px; left: 173px;'>
+</div>
+<div class='tile' id='cell13-7' style='display: none; top: 355px; left: 199px;'>
+</div>
+<div class='tile' id='cell13-8' style='display: none; top: 355px; left: 225px;'>
+</div>
+<div class='tile' id='cell13-9' style='display: none; top: 355px; left: 251px;'>
+</div>
+<div class='tile' id='cell13-10' style='display: none; top: 355px; left: 277px;'>
+</div>
+<div class='tile' id='cell13-11' style='display: none; top: 355px; left: 303px;'>
+</div>
+<div class='tile' id='cell13-12' style='display: none; top: 355px; left: 329px;'>
+</div>
+<div class='tile' id='cell13-13' style='display: none; top: 355px; left: 355px;'>
+</div>
+<div class='tile' id='cell13-14' style='display: none; top: 355px; left: 381px;'>
+</div>
+<div class='tile' id='cell14-0' style='display: none; top: 381px; left: 17px;'>
+</div>
+<div class='tile' id='cell14-1' style='display: none; top: 381px; left: 43px;'>
+</div>
+<div class='tile' id='cell14-2' style='display: none; top: 381px; left: 69px;'>
+</div>
+<div class='tile' id='cell14-3' style='display: none; top: 381px; left: 95px;'>
+</div>
+<div class='tile' id='cell14-4' style='display: none; top: 381px; left: 121px;'>
+</div>
+<div class='tile' id='cell14-5' style='display: none; top: 381px; left: 147px;'>
+</div>
+<div class='tile' id='cell14-6' style='display: none; top: 381px; left: 173px;'>
+</div>
+<div class='tile' id='cell14-7' style='display: none; top: 381px; left: 199px;'>
+</div>
+<div class='tile' id='cell14-8' style='display: none; top: 381px; left: 225px;'>
+</div>
+<div class='tile' id='cell14-9' style='display: none; top: 381px; left: 251px;'>
+</div>
+<div class='tile' id='cell14-10' style='display: none; top: 381px; left: 277px;'>
+</div>
+<div class='tile' id='cell14-11' style='display: none; top: 381px; left: 303px;'>
+</div>
+<div class='tile' id='cell14-12' style='display: none; top: 381px; left: 329px;'>
+</div>
+<div class='tile' id='cell14-13' style='display: none; top: 381px; left: 355px;'>
+</div>
+<div class='tile' id='cell14-14' style='display: none; top: 381px; left: 381px;'>
+</div>
+		</div>
+		</td>
+
+		<td valign='top'>
+			<div >
+				<div class='cursituation'>
+					<table>
+						<tr><th>Player</th><th>Rack</th><th class='score'>Score</th></tr>
+						<tr><td>Matthew O'Connor</td><td id='rack0'></td><td class='score' id='score0'></td></tr>
+						<tr><td>Will Anderson</td><td id='rack1'></td><td class='score' id='score1'></td></tr>
+					</table>
+				</div>
+				<div id='lastmoveblock'>
+					<div>Last move: <span id='lastmove'></span></div>
+					<div>from rack of: <span id='lastrack'></span></div>
+				</div>
+				<div id='notesblock'>
+					<p>Notes:</p>
+					<div id='notelist'></div>
+				</div>
+<!--
+				<div id='commentsblock'>
+					<p>Comments: 
+						<div id='comments'>
+						</div>
+					</p>
+				</div>
+-->
+				<div class='rackinfo'>
+					<p>Tiles on rack:</p>
+											<div style='float: left'><div id='racktile0' class='tileunseen' style='display: none;'>A</div></div>
+											<div style='float: left'><div id='racktile1' class='tileunseen' style='display: none;'>A</div></div>
+											<div style='float: left'><div id='racktile2' class='tileunseen' style='display: none;'>A</div></div>
+											<div style='float: left'><div id='racktile3' class='tileunseen' style='display: none;'>A</div></div>
+											<div style='float: left'><div id='racktile4' class='tileunseen' style='display: none;'>A</div></div>
+											<div style='float: left'><div id='racktile5' class='tileunseen' style='display: none;'>A</div></div>
+											<div style='float: left'><div id='racktile6' class='tileunseen' style='display: none;'>A</div></div>
+										<div id='racktiles'>
+					</div>
+					<div style='clear: both;'></div>
+				</div>
+				<div class='unplayedinfo'>
+					<p>Unseen tiles<span id='partialrackwarning'></span>:</p>
+					<div id='pool'>
+	<div style='float: left'><div id='poolA0' class='tileunseen'>A</div></div><div style='float: left'><div id='poolA1' class='tileunseen'>A</div></div><div style='float: left'><div id='poolA2' class='tileunseen'>A</div></div><div style='float: left'><div id='poolA3' class='tileunseen'>A</div></div><div style='float: left'><div id='poolA4' class='tileunseen'>A</div></div><div style='float: left'><div id='poolA5' class='tileunseen'>A</div></div><div style='float: left'><div id='poolA6' class='tileunseen'>A</div></div><div style='float: left'><div id='poolA7' class='tileunseen'>A</div></div><div style='float: left'><div id='poolA8' class='tileunseen'>A</div></div><div style='float: left'><div id='poolB0' class='tileunseen'>B</div></div><div style='float: left'><div id='poolB1' class='tileunseen'>B</div></div><div style='float: left'><div id='poolC0' class='tileunseen'>C</div></div><div style='float: left'><div id='poolC1' class='tileunseen'>C</div></div><div style='float: left'><div id='poolD0' class='tileunseen'>D</div></div><div style='float: left'><div id='poolD1' class='tileunseen'>D</div></div><div style='float: left'><div id='poolD2' class='tileunseen'>D</div></div><div style='float: left'><div id='poolD3' class='tileunseen'>D</div></div><div style='float: left'><div id='poolE0' class='tileunseen'>E</div></div><div style='float: left'><div id='poolE1' class='tileunseen'>E</div></div><div style='float: left'><div id='poolE2' class='tileunseen'>E</div></div><div style='float: left'><div id='poolE3' class='tileunseen'>E</div></div><div style='float: left'><div id='poolE4' class='tileunseen'>E</div></div><div style='float: left'><div id='poolE5' class='tileunseen'>E</div></div><div style='float: left'><div id='poolE6' class='tileunseen'>E</div></div><div style='float: left'><div id='poolE7' class='tileunseen'>E</div></div><div style='float: left'><div id='poolE8' class='tileunseen'>E</div></div><div style='float: left'><div id='poolE9' class='tileunseen'>E</div></div><div style='float: left'><div id='poolE10' class='tileunseen'>E</div></div><div style='float: left'><div id='poolE11' class='tileunseen'>E</div></div><div style='float: left'><div id='poolF0' class='tileunseen'>F</div></div><div style='float: left'><div id='poolF1' class='tileunseen'>F</div></div><div style='float: left'><div id='poolG0' class='tileunseen'>G</div></div><div style='float: left'><div id='poolG1' class='tileunseen'>G</div></div><div style='float: left'><div id='poolG2' class='tileunseen'>G</div></div><div style='float: left'><div id='poolH0' class='tileunseen'>H</div></div><div style='float: left'><div id='poolH1' class='tileunseen'>H</div></div><div style='float: left'><div id='poolI0' class='tileunseen'>I</div></div><div style='float: left'><div id='poolI1' class='tileunseen'>I</div></div><div style='float: left'><div id='poolI2' class='tileunseen'>I</div></div><div style='float: left'><div id='poolI3' class='tileunseen'>I</div></div><div style='float: left'><div id='poolI4' class='tileunseen'>I</div></div><div style='float: left'><div id='poolI5' class='tileunseen'>I</div></div><div style='float: left'><div id='poolI6' class='tileunseen'>I</div></div><div style='float: left'><div id='poolI7' class='tileunseen'>I</div></div><div style='float: left'><div id='poolI8' class='tileunseen'>I</div></div><div style='float: left'><div id='poolJ0' class='tileunseen'>J</div></div><div style='float: left'><div id='poolK0' class='tileunseen'>K</div></div><div style='float: left'><div id='poolL0' class='tileunseen'>L</div></div><div style='float: left'><div id='poolL1' class='tileunseen'>L</div></div><div style='float: left'><div id='poolL2' class='tileunseen'>L</div></div><div style='float: left'><div id='poolL3' class='tileunseen'>L</div></div><div style='float: left'><div id='poolM0' class='tileunseen'>M</div></div><div style='float: left'><div id='poolM1' class='tileunseen'>M</div></div><div style='float: left'><div id='poolN0' class='tileunseen'>N</div></div><div style='float: left'><div id='poolN1' class='tileunseen'>N</div></div><div style='float: left'><div id='poolN2' class='tileunseen'>N</div></div><div style='float: left'><div id='poolN3' class='tileunseen'>N</div></div><div style='float: left'><div id='poolN4' class='tileunseen'>N</div></div><div style='float: left'><div id='poolN5' class='tileunseen'>N</div></div><div style='float: left'><div id='poolO0' class='tileunseen'>O</div></div><div style='float: left'><div id='poolO1' class='tileunseen'>O</div></div><div style='float: left'><div id='poolO2' class='tileunseen'>O</div></div><div style='float: left'><div id='poolO3' class='tileunseen'>O</div></div><div style='float: left'><div id='poolO4' class='tileunseen'>O</div></div><div style='float: left'><div id='poolO5' class='tileunseen'>O</div></div><div style='float: left'><div id='poolO6' class='tileunseen'>O</div></div><div style='float: left'><div id='poolO7' class='tileunseen'>O</div></div><div style='float: left'><div id='poolP0' class='tileunseen'>P</div></div><div style='float: left'><div id='poolP1' class='tileunseen'>P</div></div><div style='float: left'><div id='poolQ0' class='tileunseen'>Q</div></div><div style='float: left'><div id='poolR0' class='tileunseen'>R</div></div><div style='float: left'><div id='poolR1' class='tileunseen'>R</div></div><div style='float: left'><div id='poolR2' class='tileunseen'>R</div></div><div style='float: left'><div id='poolR3' class='tileunseen'>R</div></div><div style='float: left'><div id='poolR4' class='tileunseen'>R</div></div><div style='float: left'><div id='poolR5' class='tileunseen'>R</div></div><div style='float: left'><div id='poolS0' class='tileunseen'>S</div></div><div style='float: left'><div id='poolS1' class='tileunseen'>S</div></div><div style='float: left'><div id='poolS2' class='tileunseen'>S</div></div><div style='float: left'><div id='poolS3' class='tileunseen'>S</div></div><div style='float: left'><div id='poolT0' class='tileunseen'>T</div></div><div style='float: left'><div id='poolT1' class='tileunseen'>T</div></div><div style='float: left'><div id='poolT2' class='tileunseen'>T</div></div><div style='float: left'><div id='poolT3' class='tileunseen'>T</div></div><div style='float: left'><div id='poolT4' class='tileunseen'>T</div></div><div style='float: left'><div id='poolT5' class='tileunseen'>T</div></div><div style='float: left'><div id='poolU0' class='tileunseen'>U</div></div><div style='float: left'><div id='poolU1' class='tileunseen'>U</div></div><div style='float: left'><div id='poolU2' class='tileunseen'>U</div></div><div style='float: left'><div id='poolU3' class='tileunseen'>U</div></div><div style='float: left'><div id='poolV0' class='tileunseen'>V</div></div><div style='float: left'><div id='poolV1' class='tileunseen'>V</div></div><div style='float: left'><div id='poolW0' class='tileunseen'>W</div></div><div style='float: left'><div id='poolW1' class='tileunseen'>W</div></div><div style='float: left'><div id='poolX0' class='tileunseen'>X</div></div><div style='float: left'><div id='poolY0' class='tileunseen'>Y</div></div><div style='float: left'><div id='poolY1' class='tileunseen'>Y</div></div><div style='float: left'><div id='poolZ0' class='tileunseen'>Z</div></div><div style='float: left'><div id='poolblank0' class='tileunseen'>?</div></div><div style='float: left'><div id='poolblank1' class='tileunseen'>?</div></div>					</div>
+					<div style='clear: both;'></div>
+				</div>
+			</div>
+		</td>
+		</tr></table>
+
+	<div class='movessofar' style=''>
+		<table>
+			<tr>
+				<th colspan='4'>Matthew O'Connor</th><th class='playerdivider'>&nbsp;</th>
+				<th colspan='5'>Will Anderson</th>
+			</tr>
+<tr>	<td class='move1 playermove0' style='display: none;'>H4</td>	<td class='move1 playermove0' style='display: none;'><a href='javascript:void(0);' onclick='showmove(1); scroll(0,0);' id='moveselectorlower1' class='moveselector'>HUNGER</a></td>  <td class='move1 playermove0' style='display: none; text-align: right;'>+28</td>  <td class='move1 playermove0' style='display: none; text-align: right;'>28</td>
+  <td class='move1 playermove0 playerdivider' style='min-width: 10px;'>&nbsp;</td>	<td class='move2 playermove1' style='display: none;'>G8</td>	<td class='move2 playermove1' style='display: none;'><a href='javascript:void(0);' onclick='showmove(2); scroll(0,0);' id='moveselectorlower2' class='moveselector'>FUB</a></td>  <td class='move2 playermove1' style='display: none; text-align: right;'>+17</td>  <td class='move2 playermove1' style='display: none; text-align: right;'>17</td>
+  <td class='move2 playermove1 ' style='min-width: 10px;'>&nbsp;</td></tr>
+<tr>
+	<td class='move3 playermove0' style='display: none;'>I6</td>	<td class='move3 playermove0' style='display: none;'><a href='javascript:void(0);' onclick='showmove(3); scroll(0,0);' id='moveselectorlower3' class='moveselector'>AUNE</a></td>  <td class='move3 playermove0' style='display: none; text-align: right;'>+22</td>  <td class='move3 playermove0' style='display: none; text-align: right;'>50</td>
+  <td class='move3 playermove0 playerdivider' style='min-width: 10px;'>&nbsp;</td>	<td class='move4 playermove1' style='display: none;'>4D</td>	<td class='move4 playermove1' style='display: none;'><a href='javascript:void(0);' onclick='showmove(4); scroll(0,0);' id='moveselectorlower4' class='moveselector'>TITCH</a></td>  <td class='move4 playermove1' style='display: none; text-align: right;'>+20</td>  <td class='move4 playermove1' style='display: none; text-align: right;'>37</td>
+  <td class='move4 playermove1 ' style='min-width: 10px;'>&nbsp;</td></tr>
+<tr>
+	<td class='move5 playermove0' style='display: none;'>D2</td>	<td class='move5 playermove0' style='display: none;'><a href='javascript:void(0);' onclick='showmove(5); scroll(0,0);' id='moveselectorlower5' class='moveselector'>LATEENER</a></td>  <td class='move5 playermove0' style='display: none; text-align: right;'>+59</td>  <td class='move5 playermove0' style='display: none; text-align: right;'>109</td>
+  <td class='move5 playermove0 playerdivider' style='min-width: 10px;'>&nbsp;</td>	<td class='move6 playermove1' style='display: none;'>E3</td>	<td class='move6 playermove1' style='display: none;'><a href='javascript:void(0);' onclick='showmove(6); scroll(0,0);' id='moveselectorlower6' class='moveselector'>RIFTED</a></td>  <td class='move6 playermove1' style='display: none; text-align: right;'>+39</td>  <td class='move6 playermove1' style='display: none; text-align: right;'>76</td>
+  <td class='move6 playermove1 ' style='min-width: 10px;'>&nbsp;</td></tr>
+<tr>
+	<td class='move7 playermove0' style='display: none;'>8A</td>	<td class='move7 playermove0' style='display: none;'><a href='javascript:void(0);' onclick='showmove(7); scroll(0,0);' id='moveselectorlower7' class='moveselector'>POOED</a></td>  <td class='move7 playermove0' style='display: none; text-align: right;'>+24</td>  <td class='move7 playermove0' style='display: none; text-align: right;'>133</td>
+  <td class='move7 playermove0 playerdivider' style='min-width: 10px;'>&nbsp;</td>	<td class='move8 playermove1' style='display: none;'></td>	<td class='move8 playermove1' style='display: none;'><a href='javascript:void(0);' onclick='showmove(8); scroll(0,0);' id='moveselectorlower8' class='moveselector'>Exchange CLNQ</a></td>  <td class='move8 playermove1' style='display: none; text-align: right;'>+0</td>  <td class='move8 playermove1' style='display: none; text-align: right;'>76</td>
+  <td class='move8 playermove1 ' style='min-width: 10px;'>&nbsp;</td></tr>
+<tr>
+	<td class='move9 playermove0' style='display: none;'>F10</td>	<td class='move9 playermove0' style='display: none;'><a href='javascript:void(0);' onclick='showmove(9); scroll(0,0);' id='moveselectorlower9' class='moveselector'>AIA</a></td>  <td class='move9 playermove0' style='display: none; text-align: right;'>+11</td>  <td class='move9 playermove0' style='display: none; text-align: right;'>144</td>
+  <td class='move9 playermove0 playerdivider' style='min-width: 10px;'>&nbsp;</td>	<td class='move10 playermove1' style='display: none;'>A8</td>	<td class='move10 playermove1' style='display: none;'><a href='javascript:void(0);' onclick='showmove(10); scroll(0,0);' id='moveselectorlower10' class='moveselector'>PENTISED</a></td>  <td class='move10 playermove1' style='display: none; text-align: right;'>+86</td>  <td class='move10 playermove1' style='display: none; text-align: right;'>162</td>
+  <td class='move10 playermove1 ' style='min-width: 10px;'>&nbsp;</td></tr>
+<tr>
+	<td class='move11 playermove0' style='display: none;'>C1</td>	<td class='move11 playermove0' style='display: none;'><a href='javascript:void(0);' onclick='showmove(11); scroll(0,0);' id='moveselectorlower11' class='moveselector'>NAV</a></td>  <td class='move11 playermove0' style='display: none; text-align: right;'>+26</td>  <td class='move11 playermove0' style='display: none; text-align: right;'>170</td>
+  <td class='move11 playermove0 playerdivider' style='min-width: 10px;'>&nbsp;</td>	<td class='move12 playermove1' style='display: none;'>J4</td>	<td class='move12 playermove1' style='display: none;'><a href='javascript:void(0);' onclick='showmove(12); scroll(0,0);' id='moveselectorlower12' class='moveselector'>RUBLI</a></td>  <td class='move12 playermove1' style='display: none; text-align: right;'>+35</td>  <td class='move12 playermove1' style='display: none; text-align: right;'>197</td>
+  <td class='move12 playermove1 ' style='min-width: 10px;'>&nbsp;</td></tr>
+<tr>
+	<td class='move13 playermove0' style='display: none;'>E10</td>	<td class='move13 playermove0' style='display: none;'><a href='javascript:void(0);' onclick='showmove(13); scroll(0,0);' id='moveselectorlower13' class='moveselector'>WOLD</a></td>  <td class='move13 playermove0' style='display: none; text-align: right;'>+30</td>  <td class='move13 playermove0' style='display: none; text-align: right;'>200</td>
+  <td class='move13 playermove0 playerdivider' style='min-width: 10px;'>&nbsp;</td>	<td class='move14 playermove1' style='display: none;'>B7</td>	<td class='move14 playermove1' style='display: none;'><a href='javascript:void(0);' onclick='showmove(14); scroll(0,0);' id='moveselectorlower14' class='moveselector'>WOX</a></td>  <td class='move14 playermove1' style='display: none; text-align: right;'>+22</td>  <td class='move14 playermove1' style='display: none; text-align: right;'>219</td>
+  <td class='move14 playermove1 ' style='min-width: 10px;'>&nbsp;</td></tr>
+<tr>
+	<td class='move15 playermove0' style='display: none;'>D11</td>	<td class='move15 playermove0' style='display: none;'><a href='javascript:void(0);' onclick='showmove(15); scroll(0,0);' id='moveselectorlower15' class='moveselector'>KAE</a></td>  <td class='move15 playermove0' style='display: none; text-align: right;'>+30</td>  <td class='move15 playermove0' style='display: none; text-align: right;'>230</td>
+  <td class='move15 playermove0 playerdivider' style='min-width: 10px;'>&nbsp;</td>	<td class='move16 playermove1' style='display: none;'>C13</td>	<td class='move16 playermove1' style='display: none;'><a href='javascript:void(0);' onclick='showmove(16); scroll(0,0);' id='moveselectorlower16' class='moveselector'>ZA</a></td>  <td class='move16 playermove1' style='display: none; text-align: right;'>+48</td>  <td class='move16 playermove1' style='display: none; text-align: right;'>267</td>
+  <td class='move16 playermove1 ' style='min-width: 10px;'>&nbsp;</td></tr>
+<tr>
+	<td class='move17 playermove0' style='display: none;'>15C</td>	<td class='move17 playermove0' style='display: none;'><a href='javascript:void(0);' onclick='showmove(17); scroll(0,0);' id='moveselectorlower17' class='moveselector'>PROG</a></td>  <td class='move17 playermove0' style='display: none; text-align: right;'>+22</td>  <td class='move17 playermove0' style='display: none; text-align: right;'>252</td>
+  <td class='move17 playermove0 playerdivider' style='min-width: 10px;'>&nbsp;</td>	<td class='move18 playermove1' style='display: none;'>6C</td>	<td class='move18 playermove1' style='display: none;'><a href='javascript:void(0);' onclick='showmove(18); scroll(0,0);' id='moveselectorlower18' class='moveselector'>JET</a></td>  <td class='move18 playermove1' style='display: none; text-align: right;'>+10</td>  <td class='move18 playermove1' style='display: none; text-align: right;'>277</td>
+  <td class='move18 playermove1 ' style='min-width: 10px;'>&nbsp;</td></tr>
+<tr>
+	<td class='move19 playermove0' style='display: none;'></td>	<td class='move19 playermove0' style='display: none;'><a href='javascript:void(0);' onclick='showmove(19); scroll(0,0);' id='moveselectorlower19' class='moveselector'>Exchange OOO</a></td>  <td class='move19 playermove0' style='display: none; text-align: right;'>+0</td>  <td class='move19 playermove0' style='display: none; text-align: right;'>252</td>
+  <td class='move19 playermove0 playerdivider' style='min-width: 10px;'>&nbsp;</td>	<td class='move20 playermove1' style='display: none;'>K8</td>	<td class='move20 playermove1' style='display: none;'><a href='javascript:void(0);' onclick='showmove(20); scroll(0,0);' id='moveselectorlower20' class='moveselector'>sALVORs</a></td>  <td class='move20 playermove1' style='display: none; text-align: right;'>+73</td>  <td class='move20 playermove1' style='display: none; text-align: right;'>350</td>
+  <td class='move20 playermove1 ' style='min-width: 10px;'>&nbsp;</td></tr>
+<tr>
+	<td class='move21 playermove0' style='display: none;'>1A</td>	<td class='move21 playermove0' style='display: none;'><a href='javascript:void(0);' onclick='showmove(21); scroll(0,0);' id='moveselectorlower21' class='moveselector'>YIN</a></td>  <td class='move21 playermove0' style='display: none; text-align: right;'>+18</td>  <td class='move21 playermove0' style='display: none; text-align: right;'>270</td>
+  <td class='move21 playermove0 playerdivider' style='min-width: 10px;'>&nbsp;</td>	<td class='move22 playermove1' style='display: none;'>B13</td>	<td class='move22 playermove1' style='display: none;'><a href='javascript:void(0);' onclick='showmove(22); scroll(0,0);' id='moveselectorlower22' class='moveselector'>IT</a></td>  <td class='move22 playermove1' style='display: none; text-align: right;'>+25</td>  <td class='move22 playermove1' style='display: none; text-align: right;'>375</td>
+  <td class='move22 playermove1 ' style='min-width: 10px;'>&nbsp;</td></tr>
+<tr>
+	<td class='move23 playermove0' style='display: none;'>14H</td>	<td class='move23 playermove0' style='display: none;'><a href='javascript:void(0);' onclick='showmove(23); scroll(0,0);' id='moveselectorlower23' class='moveselector'>MISsIONS</a></td>  <td class='move23 playermove0' style='display: none; text-align: right;'>+72</td>  <td class='move23 playermove0' style='display: none; text-align: right;'>342</td>
+  <td class='move23 playermove0 playerdivider' style='min-width: 10px;'>&nbsp;</td>	<td class='move24 playermove1' style='display: none;'>O7</td>	<td class='move24 playermove1' style='display: none;'><a href='javascript:void(0);' onclick='showmove(24); scroll(0,0);' id='moveselectorlower24' class='moveselector'>TOESHOES</a></td>  <td class='move24 playermove1' style='display: none; text-align: right;'>+86</td>  <td class='move24 playermove1' style='display: none; text-align: right;'>461</td>
+  <td class='move24 playermove1 ' style='min-width: 10px;'>&nbsp;</td></tr>
+<tr>
+	<td class='move25 playermove0' style='display: none;'>H12</td>	<td class='move25 playermove0' style='display: none;'><a href='javascript:void(0);' onclick='showmove(25); scroll(0,0);' id='moveselectorlower25' class='moveselector'>CYME</a></td>  <td class='move25 playermove0' style='display: none; text-align: right;'>+42</td>  <td class='move25 playermove0' style='display: none; text-align: right;'>384</td>
+  <td class='move25 playermove0 playerdivider' style='min-width: 10px;'>&nbsp;</td>	<td class='move26 playermove1' style='display: none;'>13M</td>	<td class='move26 playermove1' style='display: none;'><a href='javascript:void(0);' onclick='showmove(26); scroll(0,0);' id='moveselectorlower26' class='moveselector'>GIE</a></td>  <td class='move26 playermove1' style='display: none; text-align: right;'>+16</td>  <td class='move26 playermove1' style='display: none; text-align: right;'>477</td>
+  <td class='move26 playermove1 ' style='min-width: 10px;'>&nbsp;</td></tr>
+<tr>
+<td colspan='4' class='playermove0'></td><td>&nbsp;</td>	<td class='move27 playermove1' style='display: none;'></td>	<td class='move27 playermove1' style='display: none;'><a href='javascript:void(0);' onclick='showmove(27); scroll(0,0);' id='moveselectorlower27' class='moveselector'>(ADMQ)</a></td>  <td class='move27 playermove1' style='display: none; text-align: right;'>+32</td>  <td class='move27 playermove1' style='display: none; text-align: right;'>509</td>
+  <td class='move27 playermove1 ' style='min-width: 10px;'>&nbsp;</td></tr>
+<tr>
+				<td></td>
+			</tr>
+		</table>
+	</div>
+		<div id="disqus_thread"></div>
+		<script type="text/javascript">
+		    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+		    var disqus_shortname = 'crosstablescom';
+
+		    /* * * DON'T EDIT BELOW THIS LINE * * */
+		    (function() {
+		        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+		        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+		        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+		    })();
+		</script>
+		<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+<p>Source data file: <a href='annotated/selfgcg/271/anno27109.gcg'>annotated/selfgcg/271/anno27109.gcg</a>		
+		<form action='annoupload.php' method='POST' enctype='multipart/form-data'>
+		<p>
+			<input type='hidden' name='u' value='27109'>
+			<input type='hidden' name='submitted' value='1'>
+			<!-- <br>Code: <input type='text' name='code'> -->
+			<br>.gcg file: <input type='file' name='uploadedfile'>
+			<br>Dictionary: 
+			  <select name="dictionary" id="dictionary">
+				<option value="">choose a dictionary</option>
+				<option value="TWL06" >TWL06</option>
+				<option value="TWL15" >TWL15</option>
+				<option value="CSW12" >CSW12</option>
+				<option value="CSW15" SELECTED>CSW15</option>
+				<option value="" disabled='1'>---older---</option>
+				<option value="TWL98" >TWL98</option>
+				<option value="CSW07" >CSW07</option>
+				<option value="THTWL85" >THTWL85</option>
+			  </select>
+			<p><input type='submit' value='Update my game!'>
+		</form>
+	    <br>&nbsp;
+<!--	<div class="js-kit-comments" path="annoself27109"></div>
+		<script src="http://js-kit.com/comments.js"></script>
+-->
+	
+						<!--dialog that allows searching for a player. -->
+		<div id='findplayerdialog' style='display: none;'>
+			<div class='hd'>Find A Player</div>
+			<div class='bd'>
+				<form name='findplayerform' method='GET' action='results.php'><p>
+				<input type='hidden' id='findplayerid' name='p' value='0'>
+				<label for='autocompleteplayer'>Player name:</label>
+					<div id='autocompleteplayer' style='list-style: none;'> 
+					    <input id='findplayername' type='text'> 
+					    <div id='findplayernameContainer'></div> 
+					</div> 
+					<p>&nbsp;
+				<div id='newplayerloading'>Loading results for <span id='foundplayer'></span>...</div>
+				</form>
+			</div>
+		</div>	
+
+
+		
+			</div>
+				<div id='ft'>
+				
+					Copyright &copy; 2005-2018 Seth Lipkin and Keith Smith<br>Some data copyright &copy; 1999-2009 National Scrabble Association and &copy; 2009-2018 North American Scrabble Players Association<br>SCRABBLE&reg; is a registered trademark of Hasbro, Inc. in the USA and Canada.<br>Current time: 2018-08-15 17:13:14 Server IP: 162.144.19.21			
+				</div>
+		</div>
+
+    </body>
+		</html>
+		

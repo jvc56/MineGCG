@@ -19,6 +19,7 @@ sub retrieve($$)
   # by replacing ' ' with '+'
   my $user_name = $name;
   $name =~ s/ /+/g;
+  $name =~ s/'//g;
 
   # Run a query using the name to get the player id
   my $query_url = $query_url_prefix . $name;
