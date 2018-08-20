@@ -65,7 +65,7 @@ sub retrieve($$$)
 
   # Create the directory to store the game page htmls
   # if one doesn't already exist
-  if (!(-e $dir and -d $dir))
+  if (!(-e $dir && -d $dir))
   {
   	system "mkdir $dir";
     print "Created $dir\n";

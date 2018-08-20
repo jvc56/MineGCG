@@ -74,7 +74,7 @@ sub new($$)
       }
 
       # Unsuccessful Collins challenge
-      if ($play eq '---' and !$rack)
+      if ($play eq '---' && !$rack)
       {
       	# player1's turn
       	#print "A CHALLENGE: $_\n";
@@ -142,7 +142,7 @@ sub new($$)
       my $com = $moves[$index]->{'comment'};
       # A best guess at what is a pass and what is an unsuccessful challenge
       # They are indistinguishable on cross-tables
-      if (!($com =~ /pass/i or (length $moves[$index]->{'rack'}) <= 2) and !($index > 0 and $moves[$index-1]->{'play_type'} ne 'word'))
+      if (!($com =~ /pass/i or (length $moves[$index]->{'rack'}) <= 2) && !($index > 0 && $moves[$index-1]->{'play_type'} ne 'word'))
       {
         $moves[$index]->{'challenge_lost'} = 1;
       }
@@ -172,12 +172,12 @@ sub new($$)
   $board->addMoves(\@moves);
 
   if (
-        scalar @moves >= 6 and
-        $moves[-1]->{'score'} == 0 and
-        $moves[-2]->{'score'} == 0 and
-        $moves[-3]->{'score'} == 0 and
-        $moves[-4]->{'score'} == 0 and
-        $moves[-5]->{'score'} == 0 and
+        scalar @moves >= 6 &&
+        $moves[-1]->{'score'} == 0 &&
+        $moves[-2]->{'score'} == 0 &&
+        $moves[-3]->{'score'} == 0 &&
+        $moves[-4]->{'score'} == 0 &&
+        $moves[-5]->{'score'} == 0 &&
         $moves[-6]->{'score'} == 0
      )
   {

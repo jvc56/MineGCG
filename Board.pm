@@ -70,7 +70,7 @@ sub addMoves($)
   for (my $i = 0; $i < scalar @moves; $i++)
   {
     my $move = $moves[$i];
-    if ($move->{'play_type'} eq 'word' and !$move->{'challenge_lost'})
+    if ($move->{'play_type'} eq 'word' && !$move->{'challenge_lost'})
     {
       my $word         = $move->{'play'};
       my $row          = $move->{'row'};
@@ -112,7 +112,7 @@ sub getNumBonusSquaresCovered($$)
   foreach my $square (@grid)
   {
     my $tile = $square->{'tile'};
-    if ($tile and $tile->{'placed_by'} == $player)
+    if ($tile && $tile->{'placed_by'} == $player)
     {
       $sums{$square->{'bonus'}}++;
     }
