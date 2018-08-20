@@ -4,11 +4,23 @@ use warnings;
 use strict;
 use Data::Dumper;
 
-sub retrieve($$)
+sub retrieve($$$)
 {
   my $name = shift;
   my $dir = shift;
+  my $option = shift;
   
+  if (!$option && -e $dir)
+  {
+    return;
+  }
+  print "Retrieving games...\n";
+  if ($option eq "reset")
+  {
+    system "rm -r $dir";
+    print "Deleted $dir\n";
+  }
+
   # Constants
   my $query_url_prefix = "http://www.cross-tables.com/players.php?query=";
   my $annotated_games_url_prefix = "http://www.cross-tables.com/anno.php?p=";
@@ -39,7 +51,7 @@ sub retrieve($$)
   my $annotated_games_url = $annotated_games_url_prefix . $player_id;
 
   # Get the player's annotated games page
-  system "wget $annotated_games_url -O ./$annotated_games_page_name";
+  system "wget $annotated_games_url -O ./$annotated_games_page_name  >/dev/null 2>&1";
 
   # Parse the annotated games page html to get the game ids
   # of the player's annotated games
@@ -55,7 +67,8 @@ sub retrieve($$)
   # if one doesn't already exist
   if (!(-e $dir and -d $dir))
   {
-  	mkdir $dir;
+  	system "mkdir $dir";
+    print "Created $dir\n";
   }
 
   # Iterate through the annotated game ids to fetch all of
@@ -65,7 +78,13 @@ sub retrieve($$)
   	my $id = shift @game_ids;
   	my $game_url = "http://www.cross-tables.com/annotated.php?u=$id";
   	my $game_name = "$id.html";
-  	system "wget $game_url -O $dir/$game_name";
+    if ($option eq "update" && -e $dir . "/" . $game_name)
+    {
+      print "$game_name already exists\n";
+      next;
+    }
+  	system "wget $game_url -O $dir/$game_name >/dev/null 2>&1";
+    print "Downloaded $game_name to $dir\n";
   }
 }
 1;
