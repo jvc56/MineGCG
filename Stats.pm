@@ -152,7 +152,7 @@ sub toString()
   my $tow = Constants::TOTAL_WIDTH;
   my $tot = $tiw + $aw + $tow;
 
-  my $s = "";
+  my $s = "\n";
 
   my $title_divider = ("_" x ($tot+2)) . "\n";
   my $empty_line = "|" . (" " x $tot) . "|\n";

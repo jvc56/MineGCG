@@ -24,6 +24,7 @@ sub new($$)
   my $turn_number = 1;
   my $player_one_prev_total = 0;
   my $player_two_prev_total = 0;
+  my $is_tourney_game = 0;
   my @moves_removed = ();
   open(GAMEHTML, '<', $filename);
   while(<GAMEHTML>)
@@ -161,6 +162,10 @@ sub new($$)
       $moves[$index]->setMovePlay($2);
       #print "Move $1 was exchange $2\n";
     }
+    if (/tourney.php/)
+    {
+      $is_tourney_game = 1;
+    }
   }
   if ($moves[-1]->{'play_type'} ne 'pass')
   {
@@ -202,6 +207,7 @@ sub new($$)
   }
   my %game = 
   (
+    tourney_game    => $is_tourney_game,
   	this_player     => $play_num,
   	player_one_name => $player_one_name,
   	player_two_name => $player_two_name,
