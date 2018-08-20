@@ -84,7 +84,7 @@ sub retrieve($$$)
       next;
     }
   	system "wget $game_url -O $dir/$game_name >/dev/null 2>&1";
-    print "Downloaded $game_name to $dir\n";
+    print "Downloaded $game_url as $game_name to $dir\n";
   }
 }
 1;
