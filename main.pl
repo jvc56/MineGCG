@@ -4,6 +4,7 @@ use warnings;
 use strict;
 use Getopt::Long;
 use Pod::Usage qw(pod2usage);
+use Cwd qw(abs_path getcwd);
 
 require "./retrieve_games.pl";
 require "./mine_games.pl";
@@ -30,6 +31,17 @@ GetOptions (
            );
 
 pod2usage(1) if $help || !$dir || !$name;
+
+my $cp = getcwd();
+my $gp = abs_path($dir);
+
+if ($cp eq $gp)
+{
+  print "\nDo not use the current directory for storing game files\n";
+  print "Specify a different directory, subdirectories are recommended\n";
+  print "For example ./games\n\n";
+  exit(0);
+}
 
 my $option = "";
 if ($update)

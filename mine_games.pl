@@ -7,6 +7,7 @@ use lib '.';
 use Game;
 use Constants;
 use Stats;
+use Cwd 'abs_path';
 
 sub mine($$$$)
 {
@@ -27,6 +28,7 @@ sub mine($$$$)
   my $all_stats = Stats->new();
   my $single_game_stats = Stats->new();
   my %tourney_game_hash;
+  my $at_least_one = 0;
   outer: while (@game_files)
   {
     my $game_file_name = shift @game_files;
@@ -41,7 +43,7 @@ sub mine($$$$)
     my $id              = $meta_data[5];
     my $ext             = $meta_data[6];
 
-    if (($tourney_id && $game_tourney_id ne $tourney_id) || $ext ne "html"){next;}
+    if (($tourney_id && $game_tourney_id ne $tourney_id) || !$ext || $ext ne "html"){next;}
     my $full_game_file_name = $dir_name . '/' . $game_file_name;
     
     # Check for repeat tournament games
@@ -74,8 +76,17 @@ sub mine($$$$)
       $single_game_stats->resetStats();
     }
     $all_stats->addGame($game);
+    $at_least_one = 1;
   }
-  print $all_stats->toString();
+  if ($at_least_one)
+  {
+    print $all_stats->toString();
+  }
+  else
+  {
+    print "No games found in " . abs_path($dir_name) . "\n";
+    print "To update or reset this directory, use the -u or -r flags\n\n";
+  }
 }
 
 1;
