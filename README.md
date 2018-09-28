@@ -7,10 +7,10 @@ ship with perl (this includes MacOS and Linux).
 To use, navigate to a desired empty directory and run
 the following commands:
 
-git clone https://github.com/jvc56/MineGCG
-cd MineGCG
-chmod +x *.pl
-./main.pl
+git clone https://github.com/jvc56/MineGCG<br/>
+cd MineGCG<br/>
+chmod +x *.pl<br/>
+./main.pl<br/>
 
 A usage message telling you how to use the command should appear.
 This tool is still a work in progress, so if you find any bugs
