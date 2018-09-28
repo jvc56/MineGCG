@@ -44,25 +44,25 @@ if ($reset)
 retrieve($name, $dir, $option, $tid, $cort);
 mine($name, $dir, $cort, $verbose, $tid);
 
-# open (CMDOUT, "git status -uno 2>&1 |");
-# my $uptodate = 0;
-# while (<CMDOUT>)
-# {
-#   if (/Your\sbranch\sis\sup\W+to\W+date/i)
-#   {
-#     $uptodate = 1;
-#   }
-# }
+open (CMDOUT, "git fetch --dry-run 2>&1 |");
+my $uptodate = 0;
+while (<CMDOUT>)
+{
+  if (/.+/i)
+  {
+    $uptodate = 1;
+  }
+}
 
-# if ($uptodate)
-# {
-#   print "Completed with the latest version of MineGCG\n"
-# }
-# else
-# {
-#   print "Your current version of MineGCG is out of date!\n";
-#   print "Use 'git pull' to get the latest version\n";
-# }
+if ($uptodate)
+{
+  print "Completed with the latest version of MineGCG\n"
+}
+else
+{
+  print "Your current version of MineGCG is out of date!\n";
+  print "Use 'git pull' to get the latest version\n";
+}
 
 __END__
  
