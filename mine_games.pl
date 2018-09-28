@@ -8,18 +8,21 @@ use Game;
 use Constants;
 use Stats;
 
-sub mine($)
+sub mine($$$$)
 {
   my $player_name = shift;
-  my $dir_name = shift;
-  my $torc = shift;
-  my $verbose = shift;
+  my $dir_name    = shift;
+  my $cort        = shift;
+  my $verbose     = shift;
+  my $tourney_id  = shift;
 
-  print "Processing game data...\n\n";
+  print "\nProcessing game data...\n\n";
 
   opendir my $dir, $dir_name or die "Cannot open directory: $!";
   my @game_files = readdir $dir;
   closedir $dir;
+ 
+  @game_files = sort {$b cmp $a} @game_files;
 
   my $all_stats = Stats->new();
   my $single_game_stats = Stats->new();
@@ -28,6 +31,16 @@ sub mine($)
   {
     my $game_file_name = shift @game_files;
     if ($game_file_name eq '.' || $game_file_name eq '..'){next;}
+
+    my @meta_data = split /\./, $game_file_name;
+    my $date            = $meta_data[0];
+    my $game_tourney_id = $meta_data[1];
+    my $round_number    = $meta_data[2];
+    my $tourney_name    = $meta_data[3];
+    my $lexicon         = $meta_data[4];
+    my $id              = $meta_data[5];
+    
+    if ($tourney_id && $game_tourney_id ne $tourney_id){next;}
     my $full_game_file_name = $dir_name . '/' . $game_file_name;
     
     # Check for repeat tournament games
@@ -46,8 +59,8 @@ sub mine($)
       }
     }
 
-    my $game = Game->new($full_game_file_name, $player_name);
-    if ( ($torc eq 't' && !$game->{'tourney_game'}) || ($torc eq 'c' && $game->{'tourney_game'}))
+    my $game = Game->new($full_game_file_name, $player_name, $lexicon);
+    if ( ($cort eq 't' && !$game->{'tourney_game'}) || ($cort eq 'c' && $game->{'tourney_game'}))
     {
       next;
     }
@@ -59,7 +72,6 @@ sub mine($)
       print $single_game_stats->toString();
       $single_game_stats->resetStats();
     }
-
     $all_stats->addGame($game);
   }
   print $all_stats->toString();

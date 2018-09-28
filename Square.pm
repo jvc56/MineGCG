@@ -13,7 +13,7 @@ sub new($)
   my $this = shift;
 
   my $position = shift;
-
+  my $turn = shift;
   my @bsm = split //, Constants::BONUS_SQUARE_STRING;
   my $bonus = $bsm[$position];
   
@@ -33,6 +33,7 @@ sub addTile($)
 {
 	my $this = shift;
 	my $tile = shift;
+  $this->{'has_tile'} = 1;
 	$this->{'tile'} = $tile;
 }
 

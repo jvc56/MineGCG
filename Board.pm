@@ -40,6 +40,7 @@ sub placeNewTile($$$$$$)
   my $displacement = shift;
   my $vertical = shift;
   my $turn = shift;
+  my $play_number = shift;
 
   my $pos = $row*Constants::BOARD_WIDTH + $column;
 
@@ -52,7 +53,7 @@ sub placeNewTile($$$$$$)
     $pos += $displacement;
   }
 
-  my $tile = Tile->new($c, $turn);
+  my $tile = Tile->new($c, $turn, $play_number);
 
   $this->{'grid'}[$pos]->addTile($tile);
 }
@@ -77,13 +78,14 @@ sub addMoves($)
       my $column       = $move->{'column'};
       my $vertical     = $move->{'vertical'};
       my $turn         = $move->{'turn'};
+      my $play_number  = $move->{'number'};
       my $displacement = 0;
 
       foreach my $c (split //, $word)
       {
         if ($c ne '.')
         {
-          $this->placeNewTile($c, $row, $column, $displacement, $vertical, $turn);
+          $this->placeNewTile($c, $row, $column, $displacement, $vertical, $turn, $play_number);
         }
         $displacement++;
       }
@@ -127,7 +129,7 @@ sub toString()
   
   for (my $i = 0; $i < Constants::BOARD_HEIGHT; $i++)
   {
-    my $t = "\n" . (sprintf "%2s", $i) . '|';
+    my $t = "\n" . (sprintf "%2s", ($i+1)) . '|';
     for (my $k = 0; $k < Constants::BOARD_WIDTH; $k++)
     {
       my $index = $i*Constants::BOARD_WIDTH + $k;

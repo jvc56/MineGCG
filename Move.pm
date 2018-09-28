@@ -6,8 +6,8 @@ use warnings;
 use strict;
 use lib '.';
 use Constants;
-
-sub new($$$$$$$$$$$$$$$)
+use Data::Dumper;
+sub new($$$$$$$$$$$$$$$$)
 {
   my $this = shift;
 
@@ -26,10 +26,12 @@ sub new($$$$$$$$$$$$$$$)
   my $challenge_points = shift;
   my $out_points = shift;
   my $comment = shift;
+  my $last_name = shift;
 
   my %move = (
   	           number           => $turn_number,
       	       play             => $play,
+               words_made       => undef,
       	       score            => $score,
       	       row              => $zero_index_row,
       	       column           => $zero_index_column,
@@ -42,7 +44,10 @@ sub new($$$$$$$$$$$$$$$)
       	       challenge_lost   => $challenge_lost,
       	       challenge_points => $challenge_points,
       	       out_points       => $out_points,
-      	       comment          => $comment
+      	       comment          => $comment,
+               last_name        => $last_name,
+               is_phony         => 1,
+               prob             => 0
       	     );
 
   my $self = bless \%move, $this;
@@ -66,22 +71,8 @@ sub setMovePlay($)
 sub getAlphanumericLocation()
 {
   my $this = shift;
-  my %index_column_mapping = ( 0 => 'A',
-                               1 => 'B',
-                               2 => 'C',
-                               3 => 'D',
-                               4 => 'E',
-                               5 => 'F',
-                               6 => 'G',
-                               7 => 'H',
-                               8 => 'I',
-                               9 => 'J',
-                               10 => 'K',
-                               11 => 'L',
-                               12 => 'M',
-                               13 => 'N',
-                               14 => 'O' );
-
+  my $index_column_mapping_ref = Constants::INDEX_COLUMN_MAPPING;
+  my %index_column_mapping = %{$index_column_mapping_ref};
   my $row = $this->{'row'} + 1;
   my $column = $index_column_mapping{$this->{'column'}};
   if ($this->{'vertical'})
@@ -94,15 +85,6 @@ sub getAlphanumericLocation()
   }
 }
 
-sub getNumBingosPlayed($)
-{
-  my $this = shift;
-
-  my $this_player = shift;
-
-  return $this->getNumTilesPlayed($this_player) == 7; 
-}
-
 sub getNumTilesPlayed($)
 {
   my $this = shift;
@@ -110,13 +92,42 @@ sub getNumTilesPlayed($)
   my $this_player = shift;
   my $play = $this->{'play'};
   
-  if ($this_player != $this->{'turn'} or !$play or $play eq '---' or $this->{'challenge_lost'} or $this->{'play_type'} ne 'word')
+  if (
+      $this_player != $this->{'turn'} ||
+      !$play ||
+      $play eq '---' ||
+      $this->{'challenge_lost'} ||
+      $this->{'play_type'} ne Constants::PLAY_TYPE_WORD
+     )
   {
     return 0;
   }
   else
   {
     $play =~ s/\.//g;
+    return length $play;
+  }
+}
+
+sub getLength($)
+{
+  my $this = shift;
+
+  my $this_player = shift;
+  my $play = $this->{'play'};
+  
+  if (
+      $this_player != $this->{'turn'} ||
+      !$play ||
+      $play eq '---' ||
+      $this->{'challenge_lost'} ||
+      $this->{'play_type'} ne Constants::PLAY_TYPE_WORD
+     )
+  {
+    return 0;
+  }
+  else
+  {
     return length $play;
   }
 }
@@ -128,7 +139,11 @@ sub getNumBlanksPlayed($)
   my $this_player = shift;
   my $play = $this->{'play'};
   
-  if ($this_player != $this->{'turn'} or !$play or $play eq '---' or $this->{'challenge_lost'} or $this->{'play_type'} ne 'word')
+  if ($this_player != $this->{'turn'} ||
+      !$play ||
+      $play eq '---' ||
+      $this->{'challenge_lost'} ||
+      $this->{'play_type'} ne Constants::PLAY_TYPE_WORD)
   {
     return 0;
   }
@@ -148,7 +163,7 @@ sub getChallengeType($)
   my $player = shift;
 
   my $your_turn = $this->{'turn'} == $player;
-  my $play_is_pass = $this->{'play_type'} eq 'pass';
+  my $play_is_pass = $this->{'play_type'} eq Constants::PLAY_TYPE_PASS;
   if ($this->{'challenge_lost'})
   {
     if ($your_turn) 
@@ -174,9 +189,23 @@ sub getChallengeType($)
   	return Constants::PLAYER_CHALLENGE_LOST;
   }
   return Constants::NO_CHALLENGE;
-
-
 }
+
+sub isBingo($)
+{
+  my $this = shift;
+
+  my $this_player = shift;
+
+  my $l = $this->getNumTilesPlayed($this_player);
+
+  if ($l == 7)
+  {
+    return $this->getLength($this_player);
+  }
+  return 0;
+}
+
 sub isTripleTriple($)
 {
   my $this = shift;
@@ -216,7 +245,7 @@ sub toString()
   my $this = shift;
 
   my $loc = $this->getAlphanumericLocation();
-  if ($this->{'play_type'} ne 'word')
+  if ($this->{'play_type'} ne Constants::PLAY_TYPE_WORD)
   {
   	$loc = $this->{'play_type'};
   } 
@@ -225,7 +254,8 @@ sub toString()
   {
   	$ch = ' (Lost challenge) ';
   }
-  return sprintf "%d: %s %s +%d%s\n", $this->{'number'}, $loc, $this->{'play'}, $this->{'score'}, $ch;
+  my $return_string = sprintf "%s %s +%d%s", $loc, $this->{'play'}, $this->{'score'}, $ch;
+  return $return_string;
 }
 1;
 

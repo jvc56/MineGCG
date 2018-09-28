@@ -1,5 +1,6 @@
-games
-games_test
+games*
 anno_page.html
 query_results.html
 wget-log
+txt_to_hash*
+

@@ -11,6 +11,7 @@ sub new($$)
 
   my $c = shift;
   my $placed_by = shift;
+  my $play_number = shift;
 
   my $value = $this->charToValue($c);
 
@@ -22,10 +23,11 @@ sub new($$)
 
   my %tile =
   (
-  	char      => $c,
-    value     => $value,
-    is_blank  => $is_blank,
-    placed_by => $placed_by
+  	char        => $c,
+    value       => $value,
+    is_blank    => $is_blank,
+    placed_by   => $placed_by,
+    play_number => $play_number
   );
 
   my $self = bless \%tile, $this;

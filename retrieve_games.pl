@@ -2,30 +2,33 @@
 
 use warnings;
 use strict;
-use Data::Dumper;
+use lib '.';
+use Constants;
 
 sub retrieve($$$)
 {
+  # Constants
+  my $query_url_prefix           = Constants::QUERY_URL_PREFIX;
+  my $annotated_games_url_prefix = Constants::ANNOTATED_GAMES_URL_PREFIX;
+  my $annotated_games_page_name  = Constants::ANNOTATED_GAMES_PAGE_NAME;
+  my $query_results_page_name    = Constants::QUERY_RESULTS_PAGE_NAME;
+
   my $name = shift;
   my $dir = shift;
   my $option = shift;
-  
+  my $tourney_id = shift;
+  my $tourney_or_casual = shift;
+
   if (!$option && -e $dir)
   {
     return;
   }
   print "Retrieving games...\n";
-  if ($option eq "reset")
+  if ($option eq "reset" && -e $dir)
   {
     system "rm -r $dir";
     print "Deleted $dir\n";
   }
-
-  # Constants
-  my $query_url_prefix = "http://www.cross-tables.com/players.php?query=";
-  my $annotated_games_url_prefix = "http://www.cross-tables.com/anno.php?p=";
-  my $annotated_games_page_name = "anno_page.html";
-  my $query_results_page_name = "query_results.html";
 
   # Prepare name for cross-tables query
   # by replacing ' ' with '+'
@@ -59,10 +62,10 @@ sub retrieve($$$)
   open(RESULTS, '<', $annotated_games_page_name);
   while (<RESULTS>)
   {
-    my @matches = ($_ =~ /<a href='annotated\.php\?u=(\d+)'>/g);
+    my @matches = ($_ =~ /href=.annotated.php.u=(\d+).>.*?href=.tourney.php.t=(.+?).>([^<]*)<.a><.td><td>([^<]*)<.td><td>([^<]*)<.td><td><.td><td>([^<]*)</g);
+    #game_id, tourney_id, tourney_name, date, round_number, dictionary
     push @game_ids, @matches;
   }
-
   # Create the directory to store the game page htmls
   # if one doesn't already exist
   if (!(-e $dir && -d $dir))
@@ -73,18 +76,63 @@ sub retrieve($$$)
 
   # Iterate through the annotated game ids to fetch all of
   # the player's annotated games
+  my $games_to_download = (scalar @game_ids) / 6;
+  my $count = 0;
   while (@game_ids)
   {
-  	my $id = shift @game_ids;
-  	my $game_url = "http://www.cross-tables.com/annotated.php?u=$id";
-  	my $game_name = "$id.html";
+    #game_id, tourney_id, tourney_name, date, round_number, dictionary
+  	my $id              = shift @game_ids;
+    my $game_tourney_id = shift @game_ids;
+    my $tourney_name    = shift @game_ids;
+    $tourney_name =~ s/ /_/g;
+    my $date            = shift @game_ids;
+    my $round_number    = shift @game_ids;
+    my $lexicon         = shift @game_ids;
+
+    if (!$game_tourney_id)
+    {
+      $game_tourney_id = Constants::NON_TOURNAMENT_GAME;
+    }
+    if (!$tourney_name)
+    {
+      $tourney_name = "noname";
+    }
+    if (!$date)
+    {
+      $date = 0;
+    }
+    if (!$round_number)
+    {
+      $round_number = 0;
+    }
+
+    my $game_name = join ".", ($date, $game_tourney_id, $round_number, $tourney_name, $lexicon, $id, "html");
+    
+  	my $game_url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX . $id;
+    $count++;
+    my $num_str = "$count of $games_to_download:";
     if ($option eq "update" && -e $dir . "/" . $game_name)
     {
-      print "$game_name already exists\n";
+      print "$num_str Game $game_url already exists in the directory\n";
+      next;
+    }
+    if ($tourney_id && $tourney_id ne $game_tourney_id)
+    {
+      print "$num_str Game $game_url wasn't played in the specified tournament\n";
+      next;
+    }
+    if ($tourney_name eq "noname" && uc $tourney_or_casual eq 'T')
+    {
+      print "$num_str Game $game_url is not a tournament game\n";
+      next;
+    }
+    if ($tourney_name ne "noname" && uc $tourney_or_casual eq 'C')
+    {
+      print "$num_str Game $game_url is a tournament game\n";
       next;
     }
   	system "wget $game_url -O $dir/$game_name >/dev/null 2>&1";
-    print "Downloaded $game_url as $game_name to $dir\n";
+    print "$num_str Downloaded game $game_url as $game_name to $dir\n";
   }
 }
 1;
