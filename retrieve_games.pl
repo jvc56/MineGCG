@@ -13,11 +13,12 @@ sub retrieve($$$)
   my $annotated_games_page_name  = Constants::ANNOTATED_GAMES_PAGE_NAME;
   my $query_results_page_name    = Constants::QUERY_RESULTS_PAGE_NAME;
 
-  my $name = shift;
-  my $dir = shift;
-  my $option = shift;
-  my $tourney_id = shift;
+  my $name              = shift;
+  my $dir               = shift;
+  my $option            = shift;
+  my $tourney_id        = shift;
   my $tourney_or_casual = shift;
+  my $verbose           = shift;
 
   if (!$option && -e $dir)
   {
@@ -27,7 +28,7 @@ sub retrieve($$$)
   if ($option eq "reset" && -e $dir)
   {
     system "rm -r $dir";
-    print "Deleted $dir\n";
+    if ($verbose) {print "Deleted $dir\n";}
   }
 
   # Prepare name for cross-tables query
@@ -71,7 +72,7 @@ sub retrieve($$$)
   if (!(-e $dir && -d $dir))
   {
   	system "mkdir $dir";
-    print "Created $dir\n";
+    if ($verbose) {print "Created $dir\n";}
   }
 
   # Iterate through the annotated game ids to fetch all of
@@ -113,26 +114,26 @@ sub retrieve($$$)
     my $num_str = "$count of $games_to_download:";
     if ($option eq "update" && -e $dir . "/" . $game_name)
     {
-      print "$num_str Game $game_url already exists in the directory\n";
+      if ($verbose) {print "$num_str Game $game_url already exists in the directory\n";}
       next;
     }
     if ($tourney_id && $tourney_id ne $game_tourney_id)
     {
-      print "$num_str Game $game_url wasn't played in the specified tournament\n";
+      if ($verbose) {print "$num_str Game $game_url wasn't played in the specified tournament\n";}
       next;
     }
     if ($tourney_name eq "noname" && uc $tourney_or_casual eq 'T')
     {
-      print "$num_str Game $game_url is not a tournament game\n";
+      if ($verbose) {print "$num_str Game $game_url is not a tournament game\n";}
       next;
     }
     if ($tourney_name ne "noname" && uc $tourney_or_casual eq 'C')
     {
-      print "$num_str Game $game_url is a tournament game\n";
+      if ($verbose) {print "$num_str Game $game_url is a tournament game\n";}
       next;
     }
   	system "wget $game_url -O $dir/$game_name >/dev/null 2>&1";
-    print "$num_str Downloaded game $game_url as $game_name to $dir\n";
+    if ($verbose) {print "$num_str Downloaded game $game_url as $game_name to $dir\n";}
   }
 }
 1;

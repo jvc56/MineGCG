@@ -53,7 +53,7 @@ if ($reset)
   $option = "reset";
 }
 
-retrieve($name, $dir, $option, $tid, $cort);
+retrieve($name, $dir, $option, $tid, $cort, $verbose);
 mine($name, $dir, $cort, $verbose, $tid);
 
 open (CMDOUT, "git fetch --dry-run 2>&1 |");
