@@ -45,16 +45,13 @@ retrieve($name, $dir, $option, $tid, $cort);
 mine($name, $dir, $cort, $verbose, $tid);
 
 open (CMDOUT, "git fetch --dry-run 2>&1 |");
-my $uptodate = 0;
+my $response = '';
 while (<CMDOUT>)
 {
-  if (/.+/i)
-  {
-    $uptodate = 1;
-  }
+  $response .= $_;
 }
 
-if ($uptodate)
+if (!$response)
 {
   print "Completed with the latest version of MineGCG\n"
 }
