@@ -39,8 +39,9 @@ sub mine($$$$)
     my $tourney_name    = $meta_data[3];
     my $lexicon         = $meta_data[4];
     my $id              = $meta_data[5];
-    
-    if ($tourney_id && $game_tourney_id ne $tourney_id){next;}
+    my $ext             = $meta_data[6];
+
+    if (($tourney_id && $game_tourney_id ne $tourney_id) || $ext ne "html"){next;}
     my $full_game_file_name = $dir_name . '/' . $game_file_name;
     
     # Check for repeat tournament games
