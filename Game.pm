@@ -10,7 +10,7 @@ use lib '.';
 use Board;
 use Move;
 use Tile;
-use Collins;
+use CSW15;
 use American;
 
 sub new($$)
@@ -226,19 +226,19 @@ sub new($$)
   }
   if (!$lexicon)
   {
-    print "\nNo lexicon found for game $filename\n";
+    print "\nNo lexicon found for game $filename, using CSW15 as a default\n";
+    $lexicon = 'CSW15';
+  }
+  
+  if ($lexicon eq 'TWL15')
+  {
+    $lexicon_ref = American::AMERICAN_LEXICON;
   }
   else
   {
-    if ($lexicon eq 'TWL15')
-    {
-      $lexicon_ref = American::AMERICAN_LEXICON;
-    }
-    else
-    {
-      $lexicon_ref = Collins::COLLINS_LEXICON;
-    }
+    $lexicon_ref = CSW15::CSW15_LEXICON;
   }
+
   my %game = 
   (
     lexicon         => $lexicon_ref,
@@ -271,7 +271,7 @@ sub getNumTurns()
     my $turn = $move->{'turn'};
     if (
         (($player != -1 && $turn == $player) || $player == -1) &&
-        $move->{'play_type'} ne Constants::PLAY_TYPE_PASS
+        !($move->{'challenge_lost'})
        )
     {
       $sum++;

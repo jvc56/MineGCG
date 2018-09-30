@@ -108,7 +108,7 @@ sub retrieve($$$)
     }
 
     my $game_name = join ".", ($date, $game_tourney_id, $round_number, $tourney_name, $lexicon, $id, "html");
-    
+
   	my $game_url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX . $id;
     $count++;
     my $num_str = "$count of $games_to_download:";
