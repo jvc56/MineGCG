@@ -50,7 +50,7 @@ sub retrieve($$$)
   	  last;
   	}
   }
-  if (!$player_id){die "No player named $user_name found";}
+  if (!$player_id){print "No player named $user_name found\n"; return;}
   # Use the player id to get the address of the annotated games page
   my $annotated_games_url = $annotated_games_url_prefix . $player_id;
 
@@ -90,13 +90,9 @@ sub retrieve($$$)
     my $round_number    = shift @game_ids;
     my $lexicon         = shift @game_ids;
 
-    if (!$game_tourney_id)
-    {
-      $game_tourney_id = Constants::NON_TOURNAMENT_GAME;
-    }
     if (!$tourney_name)
     {
-      $tourney_name = "noname";
+      $tourney_name = Constants::NON_TOURNAMENT_GAME;
     }
     if (!$date)
     {

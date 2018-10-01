@@ -10,7 +10,7 @@ use constant ANNOTATED_GAMES_URL_PREFIX       => 'http://www.cross-tables.com/an
 use constant SINGLE_ANNOTATED_GAME_URL_PREFIX => 'http://www.cross-tables.com/annotated.php?u=';
 use constant ANNOTATED_GAMES_PAGE_NAME        => 'anno_page.html';
 use constant QUERY_RESULTS_PAGE_NAME          => 'query_results.html';
-use constant NON_TOURNAMENT_GAME              => 'nontournament';
+use constant NON_TOURNAMENT_GAME              => 'casual_or_club';
 
 use constant STAT_ITEM_GAME        => 'GAME STATS';
 use constant STAT_ITEM_PLAYER      => 'YOUR STATS';
@@ -41,8 +41,8 @@ use constant STATS_ITEMS =>
     {name => 'Power Tiles Played',    type => STAT_ITEM_PLAYER},
     {name => 'Triple Triples Played', type => STAT_ITEM_PLAYER},
     {name => 'Bingoless Games',       type => STAT_ITEM_PLAYER},
-    {name => 'Phonies',               type => STAT_ITEM_PLAYER},
     {name => 'Bonus Square Coverage', type => STAT_ITEM_PLAYER},
+    {name => 'Phony Plays',           type => STAT_ITEM_PLAYER},
     {name => 'Wins',                  type => STAT_ITEM_OPP},
     {name => 'Score',                 type => STAT_ITEM_OPP},
     {name => 'Turns',                 type => STAT_ITEM_OPP},
@@ -56,7 +56,7 @@ use constant STATS_ITEMS =>
     {name => 'Triple Triples Played', type => STAT_ITEM_OPP},
     {name => 'Bingoless Games',       type => STAT_ITEM_OPP},
     {name => 'Bonus Square Coverage', type => STAT_ITEM_OPP},
-    {name => 'Phonies',               type => STAT_ITEM_OPP},
+    {name => 'Phony Plays',           type => STAT_ITEM_OPP},
 );
 
 use constant INDEX_COLUMN_MAPPING =>

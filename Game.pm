@@ -10,8 +10,6 @@ use lib '.';
 use Board;
 use Move;
 use Tile;
-use CSW15;
-use American;
 
 sub new($$)
 {
@@ -19,7 +17,7 @@ sub new($$)
 
   my $filename         = shift;
   my $this_player_name = shift;
-  my $lexicon          = shift;
+  my $lexicon_ref      = shift;
 
   my $player_one_name;
   my $player_two_name;
@@ -28,7 +26,7 @@ sub new($$)
   my $player_one_prev_total = 0;
   my $player_two_prev_total = 0;
   my $is_tourney_game = 0;
-  my $lexicon_ref = '';
+
   my @moves_removed = ();
   open(GAMEHTML, '<', $filename);
   while(<GAMEHTML>)
@@ -224,30 +222,17 @@ sub new($$)
   {
   	$play_num = 1;
   }
-  if (!$lexicon)
-  {
-    print "\nNo lexicon found for game $filename, using CSW15 as a default\n";
-    $lexicon = 'CSW15';
-  }
-  
-  if ($lexicon eq 'TWL15')
-  {
-    $lexicon_ref = American::AMERICAN_LEXICON;
-  }
-  else
-  {
-    $lexicon_ref = CSW15::CSW15_LEXICON;
-  }
 
   my %game = 
   (
+    filename        => $filename,
     lexicon         => $lexicon_ref,
     tourney_game    => $is_tourney_game,
   	this_player     => $play_num,
   	player_one_name => $player_one_name,
   	player_two_name => $player_two_name,
-    board => $board,
-    moves => \@moves
+    board           => $board,
+    moves           => \@moves
   );
 
   my $self = bless \%game, $this;
@@ -380,25 +365,26 @@ sub getPhoniesFormed($)
     {
       next;
     }
+    my $move_phonies = '';
     my $readable_play = $this->readableMove($move);
     my $caps_play = $this->readableMoveCapitalized($move);
     my $prob = $this->{'lexicon'}->{$caps_play};
     if (!$prob)
     {
-      push @phonies, $readable_play."*";
-    }
-    if (!$move->{'words_made'})
-    {
-      next;
+      $move_phonies .= $readable_play."*";
     }
     my @words_made = @{$move->{'words_made'}};
     foreach my $word (@words_made)
     {
       my $word_made_prob = $this->{'lexicon'}->{$word};
-      if (!$prob)
+      if (!$word_made_prob)
       {
-        push @phonies, $word."*";
+        $move_phonies .= ' '.$word."*";
       }
+    }
+    if ($move_phonies)
+    {
+      push @phonies, $move_phonies;
     }
   }
   return \@phonies;
@@ -541,37 +527,20 @@ sub getNumChallenges($)
   return \%sums;
 }
 
-sub getNumPhonies($)
+sub getNumPhonyPlays($$)
 {
   my $this = shift;
   
   my $player = shift;
+  my $unchal = shift;
 
   my @moves = @{$this->{'moves'}};
   my $sum = 0;
   foreach my $move (@moves)
   {
-    if ($move->{'turn'} == $player)
+    if ((!$unchal || !$move->{'challenge_lost'}) && $move->{'turn'} == $player && $move->{'is_phony'})
     {
-      $sum += $move->{'is_phony'};
-    }
-  }
-  return $sum;
-}
-
-sub getNumPhoniesUnchallenged($)
-{
-  my $this = shift;
-  
-  my $player = shift;
-
-  my @moves = @{$this->{'moves'}};
-  my $sum = 0;
-  foreach my $move (@moves)
-  {
-    if (!$move->{'challenge_lost'} && $move->{'turn'} == $player)
-    {
-      $sum += $move->{'is_phony'};
+      $sum++;
     }
   }
   return $sum;

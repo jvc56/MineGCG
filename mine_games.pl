@@ -7,7 +7,17 @@ use lib '.';
 use Game;
 use Constants;
 use Stats;
-use Cwd 'abs_path';
+
+use lib 'lexicons';
+use CSW07;
+use CSW12;
+use CSW15;
+use TWL98;
+use TWL06;
+use American;
+
+
+use Cwd qw(abs_path);
 
 sub mine($$$$)
 {
@@ -29,7 +39,7 @@ sub mine($$$$)
   my $single_game_stats = Stats->new();
   my %tourney_game_hash;
   my $at_least_one = 0;
-  outer: while (@game_files)
+  while (@game_files)
   {
     my $game_file_name = shift @game_files;
     if ($game_file_name eq '.' || $game_file_name eq '..'){next;}
@@ -46,27 +56,60 @@ sub mine($$$$)
     if (($tourney_id && $game_tourney_id ne $tourney_id) || !$ext || $ext ne "html"){next;}
     my $full_game_file_name = $dir_name . '/' . $game_file_name;
     
-    # Check for repeat tournament games
-    open(GAMEHTML, '<', $full_game_file_name);
-    while(<GAMEHTML>)
-    {
-      if (/.*?tourney.php.t=(\d+).*?Round (\d+)/)
-      {
-      	my $key = $1.'+'.$2;
-      	if($tourney_game_hash{$key})
-      	{
-      	  print "Repeat game $full_game_file_name found with tournament id $1 and round number $2. Skipping...\n";
-          next outer;
-      	}
-        $tourney_game_hash{$key} = 1;
-      }
-    }
+    my $is_tourney_game = $tourney_name ne Constants::NON_TOURNAMENT_GAME;
 
-    my $game = Game->new($full_game_file_name, $player_name, $lexicon);
-    if ( ($cort eq 't' && !$game->{'tourney_game'}) || ($cort eq 'c' && $game->{'tourney_game'}))
+    # Check for casual/club or only tournament games
+    if ( (uc $cort eq 'T' && !$is_tourney_game) || (uc $cort eq 'C' && $is_tourney_game))
     {
       next;
     }
+
+    # Check for repeat tournament games
+    if ($game_tourney_id && $round_number && $is_tourney_game)
+    {
+      my $key = $game_tourney_id.'+'.$round_number;
+      if($tourney_game_hash{$key})
+      {
+        print "Repeat game $full_game_file_name found with tournament id $game_tourney_id and round number $round_number. Skipping...\n";
+        next;
+      }
+      $tourney_game_hash{$key} = 1;
+    }
+
+    my $lexicon_ref;
+
+    if ($lexicon eq 'TWL98')
+    {
+      $lexicon_ref = TWL98::TWL98_LEXICON;
+    }
+    elsif ($lexicon eq 'TWL06')
+    {
+      $lexicon_ref = TWL06::TWL06_LEXICON;
+    }
+    elsif ($lexicon eq 'TWL15')
+    {
+      $lexicon_ref = American::AMERICAN_LEXICON;
+    }
+    elsif ($lexicon eq 'CSW07')
+    {
+      $lexicon_ref = CSW07::CSW07_LEXICON;
+    }
+    elsif ($lexicon eq 'CSW12')
+    {
+      $lexicon_ref = CSW12::CSW12_LEXICON;
+    }
+    elsif ($lexicon eq 'CSW15')
+    {
+      $lexicon_ref = CSW15::CSW15_LEXICON;
+    }
+    else
+    {
+      print "No lexicon found for game $full_game_file_name, using CSW15 as a default\n";
+      $lexicon_ref = CSW15::CSW15_LEXICON;
+    }
+
+    my $game = Game->new($full_game_file_name, $player_name, $lexicon_ref);
+
     if ($verbose)
     {
       print "\nData structures for $full_game_file_name\n\n";
@@ -85,7 +128,7 @@ sub mine($$$$)
   else
   {
     print "No games found in " . abs_path($dir_name) . "\n";
-    print "To update or reset this directory, use the -u or -r flags\n\n";
+    print "To update or reset this directory, use the -u or -r flags respectively\n\n";
   }
 }
 

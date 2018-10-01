@@ -137,9 +137,9 @@ sub addGame($)
   {
     $this->__updateNumBonusSquaresCovered($game, $this_player);
   }
-  elsif ($name eq "Phonies")
+  elsif ($name eq "Phony Plays")
   {
-    $this->__updateNumPhonies($game, $this_player);
+    $this->__updateNumPhonyPlays($game, $this_player);
   }
 }
 
@@ -644,7 +644,7 @@ sub __updateNumChallenges($)
   $this->{'subitems'}->{Constants::OPP_CHALLENGE_LOST}    += $ocl;
 }
 
-sub __updateNumPhonies($$)
+sub __updateNumPhonyPlays($$)
 {
   my $this = shift;
   my $game = shift;
@@ -667,8 +667,9 @@ sub __updateNumPhonies($$)
     $this->{'list'} = \@order;
   }
 
-  my $num_phonies = $game->getNumPhonies($this_player);
-  my $num_phonies_unchal = $game->getNumPhoniesUnchallenged($this_player);
+  # 0 to get all phonies, 1 to get unchallenged phonies
+  my $num_phonies = $game->getNumPhonyPlays($this_player, 0);
+  my $num_phonies_unchal = $game->getNumPhonyPlays($this_player, 1);
 
 
 

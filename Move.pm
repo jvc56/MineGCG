@@ -27,11 +27,12 @@ sub new($$$$$$$$$$$$$$$$)
   my $out_points = shift;
   my $comment = shift;
   my $last_name = shift;
+  my @words_made = ();
 
   my %move = (
   	           number           => $turn_number,
       	       play             => $play,
-               words_made       => undef,
+               words_made       => \@words_made,
       	       score            => $score,
       	       row              => $zero_index_row,
       	       column           => $zero_index_column,
