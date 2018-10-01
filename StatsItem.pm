@@ -69,7 +69,7 @@ sub addGame($)
   {
     $this->__updatePhoniesFormed($game, $this_player);
   }
-  elsif ($name eq "Plays Challenged")
+  elsif ($name eq "Plays That Were Challenged")
   {
     $this->__updatePlaysChallenged($game, $this_player);
   }

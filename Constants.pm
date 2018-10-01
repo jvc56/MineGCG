@@ -22,10 +22,10 @@ use constant STATS_ITEMS =>
 (
     {name => 'Bingos',                type => STAT_ITEM_LIST_PLAYER},
     {name => 'Phonies Formed',        type => STAT_ITEM_LIST_PLAYER},
-    {name => 'Plays Challenged',      type => STAT_ITEM_LIST_PLAYER},
+    {name => 'Plays That Were Challenged',   type => STAT_ITEM_LIST_PLAYER},
     {name => 'Bingos',                type => STAT_ITEM_LIST_OPP},
     {name => 'Phonies Formed',        type => STAT_ITEM_LIST_OPP},
-    {name => 'Plays Challenged',      type => STAT_ITEM_LIST_OPP},
+    {name => 'Plays That Were Challenged',      type => STAT_ITEM_LIST_OPP},
     {name => 'Games',                 type => STAT_ITEM_GAME},
     {name => 'Total Turns',           type => STAT_ITEM_GAME},
     {name => 'Challenges',            type => STAT_ITEM_GAME},

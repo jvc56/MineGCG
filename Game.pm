@@ -255,8 +255,8 @@ sub getNumTurns()
   {
     my $turn = $move->{'turn'};
     if (
-        (($player != -1 && $turn == $player) || $player == -1) &&
-        !($move->{'challenge_lost'})
+        (($player != -1 && $turn == $player) || $player == -1) #&&
+        #!($move->{'challenge_lost'})
        )
     {
       $sum++;
@@ -403,30 +403,25 @@ sub getPlaysChallenged($)
   for (my $i = 0; $i < scalar @moves; $i++)
   {
     my $move = $moves[$i];
-    if ($player != $move->{'turn'})
+    my $next_move = undef;
+    if ($i + 1 < scalar @moves)
     {
-      next;
+      $next_move = $moves[$i + 1];
     }
     if (
-        $move->getChallengeType($player) eq Constants::NO_CHALLENGE &&
-        !($move->{'challenge_lost'} && $move->{'play_type'} eq Constants::PLAY_TYPE_PASS)
+         ($player == $move->{'turn'} && $move->{'play_type'} ne Constants::PLAY_TYPE_PASS && ($move->{'challenge_lost'} || $move->{'challenge_points'}))
+         || ($next_move && $player != $next_move->{'turn'} && $next_move->{'challenge_lost'} && $next_move->{'play_type'} eq Constants::PLAY_TYPE_PASS)
        )
     {
-      next;
+      my $readable_play = $this->readableMove($move);
+      my $caps_play = $this->readableMoveCapitalized($move);
+      my $prob = $this->{'lexicon'}->{$caps_play};
+      if (!$prob)
+      {
+        $readable_play = $readable_play."*";
+      }
+      push @plays_chal, $readable_play;
     }
-    if ($move->{'challenge_lost'} && $move->{'play_type'} eq Constants::PLAY_TYPE_PASS)
-    {
-      $move = $moves[$i-1];
-    }
-
-    my $readable_play = $this->readableMove($move);
-    my $caps_play = $this->readableMoveCapitalized($move);
-    my $prob = $this->{'lexicon'}->{$caps_play};
-    if (!$prob)
-    {
-      $readable_play = $readable_play."*";
-    }
-    push @plays_chal, $readable_play;
   }
   return \@plays_chal;
 }
