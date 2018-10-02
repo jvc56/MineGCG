@@ -70,7 +70,7 @@ if (!$response)
 else
 {
   print "Your current version of MineGCG is out of date!\n";
-  print "Use 'git pull' to get the latest version\n";
+  print "Use 'git pull --rebase' to get the latest version\n";
 }
 
 
