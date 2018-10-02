@@ -80,7 +80,7 @@ __END__
 =head1 SYNOPSIS
  
 
- ./main.pl -n=<playername> -d=<directory> [-v] [-u] [-r] [-t=<gametype>]
+ ./main.pl -n=<playername> -d=<directory> [-v] [-u] [-r] [-c=<gametype>] [-t=<tournamentid>]
 
  
  Options:
