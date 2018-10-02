@@ -118,6 +118,7 @@ sub mine($$$$)
       print $single_game_stats->toString();
       $single_game_stats->resetStats();
     }
+    
     $all_stats->addGame($game);
     $at_least_one = 1;
   }
