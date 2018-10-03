@@ -91,7 +91,7 @@ __END__
    -r, --reset           delete the directory specified by -d and remake
                          it with games from the player specified by -n
    -c, --cort            option to specify whether to process just club and casual
-                         games (-t=<c>) or just tournament games (-t=<t>)
+                         games (-c=<c>) or just tournament games (-c=<t>)
    -t, --tournament-id   optional argument to specify a particular tournament
                          for which statistics will be calculated. If this option 
                          is specified, only games from that tournament will be processed.
@@ -110,7 +110,7 @@ __END__
  Example:
    The following command:
 
-     ./main.pl -n "Joshua Castellano" -d ./games -v -u -t t
+     ./main.pl -n "Joshua Castellano" -d ./games -v -u
 
    will download any of Joshua Castellano's annotated cross-tables.com
    games that do not exist in the directory ./games and print the statistics
