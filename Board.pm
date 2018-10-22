@@ -65,7 +65,7 @@ sub addMoves($)
   my @moves = @{$move_array_ref};
   if ($this->{'moves_completed'} + 1 != $moves[0]->{'number'})
   {
-    print "Could not add moves: move number incorrect. Doing nothing.";
+    print "Could not add moves: move number incorrect";
     return;
   }
   for (my $i = 0; $i < scalar @moves; $i++)
@@ -91,9 +91,9 @@ sub addMoves($)
       }
     }
     $this->{'moves_completed'}++;
-    $this->{'player_one_total'} = $move->{'player_one_total'};
-    $this->{'player_two_total'} = $move->{'player_two_total'};
   }
+  $this->{'player_one_total'} = $moves[-1]->{'player_one_total'};
+  $this->{'player_two_total'} = $moves[-1]->{'player_two_total'};
 }
 
 sub getNumBonusSquaresCovered($$)

@@ -51,9 +51,13 @@ sub mine($$$$)
     my $tourney_name    = $meta_data[3];
     my $lexicon         = $meta_data[4];
     my $id              = $meta_data[5];
-    my $ext             = $meta_data[6];
+    my $player_one_name = $meta_data[6];
+    $player_one_name    =~ s/_/ /g;
+    my $player_two_name = $meta_data[7];
+    $player_two_name    =~ s/_/ /g;
+    my $ext             = $meta_data[8];
 
-    if (($tourney_id && $game_tourney_id ne $tourney_id) || !$ext || $ext ne "html"){next;}
+    if (($tourney_id && $game_tourney_id ne $tourney_id) || !$ext || $ext ne "gcg"){next;}
     my $full_game_file_name = $dir_name . '/' . $game_file_name;
     
     my $is_tourney_game = $tourney_name ne Constants::NON_TOURNAMENT_GAME;
@@ -107,8 +111,18 @@ sub mine($$$$)
       print "No lexicon found for game $full_game_file_name, using CSW15 as a default\n";
       $lexicon_ref = CSW15::CSW15_LEXICON;
     }
+    my $player_is_first = 0;
 
-    my $game = Game->new($full_game_file_name, $player_name, $lexicon_ref);
+    if ($player_one_name ne $player_name)
+    {
+      $player_is_first = 1;
+      if ($player_two_name ne $player_name)
+      {
+        print "Didn't find a matching player name for $game_file_name\n";
+        return;
+      }
+    }
+    my $game = Game->new($full_game_file_name, $player_is_first, $lexicon_ref, $player_one_name, $player_two_name);
 
     if ($verbose)
     {

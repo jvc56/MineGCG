@@ -5,9 +5,10 @@ use strict;
 use lib '.';
 use Constants;
 
-sub retrieve($$$)
+sub retrieve($$$$$$)
 {
   # Constants
+  my $cross_tables_url           = Constants::CROSS_TABLES_URL;
   my $query_url_prefix           = Constants::QUERY_URL_PREFIX;
   my $annotated_games_url_prefix = Constants::ANNOTATED_GAMES_URL_PREFIX;
   my $annotated_games_page_name  = Constants::ANNOTATED_GAMES_PAGE_NAME;
@@ -43,10 +44,9 @@ sub retrieve($$$)
   my $player_id;
   while (<CMDOUT>)
   {
-  	/^Location: results\.php\?p=(\d+).*/;
-  	$player_id = $1;
-  	if ($player_id)
+  	if (/^Location: results\.php\?p=(\d+).*/)
   	{
+      $player_id = $1;
   	  last;
   	}
   }
@@ -103,33 +103,65 @@ sub retrieve($$$)
       $round_number = 0;
     }
 
-    my $game_name = join ".", ($date, $game_tourney_id, $round_number, $tourney_name, $lexicon, $id, "html");
-
-  	my $game_url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX . $id;
+    # Check if game needs to be downloaded
     $count++;
     my $num_str = "$count of $games_to_download:";
-    if ($option eq "update" && -e $dir . "/" . $game_name)
-    {
-      if ($verbose) {print "$num_str Game $game_url already exists in the directory\n";}
-      next;
-    }
+
     if ($tourney_id && $tourney_id ne $game_tourney_id)
     {
-      if ($verbose) {print "$num_str Game $game_url wasn't played in the specified tournament\n";}
+      if ($verbose) {print "$num_str Game $id wasn't played in the specified tournament\n";}
       next;
     }
-    if ($tourney_name eq "noname" && uc $tourney_or_casual eq 'T')
+    if ($tourney_name eq Constants::NON_TOURNAMENT_GAME && uc $tourney_or_casual eq 'T')
     {
-      if ($verbose) {print "$num_str Game $game_url is not a tournament game\n";}
+      if ($verbose) {print "$num_str Game $id is not a tournament game\n";}
       next;
     }
-    if ($tourney_name ne "noname" && uc $tourney_or_casual eq 'C')
+    if ($tourney_name ne Constants::NON_TOURNAMENT_GAME && uc $tourney_or_casual eq 'C')
     {
-      if ($verbose) {print "$num_str Game $game_url is a tournament game\n";}
+      if ($verbose) {print "$num_str Game $id is a tournament game\n";}
       next;
     }
-  	system "wget $game_url -O $dir/$game_name >/dev/null 2>&1";
-    if ($verbose) {print "$num_str Downloaded game $game_url as $game_name to $dir\n";}
+
+    my $html_game_name = "$id.html";
+
+  	my $html_game_url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX . $id;
+
+  	system "wget $html_game_url -O $dir/$html_game_name >/dev/null 2>&1";
+    my $gcg_url_suffix  = '';
+    my $player_one_name = '';
+    my $player_two_name = '';
+    open(ANNOHTML, '<', "$dir/$html_game_name");
+    while(<ANNOHTML>)
+    {
+      if (/href=.(annotated.selfgcg.\d+.anno\d+.gcg)./)
+      {
+        $gcg_url_suffix = $1;
+      }
+      if (/(.*)<a.*vs.([^<]*)</)
+      {
+        $player_one_name = $1;
+        $player_two_name = $2;
+        $player_one_name =~ s/^\s+|\s+$//g;
+        $player_two_name =~ s/^\s+|\s+$//g;
+        $player_one_name =~ s/ /_/g;
+        $player_two_name =~ s/ /_/g;
+        $player_one_name =~ s/'//g;
+        $player_two_name =~ s/'//g;
+      }
+    }
+    system "rm $dir/$html_game_name";
+
+    my $gcg_name = join ".", ($date, $game_tourney_id, $round_number, $tourney_name, $lexicon, $id, $player_one_name, $player_two_name, "gcg");
+    # Move this check to before downloading
+    if ($option eq "update" && -e $dir . "/" . $gcg_name)
+    {
+      if ($verbose) {print "$num_str Game $gcg_name already exists in the directory\n";}
+      next;
+    }
+    my $gcg_url = $cross_tables_url . $gcg_url_suffix;
+    system "wget $gcg_url -O $dir/$gcg_name >/dev/null 2>&1";
+    if ($verbose) {print "$num_str Downloaded game $gcg_name to $dir\n";}
   }
 }
 1;

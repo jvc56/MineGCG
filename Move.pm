@@ -213,7 +213,7 @@ sub isTripleTriple($)
 
   my $this_player = shift;
 
-  if($this_player != $this->{'turn'})
+  if($this_player != $this->{'turn'} || $this->{'play_type'} ne Constants::PLAY_TYPE_WORD)
   {
   	return 0;
   }
@@ -244,12 +244,12 @@ sub isTripleTriple($)
 sub toString()
 {
   my $this = shift;
-
-  my $loc = $this->getAlphanumericLocation();
-  if ($this->{'play_type'} ne Constants::PLAY_TYPE_WORD)
+  my $loc = $this->{'play_type'};
+  if ($this->{'play_type'} eq Constants::PLAY_TYPE_WORD)
   {
-  	$loc = $this->{'play_type'};
-  } 
+    $loc = $this->getAlphanumericLocation();
+  }
+
   my $ch = '';
   if ($this->{'challenge_lost'})
   {

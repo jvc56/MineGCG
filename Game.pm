@@ -15,222 +15,257 @@ sub new($$)
 {
   my $this = shift;
 
-  my $filename         = shift;
-  my $this_player_name = shift;
-  my $lexicon_ref      = shift;
+  my $filename        = shift;
+  my $player_is_first = shift;
+  my $lexicon_ref     = shift;
+
+  my $player_one_real_name = shift;
+  my $player_two_real_name = shift;
 
   my $player_one_name;
   my $player_two_name;
   my @moves;
   my $turn_number = 1;
-  my $player_one_prev_total = 0;
-  my $player_two_prev_total = 0;
+  my $player_one_total_after_move = 0;
+  my $player_two_total_after_move = 0;
   my $is_tourney_game = 0;
 
   my @moves_removed = ();
-  open(GAMEHTML, '<', $filename);
-  while(<GAMEHTML>)
+  open(GCG, '<', $filename);
+  while(<GCG>)
   {
     #print $_;
-    chomp $_;
     # Find who goes first and second
-    if (/(.*)<a.*vs.([^<]*)</)
+    if (/#player1\s([^\s]+)\s/)
     {
       $player_one_name = $1;
-      $player_two_name = $2;
-      $player_one_name =~ s/^\s+|\s+$//g;
-      $player_two_name =~ s/^\s+|\s+$//g;
-      #print "Player 1: $player_one_name\nPlayer 2: $player_two_name\n";
+      $player_one_name =~ s/_/ /g;
+      #print "Player One: $player_one_name\n";
+    }
+    elsif (/#player2\s([^\s]+)\s/)
+    {
+      $player_two_name = $1;
+      $player_two_name =~ s/_/ /g;
+      #print "Player Two: $player_two_name\n";
     }
     # Move
-    elsif (/Array\( (\d+), '(.*)', (\d+), (\d+), (\d+), (\d+), '(.*)', (\d+), (\d+), (\d+), \['?(.*?)'?\] \)/)
+    elsif (/>([^:]+):\s?([^\s]+)?\s?([^\s]+)?\s?([^\s]+)?\s([^\s]+)\s([^\s]+)/)
     {
-      #printf "%d, %s, %d, %d, %d, %d, %s, %d, %d, %d, %s\n", $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11;
+      # >Arie: DEESSUW C11 .EE +14 138
+      #printf "%s, %s, %s, %s, %s, %s\n", $1, $2, $3, $4, $5, $6;
       #print "$_\n";
-      my $play = $2;
-      if (!$play)
-      {
-        next;
-      }
-      my $zero_index_row = $3;
-      my $zero_index_column = $4;
-      my $vertical = $5;
-      my $rack = $7;
-      my $player_turn = $8;
-      my $player_one_total_after_move = $9;
-      my $player_two_total_after_move = $10;
-      my $play_type = Constants::PLAY_TYPE_WORD;
-      my $challenge_lost = 0;
-      my $challenge_points = 0;
-      my $out_points = 0;
-      my $comment = $11;
-      my $last_name = '';
+      my $name  = $1;
+      my $rack  = $2;
+      my $loc   = $3;
+      my $play  = $4;
+      my $score = $5;
+      my $total = $6;
+
+      $name =~ s/_/ /g;
+      if (!$play){$play = '';}
+      my $temp_score = $score;
+      $score =~ s/[\+-]//g; # Lazy way to get rid of '+'
+
+      #my $turn_number;
+      #my $play;
+      #my $score;
+      my $zero_index_row;
+      my $zero_index_column;
+      my $vertical;
+      #my $rack;
+      my $player_turn;
+      my $play_type;
+      my $challenge_lost;
+      my $challenge_points;
+      my $out_points;
+      my $comment;
+      my $last_name = $name;
 
 
-      # player_one's turn
-      my $score;
-      if (!$player_turn)
+      if ($name eq $player_one_name)
       {
-      	$score = $player_one_total_after_move - $player_one_prev_total;
+        $player_turn = 1;
       }
       else
       {
-       	$score = $player_two_total_after_move - $player_two_prev_total;     	
+        $player_turn = 0;
       }
 
-      # Unsuccessful Collins challenge
-      if ($play eq '---' && !$rack)
+
+      # Determine 6 pass
+      #print "THE SCORE: $score\n";
+      if (!$rack && !$play)
       {
-      	# player1's turn
-      	#print "A CHALLENGE: $_\n";
-      	my $prev_score;
-      	if ($player_turn)
-      	{
-          $moves[-1]{'challenge_points'} = $player_one_total_after_move - $player_one_prev_total;
-          #print "Player 1's turn\n";
-          #print "Current total: $player_one_total_after_move\n";
-          #print "Previous total: $player_one_prev_total\n";
-      	}
-      	else
-      	{
-          $moves[-1]{'challenge_points'} = $player_two_total_after_move - $player_two_prev_total;
-      	}
-        $moves[-1]{'player_one_total'} = $player_one_total_after_move;
-        $moves[-1]{'player_two_total'} = $player_two_total_after_move;
-        $moves[-1]{'score'} += $moves[-1]{'challenge_points'};
-        push @moves_removed, 1;
-      	next;
-      }
-      # Successful Challenge
-      if ($play =~ /^-chl-/)
-      {
-        $moves[-1]{'challenge_lost'} = 1;
-        $moves[-1]{'player_one_total'} = $player_one_total_after_move;
-        $moves[-1]{'player_two_total'} = $player_two_total_after_move;
-        $moves[-1]{'score'} = 0;
-        push @moves_removed, 1;
+        #print "OUTplay\n";
+        if ($player_turn)
+        {
+          $moves[-1]->{'player_one_total'} = $total;
+        }
+        else
+        {
+          $moves[-1]->{'player_two_total'} = $total;
+        }
+        $moves[-1]->{'score'} += $score;
+        $moves[-1]->{'out_points'} = $score;
         next;
       }
+      elsif ($temp_score =~ /\+-/)
+      {
+        #print "\n\nA SIX PASS\n\n";
+        my $rack_value = 0;
+        my @rack_array = split //, $moves[-2]->{'rack'};
+        foreach my $tile (@rack_array)
+        {
+          #print "THE TILE: $tile\n";
+          $rack_value += Tile->charToValue($tile);
+        }
+        #print "THE VALUE: $rack_value\n";
+        #print "The total: $total\n";
+        #print "The score: $score\n";
+        #print Dumper($moves[-1]);
+        if ($turn_number % 2 == 0)
+        {
+          $moves[-1]->{'player_one_total'} = $total;
+          $moves[-1]->{'player_two_total'} -= $rack_value;
+        }
+        else
+        {
+          $moves[-1]->{'player_two_total'} = $total;
+          $moves[-1]->{'player_one_total'} -= $rack_value;
+        }
+        #print Dumper($moves[-1]);
+        next;
+      }
+      # Determine verticalness, row index, and column index
 
-      my $move = Move->new( $turn_number,
-      	                    $play,
-      	                    $score,
-      	                    $zero_index_row,
-      	                    $zero_index_column,
-      	                    $vertical,
-      	                    $rack,
-      	                    $player_turn,
-      	                    $player_one_total_after_move,
-      	                    $player_two_total_after_move,
-      	                    $play_type,
-      	                    $challenge_lost,
-      	                    $challenge_points,
-      	                    $out_points,
-      	                    $comment,
-                            $last_name );
+      elsif ($play ne '')
+      {
+        #print "A play\n";
+        my $column_letter;
+        my $row_number;
+        my @loc_array = split //, $loc;
+        $play_type = Constants::PLAY_TYPE_WORD;
+        if ($loc_array[0] =~ /\d/)
+        {
+          $vertical = 0;
+          $column_letter = uc pop @loc_array;
+          $row_number = join "", @loc_array;
+        }
+        else
+        {
+          $vertical = 1;
+          $column_letter = uc shift @loc_array;
+          $row_number = join "", @loc_array;
+        }
+        my $column_index_mapping_ref = Constants::COLUMN_INDEX_MAPPING;
+        $zero_index_row = $row_number - 1;
+        $zero_index_column = $column_index_mapping_ref->{$column_letter};
+      }
+      # If a play wasn't made then a word was challenged off, a challenge lost, or exchange made
+      else
+      {
+        #print "Something else\n";
+        if ($loc eq "--")
+        {
+          #print "Play challenged off\n";
+          $moves[-1]->{'challenge_lost'} = 1;
+          if ($player_turn)
+          {
+            $player_one_total_after_move = $total;
+          }
+          else
+          {
+            $player_two_total_after_move = $total;
+          }
+          next;
+        }
+        elsif ($loc eq "-")
+        {
+          #print "challenge lost in TWL or a pass, can't tell :/\n";
+          $play_type = Constants::PLAY_TYPE_PASS;
+          # A best guess at what is a pass and what is an unsuccessful challenge
+          # They are indistinguishable in GCGs
+          if ($moves[-1]->{'play_type'} eq Constants::PLAY_TYPE_WORD && $filename =~ /TWL/)
+          {
+            $challenge_lost = 1;
+          }
+
+        }
+        elsif ($loc eq "(challenge)")
+        {
+          #print "challenge lost in CSW\n";
+          $moves[-1]->{'challenge_points'} = $score;
+          $moves[-1]->{'score'} += $score;
+          if ($player_turn)
+          {
+            $player_one_total_after_move = $total;
+          }
+          else
+          {
+            $player_two_total_after_move = $total;
+          }
+          next;
+        }
+        else
+        {
+          #print "EXCHANGE\n";
+          $play_type = Constants::PLAY_TYPE_EXCHANGE;
+          my @a = split //, $loc;
+          my $exchanged_tiles = join "", (shift @a);
+          $play = $exchanged_tiles;
+          # An exchange was made
+        }
+      }
+      # Update total score
+      if ($player_turn)
+      {
+        $player_one_total_after_move = $total;
+      }
+      else
+      {
+        $player_two_total_after_move = $total;
+      }
+      #print "FInal scores: $player_one_total_after_move - $player_two_total_after_move\n";
+      my $move = Move->new(   
+                            $turn_number,
+                            $play,
+                            $score,
+                            $zero_index_row,
+                            $zero_index_column,
+                            $vertical,
+                            $rack,
+                            $player_turn,
+                            $player_one_total_after_move,
+                            $player_two_total_after_move,
+                            $play_type,
+                            $challenge_lost,
+                            $challenge_points,
+                            $out_points,
+                            $comment,
+                            $last_name
+                        );
       push @moves, $move;
       $turn_number++;
-      push @moves_removed, 0;
-      $player_one_prev_total = $player_one_total_after_move;
-      $player_two_prev_total = $player_two_total_after_move;
     }
-    # Detect passes and unsuccessful TWL Challenges
-    elsif (/id=.moveselectorlower(\d+). class=.moveselector.>Pass/)
+    else # assume all other regexes are notes capture notes
     {
-      my $index = $1 - 1;
-      my $sum = 0;
-      for (my $j = 0; $j < $index; $j++)
-      {
-      	$sum += $moves_removed[$j];
-      }
-      $index -= $sum;
-      $moves[$index]->setMoveType(Constants::PLAY_TYPE_PASS);
-      my $com = $moves[$index]->{'comment'};
-      # A best guess at what is a pass and what is an unsuccessful challenge
-      # They are indistinguishable on cross-tables
-      if (!($com =~ /pass/i ||
-         (length $moves[$index]->{'rack'}) <= 2) && !($index > 0 && $moves[$index-1]->{'play_type'} ne Constants::PLAY_TYPE_WORD))
-      {
-        $moves[$index]->{'challenge_lost'} = 1;
-      }
-    }
-    # Detect exchanges
-    elsif (/id=.moveselectorlower(\d+). class=.moveselector.>Exchange (\w+)/)
-    {
-      my $index = $1 - 1;
-      my $sum = 0;
-      for (my $j = 0; $j < $index; $j++)
-      {
-        $sum += $moves_removed[$j];
-      }
-      $index -= $sum;
-      $moves[$index]->setMoveType('exch');
-      $moves[$index]->setMovePlay($2);
-    }
-    if (/tourney.php/)
-    {
-      $is_tourney_game = 1;
+      $_ =~ s/#note//g;
+      $moves[-1]->{'comment'} .= $_;
     }
   }
-  if ($moves[-1]->{'play_type'} ne Constants::PLAY_TYPE_PASS)
-  {
-    $moves[-1]->{'out_points'} = $moves[-1]->{'challenge_points'};
-    $moves[-1]->{'challenge_points'} = 0;
-  }
-
+  #print "Moves:\n";
+  #print Dumper(\@moves);
   my $board = Board->new();
   $board->addMoves(\@moves);
-
-  if (
-        scalar @moves >= 6 &&
-        $moves[-1]->{'score'} == 0 &&
-        $moves[-2]->{'score'} == 0 &&
-        $moves[-3]->{'score'} == 0 &&
-        $moves[-4]->{'score'} == 0 &&
-        $moves[-5]->{'score'} == 0 &&
-        $moves[-6]->{'score'} == 0
-     )
-  {
-    my $last_rack_value = sum( (map {Tile->charToValue($_)} (split //, $moves[-1]->{'rack'})) );
-    my $penult_rack_value = sum( map {Tile->charToValue($_)} (split //, $moves[-2]->{'rack'}) );
-    if (!$moves[-1]->{'turn'})
-    {
-      $board->{'player_one_total'} -= $last_rack_value;
-      $board->{'player_two_total'} -= $penult_rack_value;
-    }
-    else
-    {
-      $board->{'player_one_total'} -= $penult_rack_value;
-      $board->{'player_two_total'} -= $last_rack_value;
-    }
-  } 
-  
-  foreach my $move (@moves)
-  {
-    # Set names
-    my $this_move_player_name = $player_one_name;
-    if ($move->{'turn'})
-    {
-      $this_move_player_name = $player_two_name;
-    }
-    $this_move_player_name =~ /([^\s]*)$/;
-  }
-
-
-  my $play_num = 0;
-  if ($this_player_name eq $player_two_name)
-  {
-  	$play_num = 1;
-  }
 
   my %game = 
   (
     filename        => $filename,
     lexicon         => $lexicon_ref,
     tourney_game    => $is_tourney_game,
-  	this_player     => $play_num,
-  	player_one_name => $player_one_name,
-  	player_two_name => $player_two_name,
+  	this_player     => !$player_is_first,
+  	player_one_name => $player_one_real_name,
+  	player_two_name => $player_two_real_name,
     board           => $board,
     moves           => \@moves
   );
@@ -238,7 +273,8 @@ sub new($$)
   my $self = bless \%game, $this;
 
   $self->postConstruction();
-  
+  #print "Moves:\n";
+  #print Dumper($self->{'moves'});
   return $self;
 }
 
@@ -280,7 +316,7 @@ sub getNumWins($)
   }
   if ($p1s > $p2s)
   {
-    if (!$player)
+    if ($player)
     {
       return 1;
     }
@@ -288,7 +324,7 @@ sub getNumWins($)
   }
   if ($p1s < $p2s)
   {
-  	if (!$player)
+  	if ($player)
   	{
   	  return 0;
   	}
@@ -305,7 +341,7 @@ sub getScore($)
   my $board = $this->{'board'};
   my $p1s = $board->{'player_one_total'};
   my $p2s = $board->{'player_two_total'};
-  if (!$player)
+  if ($player)
   {
     return $p1s;
   }

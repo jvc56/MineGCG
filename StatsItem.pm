@@ -9,7 +9,7 @@ use Data::Dumper;
 use lib '.';
 use Constants;
 
-sub new()
+sub new($$)
 {
   my $this = shift;
 

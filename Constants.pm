@@ -5,6 +5,7 @@ package Constants;
 use warnings;
 use strict;
 
+use constant CROSS_TABLES_URL                 => 'http://www.cross-tables.com/';
 use constant QUERY_URL_PREFIX                 => 'http://www.cross-tables.com/players.php?query=';
 use constant ANNOTATED_GAMES_URL_PREFIX       => 'http://www.cross-tables.com/anno.php?p=';
 use constant SINGLE_ANNOTATED_GAME_URL_PREFIX => 'http://www.cross-tables.com/annotated.php?u=';
@@ -76,6 +77,25 @@ use constant INDEX_COLUMN_MAPPING =>
     12 => 'M',
     13 => 'N',
     14 => 'O'
+};
+
+use constant COLUMN_INDEX_MAPPING =>
+{
+    A => 0,
+    B => 1,
+    C => 2,
+    D => 3,
+    E => 4,
+    F => 5,
+    G => 6,
+    H => 7,
+    I => 8,
+    J => 9,
+    K => 10,
+    L => 11,
+    M => 12,
+    N => 13,
+    O => 14
 };
 
 use constant NO_CHALLENGE          => 'No Challenge';
