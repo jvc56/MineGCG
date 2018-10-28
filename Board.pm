@@ -4,6 +4,7 @@ package Board;
 
 use warnings;
 use strict;
+use Data::Dumper;
 use lib '.';
 use Square;
 use Tile;
@@ -30,28 +31,14 @@ sub new()
   return $self;
 }
 
-sub placeNewTile($$$$$$)
+sub placeNewTile($$$$)
 {
   my $this = shift;
 
   my $c = shift;
-  my $row = shift;
-  my $column = shift;
-  my $displacement = shift;
-  my $vertical = shift;
+  my $pos = shift;
   my $turn = shift;
   my $play_number = shift;
-
-  my $pos = $row*Constants::BOARD_WIDTH + $column;
-
-  if ($vertical)
-  {
-    $pos += $displacement * Constants::BOARD_WIDTH;
-  }
-  else
-  {
-    $pos += $displacement;
-  }
 
   my $tile = Tile->new($c, $turn, $play_number);
 
@@ -63,6 +50,15 @@ sub addMoves($)
 
   my $move_array_ref = shift;
   my @moves = @{$move_array_ref};
+  if (!$this)
+  {
+    print "this is uninited\n";
+  }
+  if (!$moves[0])
+  {
+    print "moves uninited\n";
+    print Dumper(\@moves);
+  }
   if ($this->{'moves_completed'} + 1 != $moves[0]->{'number'})
   {
     print "Could not add moves: move number incorrect";
@@ -83,9 +79,18 @@ sub addMoves($)
 
       foreach my $c (split //, $word)
       {
-        if ($c ne '.')
+        my $pos = $row*Constants::BOARD_WIDTH + $column;
+        if ($vertical)
         {
-          $this->placeNewTile($c, $row, $column, $displacement, $vertical, $turn, $play_number);
+          $pos += $displacement * Constants::BOARD_WIDTH;
+        }
+        else
+        {
+          $pos += $displacement;
+        }
+        if ($c ne '.' && !$this->{'grid'}[$pos]->{'has_tile'})
+        {
+          $this->placeNewTile($c, $pos, $turn, $play_number);
         }
         $displacement++;
       }

@@ -29,12 +29,13 @@ sub new($$)
   my $player_one_total_after_move = 0;
   my $player_two_total_after_move = 0;
   my $is_tourney_game = 0;
+  my $valid = 1;
 
   my @moves_removed = ();
   open(GCG, '<', $filename);
   while(<GCG>)
   {
-    #print $_;
+    chomp $_;
     # Find who goes first and second
     if (/#player1\s([^\s]+)\s/)
     {
@@ -48,23 +49,30 @@ sub new($$)
       $player_two_name =~ s/_/ /g;
       #print "Player Two: $player_two_name\n";
     }
+
+    elsif (!$_ || !$player_one_name || !$player_two_name)
+    {
+      next;
+    }
+
     # Move
     elsif (/>([^:]+):\s?([^\s]+)?\s?([^\s]+)?\s?([^\s]+)?\s([^\s]+)\s([^\s]+)/)
     {
+
       # >Arie: DEESSUW C11 .EE +14 138
-      #printf "%s, %s, %s, %s, %s, %s\n", $1, $2, $3, $4, $5, $6;
-      #print "$_\n";
       my $name  = $1;
       my $rack  = $2;
       my $loc   = $3;
       my $play  = $4;
       my $score = $5;
       my $total = $6;
+      #printf "%s, %s, %s, %s, %s, %s\n", $name, $rack, $loc, $play, $score, $total;
+      #print "$_\n";
 
       $name =~ s/_/ /g;
       if (!$play){$play = '';}
       my $temp_score = $score;
-      $score =~ s/[\+-]//g; # Lazy way to get rid of '+'
+      $score =~ s/[\+-]//g; 
 
       #my $turn_number;
       #my $play;
@@ -94,9 +102,9 @@ sub new($$)
 
       # Determine 6 pass
       #print "THE SCORE: $score\n";
-      if (!$rack && !$play)
+      if (/\(/)
       {
-        #print "OUTplay\n";
+        #print "OUTPLAY\n";
         if ($player_turn)
         {
           $moves[-1]->{'player_one_total'} = $total;
@@ -108,6 +116,23 @@ sub new($$)
         $moves[-1]->{'score'} += $score;
         $moves[-1]->{'out_points'} = $score;
         next;
+      }
+      elsif ($play =~ /-\w+/ || $loc =~ /-\w+/)
+      {
+        #print "EXCHANGE\n";
+        #printf "%s, %s, %s, %s, %s, %s\n", $name, $rack, $loc, $play, $score, $total;
+        #print "$_\n";
+        $play_type = Constants::PLAY_TYPE_EXCHANGE;
+        if ($loc && $loc =~ /-/)
+        {
+          $play = $loc;
+        }
+        my @a = split //, $play;
+        shift @a;
+        my $exchanged_tiles = join "", @a;
+        $play = $exchanged_tiles;
+        #print "the play: $play\n";
+        # An exchange was made
       }
       elsif ($temp_score =~ /\+-/)
       {
@@ -165,9 +190,13 @@ sub new($$)
       else
       {
         #print "Something else\n";
+        #printf "%s, %s, %s, %s, %s, %s\n", $name, $rack, $loc, $play, $score, $total;
+        #print "$_\n";
         if ($loc eq "--")
         {
           #print "Play challenged off\n";
+          #print "game: $filename\n";
+
           $moves[-1]->{'challenge_lost'} = 1;
           if ($player_turn)
           {
@@ -208,12 +237,11 @@ sub new($$)
         }
         else
         {
-          #print "EXCHANGE\n";
-          $play_type = Constants::PLAY_TYPE_EXCHANGE;
-          my @a = split //, $loc;
-          my $exchanged_tiles = join "", (shift @a);
-          $play = $exchanged_tiles;
-          # An exchange was made
+          #printf "%s, %s, %s, %s, %s, %s\n", $name, $rack, $loc, $play, $score, $total;
+          #print "$_\n";
+          #print "the play: $play\n";
+          #print "filename $filename\n";
+          die "Uncaptured GCG sequence\n";
         }
       }
       # Update total score
@@ -247,17 +275,23 @@ sub new($$)
       push @moves, $move;
       $turn_number++;
     }
-    else # assume all other regexes are notes capture notes
+    elsif(/(^#note)|(^[^#])/) # assume all other regexes are notes capture notes
     {
       $_ =~ s/#note//g;
-      $moves[-1]->{'comment'} .= $_;
+      $moves[-1]->{'comment'} .= $_ . "\n";
     }
   }
-  #print "Moves:\n";
-  #print Dumper(\@moves);
-  my $board = Board->new();
-  $board->addMoves(\@moves);
 
+  my $board = Board->new();
+  
+  if (@moves)
+  {
+    $board->addMoves(\@moves);
+  }
+  else
+  {
+    $valid = 0;
+  }
   my %game = 
   (
     filename        => $filename,
@@ -267,7 +301,8 @@ sub new($$)
   	player_one_name => $player_one_real_name,
   	player_two_name => $player_two_real_name,
     board           => $board,
-    moves           => \@moves
+    moves           => \@moves,
+    valid           => $valid
   );
 
   my $self = bless \%game, $this;
@@ -401,6 +436,7 @@ sub getPhoniesFormed($)
     {
       next;
     }
+
     my $move_phonies = '';
     my $readable_play = $this->readableMove($move);
     my $caps_play = $this->readableMoveCapitalized($move);
@@ -680,6 +716,7 @@ sub readableMoveCapitalized($)
       my $c = $move->{'column'};
       my $v = $move->{'vertical'};
       my $pos = $r*Constants::BOARD_WIDTH + $c;
+
       if (!$v)
       {
         $pos += $i;
@@ -731,11 +768,6 @@ sub postConstruction()
     my @words_made = ();
     for (my $i = 0; $i < scalar @play_array; $i++)
     {
-      my $char = $play_array[$i];
-      if ($char eq ".")
-      {
-        next;
-      }
       my $pos = $r*Constants::BOARD_WIDTH + $c;
       my $inc;
       my $original_row = -1;
@@ -750,6 +782,21 @@ sub postConstruction()
         $inc = 1;
         $original_row = $r + $i;
       }
+
+      my $char = $play_array[$i];
+      my $tile = $this->{'board'}->{'grid'}[$pos]->{'tile'};
+      # if (!$tile)
+      # {
+      #   print "the board: \n";
+      #   print $this->toString();
+      #   print "the play: $play\n";
+      #   print "the pos: $pos\n";
+      # }
+      if ($char eq "." || ($tile && $play_number != $tile->{'play_number'}))
+      {
+        next;
+      }
+
       my @formed_word = ($char);
       my $bi = $pos - $inc;
       my $fi = $pos + $inc;
@@ -815,7 +862,7 @@ sub toString()
   my $this = shift;
 
   my $number_column = 3;
-  my $c1 = 27;
+  my $c1 = 40;
   my $s;
   my $p1 = $this->{'player_one_name'};
   my $p2 = $this->{'player_two_name'};
@@ -828,7 +875,7 @@ sub toString()
     {
       $s .= sprintf "%-".$number_column."s", ( (int ($i / 2)) + 1);
     }
-  	$s .= sprintf "%-".$c1."s", $this->{'moves'}[$i]->toString();
+  	$s .= sprintf "%-".$c1."s", $this->{'moves'}[$i]->toString($this->readableMove($this->{'moves'}[$i]));
     if ($i % 2 == 1)
     {
       $s .= "\n";

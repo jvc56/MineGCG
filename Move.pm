@@ -244,10 +244,15 @@ sub isTripleTriple($)
 sub toString()
 {
   my $this = shift;
+  my $readable_move = shift;
+
+  my $printed_play = $this->{'play'};
+
   my $loc = $this->{'play_type'};
   if ($this->{'play_type'} eq Constants::PLAY_TYPE_WORD)
   {
     $loc = $this->getAlphanumericLocation();
+    $printed_play = $readable_move;
   }
 
   my $ch = '';
@@ -255,7 +260,7 @@ sub toString()
   {
   	$ch = ' (Lost challenge) ';
   }
-  my $return_string = sprintf "%s %s +%d%s", $loc, $this->{'play'}, $this->{'score'}, $ch;
+  my $return_string = sprintf "%s %s +%d%s", $loc, $printed_play, $this->{'score'}, $ch;
   return $return_string;
 }
 1;

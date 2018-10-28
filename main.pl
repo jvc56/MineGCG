@@ -53,6 +53,7 @@ if ($reset)
   $option = "reset";
 }
 
+$name =~ s/'//g;
 retrieve($name, $dir, $option, $tid, $cort, $verbose);
 mine($name, $dir, $cort, $verbose, $tid);
 

@@ -79,8 +79,9 @@ sub retrieve($$$$$$)
   # the player's annotated games
   my $games_to_download = (scalar @game_ids) / 6;
   my $count = 0;
-  while (@game_ids)
+  OUTER: while (@game_ids)
   {
+
     #game_id, tourney_id, tourney_name, date, round_number, dictionary
   	my $id              = shift @game_ids;
     my $game_tourney_id = shift @game_ids;
@@ -89,6 +90,29 @@ sub retrieve($$$$$$)
     my $date            = shift @game_ids;
     my $round_number    = shift @game_ids;
     my $lexicon         = shift @game_ids;
+
+    $count++;
+    my $num_str = (sprintf "%-4s", $count) . " of $games_to_download:";
+
+    opendir my $games_dir, $dir or die "Cannot open directory: $!";
+    my @game_files = readdir $games_dir;
+    closedir $games_dir;
+    foreach my $game_file_name (@game_files)
+    {
+      if ($game_file_name eq "." || $game_file_name eq "..")
+      {
+        next;
+      }
+      my @items = split /\./, $game_file_name;
+      #print "items: ";
+      #print Dumper(\@items);
+      #print "id: $id\n";
+      if ($items[5] eq $id)
+      {
+        if ($verbose) {print "$num_str Game $game_file_name already exists in the directory\n";}
+        next OUTER;
+      }
+    }
 
     if (!$tourney_name)
     {
@@ -104,8 +128,7 @@ sub retrieve($$$$$$)
     }
 
     # Check if game needs to be downloaded
-    $count++;
-    my $num_str = "$count of $games_to_download:";
+
 
     if ($tourney_id && $tourney_id ne $game_tourney_id)
     {
@@ -153,12 +176,6 @@ sub retrieve($$$$$$)
     system "rm $dir/$html_game_name";
 
     my $gcg_name = join ".", ($date, $game_tourney_id, $round_number, $tourney_name, $lexicon, $id, $player_one_name, $player_two_name, "gcg");
-    # Move this check to before downloading
-    if ($option eq "update" && -e $dir . "/" . $gcg_name)
-    {
-      if ($verbose) {print "$num_str Game $gcg_name already exists in the directory\n";}
-      next;
-    }
     my $gcg_url = $cross_tables_url . $gcg_url_suffix;
     system "wget $gcg_url -O $dir/$gcg_name >/dev/null 2>&1";
     if ($verbose) {print "$num_str Downloaded game $gcg_name to $dir\n";}

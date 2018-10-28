@@ -122,8 +122,13 @@ sub mine($$$$)
         return;
       }
     }
+    #print "$full_game_file_name\n";
     my $game = Game->new($full_game_file_name, $player_is_first, $lexicon_ref, $player_one_name, $player_two_name);
-
+    if (!$game->{'valid'})
+    {
+      print "No moves found for $full_game_file_name, marking as invalid\n";
+      next;
+    }
     if ($verbose)
     {
       print "\nData structures for $full_game_file_name\n\n";
@@ -142,8 +147,10 @@ sub mine($$$$)
   }
   else
   {
-    print "No games found in " . abs_path($dir_name) . "\n";
-    print "To update or reset this directory, use the -u or -r flags respectively\n\n";
+    print "\nNo valid games found in " . abs_path($dir_name) . "\n";
+    print "To update or reset this directory, use the -u or -r flags respectively\n";
+    print "Invalid games are usually the result of malformed GCG files\n";
+    print "Report a bug if you think valid GCG files are being marked as invalid\n\n";
   }
 }
 
