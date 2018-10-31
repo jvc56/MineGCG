@@ -102,7 +102,22 @@ sub new($$)
 
       # Determine 6 pass
       #print "THE SCORE: $score\n";
-      if (/\(/)
+      if (/\(challenge\)/)
+      {
+        #print "challenge lost in CSW\n";
+        $moves[-1]->{'challenge_points'} = $score;
+        $moves[-1]->{'score'} += $score;
+        if ($player_turn)
+        {
+          $player_one_total_after_move = $total;
+        }
+        else
+        {
+          $player_two_total_after_move = $total;
+        }
+        next;
+      }
+      elsif (/\(/)
       {
         #print "OUTPLAY\n";
         if ($player_turn)
@@ -219,21 +234,6 @@ sub new($$)
             $challenge_lost = 1;
           }
 
-        }
-        elsif ($loc eq "(challenge)")
-        {
-          #print "challenge lost in CSW\n";
-          $moves[-1]->{'challenge_points'} = $score;
-          $moves[-1]->{'score'} += $score;
-          if ($player_turn)
-          {
-            $player_one_total_after_move = $total;
-          }
-          else
-          {
-            $player_two_total_after_move = $total;
-          }
-          next;
         }
         else
         {
