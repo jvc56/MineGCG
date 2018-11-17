@@ -21,28 +21,32 @@ use Cwd qw(abs_path);
 
 sub mine($$$$)
 {
+  my $dir_name   = Constants::GAME_DIRECTORY_NAME;
+  my $names_dir  = Constants::NAMES_DIRECTORY_NAME;
+
   my $player_name = shift;
-  my $dir_name    = shift;
   my $cort        = shift;
   my $verbose     = shift;
   my $tourney_id  = shift;
 
   print "\nProcessing game data...\n\n";
 
-  opendir my $dir, $dir_name or die "Cannot open directory: $!";
-  my @game_files = readdir $dir;
-  closedir $dir;
- 
-  @game_files = sort {$b cmp $a} @game_files;
-
   my $all_stats = Stats->new();
   my $single_game_stats = Stats->new();
   my %tourney_game_hash;
   my $at_least_one = 0;
-  while (@game_files)
+
+  my $sanitized_name = $player_name;
+  $sanitized_name =~ s/ /_/g;
+  $sanitized_name =~ s/'//g; # Name is now no longer raw
+  
+  open(PLAYER_INDEXES, '<', "$names_dir/$sanitized_name.txt");
+
+  while (<PLAYER_INDEXES>)
   {
-    my $game_file_name = shift @game_files;
-    if ($game_file_name eq '.' || $game_file_name eq '..'){next;}
+    chomp $_;
+    my $game_file_name = $_;
+    if (!$game_file_name){next;}
 
     my @meta_data = split /\./, $game_file_name;
     my $date            = $meta_data[0];
@@ -59,7 +63,11 @@ sub mine($$$$)
 
     if (($tourney_id && $game_tourney_id ne $tourney_id) || !$ext || $ext ne "gcg"){next;}
     my $full_game_file_name = $dir_name . '/' . $game_file_name;
-    
+    if (!(-e $full_game_file_name))
+    {
+      print "No GCG found for $full_game_file_name, rerun with the -u option to correct\n";
+      next;
+    }
     my $is_tourney_game = $tourney_name ne Constants::NON_TOURNAMENT_GAME;
 
     # Check for casual/club or only tournament games

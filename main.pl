@@ -4,7 +4,6 @@ use warnings;
 use strict;
 use Getopt::Long;
 use Pod::Usage qw(pod2usage);
-use Cwd qw(abs_path getcwd);
 
 require "./retrieve_games.pl";
 require "./mine_games.pl";
@@ -14,7 +13,6 @@ my $update  = '';
 my $reset   = '';
 my $cort    = '';
 my $tid     = '';
-my $dir;
 my $name;
 
 my $man  = 0;
@@ -25,23 +23,11 @@ GetOptions (
             'reset'            => \$reset,
             'cort:s'           => \$cort,
             'tournament-id:s'  => \$tid,
-            'dir=s'            => \$dir,
             'name=s'           => \$name,
             'help|?'           => \$help
            );
 
-pod2usage(1) if $help || !$dir || !$name;
-
-my $cp = getcwd();
-my $gp = abs_path($dir);
-
-if ($cp eq $gp)
-{
-  print "\nDo not use the current directory for storing game files\n";
-  print "Specify a different directory, subdirectories are recommended\n";
-  print "For example ./games\n\n";
-  exit(0);
-}
+pod2usage(1) if $help || !$name;
 
 my $option = "";
 if ($update)
@@ -54,8 +40,8 @@ if ($reset)
 }
 
 $name =~ s/'//g;
-retrieve($name, $dir, $option, $tid, $cort, $verbose);
-mine($name, $dir, $cort, $verbose, $tid);
+retrieve($name, $option, $tid, $cort, $verbose);
+mine($name, $cort, $verbose, $tid);
 
 open (CMDOUT, "git fetch --dry-run 2>&1 |");
 my $response = '';
@@ -102,16 +88,13 @@ __END__
                          https://www.cross-tables.com/tourney.php?t=10353&div=1
 
                          Which has a tournament id of 10353
-
-   -d, --dir             full path name of the directory to which games
-                         will be stored
    -n, --name            name of the player whose games will be processed
                          (Must be in quotes, for example, "Matthew O'Connor")
 
  Example:
    The following command:
 
-     ./main.pl -n "Joshua Castellano" -d ./games -v -u
+     ./main.pl -n "Joshua Castellano" -v -u
 
    will download any of Joshua Castellano's annotated cross-tables.com
    games that do not exist in the directory ./games and print the statistics

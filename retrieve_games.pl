@@ -13,15 +13,22 @@ sub retrieve($$$$$$)
   my $annotated_games_url_prefix = Constants::ANNOTATED_GAMES_URL_PREFIX;
   my $annotated_games_page_name  = Constants::ANNOTATED_GAMES_PAGE_NAME;
   my $query_results_page_name    = Constants::QUERY_RESULTS_PAGE_NAME;
+  my $dir                        = Constants::GAME_DIRECTORY_NAME;
+  my $names_dir                  = Constants::NAMES_DIRECTORY_NAME;
 
   my $name              = shift;
-  my $dir               = shift;
   my $option            = shift;
   my $tourney_id        = shift;
   my $tourney_or_casual = shift;
   my $verbose           = shift;
 
-  if (!$option && -e $dir)
+  my $raw_name      = $name;
+  my $textfile_name = $name;
+  $textfile_name =~ s/ /_/g;
+  $textfile_name =~ s/'//g; # Name is now no longer raw
+  my $full_index_list_name = "$names_dir/$textfile_name.txt";
+
+  if (!$option && -e $full_index_list_name)
   {
     return;
   }
@@ -34,7 +41,6 @@ sub retrieve($$$$$$)
 
   # Prepare name for cross-tables query
   # by replacing ' ' with '+'
-  my $user_name = $name;
   $name =~ s/ /+/g;
   $name =~ s/'//g;
 
@@ -50,7 +56,7 @@ sub retrieve($$$$$$)
   	  last;
   	}
   }
-  if (!$player_id){print "No player named $user_name found\n"; return;}
+  if (!$player_id){print "No player named $raw_name found\n"; return;}
   # Use the player id to get the address of the annotated games page
   my $annotated_games_url = $annotated_games_url_prefix . $player_id;
 
@@ -67,19 +73,26 @@ sub retrieve($$$$$$)
     #game_id, tourney_id, tourney_name, date, round_number, dictionary
     push @game_ids, @matches;
   }
-  # Create the directory to store the game page htmls
+  # Create the directory to store the GCGs
   # if one doesn't already exist
   if (!(-e $dir && -d $dir))
   {
   	system "mkdir $dir";
     if ($verbose) {print "Created $dir\n";}
   }
+  # Create the directory to store the player index files
+  # if one doesn't already exist
+  if (!(-e $names_dir))
+  {
+    system "mkdir $names_dir";
+    if ($verbose) {print "Created $names_dir\n";}
+  }
 
   # Iterate through the annotated game ids to fetch all of
   # the player's annotated games
   my $games_to_download = (scalar @game_ids) / 6;
   my $count = 0;
-  OUTER: while (@game_ids)
+  while (@game_ids)
   {
 
     #game_id, tourney_id, tourney_name, date, round_number, dictionary
@@ -93,26 +106,6 @@ sub retrieve($$$$$$)
 
     $count++;
     my $num_str = (sprintf "%-4s", $count) . " of $games_to_download:";
-
-    opendir my $games_dir, $dir or die "Cannot open directory: $!";
-    my @game_files = readdir $games_dir;
-    closedir $games_dir;
-    foreach my $game_file_name (@game_files)
-    {
-      if ($game_file_name eq "." || $game_file_name eq "..")
-      {
-        next;
-      }
-      my @items = split /\./, $game_file_name;
-      #print "items: ";
-      #print Dumper(\@items);
-      #print "id: $id\n";
-      if ($items[5] eq $id)
-      {
-        if ($verbose) {print "$num_str Game $game_file_name already exists in the directory\n";}
-        next OUTER;
-      }
-    }
 
     if (!$tourney_name)
     {
@@ -176,9 +169,66 @@ sub retrieve($$$$$$)
     system "rm $dir/$html_game_name";
 
     my $gcg_name = join ".", ($date, $game_tourney_id, $round_number, $tourney_name, $lexicon, $id, $player_one_name, $player_two_name, "gcg");
-    my $gcg_url = $cross_tables_url . $gcg_url_suffix;
-    system "wget $gcg_url -O $dir/$gcg_name >/dev/null 2>&1";
-    if ($verbose) {print "$num_str Downloaded game $gcg_name to $dir\n";}
+
+    # Check if index exists
+    my $index_exists = 0;
+    if (-e $full_index_list_name)
+    {
+      open(PLAYER_INDEXES, '<', $full_index_list_name);
+      while (<PLAYER_INDEXES>)
+      {
+        chomp $_;
+        if ($_ eq $gcg_name)
+        {
+          $index_exists = 1;
+          last;
+        }
+      }
+    }
+
+    # Write the index if it doesn't exist
+    if (!$index_exists)
+    {
+      my $write_mode = '>>';
+      if (!(-e $full_index_list_name))
+      {
+        my $write_mode = '>';
+      }
+      open(my $fh, $write_mode, $full_index_list_name) or die "$!\n";
+      print $fh $gcg_name."\n";
+      close $fh;
+    }
+
+    # Check if file exists
+    my $file_exists = 0;
+    opendir my $games_dir, $dir or die "Cannot open directory: $!";
+    my @game_files = readdir $games_dir;
+    closedir $games_dir;
+    foreach my $game_file_name (@game_files)
+    {
+      if ($game_file_name eq "." || $game_file_name eq "..")
+      {
+        next;
+      }
+      my @items = split /\./, $game_file_name;
+      #print "items: ";
+      #print Dumper(\@items);
+      #print "id: $id\n";
+      if ($items[5] eq $id)
+      {
+        if ($verbose) {print "$num_str Game $game_file_name already exists\n";}
+        $file_exists = 1;
+        last;
+      }
+    }
+
+    # Get the file if it doesn't exist
+    if (!$file_exists)
+    {
+      my $gcg_url = $cross_tables_url . $gcg_url_suffix;
+      system "wget $gcg_url -O $dir/$gcg_name >/dev/null 2>&1";
+      if ($verbose) {print "$num_str Downloaded game $gcg_name to $dir\n";}
+    }
   }
 }
 1;

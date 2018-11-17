@@ -12,6 +12,8 @@ use constant SINGLE_ANNOTATED_GAME_URL_PREFIX => 'http://www.cross-tables.com/an
 use constant ANNOTATED_GAMES_PAGE_NAME        => 'anno_page.html';
 use constant QUERY_RESULTS_PAGE_NAME          => 'query_results.html';
 use constant NON_TOURNAMENT_GAME              => 'casual_or_club';
+use constant GAME_DIRECTORY_NAME              => './games';
+use constant NAMES_DIRECTORY_NAME             => './names';
 
 use constant STAT_ITEM_GAME        => 'GAME STATS';
 use constant STAT_ITEM_PLAYER      => 'YOUR STATS';
