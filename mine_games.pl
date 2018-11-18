@@ -28,6 +28,7 @@ sub mine($$$$)
   my $cort        = shift;
   my $verbose     = shift;
   my $tourney_id  = shift;
+  my $html        = shift;
 
   print "\nProcessing game data...\n\n";
 
@@ -151,7 +152,14 @@ sub mine($$$$)
   }
   if ($at_least_one)
   {
-    print $all_stats->toString();
+    if (!$html)
+    {
+      print $all_stats->toString();
+    }
+    else
+    {
+      print $all_stats->toStringHTML();
+    }
   }
   else
   {

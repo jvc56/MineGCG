@@ -145,5 +145,12 @@ sub toString()
   return $s; 
 }
 
+sub toStringHTML()
+{
+  my $this = shift;
+
+  return $this->toString() . "HTML OUTPUT\n";
+}
+
 1;
 
