@@ -4,8 +4,10 @@ use warnings;
 use strict;
 use Data::Dumper;
 require "./retrieve_games.pl";
+use lib '.';
+use Constants;
 
-
+my $wget_flags = Constants::WGET_FLAGS;
 my $players_by_country_prefix = 'https://www.cross-tables.com/bycountry.php?country=';
 my @countries = ('BRB', 'IND', 'MYS', 'CAN', 'USA');
 my $html_page_prefix = 'player_by_country_';
@@ -16,7 +18,7 @@ foreach my $country (@countries)
   my $html_page_name = $html_page_prefix . $country . 'html';
 
 
-  system "wget $url -O $html_page_name >/dev/null 2>&1";
+  system "wget $wget_flags $url -O $html_page_name >/dev/null 2>&1";
 
   my @player_names = ();
 

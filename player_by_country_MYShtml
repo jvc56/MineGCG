@@ -1,0 +1,378 @@
+<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01//EN'  'https://www.w3.org/TR/html4/strict.dtd'> 
+		<html>
+		<head>
+			<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+			<meta name="resource-type" content="document"> 
+			<meta name="description" content="Scrabble statistics, results, and tournament listings"> 
+			<meta name="keywords" content="scrabble, scrabble tiles, scrabble statistics, scrabble results, stats, tournaments, upcoming, players, competitive, games "> 
+            <meta property="og:title" content="cross-tables.com" />
+    		<meta property="og:type" content='website' />
+    		<meta property="og:url" content="http://www.cross-tables.com" />
+			<title>Top Ratings by Country - cross-tables.com</title>
+<script type='text/javascript' src=' yuibuild/yahoo-dom-event/yahoo-dom-event.js'></script>
+<link type='text/css' rel='stylesheet' href='yuibuild/reset-fonts-grids/reset-fonts-grids.css' >
+<link type='text/css' rel='stylesheet' href='yuibuild/grids/grids.css' >
+<link type='text/css' rel='stylesheet' href='yuibuild/assets/skins/sam/skin.css' >
+<link type='text/css' rel='stylesheet' href='yuibuild/assets/skins/sam/menu.css' >
+			
+				<link rel='stylesheet' type='text/css' href='xt.css'> 
+																<script type='text/javascript' src=' yuibuild/container/container_core-min.js'></script>
+<script type='text/javascript' src=' yuibuild/menu/menu-min.js'></script>
+<script type='text/javascript' src=' yuibuild/element/element-beta-min.js'></script>
+<script type='text/javascript' src=' yuibuild/button/button-min.js'></script>
+<script type='text/javascript' src=' yuibuild/utilities/utilities.js'></script>
+<script type='text/javascript' src=' yuibuild/connection/connection-min.js'></script>
+<script type='text/javascript' src=' yuibuild/container/container-min.js'></script>
+<script type='text/javascript' src=' yuibuild/autocomplete/autocomplete-min.js'></script>
+				<script type='text/javascript' src='xt.js'></script>
+				<script type='text/javascript' src='acplayer.js'></script>
+				<script type='text/javascript' src='nifty.js'></script>
+				<script>
+				  // This is called with the results from from FB.getLoginStatus().
+				  function statusChangeCallback(response) {
+				    console.log('statusChangeCallback');
+				    console.log(response);
+				    // The response object is returned with a status field that lets the
+				    // app know the current login status of the person.
+				    // Full docs on the response object can be found in the documentation
+				    // for FB.getLoginStatus().
+				    if (response.status === 'connected') {
+				      // Logged into your app and Facebook.
+				      testAPI();
+				    } else {
+				      // The person is not logged into your app or we are unable to tell.
+				      // document.getElementById('status').innerHTML = 'Please log ' +
+				      //   'into this app.';
+				    }
+				  }
+
+				  // This function is called when someone finishes with the Login
+				  // Button.  See the onlogin handler attached to it in the sample
+				  // code below.
+				  function checkLoginState() {
+				    FB.getLoginStatus(function(response) {
+				      statusChangeCallback(response);
+				    });
+				  }
+
+				  window.fbAsyncInit = function() {
+				    FB.init({
+				      appId      : '203920133011073',
+				      cookie     : true,  // enable cookies to allow the server to access 
+				                          // the session
+				      xfbml      : true,  // parse social plugins on this page
+				      version    : 'v2.8' // use graph api version 2.8
+				    });
+
+				    // Now that we've initialized the JavaScript SDK, we call 
+				    // FB.getLoginStatus().  This function gets the state of the
+				    // person visiting this page and can return one of three states to
+				    // the callback you provide.  They can be:
+				    //
+				    // 1. Logged into your app ('connected')
+				    // 2. Logged into Facebook, but not your app ('not_authorized')
+				    // 3. Not logged into Facebook and can't tell if they are logged into
+				    //    your app or not.
+				    //
+				    // These three cases are handled in the callback function.
+
+				    FB.getLoginStatus(function(response) {
+				      statusChangeCallback(response);
+				    });
+
+				  };
+
+				  // Load the SDK asynchronously
+				  (function(d, s, id) {
+				    var js, fjs = d.getElementsByTagName(s)[0];
+				    if (d.getElementById(id)) return;
+				    js = d.createElement(s); js.id = id;
+				    js.src = "https://connect.facebook.net/en_US/sdk.js";
+				    fjs.parentNode.insertBefore(js, fjs);
+				  }(document, 'script', 'facebook-jssdk'));
+
+				  // Here we run a very simple test of the Graph API after login is
+				  // successful.  See statusChangeCallback() for when this call is made.
+				  function testAPI() {
+				    console.log('Welcome!  Fetching your information.... ');
+				    FB.api('/me', function(response) {
+				      console.log('Successful login for: ' + response.name);
+				      //document.getElementById('status').innerHTML = 'Thanks for logging in, ' + response.name + '!';
+				    });
+				  }
+				</script>
+
+	
+	       <script type='text/javascript'>
+
+	            // Initialize and render the menu bar when it is available in the DOM
+	            YAHOO.util.Event.onContentReady('xtmenus', function () {
+
+	                // Instantiate and render the menu bar
+	                var oMenuBar = new YAHOO.widget.MenuBar('xtmenus', { autosubmenudisplay: true, showdelay: 0, hidedelay: 750, lazyload: true });
+
+	                /*
+	                     Call the "render" method with no arguments since the markup for 
+	                     this menu already exists in the DOM.
+	                */
+
+	                oMenuBar.render();
+
+	            });
+				
+				function loadcomplete()
+				{
+					initfindplayerdialog();
+					//focusfirst($selectfirst);
+				}
+
+			</script>
+				
+				<script type='text/javascript' src=' yuibuild/connection/connection-min.js'></script>
+			<script type="text/javascript">
+				YAHOO.util.Event.on(window, "load", startglowhandlers, { id: "xtdatatable", infotype: "player information", urlbase: "playerinfo" }); 
+			</script>				       <script type='text/javascript'>
+			function openfinddialog()
+			{
+				YAHOO.findplayerdialog.show();
+			}
+			
+			function initfindplayerdialog() 
+			{
+				// Define various event handlers for Dialog
+				var handlefindplayerCancel = function() {
+					this.cancel();
+
+				};
+				
+				// Make the dialog visible
+				YAHOO.util.Dom.setStyle('findplayerdialog', 'display', 'block');
+				
+				// Instantiate the Dialog
+				YAHOO.findplayerdialog = new YAHOO.widget.Dialog("findplayerdialog", 
+																			{ width : "350px",
+																			  visible : false, 
+																			  context: ['xtmenus', 'tl', 'bl'],
+																			  constraintoviewport : true,
+																			  buttons : [ { text:"Cancel", handler:handlefindplayerCancel } ],
+																			  effect:{effect:YAHOO.widget.ContainerEffect.FADE,duration:0.25},
+																			  postmethod: 'form'
+																			 } );
+				
+				var kl = new YAHOO.util.KeyListener(document, { keys: [27] },                               
+		                                              { fn:YAHOO.findplayerdialog.hide, 
+		                                                scope:YAHOO.findplayerdialog,
+		                                                correctScope:true } ); 
+				YAHOO.findplayerdialog.cfg.queueProperty("keylisteners", [ kl ]); 		
+				
+				YAHOO.findplayerdialog.validate = function() {
+					var data = this.getData();
+					
+					if (data.p==0) {
+						document.location = "players.php?query="+document.getElementById('findplayername').value
+						//alert("Please type a player name to search for "+document.getElementById('findplayername').value);
+						return false;
+					} else {
+						return true;
+					}
+				};
+
+				// Hook up the auto-completion behavior
+				var selectionevent = new YAHOO.util.CustomEvent("playerautoselected"); 
+				addplayerautocomplete("findplayername", "findplayernameContainer", "findplayerid", selectionevent, false);
+				
+				selectionevent.subscribe(gotplayer);
+				
+				// Render the Dialog
+				YAHOO.findplayerdialog.render();
+			}
+			
+			function gotplayer()
+			{
+//				document.title = '**'+(document.getElementById('findplayerid').value)+'**';
+//				return;
+				if (document.getElementById('findplayerid').value != 0)
+				{
+					document.getElementById('foundplayer').innerHTML = document.getElementById('findplayername').value;
+					YAHOO.util.Dom.setStyle('newplayerloading', 'display', 'block');
+					document.findplayerform.submit();
+				}
+			}
+		</script>
+
+				
+			<link rel="search" type="application/opensearchdescription+xml" href="searchbar.xml" title="cross-tables">
+		</head>
+		<body class='yui-skin-sam' 
+			id='yahoo-com' 
+			onload='loadcomplete();'>
+		
+		<!-- the id on the containing div determines the page width. -->
+		<!-- #doc = 750px; #doc2 = 950px; #doc3 = 100%; #doc4 = 974px -->
+		<div id='custom-doc850'>					
+			<div id='hd'>
+
+					<div class='siteheader' id='siteheader'>
+							<span>
+					<a href='/'>
+											SCRABBLE&reg; tournaments, statistics, and community
+															</a>
+				</span>
+				<div class='logo'>
+					<a href='/'>
+													<img src="/i/logo-tile.png" height='40' align='top'>
+					    					</a>
+					<a href='/'>
+																		cross-tables.com
+																</a>
+				</div>
+					</div>
+	   <div id='xtmenus' class='yuimenubar yuimenubarnav'>
+			<div class='bd'>
+				<ul class='first-of-type'>
+					<li class='yuimenubaritem first-of-type'><a class='yuimenubaritemlabel' href='/'>
+													Home
+												</a>
+					</li>
+				
+					<li class='yuimenubaritem'>
+						<a class='yuimenubaritemlabel' href='javascript:void(0);'>
+							Find						</a>
+						<div id='find' class='yuimenu'>
+							<div class='bd'>
+								<ul class='first-of-type'>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='javascript:openfinddialog();'>Find a Player...</a></li>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='tourneys.php'>Find a Past Tournament...</a></li>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='bystate.php'>Find Top Players by State</a></li>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='bycountry.php'>Find Top Players by Country</a></li>
+								</ul>
+							</div>
+						</div>      
+					</li>
+
+					<li class='yuimenubaritem'>
+						<a class='yuimenubaritemlabel' href='javascript:void(0);'>
+							History						</a>
+						<div id='history' class='yuimenu'>
+							<div class='bd'>
+								<ul class='first-of-type'>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='annolistself.php'>Recent Annotated Games</a></li>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='annoupload.php'>Upload an Annotated Game</a></li>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='leaders.php'>All-time Leaders</a></li>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='club700.php'>The 700 Club</a></li>
+								</ul>
+							</div>
+						</div>      
+					
+					</li>
+
+					<li class='yuimenubaritem'>
+						<a class='yuimenubaritemlabel' href='javascript:void(0);'>
+							Play						</a>
+						<div id='maps' class='yuimenu'>
+							<div class='bd'>
+								<ul>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='map.php'>Map of Upcoming Tournaments</a></li>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='mapclubs.php'>Map of SCRABBLE Clubs</a></li>
+								</ul>
+							</div>
+						</div>      
+					</li>
+
+					<li class='yuimenubaritem'>
+						<a class='yuimenubaritemlabel' href='javascript:void(0);'>
+							Learn						</a>
+						<div id='words' class='yuimenu'>
+							<div class='bd'>
+								<ul>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='study.php'>Study Tools</a></li>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='leaves.php'>Leave Evaluator</a></li>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='https://www.scrabbleplayershandbook.com' target='_blank'>Scrabble Player's Handbook</a></li>
+								</ul>
+							</div>
+						</div>      
+					</li>
+
+					<li class='yuimenubaritem'>
+						<a class='yuimenubaritemlabel' href='javascript:void(0);'>
+							About						</a>
+						<div id='about' class='yuimenu'>
+							<div class='bd'>
+								<ul>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='credits.php'>About cross-tables.com</a></li>
+									<li class='yuimenuitem'><a class='yuimenuitemlabel' href='donate.php'><b>Donate to cross-tables.com</b></a></li>
+								</ul>
+							</div>
+						</div>      
+					</li>
+					<li class='yuimenubaritem' style="width: 22%">
+													<a class='yuimenubaritemlabel' href="https://www.facebook.com/v2.8/dialog/oauth?client_id=203920133011073&state=ede797c26870ef769da7e809cecbed4c&response_type=code&sdk=php-sdk-5.5.0&redirect_uri=https%3A%2F%2Fwww.cross-tables.com%2Ffb-callback.php&scope=email">
+								<span style='color: #3b5998'>Sign in with Facebook</span>
+							</a>
+
+ 											</li>
+
+ 				</ul>            
+			</div>
+		</div>
+
+
+	
+			</div>
+			<div id='bd'>
+			
+							<table>
+			 <tbody>
+			    <tr>
+			        <td xwidth='50%'>
+			        	<form name='minform' method='get' action=''>
+				        	Country: 
+				        	<select name='country' onchange="document.minform.submit();"><br><option value="">Choose a Country</option><br><option value="BRB">BRB</option><br><option value="CAN">CAN</option><br><option value="IND">IND</option><br><option value="MYS" SELECTED>MYS</option><br><option value="USA">USA</option><br><option value="XX">(None listed)</option>				        	</select>
+			        	</form>
+			        </td>
+			    </tr>
+			</table><div class='datalabel'>Top [North American] Ratings by Player's Home Country</div>				<table id="xtdatatable" class='xtdatatable'>
+					<tbody>
+					<tr class='headerrow'><td class='tdl'></td><td class='tdl'>Name</td><td class='tdl'>City</td><td class='tdl'>State/Province</td><td class='tdr'>TWL Rating</td><td class='tdr'>CSW Rating</td><td style='width: 10%;' />					</tr><tr class='row1' id='row1'>	<td class='tdr'>1</td>
+	<td>		<span class='anchorfield' id='anchor6003' style='width: 15px;'>&nbsp;</span>		<a href='results.php?playerid=6003'>Nigel Richards</a>	</td>
+	<td>Kuala Lumpur</td>
+	<td></td>
+	<td class='tdr'>2158&nbsp;</td>
+	<td class='tdr'>2214&nbsp;</td>
+	<td /></tr><tr class='row0' id='row2'>	<td class='tdr'>2</td>
+	<td>		<span class='anchorfield' id='anchor23821' style='width: 15px;'>&nbsp;</span>		<a href='results.php?playerid=23821'>Tan Jin Chor</a>	</td>
+	<td></td>
+	<td></td>
+	<td class='tdr'>*</td>
+	<td class='tdr'>1700&nbsp;</td>
+	<td /></tr>					</tbody>
+				</table>			<div id='infobox'>
+			</div>						<!--dialog that allows searching for a player. -->
+		<div id='findplayerdialog' style='display: none;'>
+			<div class='hd'>Find A Player</div>
+			<div class='bd'>
+				<form name='findplayerform' method='GET' action='results.php'><p>
+				<input type='hidden' id='findplayerid' name='p' value='0'>
+				<label for='autocompleteplayer'>Player name:</label>
+					<div id='autocompleteplayer' style='list-style: none;'> 
+					    <input id='findplayername' type='text'> 
+					    <div id='findplayernameContainer'></div> 
+					</div> 
+					<p>&nbsp;
+				<div id='newplayerloading'>Loading results for <span id='foundplayer'></span>...</div>
+				</form>
+			</div>
+		</div>	
+
+
+		
+			</div>
+				<div id='ft'>
+				
+					Copyright &copy; 2005-2018 Seth Lipkin and Keith Smith<br>Some data copyright &copy; 1999-2009 National Scrabble Association and &copy; 2009-2018 North American Scrabble Players Association<br>SCRABBLE&reg; is a registered trademark of Hasbro, Inc. in the USA and Canada.<br>Current time: 2018-11-18 18:54:18 Server IP: 162.144.19.21			
+				</div>
+		</div>
+
+    </body>
+		</html>
+		

@@ -8,6 +8,7 @@ use Constants;
 sub retrieve($$$$$$)
 {
   # Constants
+  my $wget_flags                 = Constants::WGET_FLAGS;
   my $cross_tables_url           = Constants::CROSS_TABLES_URL;
   my $query_url_prefix           = Constants::QUERY_URL_PREFIX;
   my $annotated_games_url_prefix = Constants::ANNOTATED_GAMES_URL_PREFIX;
@@ -46,7 +47,7 @@ sub retrieve($$$$$$)
 
   # Run a query using the name to get the player id
   my $query_url = $query_url_prefix . $name;
-  open (CMDOUT, "wget $query_url -O ./$query_results_page_name 2>&1 |");
+  open (CMDOUT, "wget $wget_flags $query_url -O ./$query_results_page_name 2>&1 |");
   my $player_id;
   while (<CMDOUT>)
   {
@@ -61,7 +62,7 @@ sub retrieve($$$$$$)
   my $annotated_games_url = $annotated_games_url_prefix . $player_id;
 
   # Get the player's annotated games page
-  system "wget $annotated_games_url -O ./$annotated_games_page_name  >/dev/null 2>&1";
+  system "wget $wget_flags $annotated_games_url -O ./$annotated_games_page_name  >/dev/null 2>&1";
 
   # Parse the annotated games page html to get the game ids
   # of the player's annotated games
@@ -143,7 +144,7 @@ sub retrieve($$$$$$)
 
   	my $html_game_url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX . $id;
 
-  	system "wget $html_game_url -O $dir/$html_game_name >/dev/null 2>&1";
+  	system "wget $wget_flags $html_game_url -O $dir/$html_game_name >/dev/null 2>&1";
     my $gcg_url_suffix  = '';
     my $player_one_name = '';
     my $player_two_name = '';
@@ -226,7 +227,7 @@ sub retrieve($$$$$$)
     if (!$file_exists)
     {
       my $gcg_url = $cross_tables_url . $gcg_url_suffix;
-      system "wget $gcg_url -O $dir/$gcg_name >/dev/null 2>&1";
+      system "wget $wget_flags $gcg_url -O $dir/$gcg_name >/dev/null 2>&1";
       if ($verbose) {print "$num_str Downloaded game $gcg_name to $dir\n";}
     }
   }

@@ -5,6 +5,7 @@ package Constants;
 use warnings;
 use strict;
 
+use constant WGET_FLAGS                       => '--no-check-certificate';
 use constant CROSS_TABLES_URL                 => 'http://www.cross-tables.com/';
 use constant QUERY_URL_PREFIX                 => 'http://www.cross-tables.com/players.php?query=';
 use constant ANNOTATED_GAMES_URL_PREFIX       => 'http://www.cross-tables.com/anno.php?p=';
