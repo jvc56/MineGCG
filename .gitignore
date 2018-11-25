@@ -4,4 +4,4 @@ names*
 wget-log
 txt_to_hash*
 *.txt
-
+*.log
