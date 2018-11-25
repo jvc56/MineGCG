@@ -242,7 +242,7 @@ sub retrieve($$$$$$)
       {
         $gcg_url_suffix = $1;
       }
-      if (/^([^<]*)(?:<a.*a>)?\s+vs\.\s+([^<]*)</) # How bout ^([^<]*)<a.*a>\s+vs.([^<]*)<a
+      if (/^([^<]*)(?:<a.*a>)?\s+vs\.\s+([^<]*)/) # How bout ^([^<]*)<a.*a>\s+vs.([^<]*)<a
       {
         $player_one_name = $1;
         $player_two_name = $2;

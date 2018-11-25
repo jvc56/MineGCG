@@ -80,10 +80,10 @@ foreach my $game_file (@game_files)
   }
 }
 
-print "\n\nInvalid indexes: $invalid_indexes\n";
-print "Malformed indexes: $malformed_indexes\n";
-print "Invalid games: $invalid_games\n";
-print "Malformed games: $malformed_games\n";
+print "\n\nInvalid indexes:     $invalid_indexes\n";
+print "Malformed indexes:   $malformed_indexes\n";
+print "Invalid games:       $invalid_games\n";
+print "Malformed games:     $malformed_games\n";
 #print Dumper(\%existing_games);
 
 
