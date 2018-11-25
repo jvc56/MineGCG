@@ -18,7 +18,7 @@ foreach my $country (@countries)
   my $html_page_name = $html_page_prefix . $country . '.html';
 
 
-  system "wget $wget_flags $url -O $html_page_name >/dev/null 2>&1";
+  system "wget $wget_flags $url -O '$html_page_name' >/dev/null 2>&1";
 
   my @player_names = ();
 
@@ -38,8 +38,8 @@ foreach my $country (@countries)
     my $name = shift @player_names;
     print "Retrieving games for $name\n";
     $name =~ s/'//g;
-    retrieve($name, 0, 0, 0, 1);
+    retrieve($name, "update", 0, 0, 1, 1);
   }
-  system "rm $html_page_name";
+  system "rm '$html_page_name'";
 }
 

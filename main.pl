@@ -14,6 +14,7 @@ my $reset   = '';
 my $cort    = '';
 my $tid     = '';
 my $html    = '';
+my $resolve = '';
 my $name;
 
 my $man  = 0;
@@ -25,6 +26,7 @@ GetOptions (
             'cort:s'           => \$cort,
             'tournament-id:s'  => \$tid,
             'html'             => \$html,
+            'resolve'          => \$resolve,
             'name=s'           => \$name,
             'help|?'           => \$help
            );
@@ -42,7 +44,7 @@ if ($reset)
 }
 
 $name =~ s/'//g;
-retrieve($name, $option, $tid, $cort, $verbose);
+retrieve($name, $option, $tid, $cort, $verbose, $resolve);
 mine($name, $cort, $verbose, $tid, $html);
 
 open (CMDOUT, "git fetch --dry-run 2>&1 |");

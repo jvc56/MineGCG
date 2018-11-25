@@ -15,6 +15,7 @@ use constant QUERY_RESULTS_PAGE_NAME          => 'query_results.html';
 use constant NON_TOURNAMENT_GAME              => 'casual_or_club';
 use constant GAME_DIRECTORY_NAME              => './games';
 use constant NAMES_DIRECTORY_NAME             => './names';
+use constant DEFAULT_LEXICON                  => 'CSW15';
 
 use constant STAT_ITEM_GAME        => 'GAME STATS';
 use constant STAT_ITEM_PLAYER      => 'YOUR STATS';

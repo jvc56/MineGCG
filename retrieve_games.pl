@@ -22,6 +22,7 @@ sub retrieve($$$$$$)
   my $tourney_id        = shift;
   my $tourney_or_casual = shift;
   my $verbose           = shift;
+  my $resolve           = shift;
 
   my $raw_name      = $name;
   my $textfile_name = $name;
@@ -56,6 +57,17 @@ sub retrieve($$$$$$)
       $player_id = $1;
   	  last;
   	}
+  }
+  if (!$player_id)
+  {
+    open(QUERY_RESULT, '<', "$query_results_page_name");
+    while (<QUERY_RESULT>)
+    {
+      if (/href=.results.php.playerid=(\d+).>$raw_name<.a>/)
+      {
+        $player_id = $1;
+      }
+    }
   }
   if (!$player_id){print "No player named $raw_name found\n"; return;}
   # Use the player id to get the address of the annotated games page
@@ -93,14 +105,17 @@ sub retrieve($$$$$$)
   # the player's annotated games
   my $games_to_download = (scalar @game_ids) / 6;
   my $count = 0;
+  my $game_with_no_index = 0;
+  my $index_with_no_game = 0;
   while (@game_ids)
   {
 
     #game_id, tourney_id, tourney_name, date, round_number, dictionary
-  	my $id              = shift @game_ids;
+    my $id              = shift @game_ids;
     my $game_tourney_id = shift @game_ids;
     my $tourney_name    = shift @game_ids;
     $tourney_name =~ s/ /_/g;
+    $tourney_name =~ s/[\^\$\*\+\?\|\[\]\{\}\\\.\(\)'"]//g;
     my $date            = shift @game_ids;
     my $round_number    = shift @game_ids;
     my $lexicon         = shift @game_ids;
@@ -120,56 +135,30 @@ sub retrieve($$$$$$)
     {
       $round_number = 0;
     }
+    if (!$lexicon)
+    {
+      $lexicon = Constants::DEFAULT_LEXICON;
+    }
 
     # Check if game needs to be downloaded
 
-
     if ($tourney_id && $tourney_id ne $game_tourney_id)
     {
-      if ($verbose) {print "$num_str Game $id wasn't played in the specified tournament\n";}
+      if ($verbose) {print "$num_str Game with id $id wasn't played in the specified tournament\n";}
       next;
     }
     if ($tourney_name eq Constants::NON_TOURNAMENT_GAME && uc $tourney_or_casual eq 'T')
     {
-      if ($verbose) {print "$num_str Game $id is not a tournament game\n";}
+      if ($verbose) {print "$num_str Game with id $id is not a tournament game\n";}
       next;
     }
     if ($tourney_name ne Constants::NON_TOURNAMENT_GAME && uc $tourney_or_casual eq 'C')
     {
-      if ($verbose) {print "$num_str Game $id is a tournament game\n";}
+      if ($verbose) {print "$num_str Game with id $id is a tournament game\n";}
       next;
     }
 
-    my $html_game_name = "$id.html";
-
-  	my $html_game_url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX . $id;
-
-  	system "wget $wget_flags $html_game_url -O $dir/$html_game_name >/dev/null 2>&1";
-    my $gcg_url_suffix  = '';
-    my $player_one_name = '';
-    my $player_two_name = '';
-    open(ANNOHTML, '<', "$dir/$html_game_name");
-    while(<ANNOHTML>)
-    {
-      if (/href=.(annotated.selfgcg.\d+.anno\d+.gcg)./)
-      {
-        $gcg_url_suffix = $1;
-      }
-      if (/(.*)<a.*vs.([^<]*)</)
-      {
-        $player_one_name = $1;
-        $player_two_name = $2;
-        $player_one_name =~ s/^\s+|\s+$//g;
-        $player_two_name =~ s/^\s+|\s+$//g;
-        $player_one_name =~ s/ /_/g;
-        $player_two_name =~ s/ /_/g;
-        $player_one_name =~ s/'//g;
-        $player_two_name =~ s/'//g;
-      }
-    }
-    system "rm $dir/$html_game_name";
-
-    my $gcg_name = join ".", ($date, $game_tourney_id, $round_number, $tourney_name, $lexicon, $id, $player_one_name, $player_two_name, "gcg");
+    # Check if game or game index already exists
 
     # Check if index exists
     my $index_exists = 0;
@@ -178,26 +167,13 @@ sub retrieve($$$$$$)
       open(PLAYER_INDEXES, '<', $full_index_list_name);
       while (<PLAYER_INDEXES>)
       {
-        chomp $_;
-        if ($_ eq $gcg_name)
+        my @items = split /\./, $_;
+        if ($items[5] eq $id)
         {
           $index_exists = 1;
           last;
         }
       }
-    }
-
-    # Write the index if it doesn't exist
-    if (!$index_exists)
-    {
-      my $write_mode = '>>';
-      if (!(-e $full_index_list_name))
-      {
-        my $write_mode = '>';
-      }
-      open(my $fh, $write_mode, $full_index_list_name) or die "$!\n";
-      print $fh $gcg_name."\n";
-      close $fh;
     }
 
     # Check if file exists
@@ -212,23 +188,107 @@ sub retrieve($$$$$$)
         next;
       }
       my @items = split /\./, $game_file_name;
-      #print "items: ";
-      #print Dumper(\@items);
-      #print "id: $id\n";
+      if (!$items[5])
+      {
+        print "items is not defined\n";
+        print Dumper(\@items)."\n";
+        print "the game is called $game_file_name\n";
+        print $_;
+      }
+      if (!$id)
+      {
+        print "id is not defined\n";
+        print "$id $game_tourney_id $tourney_name $date $round_number $lexicon\n";
+        print $_;
+      }
       if ($items[5] eq $id)
       {
-        if ($verbose) {print "$num_str Game $game_file_name already exists\n";}
         $file_exists = 1;
         last;
       }
     }
 
-    # Get the file if it doesn't exist
+    if ($file_exists && !$index_exists && !$resolve)
+    {
+      if ($verbose){print "$num_str Game with id $id already exists but does not have an index\n";}
+      $game_with_no_index++;
+      next;
+    }
+    if (!$file_exists && $index_exists && !$resolve)
+    {
+      if ($verbose){print "$num_str Game with id $id does not exist but has an index\n";}
+      $index_with_no_game++;
+      next;
+    }
+    if ($file_exists && $index_exists)
+    {
+      if ($verbose){print "$num_str Game with id $id already exists\n";}
+      next;
+    }
+
+    my $html_game_name = "$id.html";
+
+  	my $html_game_url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX . $id;
+
+    # All this just to see who goes first
+  	system "wget $wget_flags $html_game_url -O '$dir/$html_game_name' >/dev/null 2>&1";
+    my $gcg_url_suffix  = '';
+    my $player_one_name = '';
+    my $player_two_name = '';
+    open(ANNOHTML, '<', "$dir/$html_game_name");
+    while(<ANNOHTML>)
+    {
+      if (/href=.(annotated.selfgcg.\d+.anno\d+.gcg)./)
+      {
+        $gcg_url_suffix = $1;
+      }
+      if (/^([^<]*)(?:<a.*a>)?\s+vs\.\s+([^<]*)</) # How bout ^([^<]*)<a.*a>\s+vs.([^<]*)<a
+      {
+        $player_one_name = $1;
+        $player_two_name = $2;
+        $player_one_name =~ s/^\s+|\s+$//g;
+        $player_two_name =~ s/^\s+|\s+$//g;
+        $player_one_name =~ s/ /_/g;
+        $player_two_name =~ s/ /_/g;
+        $player_one_name =~ s/[\(\)\+\?\*\.'"]//g;
+        $player_two_name =~ s/[\(\)\+\?\*\.'"]//g;
+      }
+    }
+    system "rm $dir/$html_game_name";
+
+
+    my $gcg_name = join ".", ($date, $game_tourney_id, $round_number, $tourney_name, $lexicon, $id, $player_one_name, $player_two_name, "gcg");
+
+    # Write the index
+    if (!$index_exists)
+    {
+      my $write_mode = '>>';
+      if (!(-e $full_index_list_name))
+      {
+        my $write_mode = '>';
+      }
+      open(my $fh, $write_mode, $full_index_list_name) or die "$!\n";
+      print $fh $gcg_name."\n";
+      close $fh;
+    }
+
+    # Download the game
     if (!$file_exists)
     {
       my $gcg_url = $cross_tables_url . $gcg_url_suffix;
-      system "wget $wget_flags $gcg_url -O $dir/$gcg_name >/dev/null 2>&1";
+      system "wget $wget_flags $gcg_url -O '$dir/$gcg_name' >/dev/null 2>&1";
       if ($verbose) {print "$num_str Downloaded game $gcg_name to $dir\n";}
+    }
+  }
+  
+  print "\nDone retrieving\n";
+  if (!$resolve)
+  {
+    print "Games with no indexes: $game_with_no_index\n";
+    print "Indexes with no games: $index_with_no_game\n";
+    if ($game_with_no_index || $index_with_no_game)
+    {
+      print "\nInconsistencies have been detected!\nRun with the --resolve flag to resolve the inconsistencies\n";
     }
   }
 }

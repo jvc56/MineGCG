@@ -1,7 +1,7 @@
 games*
 names*
-anno_page.html
-query_results.html
+*.html
 wget-log
 txt_to_hash*
 *.txt
+
