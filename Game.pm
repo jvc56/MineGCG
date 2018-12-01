@@ -35,7 +35,13 @@ sub new($$)
   open(GCG, '<', $filename);
   while(<GCG>)
   {
+    my $line = $_;
     chomp $_;
+    # Skip if line is empty or all whitespace
+    if (!$_ || $_ =~ /^\s+$/)
+    {
+      next;
+    }
     # Find who goes first and second
     if (/#player1\s([^\s]+)\s/)
     {
@@ -132,7 +138,7 @@ sub new($$)
         $moves[-1]->{'out_points'} = $score;
         next;
       }
-      elsif ($play =~ /-\w+/ || $loc =~ /-\w+/)
+      elsif ($play =~ /-[\w\?]+/ || $loc =~ /-[\w\?]+/)
       {
         #print "EXCHANGE\n";
         #printf "%s, %s, %s, %s, %s, %s\n", $name, $rack, $loc, $play, $score, $total;
@@ -229,7 +235,7 @@ sub new($$)
           $play_type = Constants::PLAY_TYPE_PASS;
           # A best guess at what is a pass and what is an unsuccessful challenge
           # They are indistinguishable in GCGs
-          if ($moves[-1]->{'play_type'} eq Constants::PLAY_TYPE_WORD && $filename =~ /TWL/)
+          if (@moves && $moves[-1]->{'play_type'} eq Constants::PLAY_TYPE_WORD && $filename =~ /TWL/)
           {
             $challenge_lost = 1;
           }
@@ -237,10 +243,11 @@ sub new($$)
         }
         else
         {
-          #printf "%s, %s, %s, %s, %s, %s\n", $name, $rack, $loc, $play, $score, $total;
-          #print "$_\n";
-          #print "the play: $play\n";
-          #print "filename $filename\n";
+          printf "%s, %s, %s, %s, %s, %s\n", $name, $rack, $loc, $play, $score, $total;
+          print "$_\n";
+          print "the play: $play\n";
+          print "filename $filename\n";
+          print "at $line\n";
           die "Uncaptured GCG sequence\n";
         }
       }
@@ -278,6 +285,11 @@ sub new($$)
     elsif(/(^#note)|(^[^#])/) # assume all other regexes are notes capture notes
     {
       $_ =~ s/#note//g;
+      if (!(@moves))
+      {
+        print "Error in $filename\nAt -$line-\n";
+        die "Detected a note when there were no moves\n";
+      }
       $moves[-1]->{'comment'} .= $_ . "\n";
     }
   }
