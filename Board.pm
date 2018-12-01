@@ -39,23 +39,15 @@ sub placeNewTile($$$$)
   my $pos = shift;
   my $turn = shift;
   my $play_number = shift;
-  my $filename = shift;
 
   my $tile = Tile->new($c, $turn, $play_number);
 
-  my $var = $this->{'grid'}[$pos];
-  if (!(ref($var) eq "Square"))
-  {
-    print $this->toString();
-    print "The file is $filename\n";
-  }
   $this->{'grid'}[$pos]->addTile($tile);
 }
 sub addMoves($$)
 {
   my $this = shift;
   my $move_array_ref = shift;
-  my $filename = shift;
 
   my @moves = @{$move_array_ref};
   if (!$this)
@@ -98,7 +90,7 @@ sub addMoves($$)
         }
         if ($c ne '.' && !$this->{'grid'}[$pos]->{'has_tile'})
         {
-          $this->placeNewTile($c, $pos, $turn, $play_number, $filename);
+          $this->placeNewTile($c, $pos, $turn, $play_number);
         }
         $displacement++;
       }

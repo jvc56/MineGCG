@@ -304,7 +304,7 @@ sub new($$)
   
   if (@moves)
   {
-    $board->addMoves(\@moves, $filename);
+    $board->addMoves(\@moves);
   }
   else
   {
