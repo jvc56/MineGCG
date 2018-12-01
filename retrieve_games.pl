@@ -14,6 +14,7 @@ sub retrieve($$$$$$)
   my $annotated_games_url_prefix = Constants::ANNOTATED_GAMES_URL_PREFIX;
   my $annotated_games_page_name  = Constants::ANNOTATED_GAMES_PAGE_NAME;
   my $query_results_page_name    = Constants::QUERY_RESULTS_PAGE_NAME;
+  my $blacklisted_tournaments    = Constants::BLACKLISTED_TOURNAMENTS;
   my $dir                        = Constants::GAME_DIRECTORY_NAME;
   my $names_dir                  = Constants::NAMES_DIRECTORY_NAME;
 
@@ -157,7 +158,11 @@ sub retrieve($$$$$$)
       if ($verbose) {print "$num_str Game with id $id is a tournament game\n";}
       next;
     }
-
+    if ($blacklisted_tournaments->{$game_tourney_id})
+    {
+      if ($verbose) {print "$num_str Game with id $id is from a blacklisted tournament\n";}
+      next;
+    }
     # Check if game or game index already exists
 
     # Check if index exists

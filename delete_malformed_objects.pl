@@ -6,8 +6,9 @@ use Data::Dumper;
 use lib '.';
 use Constants;
 
-my $games_dir = Constants::GAME_DIRECTORY_NAME;
-my $names_dir = Constants::NAMES_DIRECTORY_NAME;
+my $games_dir               = Constants::GAME_DIRECTORY_NAME;
+my $names_dir               = Constants::NAMES_DIRECTORY_NAME;
+my $blacklisted_tournaments = Constants::BLACKLISTED_TOURNAMENTS;
 
 my $num_deleted_games = 0;
 my $num_deleted_indexes = 0;
@@ -23,7 +24,20 @@ foreach my $game_file_name (@game_files)
     next;
   }
   my @items = split /\./, $game_file_name;
-  if (scalar @items != 9 || $items[3] =~ /(>_vs)|[\(\)\*\+\.\?'"]/ || $items[0] eq ""   || $items[1] eq "" || $items[2] eq "" || $items[3] eq "" || $items[4] eq "" || $items[5] eq "" || $items[6] eq "" || $items[7] eq "" || $items[8] eq "" || $items[6] =~ /(^_)|(_$)/ || $items[7] =~ /(^_)|(_$)/)
+  if (scalar @items != 9 ||
+   $items[3] =~ /(>_vs)|[\(\)\*\+\.\?'"]/ ||
+    $items[0] eq ""   ||
+     $items[1] eq "" ||
+      $items[2] eq "" ||
+       $items[3] eq "" ||
+        $items[4] eq "" ||
+         $items[5] eq "" ||
+          $items[6] eq "" ||
+           $items[7] eq "" ||
+            $items[8] eq "" ||
+             $items[6] =~ /(^_)|(_$)/ ||
+              $items[7] =~ /(^_)|(_$)/ ||
+              $blacklisted_tournaments->{$items[1]})
   {
     system "rm '$games_dir/$game_file_name'";
     print "Deleted $games_dir/$game_file_name\n";
@@ -48,8 +62,20 @@ foreach my $name_file_name (@name_files)
   while(<NAME_FILE>)
   {
     my @items = split /\./, $_;
-    if (!(scalar @items != 9 || $items[3] =~ />_vs|[\(\)\*\+\.\?'"]/ || $items[0] eq ""   || $items[1] eq "" || $items[2] eq "" || $items[3] eq "" || $items[4] eq "" || $items[5] eq "" || $items[6] eq "" || $items[7] eq "" || $items[8] eq "" || $items[6] =~ /(^_)|(_$)/ || $items[7] =~ /(^_)|(_$)/))
-    {
+  if (!(scalar @items != 9 ||
+   $items[3] =~ /(>_vs)|[\(\)\*\+\.\?'"]/ ||
+    $items[0] eq ""   ||
+     $items[1] eq "" ||
+      $items[2] eq "" ||
+       $items[3] eq "" ||
+        $items[4] eq "" ||
+         $items[5] eq "" ||
+          $items[6] eq "" ||
+           $items[7] eq "" ||
+            $items[8] eq "" ||
+             $items[6] =~ /(^_)|(_$)/ ||
+              $items[7] =~ /(^_)|(_$)/ ||
+              $blacklisted_tournaments->{$items[1]}))    {
       print $new_file $_;
     }
     else

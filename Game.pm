@@ -138,7 +138,7 @@ sub new($$)
         $moves[-1]->{'out_points'} = $score;
         next;
       }
-      elsif ($play =~ /-[\w\?]+/ || $loc =~ /-[\w\?]+/)
+      elsif (($play && $play =~ /-[\w\?]+/) || ($loc && $loc =~ /-[\w\?]+/))
       {
         #print "EXCHANGE\n";
         #printf "%s, %s, %s, %s, %s, %s\n", $name, $rack, $loc, $play, $score, $total;
@@ -189,6 +189,12 @@ sub new($$)
         #print "A play\n";
         my $column_letter;
         my $row_number;
+        if (!$loc)
+        {
+          # Most likely result of a malformed gcg
+          $valid = 0;
+          next;
+        }
         my @loc_array = split //, $loc;
         $play_type = Constants::PLAY_TYPE_WORD;
         if ($loc_array[0] =~ /\d/)
@@ -298,7 +304,7 @@ sub new($$)
   
   if (@moves)
   {
-    $board->addMoves(\@moves);
+    $board->addMoves(\@moves, $filename);
   }
   else
   {

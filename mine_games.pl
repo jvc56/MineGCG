@@ -21,8 +21,9 @@ use Cwd qw(abs_path);
 
 sub mine($$$$)
 {
-  my $dir_name   = Constants::GAME_DIRECTORY_NAME;
-  my $names_dir  = Constants::NAMES_DIRECTORY_NAME;
+  my $dir_name                = Constants::GAME_DIRECTORY_NAME;
+  my $names_dir               = Constants::NAMES_DIRECTORY_NAME;
+  my $blacklisted_tournaments = Constants::BLACKLISTED_TOURNAMENTS;
 
   my $player_name = shift;
   my $cort        = shift;
@@ -70,6 +71,13 @@ sub mine($$$$)
         print "No GCG found for $full_game_file_name, rerun with the -u option to correct\n";
         next;
       }
+
+      if ($blacklisted_tournaments->{$game_tourney_id})
+      {
+        print "Game $full_game_file_name is from a blacklisted tournament\n";
+        next;
+      }
+
       my $is_tourney_game = $tourney_name ne Constants::NON_TOURNAMENT_GAME;
 
       # Check for casual/club or only tournament games
@@ -136,7 +144,7 @@ sub mine($$$$)
       my $game = Game->new($full_game_file_name, $player_is_first, $lexicon_ref, $player_one_name, $player_two_name);
       if (!$game->{'valid'})
       {
-        print "No moves found for $full_game_file_name, marking as invalid\n";
+        print "Skipping malformed gcg file: $full_game_file_name\n";
         next;
       }
       if ($verbose)
