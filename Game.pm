@@ -62,7 +62,7 @@ sub new($$)
     }
 
     # Move
-    elsif (/>([^:]+):\s?([^\s]+)?\s?([^\s]+)?\s?([^\s]+)?\s([^\s]+)\s([^\s]+)/)
+    elsif (/^\s*>([^:]+):\s*([^\s\+]+)?\s*([^\s\+]+)?\s*([^\s\+]+)?\s*([^\s]+)\s*([^\s\+]+)/)
     {
 
       # >Arie: DEESSUW C11 .EE +14 138
@@ -123,9 +123,15 @@ sub new($$)
         }
         next;
       }
-      elsif (/\(/)
+      elsif (/^[^:]+:.*\(/)
       {
         #print "OUTPLAY\n";
+        if (!(@moves))
+        {
+          print "Error in $filename\nAt -$line-\n";
+          printf "%s, %s, %s, %s, %s, %s\n", $name, $rack, $loc, $play, $score, $total;
+          die "Outplay detected as the first move\n"
+        }
         if ($player_turn)
         {
           $moves[-1]->{'player_one_total'} = $total;
@@ -208,6 +214,12 @@ sub new($$)
           $vertical = 1;
           $column_letter = uc shift @loc_array;
           $row_number = join "", @loc_array;
+        }
+        if (!$row_number)
+        {
+          print "Error in $filename\nAt -$line-\n";
+          printf "%s, %s, %s, %s, %s, %s\n", $name, $rack, $loc, $play, $score, $total;
+          die "Invalid row number: $row_number\n"
         }
         my $column_index_mapping_ref = Constants::COLUMN_INDEX_MAPPING;
         $zero_index_row = $row_number - 1;

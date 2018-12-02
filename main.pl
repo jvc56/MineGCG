@@ -15,6 +15,7 @@ my $cort    = '';
 my $tid     = '';
 my $html    = '';
 my $resolve = '';
+my $skipmetaupdate = '';
 my $name;
 
 my $man  = 0;
@@ -22,6 +23,7 @@ my $help = 0;
 GetOptions (
             'verbose'          => \$verbose,
             'update'           => \$update,
+            'skipmetaupdate'   => \$skipmetaupdate,
             'reset'            => \$reset,
             'cort:s'           => \$cort,
             'tournament-id:s'  => \$tid,
@@ -47,23 +49,25 @@ $name =~ s/'//g;
 retrieve($name, $option, $tid, $cort, $verbose, $resolve);
 mine($name, $cort, $verbose, $tid, $html);
 
-open (CMDOUT, "git fetch --dry-run 2>&1 |");
-my $response = '';
-while (<CMDOUT>)
+if (!$skipmetaupdate)
 {
-  $response .= $_;
-}
+  open (CMDOUT, "git fetch --dry-run 2>&1 |");
+  my $response = '';
+  while (<CMDOUT>)
+  {
+    $response .= $_;
+  }
 
-if (!$response)
-{
-  print "Completed with the latest version of MineGCG\n"
+  if (!$response)
+  {
+    print "Completed with the latest version of MineGCG\n"
+  }
+  else
+  {
+    print "Your current version of MineGCG is out of date!\n";
+    print "Use 'git pull' to get the latest version\n";
+  }
 }
-else
-{
-  print "Your current version of MineGCG is out of date!\n";
-  print "Use 'git pull' to get the latest version\n";
-}
-
 
 
 __END__
