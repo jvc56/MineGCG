@@ -62,7 +62,7 @@ sub new($$)
     }
 
     # Move
-    elsif (/^\s*>([^:]+):\s*([^\s\+]+)?\s*([^\s\+]+)?\s*([^\s\+]+)?\s*([^\s]+)\s*([^\s\+]+)/)
+    elsif (/^\s*>([^:]+):?\s+([^\s\+]+)?\s+([^\s\+]+)?\s+([^\s\+]+)?\s+([^\s]+)\s+([^\s\+]+)/)
     {
 
       # >Arie: DEESSUW C11 .EE +14 138
@@ -215,7 +215,7 @@ sub new($$)
           $column_letter = uc shift @loc_array;
           $row_number = join "", @loc_array;
         }
-        if (!$row_number)
+        if (!($row_number =~ /^\d+$/))
         {
           print "Error in $filename\nAt -$line-\n";
           printf "%s, %s, %s, %s, %s, %s\n", $name, $rack, $loc, $play, $score, $total;
