@@ -106,6 +106,7 @@ sub new($$)
     # exchanged             5 -
     # 6 pass                5 -
     # outplay               4 -
+    # outplay (legacy)      5 -
 
     my $name  = $items[0];
     my $rack  = $items[1];
@@ -146,7 +147,6 @@ sub new($$)
      # print "An outplay 4 long\n";
       $score = $items[2];
       $total = $items[3];
-
 
       $score =~ s/[\+-]//g; 
 
@@ -232,9 +232,29 @@ sub new($$)
         next;
       }
       # A six pass
+      elsif ($items[3] =~ /\+-\d+/)
+      {
+        print "\nError in $filename\n$line\n";
+        die "Six pass unimplemented for now\n";
+      }
+      # Also an outplay for older quackle versions
       elsif ($items[2] =~ /\(.*\)/)
       {
-        die "Six pass unimplemented for now\n";
+        if (!(@moves))
+        {
+          die "Outplay detected as the first move\n"
+        }
+        if ($player_turn)
+        {
+          $moves[-1]->{'player_one_total'} = $total;
+        }
+        else
+        {
+          $moves[-1]->{'player_two_total'} = $total;
+        }
+        $moves[-1]->{'score'} += $score;
+        $moves[-1]->{'out_points'} = $score;
+        next;
       }
       # An exchange
       elsif ($items[2] =~ /-([^-]+)/)
@@ -245,6 +265,7 @@ sub new($$)
       }
       else
       {
+        print "\nError in $filename\n$line\n";
         die "NO 5 ITEM SEQUENCE FOUND\n";
       }
     }
@@ -301,7 +322,7 @@ sub new($$)
     }
     else
     {
-     # print "\nError in $filename\n$line\n";
+      print "\nError in $filename\n$line\n";
       die "Invalid number of items detected: $num_items\n";
     }
 
