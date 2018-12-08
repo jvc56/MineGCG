@@ -70,14 +70,17 @@ sub new($$)
     elsif(/^#note/ || ($in_note && /^[^>]/)) # assume all other regexes are notes capture notes
     {
      # print "We are in a note\n";
-      $in_note = 1;
-      $line =~ s/^#note//g;
       if (!(@moves))
       {
-       # print "Error in $filename\nAt -$line-\n";
-        die "Detected a note when there were no moves\n";
+        print "Warning: Note before moves detected in $filename at\n\n$line\n\n";
+        print "Ignoring\n\n";
       }
-      $moves[-1]->{'comment'} .= $line . "\n";
+      else
+      {
+        $line =~ s/^#note//g;
+        $moves[-1]->{'comment'} .= $line . "\n";
+        $in_note = 1;
+      }
       next;
     }
 
@@ -90,12 +93,17 @@ sub new($$)
 
     $in_note = 0;
 
+    # Remove leading and trailing whitespace
     $line =~ s/^\s+|\s+$//g;
+    # Remove trailing whitespace on the > character
+    $line =~ s/>\s+/>/g;
+    # Remove leading whitespace ONLY from the : character
+    # Also add a space after the : in case there was no
+    # space between the : and the rack
+    $line =~ s/\s*:/: /g;
+    
     my @items = split /\s+/, $line;
     my $num_items = scalar @items;
-
-
-
 
     # Possible plays:
     
@@ -153,6 +161,8 @@ sub new($$)
      # printf "%s, %s, %s, %s\n", $name, $rack, $score, $total;
       if (!(@moves))
       {
+        print "\nError in $filename\n$line\n";
+        printf "%s, %s, %s, %s\n", $name, $rack, $score, $total;
         die "Outplay detected as the first move\n"
       }
       if ($player_turn)
@@ -346,8 +356,8 @@ sub new($$)
       }
       if (!($row_number =~ /^\d+$/))
       {
-       # print "\nError in $filename\n$line\n";
-       # printf "%s, %s, %s, %s, %s, %s\n", $name, $rack, $loc, $play, $score, $total;
+        print "\nError in $filename\n$line\n";
+        printf "%s, %s, %s, %s, %s, %s\n", $name, $rack, $loc, $play, $score, $total;
         die "Invalid row number: $row_number\n"
       }
       my $column_index_mapping_ref = Constants::COLUMN_INDEX_MAPPING;
