@@ -234,8 +234,37 @@ sub new($$)
       # A six pass
       elsif ($items[3] =~ /\+-\d+/)
       {
-        print "\nError in $filename\n$line\n";
-        die "Six pass unimplemented for now\n";
+        #print "\n\nA SIX PASS\n\n";
+        if (scalar @moves < 6)
+        {
+          die "Six pass detected with less than six moves"
+        }
+        my $rack_value = 0;
+        my @rack_array = split //, $moves[-2]->{'rack'};
+        foreach my $tile (@rack_array)
+        {
+          #print "THE TILE: $tile\n";
+          $rack_value += Tile->charToValue($tile);
+        }
+        #print "THE VALUE: $rack_value\n";
+        #print "The total: $total\n";
+        #print "The score: $score\n";
+        #print Dumper($moves[-1]);
+        if ($turn_number % 2 == 0)
+        {
+          $moves[-1]->{'player_one_total'} = $total;
+          $moves[-1]->{'player_two_total'} -= $rack_value;
+        }
+        else
+        {
+          $moves[-1]->{'player_two_total'} = $total;
+          $moves[-1]->{'player_one_total'} -= $rack_value;
+        }
+        #print Dumper($moves[-1]);
+        next;
+        #printf "p1: %d, p2: %d, s: %d, s: %d", $moves[-1]->{'player_one_total'}, $moves[-1]->{'player_two_total'}, $rack_value, $score;
+        #print "\nError in $filename\n$line\n";
+        #die "Six pass unimplemented for now\n";
       }
       # Also an outplay for older quackle versions
       elsif ($items[2] =~ /\(.*\)/)
@@ -270,7 +299,12 @@ sub new($$)
       }
     }
     # A play
-    elsif (scalar $num_items == 6)
+    # For some GCGs, the words formed by
+    # the play are appended to the line
+    # making the number of items > 6
+    # in this case we just ignore them
+    # and continue
+    elsif (scalar $num_items >= 6)
     {
 
      # print "A play 6 long\n";
