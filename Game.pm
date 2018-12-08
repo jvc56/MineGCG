@@ -277,8 +277,15 @@ sub new($$)
         #die "Six pass unimplemented for now\n";
       }
       # Also an outplay for older quackle versions
-      elsif ($items[2] =~ /\(.*\)/)
+      # $items[1] is a rare outplay sequence only seen in
+      # in game 970
+      elsif ($items[2] =~ /\(.*\)/ || $items[1] =~ /\(.*\)/)
       {
+        if ($items[1] =~ /\(.*\)/)
+        {
+          $score = $items[2];
+          $total = $items[3];
+        }
         if (!(@moves))
         {
           die "Outplay detected as the first move\n"
@@ -295,6 +302,8 @@ sub new($$)
         $moves[-1]->{'out_points'} = $score;
         next;
       }
+      # Also an outplay for older quackle versions
+
       # An exchange
       elsif ($items[2] =~ /-([^-]+)/)
       {

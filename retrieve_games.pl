@@ -193,19 +193,6 @@ sub retrieve($$$$$$)
         next;
       }
       my @items = split /\./, $game_file_name;
-      # if (!$items[5])
-      # {
-      #   print "items is not defined\n";
-      #   print Dumper(\@items)."\n";
-      #   print "the game is called $game_file_name\n";
-      #   print $_;
-      # }
-      # if (!$id)
-      # {
-      #   print "id is not defined\n";
-      #   print "$id $game_tourney_id $tourney_name $date $round_number $lexicon\n";
-      #   print $_;
-      # }
       if ($items[5] eq $id)
       {
         $file_exists = 1;

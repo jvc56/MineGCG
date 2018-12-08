@@ -30,7 +30,4 @@ foreach my $name_file (@name_files)
   print $write_log1 "$name\n";
   close $write_log1;
   system "./main.pl -n '$name' -s >/dev/null 2>> $log_name";
-  open(my $write_log2, '>>', $log_name);
-  print $write_log2 "Done\n\n";
-  close $write_log2;
 }
