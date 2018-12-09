@@ -10,6 +10,7 @@ use constant CROSS_TABLES_URL                 => 'http://www.cross-tables.com/';
 use constant QUERY_URL_PREFIX                 => 'http://www.cross-tables.com/players.php?query=';
 use constant ANNOTATED_GAMES_URL_PREFIX       => 'http://www.cross-tables.com/anno.php?p=';
 use constant SINGLE_ANNOTATED_GAME_URL_PREFIX => 'http://www.cross-tables.com/annotated.php?u=';
+use constant CROSS_TABLES_COUNTRY_PREFIX      => 'https://www.cross-tables.com/bycountry.php?country=';
 use constant ANNOTATED_GAMES_PAGE_NAME        => 'anno_page.html';
 use constant QUERY_RESULTS_PAGE_NAME          => 'query_results.html';
 use constant NON_TOURNAMENT_GAME              => 'casual_or_club';

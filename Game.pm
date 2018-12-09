@@ -333,6 +333,14 @@ sub new($$)
       $score = $items[4];
       $total = $items[5];
 
+      if (length $play <= 1)
+      {
+        print "\nError in $filename\n$line\n";
+        printf "%s, %s, %s, %s, %s, %s\n", $name, $rack, $loc, $play, $score, $total;
+        die "Play length of 1 detected\n"
+      }
+
+      $loc = uc $loc;
       $name =~ s/_/ /g;
       $name =~ s/[>:]//g;
       $score =~ s/[\+-]//g; 
@@ -415,6 +423,9 @@ sub new($$)
   
   my $board = Board->new();
   
+  #print "BEFORE the moves:\n";
+  #print Dumper(\@moves);
+
   if (@moves)
   {
     $board->addMoves(\@moves);
@@ -423,6 +434,10 @@ sub new($$)
   {
     $valid = 0;
   }
+
+  print "The moves:\n";
+  print Dumper(\@moves);
+
   my %game = 
   (
     filename        => $filename,

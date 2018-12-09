@@ -77,6 +77,8 @@ sub addMoves($$)
       my $play_number  = $move->{'number'};
       my $displacement = 0;
 
+      my $dotted_word = "";
+
       foreach my $c (split //, $word)
       {
         my $pos = $row*Constants::BOARD_WIDTH + $column;
@@ -91,9 +93,17 @@ sub addMoves($$)
         if ($c ne '.' && !$this->{'grid'}[$pos]->{'has_tile'})
         {
           $this->placeNewTile($c, $pos, $turn, $play_number);
+          $dotted_word .= $c;
+        }
+        else
+        {
+          $dotted_word .= ".";
         }
         $displacement++;
       }
+
+      $move->{'play'} = $dotted_word;
+
     }
     $this->{'moves_completed'}++;
   }

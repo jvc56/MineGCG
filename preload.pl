@@ -32,7 +32,7 @@ my $response = <STDIN>;
 if ($response =~ /^([yY][eE][sS]|[yY])+$/)
 {
   my $wget_flags = Constants::WGET_FLAGS;
-  my $players_by_country_prefix = 'https://www.cross-tables.com/bycountry.php?country=';
+  my $players_by_country_prefix = Constants::CROSS_TABLES_COUNTRY_PREFIX;
   my $html_page_prefix = 'player_by_country_';
 
   foreach my $country (@countries)
