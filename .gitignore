@@ -1,9 +1,3 @@
-games*
-names*
-*.html
-wget-log
-txt_to_hash*
-*.txt
-*.log
-minegcg*
-todo*
+games
+names
+downloads

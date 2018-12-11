@@ -1,0 +1,8 @@
+TODO:
+
+ - Updated main.pl with the new args
+
+LOWER PRIORITY:
+
+ - Write GCGs that trigger these errors and asserions
+ - Better TWL lost challenge / pass heuristics
