@@ -3,8 +3,11 @@
 use warnings;
 use strict;
 use Data::Dumper;
-require "./retrieve_games.pl";
-use lib '.';
+
+require "./scripts/retrieve_games.pl";
+require "./scripts/sanitize.pl";
+
+use lib './objects';
 use Constants;
 
 my @countries = ('BRB', 'IND', 'MYS', 'CAN', 'USA');
@@ -33,7 +36,7 @@ if ($response =~ /^([yY][eE][sS]|[yY])+$/)
 {
   my $wget_flags = Constants::WGET_FLAGS;
   my $players_by_country_prefix = Constants::CROSS_TABLES_COUNTRY_PREFIX;
-  my $html_page_prefix = 'player_by_country_';
+  my $html_page_prefix = './downloads/player_by_country_';
 
   foreach my $country (@countries)
   {
@@ -58,10 +61,11 @@ if ($response =~ /^([yY][eE][sS]|[yY])+$/)
 
     while (@player_names)
     {
-      my $name = shift @player_names;
+      my $raw_name = shift @player_names;
+      my $name = $raw_name;
       print "Retrieving games for $name\n";
-      $name =~ s/'//g;
-      retrieve($name, "update", 0, 0, 1, 1);
+      $name = sanitize($name, "name");
+      retrieve($name, $raw_name, "update", 0, 0, 0, 1, 1);
     }
     system "rm '$html_page_name'";
   }
