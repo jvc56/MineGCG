@@ -32,8 +32,8 @@ my @countries = ('BRB', 'IND', 'MYS', 'CAN', 'USA');
 
 # my $response = <STDIN>;
 
-if ($response =~ /^([yY][eE][sS]|[yY])+$/)
-{
+# if ($response =~ /^([yY][eE][sS]|[yY])+$/)
+# {
   my $wget_flags = Constants::WGET_FLAGS;
   my $players_by_country_prefix = Constants::CROSS_TABLES_COUNTRY_PREFIX;
   my $html_page_prefix = './downloads/player_by_country_';
@@ -69,4 +69,4 @@ if ($response =~ /^([yY][eE][sS]|[yY])+$/)
     }
     system "rm '$html_page_name'";
   }
-}
+# }
