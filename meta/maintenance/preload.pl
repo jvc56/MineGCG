@@ -13,24 +13,24 @@ use Constants;
 my @countries = ('BRB', 'IND', 'MYS', 'CAN', 'USA');
 
 
-print "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
-print "!!! WARNING: LONG-RUNNING JOB !!!\n";
-print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
-print "\n";
-print "This script will download and index\n";
-print "all of the games of all of the active\n";
-print "players from the following countries:\n\n";
+# print "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
+# print "!!! WARNING: LONG-RUNNING JOB !!!\n";
+# print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
+# print "\n";
+# print "This script will download and index\n";
+# print "all of the games of all of the active\n";
+# print "players from the following countries:\n\n";
 
-foreach my $country (@countries)
-{
-print "  $country\n";
-}
-print "\n";
-print "Even with the lowest latencies, this is\n";
-print "expected to take several days.\n";
-print "Continue? [y/N] ";
+# foreach my $country (@countries)
+# {
+# print "  $country\n";
+# }
+# print "\n";
+# print "Even with the lowest latencies, this is\n";
+# print "expected to take several days.\n";
+# print "Continue? [y/N] ";
 
-my $response = <STDIN>;
+# my $response = <STDIN>;
 
 if ($response =~ /^([yY][eE][sS]|[yY])+$/)
 {
@@ -64,7 +64,7 @@ if ($response =~ /^([yY][eE][sS]|[yY])+$/)
       my $raw_name = shift @player_names;
       my $name = $raw_name;
       print "Retrieving games for $name\n";
-      $name = sanitize($name, "name");
+      $name = sanitize($name);
       retrieve($name, $raw_name, "update", 0, 0, 0, 1, 1);
     }
     system "rm '$html_page_name'";

@@ -13,7 +13,7 @@ use constant SINGLE_ANNOTATED_GAME_URL_PREFIX => 'http://www.cross-tables.com/an
 use constant CROSS_TABLES_COUNTRY_PREFIX      => 'https://www.cross-tables.com/bycountry.php?country=';
 use constant ANNOTATED_GAMES_PAGE_NAME        => './downloads/anno_page.html';
 use constant QUERY_RESULTS_PAGE_NAME          => './downloads/query_results.html';
-use constant NON_TOURNAMENT_GAME              => 'casual_or_club';
+use constant NON_TOURNAMENT_GAME              => 'NONTOURAMENT';
 use constant GAME_DIRECTORY_NAME              => './games';
 use constant NAMES_DIRECTORY_NAME             => './names';
 use constant DEFAULT_LEXICON                  => 'CSW15';

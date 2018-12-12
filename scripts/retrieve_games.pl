@@ -119,7 +119,6 @@ sub retrieve
     my $id              = shift @game_ids;
     my $game_tourney_id = shift @game_ids;
     my $tourney_name    = shift @game_ids;
-    $tourney_name       = sanitize($tourney_name);
     my $date            = shift @game_ids;
     my $round_number    = shift @game_ids;
     my $lexicon         = shift @game_ids;
@@ -135,9 +134,13 @@ sub retrieve
     {
       $date = 0;
     }
-    if (!$round_number)
+    if (!$round_number || !($round_number =~ /^\d+$/))
     {
       $round_number = 0;
+    }
+    if (!$game_tourney_id || !($game_tourney_id =~ /^\d+$/))
+    {
+      $game_tourney_id = 0;
     }
     if (!$lexicon)
     {
@@ -246,8 +249,8 @@ sub retrieve
       }
       if (/^([^<]*)(?:<a.*a>)?\s+vs\.\s+([^<]*)/) # How bout ^([^<]*)<a.*a>\s+vs.([^<]*)<a
       {
-        $player_one_name = sanitize($1, "name");
-        $player_two_name = sanitize($2, "name");
+        $player_one_name = $1;
+        $player_two_name = $2;
       }
     }
     system "rm $dir/$html_game_name";
@@ -269,7 +272,7 @@ sub retrieve
       open(my $fh, $write_mode, $full_index_list_name) or die "$!\n";
       print $fh $gcg_name."\n";
       close $fh;
-      if ($verbose) {print "$num_str Indexed game $gcg_name in $full_index_list_name\n";}
+      if ($verbose) {print "$num_str Indexed    game $gcg_name in $full_index_list_name\n";}
     }
 
     # Download the game

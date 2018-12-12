@@ -1,6 +1,7 @@
 TODO:
 
- - Updated main.pl with the new args
+ - Update the README.md
+ - Remove Unnecessary imports
 
 LOWER PRIORITY:
 

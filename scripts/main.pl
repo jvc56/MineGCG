@@ -50,7 +50,7 @@ if ($reset)
 }
 
 $raw_name = $name;
-$name = sanitize($name, "name");
+$name = sanitize($name);
 
 retrieve($name, $raw_name, $option, $tid, $cort, $game, $verbose, $resolve);
 mine($name, $cort, $game, $verbose, $tid, $html);
