@@ -70,7 +70,7 @@ foreach my $name_file_name (@name_files)
       chomp $_;
       if (validate_filename($_))
       {
-        print $new_file $_;
+        print $new_file $_ . "\n";
       }
       else
       {

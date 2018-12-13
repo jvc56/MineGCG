@@ -2,7 +2,8 @@ TODO:
 
  - Update the README.md
  - Remove Unnecessary imports
-
+ - Add timer to preload.pl
+- Add comments
 LOWER PRIORITY:
 
  - Write GCGs that trigger these errors and asserions

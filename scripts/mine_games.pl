@@ -76,7 +76,7 @@ sub mine
 
       if (!$ext || $ext ne "gcg")
       {
-        print "ERROR:  invalid file extension\nFILE:   $game_file_name";
+        print "\nERROR:  invalid file extension\nFILE:   $game_file_name";
         $num_errors++;
         next;
       }
@@ -85,7 +85,7 @@ sub mine
       
       if (!(-e $full_game_file_name))
       {
-        print "ERROR: No GCG found for index $full_game_file_name\n";
+        print "\nERROR: No GCG found for index $full_game_file_name\n";
         $num_errors++;
         next;
       }

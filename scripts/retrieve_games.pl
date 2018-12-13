@@ -3,6 +3,8 @@
 use warnings;
 use strict;
 
+require "./scripts/sanitize.pl";
+
 use lib './objects';
 use Constants;
 
@@ -68,9 +70,13 @@ sub retrieve
     open(QUERY_RESULT, '<', "$query_results_page_name");
     while (<QUERY_RESULT>)
     {
-      if (/href=.results.php.playerid=(\d+).>$raw_name<.a>/)
+      if (/href=.results.php.playerid=(\d+).>([^<]+)<.a>/)
       {
-        $player_id = $1;
+        my $captured_named = sanitize($2);
+        if ($captured_named eq $name)
+        {
+          $player_id = $1;
+        }
       }
     }
   }
@@ -256,10 +262,17 @@ sub retrieve
     system "rm $dir/$html_game_name";
 
 
-    my $gcg_name = join ".", ($date, $game_tourney_id, $round_number, $tourney_name, $lexicon, $id, $player_one_name, $player_two_name, "gcg");
-
-    # Sanitize again to be sure
-    $gcg_name = sanitize_filename($gcg_name);
+    my $gcg_name = join ".", (
+                              sanitize($date),
+                              sanitize($game_tourney_id),
+                              sanitize($round_number),
+                              sanitize($tourney_name),
+                              sanitize($lexicon),
+                              sanitize($id),
+                              sanitize($player_one_name),
+                              sanitize($player_two_name),
+                              "gcg"
+                             );
 
     # Write the index
     if (!$index_exists)
