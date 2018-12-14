@@ -20,6 +20,7 @@ my $num_deleted_games       = 0;
 my $num_deleted_indexes     = 0;
 my $malformed_name_filenames = 0;
 # Delete malformed game names
+print "\n\n\nMalformed filenames:\n\n";
 opendir my $games, $games_dir or die "Cannot open directory: $!";
 my @game_files = readdir $games;
 closedir $games;
@@ -31,7 +32,7 @@ foreach my $game_file_name (@game_files)
   }
   if (!(validate_filename($game_file_name)))
   {
-    print "Malformed game name: $game_file_name\n";
+    print "Game: $game_file_name\n";
     if ($delete)
     {
       system "rm '$games_dir/$game_file_name'";
@@ -54,7 +55,7 @@ foreach my $name_file_name (@name_files)
   
   if (!(validate_textfilename($name_file_name)))
   {
-    print "Malformed name filename: $name_file_name\n";
+    print "Name filename: $name_file_name\n";
     $malformed_name_filenames++;
   }
 
@@ -88,12 +89,14 @@ foreach my $name_file_name (@name_files)
       chomp $_;
       if (!(validate_filename($_)))
       {
-        print "Malformed index in $old_file_name: $_\n";
+        print "Index in $old_file_name: $_\n";
         $num_deleted_indexes++;
       }
     }
   }
 }
+
+print "\n\n";
 
 if ($delete)
 {
@@ -104,5 +107,5 @@ else
 {
   print "Detected $num_deleted_games malformed games\n";
   print "Detected $num_deleted_indexes malformed indexes\n";  
-  print "Detected $malformed_name_filenames malformed name filesnames\n";  
+  print "Detected $malformed_name_filenames malformed name filenames\n";  
 }

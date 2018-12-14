@@ -4,6 +4,7 @@ use warnings;
 use strict;
 
 require "./scripts/sanitize.pl";
+require "./scripts/validate_filename.pl";
 
 use lib './objects';
 use Constants;
@@ -116,8 +117,10 @@ sub retrieve
   # the player's annotated games
   my $games_to_download = (scalar @game_ids) / 6;
   my $count = 0;
-  my $game_with_no_index = 0;
-  my $index_with_no_game = 0;
+  my $game_with_no_index    = 0;
+  my $index_with_no_game    = 0;
+  my $num_invalid_filenames = 0;
+  my $invalid_filenames     = "";
   while (@game_ids)
   {
 
@@ -274,6 +277,14 @@ sub retrieve
                               "gcg"
                              );
 
+    if (!validate_filename($gcg_name))
+    {
+      print "$num_str Invalid file name: $gcg_name\n";  
+      $invalid_filenames .= "$gcg_name\n";
+      $num_invalid_filenames++;
+      next;
+    }
+
     # Write the index
     if (!$index_exists)
     {
@@ -298,6 +309,10 @@ sub retrieve
   }
   
   print "\nDone retrieving\n";
+
+  print "Number of invalid filenames: $num_invalid_filenames\n";
+  #print "Invalid filenames:\n$invalid_filenames\n";
+
   if (!$resolve)
   {
     print "Games with no indexes: $game_with_no_index\n";
