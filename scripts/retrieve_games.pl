@@ -73,8 +73,8 @@ sub retrieve
     {
       if (/href=.results.php.playerid=(\d+).>([^<]+)<.a>/)
       {
-        my $captured_named = sanitize($2);
-        if ($captured_named eq $name)
+        my $captured_name = sanitize($2);
+        if ($captured_name eq $name)
         {
           $player_id = $1;
         }
@@ -242,10 +242,10 @@ sub retrieve
 
     my $html_game_name = "$id.html";
 
-  	my $html_game_url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX . $id;
+    my $html_game_url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX . $id;
 
     # All this just to see who goes first
-  	system "wget $wget_flags $html_game_url -O '$dir/$html_game_name' >/dev/null 2>&1";
+    system "wget $wget_flags $html_game_url -O '$dir/$html_game_name' >/dev/null 2>&1";
     my $gcg_url_suffix  = '';
     my $player_one_name = '';
     my $player_two_name = '';
@@ -311,7 +311,10 @@ sub retrieve
   print "\nDone retrieving\n";
 
   print "Number of invalid filenames: $num_invalid_filenames\n";
-  #print "Invalid filenames:\n$invalid_filenames\n";
+  if ($num_invalid_filenames > 0)
+  {
+    print "Invalid filenames:\n$invalid_filenames\n";
+  }
 
   if (!$resolve)
   {

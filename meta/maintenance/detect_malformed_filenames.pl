@@ -36,7 +36,7 @@ foreach my $game_file_name (@game_files)
     if ($delete)
     {
       system "rm '$games_dir/$game_file_name'";
-      print "Deleted $games_dir/$game_file_name\n";
+      print "Deleted games $games_dir/$game_file_name\n";
     }
     $num_deleted_games++;
   }
@@ -75,7 +75,7 @@ foreach my $name_file_name (@name_files)
       }
       else
       {
-        print "Removed $_";
+        print "Removed index $_\n";
         $num_deleted_indexes++;
       }
     }

@@ -3,7 +3,11 @@ TODO:
  - Update the README.md
  - Remove Unnecessary imports
  - Add timer to preload.pl
-- Add comments
+ - Add comments
+ - Combine detect and ensure scripts
+ - Have all test scripts write to logs automatically
+ - Make use of STDERR for mine and retrieve
+
 LOWER PRIORITY:
 
  - Write GCGs that trigger these errors and asserions

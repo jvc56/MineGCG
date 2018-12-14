@@ -26,8 +26,8 @@ my @countries = ('BRB', 'IND', 'MYS', 'CAN', 'USA');
 # print "  $country\n";
 # }
 # print "\n";
-# print "Even with the lowest latencies, this is\n";
-# print "expected to take several days.\n";
+# print "This could take between several hours to\n";
+# print "several days depending on your latency.\n";
 # print "Continue? [y/N] ";
 
 # my $response = <STDIN>;
@@ -65,7 +65,7 @@ my @countries = ('BRB', 'IND', 'MYS', 'CAN', 'USA');
       my $name = $raw_name;
       print "Retrieving games for $name\n";
       $name = sanitize($name);
-      retrieve($name, $raw_name, "update", 0, 0, 0, 1, 1);
+      retrieve($name, $raw_name, "update", 0, 0, 0, 0, 1);
     }
     system "rm '$html_page_name'";
   }

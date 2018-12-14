@@ -3,7 +3,7 @@
 use warnings;
 use strict;
 use Data::Dumper;
-use lib '.';
+use lib './objects';
 use Constants;
 
 my $games_dir = Constants::GAME_DIRECTORY_NAME;
