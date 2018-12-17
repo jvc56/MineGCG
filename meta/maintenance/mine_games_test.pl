@@ -2,7 +2,7 @@
 
 use warnings;
 use strict;
-use lib '.';
+use lib './objects';
 use Constants;
 
 my $names_dir = Constants::NAMES_DIRECTORY_NAME;
@@ -11,7 +11,7 @@ opendir my $names, $names_dir or die "Cannot open directory: $!";
 my @name_files = readdir $names;
 closedir $names;
 
-my $log_name = 'mine_games_test.log';
+my $log_name = './logs/mine_games_test.log';
 
 open(my $log, '>', $log_name);
 print $log "Log file for mine_games_test on " . localtime() . "\n\n"; 
@@ -29,5 +29,5 @@ foreach my $name_file (@name_files)
   open(my $write_log1, '>>', $log_name);
   print $write_log1 "~ $name\n";
   close $write_log1;
-  system "./main.pl -n '$name' -s >/dev/null 2>> $log_name";
+  system "./scripts/main.pl -n '$name' -s >/dev/null 2>> $log_name";
 }

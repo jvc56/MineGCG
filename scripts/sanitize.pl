@@ -23,26 +23,4 @@ sub sanitize
   return $string;
 }
 
-sub sanitize_filename
-{
-  my $filename = shift;
-  chomp $filename;
-
-  my @items = split /\./, $filename;
-
-  my $new_file_name = join ".", (
-                                 sanitize($items[0]),
-                                 sanitize($items[1]),
-                                 sanitize($items[2]),
-                                 sanitize($items[3]),
-                                 sanitize($items[4]),
-                                 sanitize($items[5]),
-                                 sanitize($items[6]),
-                                 sanitize($items[7]),
-                                 $items[8]
-                                );
-
-  return $new_file_name;
-}
-
 1;
