@@ -3,7 +3,7 @@
 use warnings;
 use strict;
 
-my $full_start_time =  "\nStarted: " . localtime . "\n";
+my $full_start_time =  "\nStarted: " . localtime() . "\n";
 
 my $preload_start_time = time;
 
@@ -23,7 +23,7 @@ system "./meta/maintenance/mine_games_test.pl";
 
 my $mine_end_time = time;
 
-my $full_end_time = "Ended:   " . localtime . "\n";
+my $full_end_time = "Ended:   " . localtime() . "\n";
 
 open(my $full_test_log, ">", "./logs/full_test.log");
 
