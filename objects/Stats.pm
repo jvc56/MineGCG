@@ -8,7 +8,6 @@ use Data::Dumper;
 use lib '.';
 use Constants;
 use StatsItem;
-use utf8;
 
 sub new
 {

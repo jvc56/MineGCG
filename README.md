@@ -9,8 +9,8 @@ the following commands:
 
 git clone https://github.com/jvc56/MineGCG<br/>
 cd MineGCG<br/>
-chmod +x *.pl<br/>
-./main.pl<br/>
+chmod +x ./scripts/*.pl<br/>
+./scripts/main.pl<br/>
 
 A usage message telling you how to use the command should appear.
 This tool is still a work in progress, so if you find any bugs
