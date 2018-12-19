@@ -8,6 +8,7 @@ use Data::Dumper;
 use lib '.';
 use Constants;
 use StatsItem;
+use utf8;
 
 sub new
 {
@@ -141,7 +142,7 @@ sub toString
       $s .= $stat_item->toString($num);
     }
   }
-  $s .= ("‾" x ($tot+2)) . "\n";
+  $s .= ("_" x ($tot+2)) . "\n";
   return $s; 
 }
 
@@ -149,7 +150,7 @@ sub toStringHTML
 {
   my $this = shift;
 
-  return $this->toString . "HTML OUTPUT\n";
+  return $this->toString;
 }
 
 1;
