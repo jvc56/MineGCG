@@ -1,9 +1,10 @@
 # MineGCG
 
-MineGCG is a command line tool that computes statistics
-for annotated cross-tables.com games. Currently, this
-tool only works for UNIX-based operating systems that
-ship with perl (this includes MacOS and Linux).
+MineGCG is a tool that computes statistics
+for annotated cross-tables.com games. The web version
+can be found at randomracer.com/mine.html.
+To use the command line version, you must have a
+UNIX-based operating system (this includes MacOS and Linux).
 To use, navigate to a desired empty directory and run
 the following commands:
 
