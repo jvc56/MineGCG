@@ -335,7 +335,7 @@ sub new
     }
     else
     {
-      return "Invalid number of items detected: $num_items\nFILE:   $filename\nLINE $line_number: $line\n";
+      return "invalid number of items detected: $num_items\nFILE:   $filename\nLINE $line_number: $line\n";
     }
 
     # Update total score
@@ -378,7 +378,7 @@ sub new
   }
   else
   {
-    return "No moves found\nFILE:   $filename";
+    return "no moves found\nFILE:   $filename\n";
   }
 
   my %game = 

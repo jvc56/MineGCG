@@ -36,7 +36,7 @@ sub mine
 
 
 
-  print_or_append( "\nProcessing game data...\n\n", $html);
+  print_or_append( "\nProcessing game data...\n\n", $html, 0);
 
   my $all_stats = Stats->new();
   my $single_game_stats = Stats->new();
@@ -74,14 +74,14 @@ sub mine
         $player_is_first = 1;
         if ($player_two_name ne $player_name)
         {
-          print_or_append( "Didn't find a matching player name for $game_file_name\n", $html);
+          print_or_append( "Didn't find a matching player name for $game_file_name\n", $html, 0);
           return;
         }
       }
 
       if (!$ext || $ext ne "gcg")
       {
-        print_or_append( "\nERROR:  invalid file extension\nFILE:   $game_file_name", $html);
+        print_or_append( "\nERROR:  invalid file extension\nFILE:   $game_file_name", $html, 1);
         $num_errors++;
         next;
       }
@@ -90,24 +90,24 @@ sub mine
       
       if (!(-e $full_game_file_name))
       {
-        print_or_append( "\nERROR: No GCG found for index $full_game_file_name\n", $html);
+        print_or_append( "\nERROR: No GCG found for index $full_game_file_name\n", $html, 1);
         $num_errors++;
         next;
       }
 
       if ($single_game_id && $single_game_id ne $id)
       {
-        if ($verbose) {print_or_append( "Game $full_game_file_name is not the specified game\n", $html);}
+        if ($verbose) {print_or_append( "Game $full_game_file_name is not the specified game\n", $html, 0);}
         next;
       }
       if ($tourney_id && $game_tourney_id ne $tourney_id)
       {
-        if ($verbose) {print_or_append( "Game $full_game_file_name is not in the specified tournament\n", $html);}
+        if ($verbose) {print_or_append( "Game $full_game_file_name is not in the specified tournament\n", $html, 0);}
         next;
       }
       if ($blacklisted_tournaments->{$game_tourney_id})
       {
-        if ($verbose) {print_or_append( "Game $full_game_file_name is from a blacklisted tournament\n", $html);}
+        if ($verbose) {print_or_append( "Game $full_game_file_name is from a blacklisted tournament\n", $html, 0);}
         next;
       }
 
@@ -116,7 +116,7 @@ sub mine
       # Check for casual/club or only tournament games
       if ( (uc $cort eq 'T' && !$is_tourney_game) || (uc $cort eq 'C' && $is_tourney_game))
       {
-        if ($verbose) {print_or_append( "Game $full_game_file_name is not the specified type\n", $html);}
+        if ($verbose) {print_or_append( "Game $full_game_file_name is not the specified type\n", $html, 0);}
         next;
       }
 
@@ -126,7 +126,7 @@ sub mine
         my $key = $game_tourney_id.'+'.$round_number;
         if($tourney_game_hash{$key})
         {
-          if ($verbose) {print_or_append( "Repeat game $full_game_file_name found with tournament id $game_tourney_id and round number $round_number\n", $html);}
+          if ($verbose) {print_or_append( "Repeat game $full_game_file_name found with tournament id $game_tourney_id and round number $round_number\n", $html, 0);}
           next;
         }
         $tourney_game_hash{$key} = 1;
@@ -160,7 +160,7 @@ sub mine
       }
       else
       {
-        if ($verbose) {print_or_append( "No lexicon found for game $full_game_file_name, using CSW15 as a default\n", $html);}
+        if ($verbose) {print_or_append( "No lexicon found for game $full_game_file_name, using CSW15 as a default\n", $html, 0);}
         $lexicon_ref = CSW15::CSW15_LEXICON;
       }
 
@@ -168,22 +168,22 @@ sub mine
       
       if (ref($game) ne "Game")
       {
-        print_or_append( "\nERROR:  $game", $html);
+        print_or_append( "\nERROR:  $game", $html, 1);
         $num_errors++;
         next;
       }
       elsif ($game->{'warnings'})
       {
-        print_or_append( "\n" . $game->warnings, $html);
+        print_or_append( "\n" . $game->warnings, $html, 0);
         $num_warnings++;
       }
 
       if ($verbose)
       {
-        print_or_append( "\nData structures for $full_game_file_name\n\n", $html);
-        print_or_append( $game->toString(), $html);
+        print_or_append( "\nData structures for $full_game_file_name\n\n", $html, 0);
+        print_or_append( $game->toString(), $html, 0);
         $single_game_stats->addGame($game);
-        print_or_append( $single_game_stats->toString(), $html);
+        print_or_append( $single_game_stats->toString(), $html, 0);
         $single_game_stats->resetStats();
       }
       
@@ -195,23 +195,23 @@ sub mine
   {
     if (!$html)
     {
-      print_or_append( $all_stats->toString(), $html);
+      print_or_append( $all_stats->toString(), $html, 0);
     }
     else
     {
-      print_or_append( $all_stats->toStringHTML(), $html);
+      print_or_append( $all_stats->toStringHTML(), $html, 0);
     }
   }
   else
   {
-    print_or_append( "\nNo valid games found\n", $html);
-    print_or_append( "To update or reset the games directory, use the --update or --reset flags respectively\n", $html);
-    print_or_append( "To attempt to resolve inconsistencies, use the --resolve flag\n", $html);
+    print_or_append( "\nNo valid games found\n", $html, 0);
+    print_or_append( "To update or reset the games directory, use the --update or --reset flags respectively\n", $html, 0);
+    print_or_append( "To attempt to resolve inconsistencies, use the --resolve flag\n", $html, 0);
   }
-  print_or_append( "\n", $html);
-  print_or_append( "Errors:   $num_errors\n", $html);
-  print_or_append( "Warnings: $num_warnings\n", $html);
-  print_or_append( "\n", $html);
+  print_or_append( "\n", $html, 0);
+  print_or_append( "Errors:   $num_errors\n", $html, 0);
+  print_or_append( "Warnings: $num_warnings\n", $html, 0);
+  print_or_append( "\n", $html, 0);
 
   if ($html)
   {
@@ -225,14 +225,21 @@ sub print_or_append
 {
   my $addition    = shift;
   my $append      = shift;
-
+  my $error       = shift;
   if ($append)
   {
     $html_string .= $addition;
   }
   else
   {
-    print $addition;
+    if ($error)
+    {
+      print STDERR $addition;
+    }
+    else
+    {
+      print $addition;
+    }
   }
 }
 
