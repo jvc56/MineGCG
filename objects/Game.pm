@@ -397,6 +397,7 @@ sub new
   my $self = bless \%game, $this;
 
   $self->postConstruction();
+
   return $self;
 }
 
@@ -869,7 +870,7 @@ sub postConstruction
 
       my $char = $play_array[$i];
       my $tile = $this->{'board'}->{'grid'}[$pos]->{'tile'};
-      if ($char eq "." || ($tile && $play_number != $tile->{'play_number'}))
+      if ($char eq "." || ($tile && $play_number > $tile->{'play_number'}))
       {
         next;
       }
