@@ -5,7 +5,7 @@ package Game;
 use warnings;
 use strict;
 use Data::Dumper;
-use List::Util qw(sum);
+use List::Util qw(sum min max);
 use lib '.';
 use Board;
 use Move;
@@ -294,11 +294,6 @@ sub new
       $play  = $items[3];
       $score = $items[4];
       $total = $items[5];
-
-      if (length $play <= 1)
-      {
-        return "play length of 1 detected\nFILE:   $filename\nLINE $line_number: $line\n";
-      }
 
       $loc = uc $loc;
       $name =~ s/_/ /g;
@@ -826,6 +821,116 @@ sub postConstruction
   # Determine phoniness and probabilities
   foreach my $move (@moves)
   {
+    
+    my $play = $move->{'play'};
+    my $v = $move->{'vertical'};
+    my $r = $move->{'row'};
+    my $c = $move->{'column'};
+    my $play_number = $move->{'number'};
+
+    # Add dots to one tile plays
+
+    if (length $play == 1)
+    {
+      my $pos = $r * Constants::BOARD_WIDTH + $c;
+      
+      my $iter_r = $pos - Constants::BOARD_WIDTH;
+      my $iter_c = $pos - 1;
+
+      # Some numbers higher than the maximum row and column
+      my $new_r = $r;
+      my $new_c = $c;
+
+      my @formed_word = ($play);
+
+      # Try the horizontal direction first
+      
+      while ($iter_c >= 0 && (int ($iter_c/Constants::BOARD_WIDTH)) == $r )
+      {
+        my $square = $this->{'board'}->{'grid'}[$iter_c];
+        if (!$square->{'has_tile'})
+        {
+          last;
+        }
+        my $tile = $square->{'tile'};
+        if ($tile->{'play_number'} > $play_number)
+        {
+          last;
+        }
+        $new_c = min($new_c, $iter_c % Constants::BOARD_WIDTH);
+        unshift @formed_word, ".";
+        $iter_c--;
+      }
+
+      $iter_c = $pos + 1;
+
+      while ($iter_c <= 224 && (int ($iter_c/Constants::BOARD_WIDTH)) == $r )
+      {
+        my $square = $this->{'board'}->{'grid'}[$iter_c];
+        if (!$square->{'has_tile'})
+        {
+          last;
+        }
+        my $tile = $square->{'tile'};
+        if ($tile->{'play_number'} > $play_number)
+        {
+          last;
+        }
+        $new_c = min($new_c, $iter_c % Constants::BOARD_WIDTH);
+        push @formed_word, ".";
+        $iter_c++;
+      }
+
+      if (scalar @formed_word > 1)
+      {
+        $move->{'play'} = (join "", @formed_word);
+        $move->{'column'} = $new_c;
+        $move->{'vertical'} = 0;
+      }
+      else
+      {
+        while ($iter_r >= 0)
+        {
+          my $square = $this->{'board'}->{'grid'}[$iter_r];
+          if (!$square->{'has_tile'})
+          {
+            last;
+          }
+          my $tile = $square->{'tile'};
+          if ($tile->{'play_number'} > $play_number)
+          {
+            last;
+          }
+          $new_r = min($new_r, int ($iter_r/Constants::BOARD_WIDTH) );
+          unshift @formed_word, ".";
+          $iter_r -= Constants::BOARD_WIDTH;
+        }
+
+        $iter_r = $pos + Constants::BOARD_WIDTH;
+
+        while ($iter_r <= 224)
+        {
+          my $square = $this->{'board'}->{'grid'}[$iter_r];
+          if (!$square->{'has_tile'})
+          {
+            last;
+          }
+          my $tile = $square->{'tile'};
+          if ($tile->{'play_number'} > $play_number)
+          {
+            last;
+          }
+          $new_r = min($new_r, int ($iter_r/Constants::BOARD_WIDTH) );
+          push @formed_word, ".";
+          $iter_r += Constants::BOARD_WIDTH;
+        }
+
+        $move->{'play'} = (join "", @formed_word);
+        $move->{'row'} = $new_r;
+        $move->{'vertical'} = 1;
+      }
+    }
+
     # Set is_phony and probability
     if ($move->{'play_type'} ne Constants::PLAY_TYPE_WORD)
     {
@@ -843,11 +948,7 @@ sub postConstruction
     {
       next;
     }
-    my $play = $move->{'play'};
-    my $v = $move->{'vertical'};
-    my $r = $move->{'row'};
-    my $c = $move->{'column'};
-    my $play_number = $move->{'number'};
+
 
     my @play_array = split //, $play;
     my @words_made = ();

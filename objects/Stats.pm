@@ -141,7 +141,7 @@ sub toString
       $s .= $stat_item->toString($num);
     }
   }
-  $s .= ("_" x ($tot+2)) . "\n";
+  $s .= ("_" x ($tot+2)) . "\n\n";
   return $s; 
 }
 
