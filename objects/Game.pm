@@ -821,6 +821,11 @@ sub postConstruction
   # Determine phoniness and probabilities
   foreach my $move (@moves)
   {
+    if ($move->{'play_type'} ne Constants::PLAY_TYPE_WORD)
+    {
+      $move->{'is_phony'} = 0;
+      next;
+    }
     
     my $play = $move->{'play'};
     my $v = $move->{'vertical'};
@@ -932,11 +937,6 @@ sub postConstruction
     }
 
     # Set is_phony and probability
-    if ($move->{'play_type'} ne Constants::PLAY_TYPE_WORD)
-    {
-      $move->{'is_phony'} = 0;
-      next;
-    }
     my $caps_move = $this->readableMoveCapitalized($move);
     my $prob = $this->{'lexicon'}->{$caps_move};
     if ($prob)
