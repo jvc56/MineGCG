@@ -174,7 +174,7 @@ sub mine
       }
       elsif ($game->{'warnings'})
       {
-        print_or_append( "\n" . $game->warnings, $html, 0);
+        print_or_append( "\n" . $game->{'warnings'}, $html, 0);
         $num_warnings++;
       }
 
