@@ -176,14 +176,14 @@ sub mine
         $num_warnings++;
       }
 
-      if ($verbose)
-      {
-        print_or_append( "\nData structures for $full_game_file_name\n\n", $html, 0);
-        print_or_append( $game->toString(), $html, 0);
-        $single_game_stats->addGame($game);
-        print_or_append( $single_game_stats->toString(), $html, 0);
-        $single_game_stats->resetStats();
-      }
+      #if ($verbose)
+      #{
+      #  print_or_append( "\nData structures for $full_game_file_name\n\n", $html, 0);
+      #  print_or_append( $game->toString(), $html, 0);
+      #  $single_game_stats->addGame($game);
+      #  print_or_append( $single_game_stats->toString(), $html, 0);
+      #  $single_game_stats->resetStats();
+      #}
       
       $all_stats->addGame($game);
       $at_least_one = 1;
@@ -213,8 +213,7 @@ sub mine
 
   if ($html)
   {
-    print "Content-type: text/javascript\n\n";
-    print $html_string;
+    print "<pre style='white-space: pre-wrap;' > $html_string </pre>";
   }
 }
 

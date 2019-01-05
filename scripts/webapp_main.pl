@@ -4,22 +4,22 @@ use warnings;
 use strict;
 use Getopt::Long;
 
-chdir("~/MineGCG");
+chdir("/home/jvc/MineGCG");
 
 require "./scripts/mine_games.pl";
 require "./scripts/sanitize.pl";
 
-my $name    = '';
+my $name;
 my $cort    = '';
 my $game    = '';
 my $tid     = '';
 
 GetOptions (
-            'name'    => \$name,
-            'cort'    => \$cort,
-            'game'    => \$game,
-            'tid'     => \$tid,
+            'name=s'    => \$name,
+            'cort:s'    => \$cort,
+            'game:s'    => \$game,
+            'tid:s'     => \$tid,
            );
 
-mine(sanitize($name), $cort, $game, 0, $tid, 1);
+mine(sanitize($name), $cort, $game, 1, $tid, 1);
 
