@@ -34,8 +34,6 @@ sub mine
   my $tourney_id     = shift;
   my $html           = shift;
 
-
-
   print_or_append( "\nProcessing game data...\n\n", $html, 0);
 
   my $all_stats = Stats->new();
