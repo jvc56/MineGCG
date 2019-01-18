@@ -26,8 +26,5 @@ foreach my $name_file (@name_files)
   $name_file =~ /(.*)\.txt/;
   my $name = $1;
   $name =~ s/_/ /g;
-  open(my $write_log1, '>>', $log_name);
-  print $write_log1 "\nMining $name\n";
-  close $write_log1;
   system "./scripts/main.pl -n '$name' -s >/dev/null 2>> $log_name";
 }

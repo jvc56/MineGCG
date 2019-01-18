@@ -16,6 +16,8 @@ my $wget_flags = Constants::WGET_FLAGS;
 my $players_by_country_prefix = Constants::CROSS_TABLES_COUNTRY_PREFIX;
 my $html_page_prefix = './downloads/player_by_country_';
 
+print "Log file for retrieve on " . localtime() . "\n\n"; 
+
 foreach my $country (@countries)
 {
   my $url = $players_by_country_prefix . $country;
@@ -34,13 +36,11 @@ foreach my $country (@countries)
   }
 
   my $num_names = scalar @player_names;
-  print "Retrieving the games of $num_names people for $country\n";
 
   while (@player_names)
   {
     my $raw_name = shift @player_names;
     my $name = $raw_name;
-    print "Retrieving games for $name\n";
     $name = sanitize($name);
     retrieve($name, $raw_name, "update", 0, 0, 0, 0, 1);
   }

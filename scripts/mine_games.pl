@@ -36,6 +36,21 @@ sub mine
 
   print_or_append( "\nProcessing game data...\n\n", $html, 0);
 
+  print_or_append( "\nStatistics for $player_name\n\n", $html, 0);
+
+  print_or_append( "\nThe two numbers after each bingo are the probability and the game number, respectively.\n", $html, 0);
+  print_or_append( "\nFor example, the bingo:\n\n", $html, 0);
+  print_or_append( "TETrODE 3294 [30361]\n\n", $html, 0);
+  print_or_append( "Has a probability of 3294 and appears in game 30361.\n", $html, 0);
+  
+  print_or_append( "\nPhonies and challenged plays don't have probabilities listed and are followed only by the game number.\n", $html, 0);  
+
+  print_or_append( "\nYou can access games by their game number by using this address:\n", $html, 0);
+  print_or_append( "https://www.cross-tables.com/annotated.php?u=<game_number>\n", $html, 0);
+  print_or_append( "\nFor example, the TETrODE bingo appears in the game at this address:\n", $html, 0);
+  print_or_append( "https://www.cross-tables.com/annotated.php?u=30361\n\n", $html, 0);
+
+
   my $all_stats = Stats->new();
   my $single_game_stats = Stats->new();
   my %tourney_game_hash;
@@ -176,14 +191,14 @@ sub mine
         $num_warnings++;
       }
 
-      #if ($verbose)
-      #{
-      #  print_or_append( "\nData structures for $full_game_file_name\n\n", $html, 0);
-      #  print_or_append( $game->toString(), $html, 0);
-      #  $single_game_stats->addGame($game);
-      #  print_or_append( $single_game_stats->toString(), $html, 0);
-      #  $single_game_stats->resetStats();
-      #}
+      if ($verbose)
+      {
+       print_or_append( "\nData structures for $full_game_file_name\n\n", $html, 0);
+       print_or_append( $game->toString(), $html, 0);
+       $single_game_stats->addGame($game);
+       print_or_append( $single_game_stats->toString(), $html, 0);
+       $single_game_stats->resetStats();
+      }
       
       $all_stats->addGame($game);
       $at_least_one = 1;

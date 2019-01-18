@@ -1,11 +1,8 @@
 TODO:
 
- - Update the README.md
- - Remove Unnecessary imports
- - Add comments
- - Make use of STDERR for mine and retrieve
+ - Add game number to phonies and bings
+ - Add names to top of report maybe with short description
 
 LOWER PRIORITY:
 
- - Write GCGs that trigger these errors and asserions
  - Better TWL lost challenge / pass heuristics

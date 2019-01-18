@@ -473,6 +473,8 @@ sub getBingos
 
   my @bingos = ();
 
+  my @filename_items = split /\./, $this->{'filename'};
+
   foreach my $move (@moves)
   {
     my $bingo = $move->isBingo($player);
@@ -488,7 +490,7 @@ sub getBingos
       {
         $prob = " " . $prob;
       }
-      push @bingos, $this->readableMove($move) . $prob;
+      push @bingos, $this->readableMove($move) . $prob . " [". $filename_items[6] . "]";
     }
   }
   return \@bingos;
@@ -503,6 +505,8 @@ sub getPhoniesFormed
   my @moves = @{$this->{'moves'}};
 
   my @phonies = ();
+
+  my @filename_items = split /\./, $this->{'filename'};
 
   foreach my $move (@moves)
   {
@@ -536,7 +540,7 @@ sub getPhoniesFormed
     }
     if ($move_phonies)
     {
-      push @phonies, $move_phonies;
+      push @phonies, $move_phonies . " [". $filename_items[6] . "]";
     }
   }
   return \@phonies;
@@ -551,6 +555,8 @@ sub getPlaysChallenged
   my @moves = @{$this->{'moves'}};
 
   my @plays_chal = ();
+
+  my @filename_items = split /\./, $this->{'filename'};
 
   for (my $i = 0; $i < scalar @moves; $i++)
   {
@@ -572,7 +578,7 @@ sub getPlaysChallenged
       {
         $readable_play = $readable_play."*";
       }
-      push @plays_chal, $readable_play;
+      push @plays_chal, $readable_play . " [". $filename_items[6] . "]";
     }
   }
   return \@plays_chal;

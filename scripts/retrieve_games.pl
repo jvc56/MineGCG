@@ -40,7 +40,7 @@ sub retrieve
 
   system "mkdir -p downloads";
 
-  print "Retrieving games...\n";
+  if ($verbose) {print "Retrieving games...\n";}
   if ($option eq "reset" && -e $dir)
   {
     system "rm -r $dir";
@@ -308,9 +308,7 @@ sub retrieve
     }
   }
   
-  print "\nDone retrieving\n";
-
-  print "Number of invalid filenames: $num_invalid_filenames\n";
+  if ($verbose) {print "Number of invalid filenames: $num_invalid_filenames\n";}
   if ($num_invalid_filenames > 0)
   {
     print "Invalid filenames:\n$invalid_filenames\n";
