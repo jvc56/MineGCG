@@ -3,6 +3,8 @@
 use warnings;
 use strict;
 
+chdir("/home/jvc/MineGCG");
+
 my $full_start_time =  "\nStarted: " . localtime() . "\n";
 
 my $preload_start_time = time;
