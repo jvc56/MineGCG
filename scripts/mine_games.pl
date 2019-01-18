@@ -46,7 +46,7 @@ sub mine
   print_or_append( "\nPhonies and challenged plays don't have probabilities listed and are followed only by the game number.\n", $html, 0);  
 
   print_or_append( "\nYou can access games by their game number by using this address:\n", $html, 0);
-  print_or_append( "https://www.cross-tables.com/annotated.php?u=<game_number>\n", $html, 0);
+  print_or_append( "https://www.cross-tables.com/annotated.php?u=game_number\n", $html, 0);
   print_or_append( "\nFor example, the TETrODE bingo appears in the game at this address:\n", $html, 0);
   print_or_append( "https://www.cross-tables.com/annotated.php?u=30361\n\n", $html, 0);
 
