@@ -34,9 +34,11 @@ sub mine
   my $tourney_id     = shift;
   my $html           = shift;
 
-  print_or_append( "\nProcessing game data...\n\n", $html, 0);
+  print_or_append( "\nStatistics for $player_name\n\n\n\n", $html, 0);
 
-  print_or_append( "\nStatistics for $player_name\n\n", $html, 0);
+  print_or_append( "\nFor the web version of this tool, triple triples are highlighted red and\n", $html, 0);
+  print_or_append( "\nbingoes that are nines or longer are highlighted green.\n", $html, 0);
+  
 
   print_or_append( "\nThe two numbers after each bingo are the probability and the game number, respectively.\n", $html, 0);
   print_or_append( "\nFor example, the bingo:\n\n", $html, 0);
@@ -48,7 +50,7 @@ sub mine
   print_or_append( "\nYou can access games by their game number by using this address:\n", $html, 0);
   print_or_append( "https://www.cross-tables.com/annotated.php?u=game_number\n", $html, 0);
   print_or_append( "\nFor example, the TETrODE bingo appears in the game at this address:\n", $html, 0);
-  print_or_append( "https://www.cross-tables.com/annotated.php?u=30361\n\n", $html, 0);
+  print_or_append( "https://www.cross-tables.com/annotated.php?u=30361\n\n\n\n", $html, 0);
 
 
   my $all_stats = Stats->new();
@@ -177,7 +179,7 @@ sub mine
         $lexicon_ref = CSW15::CSW15_LEXICON;
       }
 
-      my $game = Game->new($full_game_file_name, $player_is_first, $lexicon_ref, $player_one_name, $player_two_name);
+      my $game = Game->new($full_game_file_name, $player_is_first, $lexicon_ref, $player_one_name, $player_two_name, $html);
       
       if (ref($game) ne "Game")
       {

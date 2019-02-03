@@ -15,12 +15,14 @@ sub new
 {
   my $this = shift;
 
-  my $filename        = shift;
-  my $player_is_first = shift;
-  my $lexicon_ref     = shift;
+  my $filename             = shift;
+  my $player_is_first      = shift;
+  my $lexicon_ref          = shift;
 
   my $player_one_real_name = shift;
   my $player_two_real_name = shift;
+
+  my $html                 = shift;
 
   my $player_one_name;
   my $player_two_name;
@@ -386,7 +388,8 @@ sub new
   	player_two_name => $player_two_real_name,
     board           => $board,
     moves           => \@moves,
-    warnings        => $warning
+    warnings        => $warning,
+    html            => $html
   );
 
   my $self = bless \%game, $this;
@@ -490,7 +493,25 @@ sub getBingos
       {
         $prob = " " . $prob;
       }
-      push @bingos, $this->readableMove($move) . $prob . " [". $filename_items[6] . "]";
+
+      my $opening_mark_tag = "";
+      my $closing_mark_tag = "";
+
+      if ($this->{'html'})
+      {
+        if ($move->isTripleTriple($player))
+        {
+          $opening_mark_tag = "<mark style='background-color: red'>";
+          $closing_mark_tag = "</mark>";
+        }
+        elsif ($move->getLength($player) >= 9)
+        {
+          $opening_mark_tag = "<mark style='background-color: green'>";
+          $closing_mark_tag = "</mark>";
+        }
+      }
+
+      push @bingos, $opening_mark_tag . $this->readableMove($move) . $closing_mark_tag .  $prob . " [". $filename_items[6] . "]";
     }
   }
   return \@bingos;

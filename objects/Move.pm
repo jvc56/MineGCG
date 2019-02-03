@@ -54,21 +54,7 @@ sub new
   my $self = bless \%move, $this;
   return $self;
 }
-sub setMoveType
-{
-  my $this = shift;
 
-  my $type = shift;
-  $this->{'play_type'} = $type;
-}
-
-sub setMovePlay
-{
-  my $this = shift;
-
-  my $play = shift;
-  $this->{'play'} = $play;
-}
 sub getAlphanumericLocation
 {
   my $this = shift;
