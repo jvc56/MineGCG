@@ -42,7 +42,7 @@ foreach my $country (@countries)
     my $raw_name = shift @player_names;
     my $name = $raw_name;
     $name = sanitize($name);
-    retrieve($name, $raw_name, "update", 0, 0, 0, 0, 1);
+    retrieve($name, $raw_name, "update", 0, 0, 0, 0, 0, 0, 0, 1);
   }
   system "rm '$html_page_name'";
 }

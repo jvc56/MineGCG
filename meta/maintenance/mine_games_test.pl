@@ -17,6 +17,8 @@ open(my $log, '>', $log_name);
 print $log "Log file for mine_games_test on " . localtime() . "\n\n"; 
 close $log;
 
+my $count = 0;
+
 foreach my $name_file (@name_files)
 {
   if ($name_file eq '.' || $name_file eq '..')
@@ -26,5 +28,8 @@ foreach my $name_file (@name_files)
   $name_file =~ /(.*)\.txt/;
   my $name = $1;
   $name =~ s/_/ /g;
-  system "./scripts/main.pl -n '$name' -s >/dev/null 2>> $log_name";
+  system "./scripts/main.pl -n '$name' -ski >/dev/null 2>> $log_name";
+  $count++;
 }
+
+print $log "\n\n$count names mined\n\n";
