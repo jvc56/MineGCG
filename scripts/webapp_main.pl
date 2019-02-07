@@ -22,9 +22,9 @@ GetOptions (
             'cort:s'    => \$cort,
             'game:s'    => \$game,
             'tid:s'     => \$tid,
-            'opponent:s'     => \$opp,
-            'startdate:s'   => \$start,
-            'enddate:s'     => \$end
+            'opponent:s'     => \$opponent,
+            'startdate:s'   => \$startdate,
+            'enddate:s'     => \$enddate
            );
 
 mine(sanitize($name), $cort, $game, $opponent, $startdate, $enddate, 1, $tid, 1);
