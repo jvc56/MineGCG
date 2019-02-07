@@ -582,7 +582,7 @@ sub highlightPlay
   {
 
     my $is_tt = $move->isTripleTriple($player);
-    my $is_na = $move->getLength($player) >= 9;
+    my $is_na = $move->getLength($player) >= 9 && $move->isBingo($player);
     my $is_im = $prob > 20000;
 
     my $opening_mark_tag = "";
