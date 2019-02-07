@@ -13,7 +13,7 @@ my $name;
 my $cort    = '';
 my $game    = '';
 my $tid     = '';
-my $oppopnent     = '';
+my $opponent     = '';
 my $startdate   = '';
 my $enddate     = '';
 
