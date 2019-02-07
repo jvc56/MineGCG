@@ -37,9 +37,46 @@ sub mine
   my $tourney_id        = shift;
   my $html              = shift;
 
-  print_or_append( "\nStatistics for $player_name\n\n\n\n\n", $html, 0);
+  print_or_append( "\nStatistics for $player_name\n\n\n", $html, 0);
+  
+  print_or_append( "\nSearch Parameters: \n", $html, 0);
+  
+  print_or_append( "\n  Player:        $player_name", $html, 0);
 
 
+  print_or_append( "\n  Game type:     ", $html, 0);
+
+  if (uc $cort eq 'C') {print_or_append( "CLUB OR CASUAL", $html, 0);}
+  elsif (uc $cort eq 'T') {print_or_append( "TOURNAMENT", $html, 0);}
+  else {print_or_append( "-", $html, 0);}
+
+  print_or_append( "\n  Tournament ID: ", $html, 0);
+  
+  if ($tourney_id) {print_or_append( $tourney_id, $html, 0);}
+  else {print_or_append( "-", $html, 0);}
+
+  print_or_append( "\n  Game ID:       ", $html, 0);
+  
+  if ($single_game_id) {print_or_append( $single_game_id, $html, 0);}
+  else {print_or_append( "-", $html, 0);}
+
+  print_or_append( "\n  Opponent:      ", $html, 0);
+  
+  if ($opponent_name) {print_or_append( $opponent_name, $html, 0);}
+  else {print_or_append( "-", $html, 0);}
+
+  print_or_append( "\n  Start Date:    ", $html, 0);
+  
+  if ($startdate) {print_or_append( $startdate, $html, 0);}
+  else {print_or_append( "-", $html, 0);}
+
+  print_or_append( "\n  End Date:      ", $html, 0);
+  
+  if ($enddate) {print_or_append( $enddate, $html, 0);}
+  else {print_or_append( "-", $html, 0);}
+  
+
+  print_or_append( "\n\n\n", $html, 0);
 
   if ($html)
   {
