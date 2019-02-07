@@ -27,29 +27,58 @@ sub mine
   my $names_dir               = Constants::NAMES_DIRECTORY_NAME;
   my $blacklisted_tournaments = Constants::BLACKLISTED_TOURNAMENTS;
 
-  my $player_name    = shift;
-  my $cort           = shift;
-  my $single_game_id = shift;
-  my $verbose        = shift;
-  my $tourney_id     = shift;
-  my $html           = shift;
+  my $player_name       = shift;
+  my $cort              = shift;
+  my $single_game_id    = shift;
+  my $opponent_name     = shift;
+  my $startdate         = shift;
+  my $enddate           = shift;
+  my $verbose           = shift;
+  my $tourney_id        = shift;
+  my $html              = shift;
 
-  print_or_append( "\nStatistics for $player_name\n\n\n\n", $html, 0);
+  print_or_append( "\nStatistics for $player_name\n\n\n\n\n", $html, 0);
 
-  print_or_append( "\nFor the web version of this tool, triple triples are highlighted red and\n", $html, 0);
-  print_or_append( "\nbingoes that are nines or longer are highlighted green.\n", $html, 0);
+
+
+  if ($html)
+  {
+
+    my $tt_color    = Constants::TRIPLE_TRIPLE_COLOR;
+    my $na_color    = Constants::NINE_OR_ABOVE_COLOR;
+    my $im_color    = Constants::IMPROBABLE_COLOR;
+    my $tt_na_color = Constants::TRIPLE_TRIPLE_NINE_COLOR;
+    my $im_na_color = Constants::IMPROBABLE_NINE_OR_ABOVE_COLOR;
+    my $im_tt_color = Constants::IMPROBABLE_TRIPLE_TRIPE_COLOR;
+    my $at_color    = Constants::ALL_THREE_COLOR;
+
+    my $opening_mark_tag = "<mark style='background-color: ";
+    my $closing_mark_tag = "</mark>";  
+
+    print_or_append( "COLOR KEY:\n\n", $html, 0);
+    print_or_append( "  $opening_mark_tag $tt_color'>Triple Triple$closing_mark_tag\n\n", $html, 0);
+    print_or_append( "  $opening_mark_tag $na_color'>Bingo Nine or Above$closing_mark_tag\n\n", $html, 0);
+    print_or_append( "  $opening_mark_tag $im_color'>Improbable$closing_mark_tag\n\n", $html, 0);
+    print_or_append( "  $opening_mark_tag $tt_na_color'>Triple Triple and Bingo Nine or Above$closing_mark_tag\n\n", $html, 0);
+    print_or_append( "  $opening_mark_tag $im_na_color'>Improbable and Bingo Nine or Above$closing_mark_tag\n\n", $html, 0);
+    print_or_append( "  $opening_mark_tag $im_tt_color'>Triple Triple and Improbable$closing_mark_tag\n\n", $html, 0);
+    print_or_append( "  $opening_mark_tag $at_color'>Triple Triple and Bingo Nine or Above and Improbable$closing_mark_tag\n\n", $html, 0);
+    
+    print_or_append( "\n\n", $html, 0);
+  }
+
   
 
-  print_or_append( "\nThe two numbers after each bingo are the probability and the game number, respectively.\n", $html, 0);
-  print_or_append( "\nFor example, the bingo:\n\n", $html, 0);
+  print_or_append( "The two numbers after each bingo are the probability and the game number, respectively.\n", $html, 0);
+  print_or_append( "For example, the bingo:\n\n", $html, 0);
   print_or_append( "TETrODE 3294 [30361]\n\n", $html, 0);
   print_or_append( "Has a probability of 3294 and appears in game 30361.\n", $html, 0);
   
-  print_or_append( "\nPhonies and challenged plays don't have probabilities listed and are followed only by the game number.\n", $html, 0);  
+  print_or_append( "Phonies and challenged plays don't have probabilities listed and are followed only by the game number.\n\n", $html, 0);  
 
-  print_or_append( "\nYou can access games by their game number by using this address:\n", $html, 0);
-  print_or_append( "https://www.cross-tables.com/annotated.php?u=game_number\n", $html, 0);
-  print_or_append( "\nFor example, the TETrODE bingo appears in the game at this address:\n", $html, 0);
+  print_or_append( "You can access games by their game number by using this address:\n\n", $html, 0);
+  print_or_append( "https://www.cross-tables.com/annotated.php?u=game_number\n\n", $html, 0);
+  print_or_append( "For example, the TETrODE bingo appears in the game at this address:\n\n", $html, 0);
   print_or_append( "https://www.cross-tables.com/annotated.php?u=30361\n\n\n\n", $html, 0);
 
 
@@ -62,7 +91,7 @@ sub mine
   my $num_warnings = 0;
 
   my $player_indexes_filename = "$names_dir/$player_name.txt";
-  if (-e $player_indexes_filename)
+  if (-e $player_indexes_filename && $player_name ne $opponent_name)
   {
     open(PLAYER_INDEXES, '<', $player_indexes_filename);
     while (<PLAYER_INDEXES>)
@@ -73,6 +102,8 @@ sub mine
 
       my @meta_data = split /\./, $game_file_name;
       my $date            = $meta_data[0];
+      my $date_sanitized  = $date;
+      $date_sanitized =~ s/[^\d]//g;
       my $game_tourney_id = $meta_data[1];
       my $round_number    = $meta_data[2];
       my $tourney_name    = $meta_data[3];
@@ -89,7 +120,7 @@ sub mine
         $player_is_first = 1;
         if ($player_two_name ne $player_name)
         {
-          print_or_append( "Didn't find a matching player name for $game_file_name\n", $html, 0);
+          print_or_append( "\nERROR:  Matching player name not found\nFILE:   $game_file_name\n", $html, 1);
           return;
         }
       }
@@ -120,9 +151,23 @@ sub mine
         if ($verbose) {print_or_append( "Game $full_game_file_name is not in the specified tournament\n", $html, 0);}
         next;
       }
+      if ($opponent_name && $opponent_name ne $player_one_name && $opponent_name ne $player_two_name)
+      {
+        if ($verbose) {print_or_append( "Game $full_game_file_name is not against the specified opponent\n", $html, 0);}
+        next;
+      }
+      if (($startdate && $date_sanitized < $startdate) || ($enddate && $date_sanitized > $enddate))
+      {
+        if ($verbose) {print_or_append( "Game $full_game_file_name is not in the specified timeframe\n", $html, 0);}
+        next;  
+      }
+      else
+      {
+        print "this date: $date_sanitized\nstart: $startdate\nend: $enddate\n\n";
+      }
       if ($blacklisted_tournaments->{$game_tourney_id})
       {
-        if ($verbose) {print_or_append( "Game $full_game_file_name is from a blacklisted tournament\n", $html, 0);}
+        print_or_append( "Game $full_game_file_name is from a blacklisted tournament\n", $html, 0);
         next;
       }
 
@@ -141,7 +186,7 @@ sub mine
         my $key = $game_tourney_id.'+'.$round_number;
         if($tourney_game_hash{$key})
         {
-          if ($verbose) {print_or_append( "Repeat game $full_game_file_name found with tournament id $game_tourney_id and round number $round_number\n", $html, 0);}
+          print_or_append( "Repeat game $full_game_file_name found with tournament id $game_tourney_id and round number $round_number\n", $html, 0);
           next;
         }
         $tourney_game_hash{$key} = 1;
@@ -175,7 +220,7 @@ sub mine
       }
       else
       {
-        if ($verbose) {print_or_append( "No lexicon found for game $full_game_file_name, using CSW15 as a default\n", $html, 0);}
+        print_or_append( "No lexicon found for game $full_game_file_name, using CSW15 as a default\n", $html, 0);
         $lexicon_ref = CSW15::CSW15_LEXICON;
       }
 
@@ -220,8 +265,6 @@ sub mine
   else
   {
     print_or_append( "\nNo valid games found\n", $html, 0);
-    print_or_append( "To update or reset the games directory, use the --update or --reset flags respectively\n", $html, 0);
-    print_or_append( "To attempt to resolve inconsistencies, use the --resolve flag\n", $html, 0);
   }
   print_or_append( "\n", $html, 0);
   print_or_append( "Errors:   $num_errors\n", $html, 0);

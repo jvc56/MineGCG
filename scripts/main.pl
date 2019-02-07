@@ -9,15 +9,19 @@ require "./scripts/retrieve_games.pl";
 require "./scripts/mine_games.pl";
 require "./scripts/sanitize.pl";
 
-my $verbose = '';
-my $update  = '';
-my $reset   = '';
-my $cort    = '';
-my $tid     = '';
-my $html    = '';
-my $resolve = '';
+my $verbose        = '';
+my $update         = '';
+my $reset          = '';
+my $cort           = '';
+my $tid            = '';
+my $html           = '';
+my $resolve        = '';
 my $skipmetaupdate = '';
-my $game    = '';
+my $game           = '';
+my $opponent       = '';
+my $opponent_sanitized;
+my $startdate      = '';
+my $enddate        = '';
 my $name;
 my $raw_name;
 
@@ -31,6 +35,9 @@ GetOptions (
             'reset'            => \$reset,
             'cort:s'           => \$cort,
             'tournament-id:s'  => \$tid,
+            'opponent:s'       => \$opponent,
+            'startdate:s'      => \$startdate,
+            'enddate:s'      => \$enddate,
             'html'             => \$html,
             'resolve'          => \$resolve,
             'name=s'           => \$name,
@@ -51,9 +58,12 @@ if ($reset)
 
 $raw_name = $name;
 $name = sanitize($name);
+$opponent_sanitized = sanitize($opponent);
+$startdate =~ s/[^\d]//g;
+$enddate =~ s/[^\d]//g;
 
-retrieve($name, $raw_name, $option, $tid, $cort, $game, $verbose, $resolve);
-mine($name, $cort, $game, $verbose, $tid, $html);
+retrieve($name, $raw_name, $option, $tid, $cort, $game, $opponent_sanitized, $startdate, $enddate, $verbose, $resolve);
+mine($name, $cort, $game, $opponent_sanitized, $startdate, $enddate, $verbose, $tid, $html);
 
 if (!$skipmetaupdate)
 {
@@ -106,7 +116,7 @@ __END__
    -s, --skipmetaupdate  Skip the check for the most recent version of MineGCG
                          Which has a tournament id of 10353
        --resolve         Attempt to resolve inconsistencies in game and index data
-       --html            Make output HTML-friendly, still unimplemented
+       --html            Make output HTML-friendly
    -n, --name            name of the player whose games will be processed
                          (Must be in quotes, for example, "Matthew O'Connor")
 

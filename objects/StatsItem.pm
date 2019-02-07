@@ -65,6 +65,14 @@ sub addGame
   {
     $this->__updateBingoList($game, $this_player);
   }
+  elsif ($name eq "Triple Triples")
+  {
+    $this->__updateTripleTripleList($game, $this_player);
+  }
+  elsif ($name eq "Bingo Nines or Above")
+  {
+    $this->__updateBingoNinesOrAboveList($game, $this_player);
+  }
   elsif ($name eq "Phonies Formed")
   {
     $this->__updatePhoniesFormed($game, $this_player);
@@ -156,6 +164,36 @@ sub __updateBingoList
   }
 
   push @{$this->{'list'}}, @{$game->getBingos($this_player)};
+}
+
+sub __updateTripleTripleList
+{
+  my $this = shift;
+  my $game = shift;
+  my $this_player = shift;
+
+  if (!$this->{'init'})
+  {
+    $this->{'init'} = 1;
+    $this->{'list'} = ();
+  }
+
+  push @{$this->{'list'}}, @{$game->getTripleTriples($this_player)};
+}
+
+sub __updateBingoNinesOrAboveList
+{
+  my $this = shift;
+  my $game = shift;
+  my $this_player = shift;
+
+  if (!$this->{'init'})
+  {
+    $this->{'init'} = 1;
+    $this->{'list'} = ();
+  }
+
+  push @{$this->{'list'}}, @{$game->getBingoNinesOrAbove($this_player)};
 }
 
 sub __updatePhoniesFormed

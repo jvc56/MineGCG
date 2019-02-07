@@ -494,27 +494,149 @@ sub getBingos
         $prob = " " . $prob;
       }
 
-      my $opening_mark_tag = "";
-      my $closing_mark_tag = "";
-
-      if ($this->{'html'})
-      {
-        if ($move->isTripleTriple($player))
-        {
-          $opening_mark_tag = "<mark style='background-color: red'>";
-          $closing_mark_tag = "</mark>";
-        }
-        elsif ($move->getLength($player) >= 9)
-        {
-          $opening_mark_tag = "<mark style='background-color: green'>";
-          $closing_mark_tag = "</mark>";
-        }
-      }
-
-      push @bingos, $opening_mark_tag . $this->readableMove($move) . $closing_mark_tag .  $prob . " [". $filename_items[6] . "]";
+      push @bingos, $this->highlightPlay($move, $player, $prob) .  $prob . " [". $filename_items[6] . "]";
     }
   }
   return \@bingos;
+}
+
+sub getTripleTriples
+{
+  my $this = shift;
+
+  my $player = shift;
+
+  my @moves = @{$this->{'moves'}};
+
+  my @tts = ();
+
+  my @filename_items = split /\./, $this->{'filename'};
+
+  foreach my $move (@moves)
+  {
+    my $tt = $move->isTripleTriple($player);
+    if ($tt)
+    {
+      my $tt_cap = $this->readableMoveCapitalized($move);
+      my $prob = $this->{'lexicon'}->{$tt_cap};
+      if (!$prob)
+      {
+        $prob = "* 0";
+      }
+      else
+      {
+        $prob = " " . $prob;
+      }
+      push @tts, $this->highlightPlay($move, $player, $prob) .  $prob . " [". $filename_items[6] . "]";
+    }
+  }
+  return \@tts;
+}
+
+sub getBingoNinesOrAbove
+{
+  my $this = shift;
+
+  my $player = shift;
+
+  my @moves = @{$this->{'moves'}};
+
+  my @bnas = ();
+
+  my @filename_items = split /\./, $this->{'filename'};
+
+  foreach my $move (@moves)
+  {
+    my $bna = $move->getLength($player) >= 9 && $move->isBingo($player);
+    if ($bna)
+    {
+      my $bna_cap = $this->readableMoveCapitalized($move);
+      my $prob = $this->{'lexicon'}->{$bna_cap};
+      if (!$prob)
+      {
+        $prob = "* 0";
+      }
+      else
+      {
+        $prob = " " . $prob;
+      }
+      push @bnas, $this->highlightPlay($move, $player, $prob) .  $prob . " [". $filename_items[6] . "]";
+    }
+  }
+  return \@bnas;
+}
+
+sub highlightPlay
+{
+  my $this = shift;
+  
+  my $move = shift;
+  my $player = shift;
+  my $prob = shift;
+  $prob =~ s/\*//g;
+
+
+  my $highlighted_play = $this->readableMove($move);
+
+  if ($this->{'html'})
+  {
+
+    my $is_tt = $move->isTripleTriple($player);
+    my $is_na = $move->getLength($player) >= 9;
+    my $is_im = $prob > 20000;
+
+    my $opening_mark_tag = "";
+    my $closing_mark_tag = "";
+
+    my $tt_color    = Constants::TRIPLE_TRIPLE_COLOR;
+    my $na_color    = Constants::NINE_OR_ABOVE_COLOR;
+    my $im_color    = Constants::IMPROBABLE_COLOR;
+    my $tt_na_color = Constants::TRIPLE_TRIPLE_NINE_COLOR;
+    my $im_na_color = Constants::IMPROBABLE_NINE_OR_ABOVE_COLOR;
+    my $im_tt_color = Constants::IMPROBABLE_TRIPLE_TRIPE_COLOR;
+    my $at_color    = Constants::ALL_THREE_COLOR;
+
+    my $color = '';
+
+    if ($is_tt && $is_na && $is_im)
+    {
+      $color = $at_color;
+    }
+    elsif ($is_tt && $is_na)
+    {
+      $color = $tt_na_color;
+    }
+    elsif ($is_im && $is_tt)
+    {
+      $color = $im_tt_color;
+    }
+    elsif ($is_im && $is_na)
+    {
+      $color = $im_na_color;
+    }
+    elsif ($is_tt)
+    {
+      $color = $tt_color;
+    }
+    elsif ($is_na)
+    {
+      $color = $na_color;
+    }
+    elsif ($is_im)
+    {
+      $color = $im_color;
+    }
+
+    if ($color)
+    {
+      $opening_mark_tag = "<mark style='background-color: $color'>";
+      $closing_mark_tag = "</mark>";  
+    }
+
+    $highlighted_play = $opening_mark_tag . $highlighted_play . $closing_mark_tag
+  }
+
+  return $highlighted_play;
 }
 
 sub getPhoniesFormed

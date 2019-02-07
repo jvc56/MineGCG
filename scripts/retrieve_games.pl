@@ -28,6 +28,9 @@ sub retrieve
   my $tourney_id        = shift;
   my $tourney_or_casual = shift;
   my $single_game_id    = shift;
+  my $opponent_name     = shift;
+  my $startdate         = shift;
+  my $enddate           = shift;
   my $verbose           = shift;
   my $resolve           = shift;
 
@@ -94,8 +97,8 @@ sub retrieve
   open(RESULTS, '<', $annotated_games_page_name);
   while (<RESULTS>)
   {
-    my @matches = ($_ =~ /href=.annotated.php.u=(\d+).>.*?href=.tourney.php.t=(.+?).>([^<]*)<.a><.td><td>([^<]*)<.td><td>([^<]*)<.td><td><.td><td>([^<]*)</g);
-    #game_id, tourney_id, tourney_name, date, round_number, dictionary
+    my @matches = ($_ =~ /href=.annotated.php.u=(\d+).>\w+<.a><.td><td class=.nowrap.><a href=.results.php.p=\d+.>(.+?)<.a><.td><td><a href=.tourney.php.t=(.+?).>([^<]*)<.a><.td><td>([^<]*)<.td><td>([^<]*)<.td><td><.td><td>([^<]*)</g);
+    #game_id, opponent, tourney_id, tourney_name, date, round_number, dictionary
     push @game_ids, @matches;
   }
   # Create the directory to store the GCGs
@@ -115,7 +118,7 @@ sub retrieve
 
   # Iterate through the annotated game ids to fetch all of
   # the player's annotated games
-  my $games_to_download = (scalar @game_ids) / 6;
+  my $games_to_download = (scalar @game_ids) / 7;
   my $count = 0;
   my $game_with_no_index    = 0;
   my $index_with_no_game    = 0;
@@ -126,9 +129,13 @@ sub retrieve
 
     #game_id, tourney_id, tourney_name, date, round_number, dictionary
     my $id              = shift @game_ids;
+    my $this_opponent   = shift @game_ids;
+    $this_opponent = sanitize($this_opponent);
     my $game_tourney_id = shift @game_ids;
     my $tourney_name    = shift @game_ids;
     my $date            = shift @game_ids;
+    my $date_sanitized = $date;
+    $date_sanitized =~ s/[^\d]//g;
     my $round_number    = shift @game_ids;
     my $lexicon         = shift @game_ids;
 
@@ -177,6 +184,16 @@ sub retrieve
     {
       if ($verbose) {print "$num_str Game with id $id is a tournament game\n";}
       next;
+    }
+    if ($opponent_name && $this_opponent ne $opponent_name)
+    {
+      if ($verbose) {print "$num_str Game with id $id is not against the specified opponent\n";}
+      next;
+    }
+    if (($startdate && $date_sanitized < $startdate) || ($enddate && $date_sanitized > $enddate))
+    {
+      if ($verbose) {print "$num_str Game with id $id is not in the specified timeframe\n";}
+      next;  
     }
     if ($blacklisted_tournaments->{$game_tourney_id})
     {

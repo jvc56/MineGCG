@@ -199,7 +199,7 @@ sub isTripleTriple
 
   my $this_player = shift;
 
-  if($this_player != $this->{'turn'} || $this->{'play_type'} ne Constants::PLAY_TYPE_WORD)
+  if($this_player != $this->{'turn'} || $this->{'play_type'} ne Constants::PLAY_TYPE_WORD || $this->{'challenge_lost'})
   {
   	return 0;
   }

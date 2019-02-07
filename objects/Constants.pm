@@ -31,43 +31,47 @@ use constant STAT_ITEM_LIST_OPP    => 'OPPONENT LISTS';
 
 use constant STATS_ITEMS =>
 (
-    {name => 'Bingos',                type => STAT_ITEM_LIST_PLAYER},
-    {name => 'Phonies Formed',        type => STAT_ITEM_LIST_PLAYER},
-    {name => 'Plays That Were Challenged',   type => STAT_ITEM_LIST_PLAYER},
-    {name => 'Bingos',                type => STAT_ITEM_LIST_OPP},
-    {name => 'Phonies Formed',        type => STAT_ITEM_LIST_OPP},
-    {name => 'Plays That Were Challenged',      type => STAT_ITEM_LIST_OPP},
-    {name => 'Games',                 type => STAT_ITEM_GAME},
-    {name => 'Total Turns',           type => STAT_ITEM_GAME},
-    {name => 'Challenges',            type => STAT_ITEM_GAME},
-    {name => 'Wins',                  type => STAT_ITEM_PLAYER},
-    {name => 'Score',                 type => STAT_ITEM_PLAYER},
-    {name => 'Turns',                 type => STAT_ITEM_PLAYER},
-    {name => 'Score per Turn',        type => STAT_ITEM_PLAYER},
-    {name => 'High Game',             type => STAT_ITEM_PLAYER},
-    {name => 'Low Game',              type => STAT_ITEM_PLAYER},
-    {name => 'Bingos Played',         type => STAT_ITEM_PLAYER},
-    {name => 'Bingo Probabilities',   type => STAT_ITEM_PLAYER},
-    {name => 'Tiles Played',          type => STAT_ITEM_PLAYER},
-    {name => 'Power Tiles Played',    type => STAT_ITEM_PLAYER},
-    {name => 'Triple Triples Played', type => STAT_ITEM_PLAYER},
-    {name => 'Bingoless Games',       type => STAT_ITEM_PLAYER},
-    {name => 'Bonus Square Coverage', type => STAT_ITEM_PLAYER},
-    {name => 'Phony Plays',           type => STAT_ITEM_PLAYER},
-    {name => 'Wins',                  type => STAT_ITEM_OPP},
-    {name => 'Score',                 type => STAT_ITEM_OPP},
-    {name => 'Turns',                 type => STAT_ITEM_OPP},
-    {name => 'Score per Turn',        type => STAT_ITEM_OPP},
-    {name => 'High Game',             type => STAT_ITEM_OPP},
-    {name => 'Low Game',              type => STAT_ITEM_OPP},
-    {name => 'Bingos Played',         type => STAT_ITEM_OPP},
-    {name => 'Bingo Probabilities',   type => STAT_ITEM_OPP},
-    {name => 'Tiles Played',          type => STAT_ITEM_OPP},
-    {name => 'Power Tiles Played',    type => STAT_ITEM_OPP},
-    {name => 'Triple Triples Played', type => STAT_ITEM_OPP},
-    {name => 'Bingoless Games',       type => STAT_ITEM_OPP},
-    {name => 'Bonus Square Coverage', type => STAT_ITEM_OPP},
-    {name => 'Phony Plays',           type => STAT_ITEM_OPP},
+    {name => 'Bingos',                     type => STAT_ITEM_LIST_PLAYER},
+    {name => 'Triple Triples',             type => STAT_ITEM_LIST_PLAYER},
+    {name => 'Bingo Nines or Above',       type => STAT_ITEM_LIST_PLAYER},
+    {name => 'Phonies Formed',             type => STAT_ITEM_LIST_PLAYER},
+    {name => 'Plays That Were Challenged', type => STAT_ITEM_LIST_PLAYER},
+    {name => 'Bingos',                     type => STAT_ITEM_LIST_OPP},
+    {name => 'Triple Triples',             type => STAT_ITEM_LIST_OPP},
+    {name => 'Bingo Nines or Above',       type => STAT_ITEM_LIST_OPP},
+    {name => 'Phonies Formed',             type => STAT_ITEM_LIST_OPP},
+    {name => 'Plays That Were Challenged', type => STAT_ITEM_LIST_OPP},
+    {name => 'Games',                      type => STAT_ITEM_GAME},
+    {name => 'Total Turns',                type => STAT_ITEM_GAME},
+    {name => 'Challenges',                 type => STAT_ITEM_GAME},
+    {name => 'Wins',                       type => STAT_ITEM_PLAYER},
+    {name => 'Score',                      type => STAT_ITEM_PLAYER},
+    {name => 'Turns',                      type => STAT_ITEM_PLAYER},
+    {name => 'Score per Turn',             type => STAT_ITEM_PLAYER},
+    {name => 'High Game',                  type => STAT_ITEM_PLAYER},
+    {name => 'Low Game',                   type => STAT_ITEM_PLAYER},
+    {name => 'Bingos Played',              type => STAT_ITEM_PLAYER},
+    {name => 'Bingo Probabilities',        type => STAT_ITEM_PLAYER},
+    {name => 'Tiles Played',               type => STAT_ITEM_PLAYER},
+    {name => 'Power Tiles Played',         type => STAT_ITEM_PLAYER},
+    {name => 'Triple Triples Played',      type => STAT_ITEM_PLAYER},
+    {name => 'Bingoless Games',            type => STAT_ITEM_PLAYER},
+    {name => 'Bonus Square Coverage',      type => STAT_ITEM_PLAYER},
+    {name => 'Phony Plays',                type => STAT_ITEM_PLAYER},
+    {name => 'Wins',                       type => STAT_ITEM_OPP},
+    {name => 'Score',                      type => STAT_ITEM_OPP},
+    {name => 'Turns',                      type => STAT_ITEM_OPP},
+    {name => 'Score per Turn',             type => STAT_ITEM_OPP},
+    {name => 'High Game',                  type => STAT_ITEM_OPP},
+    {name => 'Low Game',                   type => STAT_ITEM_OPP},
+    {name => 'Bingos Played',              type => STAT_ITEM_OPP},
+    {name => 'Bingo Probabilities',        type => STAT_ITEM_OPP},
+    {name => 'Tiles Played',               type => STAT_ITEM_OPP},
+    {name => 'Power Tiles Played',         type => STAT_ITEM_OPP},
+    {name => 'Triple Triples Played',      type => STAT_ITEM_OPP},
+    {name => 'Bingoless Games',            type => STAT_ITEM_OPP},
+    {name => 'Bonus Square Coverage',      type => STAT_ITEM_OPP},
+    {name => 'Phony Plays',                type => STAT_ITEM_OPP},
 );
 
 use constant INDEX_COLUMN_MAPPING =>
@@ -107,6 +111,14 @@ use constant COLUMN_INDEX_MAPPING =>
     N => 13,
     O => 14
 };
+
+use constant TRIPLE_TRIPLE_COLOR            => 'red';
+use constant NINE_OR_ABOVE_COLOR            => 'lime';
+use constant IMPROBABLE_COLOR               => 'royalblue';
+use constant TRIPLE_TRIPLE_NINE_COLOR       => 'yellow';
+use constant IMPROBABLE_NINE_OR_ABOVE_COLOR => 'cyan';
+use constant IMPROBABLE_TRIPLE_TRIPE_COLOR  => 'blueviolet';
+use constant ALL_THREE_COLOR                => 'orangered';
 
 use constant NO_CHALLENGE          => 'No Challenge';
 use constant PLAYER_CHALLENGE_WON  => 'You Won';
