@@ -27,5 +27,5 @@ GetOptions (
             'enddate:s'     => \$enddate
            );
 
-mine(sanitize($name), $cort, $game, $opponent, $startdate, $enddate, 1, $tid, 1);
+mine(sanitize($name), $cort, $game, $opponent, $startdate, $enddate, 0, $tid, 1);
 
