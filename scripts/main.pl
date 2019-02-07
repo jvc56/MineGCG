@@ -37,7 +37,7 @@ GetOptions (
             'tournament-id:s'  => \$tid,
             'opponent:s'       => \$opponent,
             'startdate:s'      => \$startdate,
-            'enddate:s'      => \$enddate,
+            'enddate:s'        => \$enddate,
             'html'             => \$html,
             'resolve'          => \$resolve,
             'name=s'           => \$name,
