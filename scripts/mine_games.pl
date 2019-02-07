@@ -161,10 +161,6 @@ sub mine
         if ($verbose) {print_or_append( "Game $full_game_file_name is not in the specified timeframe\n", $html, 0);}
         next;  
       }
-      else
-      {
-        print "this date: $date_sanitized\nstart: $startdate\nend: $enddate\n\n";
-      }
       if ($blacklisted_tournaments->{$game_tourney_id})
       {
         print_or_append( "Game $full_game_file_name is from a blacklisted tournament\n", $html, 0);
