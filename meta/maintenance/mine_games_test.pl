@@ -15,7 +15,7 @@ my $log_name = './logs/mine_games_test.log';
 
 open(my $log, '>', $log_name);
 print $log "Log file for mine_games_test on " . localtime() . "\n\n"; 
-close $log;
+
 
 my $count = 0;
 
@@ -33,3 +33,4 @@ foreach my $name_file (@name_files)
 }
 
 print $log "\n\n$count names mined\n\n";
+close $log;
