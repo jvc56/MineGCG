@@ -171,32 +171,32 @@ sub mine
 
       if ($single_game_id && $single_game_id ne $id)
       {
-        if ($verbose) {print_or_append( "Game $full_game_file_name is not the specified game\n", $html, 0);}
+        if ($verbose) {print_or_append( "Game $full_game_file_name is not the specified game\n", $html, 0, $player_name);}
         next;
       }
       if ($tourney_id && $game_tourney_id ne $tourney_id)
       {
-        if ($verbose) {print_or_append( "Game $full_game_file_name is not in the specified tournament\n", $html, 0);}
+        if ($verbose) {print_or_append( "Game $full_game_file_name is not in the specified tournament\n", $html, 0, $player_name);}
         next;
       }
       if ($opponent_name && $opponent_name ne $player_one_name && $opponent_name ne $player_two_name)
       {
-        if ($verbose) {print_or_append( "Game $full_game_file_name is not against the specified opponent\n", $html, 0);}
+        if ($verbose) {print_or_append( "Game $full_game_file_name is not against the specified opponent\n", $html, 0, $player_name);}
         next;
       }
       if (($startdate && $date_sanitized < $startdate) || ($enddate && $date_sanitized > $enddate))
       {
-        if ($verbose) {print_or_append( "Game $full_game_file_name is not in the specified timeframe\n", $html, 0);}
+        if ($verbose) {print_or_append( "Game $full_game_file_name is not in the specified timeframe\n", $html, 0, $player_name);}
         next;  
       }
       if ($lexicon && $this_lexicon ne $lexicon)
       {
-        if ($verbose) {print_or_append( "Game $full_game_file_name is not in the specified lexicon\n", $html, 0);}
+        if ($verbose) {print_or_append( "Game $full_game_file_name is not in the specified lexicon\n", $html, 0, $player_name);}
         next;  
       }
       if ($blacklisted_tournaments->{$game_tourney_id})
       {
-        print_or_append( "Game $full_game_file_name is from a blacklisted tournament\n", $html, 0);
+        print_or_append( "Game $full_game_file_name is from a blacklisted tournament\n", $html, 0, $player_name);
         next;
       }
 
@@ -205,7 +205,7 @@ sub mine
       # Check for casual/club or only tournament games
       if ( (uc $cort eq 'T' && !$is_tourney_game) || (uc $cort eq 'C' && $is_tourney_game))
       {
-        if ($verbose) {print_or_append( "Game $full_game_file_name is not the specified type\n", $html, 0);}
+        if ($verbose) {print_or_append( "Game $full_game_file_name is not the specified type\n", $html, 0, $player_name);}
         next;
       }
 
@@ -215,7 +215,7 @@ sub mine
         my $key = $game_tourney_id.'+'.$round_number;
         if($tourney_game_hash{$key})
         {
-          print_or_append( "Repeat game $full_game_file_name found with tournament id $game_tourney_id and round number $round_number\n", $html, 0);
+          print_or_append( "Game $full_game_file_name is a duplicate\n", $html, 0, $player_name);
           next;
         }
         $tourney_game_hash{$key} = 1;
@@ -249,7 +249,7 @@ sub mine
       }
       else
       {
-        print_or_append( "No lexicon found for game $full_game_file_name, using CSW15 as a default\n", $html, 0);
+        print_or_append( "Game $full_game_file_name does not use a recognized lexicon, using CSW15 as a default\n", $html, 0, $player_name);
         $lexicon_ref = CSW15::CSW15_LEXICON;
       }
 
@@ -306,15 +306,29 @@ sub mine
   }
 }
 
-
 sub print_or_append
 {
   my $addition    = shift;
-  my $append      = shift;
+  my $html        = shift;
   my $error       = shift;
-  if ($append)
+  my $this_player = shift;
+
+  if ($html)
   {
+    my $dir_name = Constants::GAME_DIRECTORY_NAME;
+    if ($addition =~ /Game $dir_name.+\.(\d+)\.(\w+)\.(\w+)\.gcg/)
+    {
+      my $opp = $2;
+      if ($opp eq $this_player)
+      {
+        $opp = $3;
+      }
+      my $url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
+      my $link = "<a href='$url$1' target='_blank'>against $opp</a>";
+      $addition =~ s/Game .*\.gcg/Game $link/g;
+    }
     $html_string .= $addition;
+
   }
   else
   {
