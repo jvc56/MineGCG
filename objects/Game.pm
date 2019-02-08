@@ -494,7 +494,7 @@ sub getBingos
         $prob = " " . $prob;
       }
 
-      push @bingos, $this->highlightPlay($move, $player, $prob) .  $prob . " [". $filename_items[6] . "]";
+      push @bingos, $this->labelPlay($move, $player, $filename_items[6], $prob);
     }
   }
   return \@bingos;
@@ -527,7 +527,7 @@ sub getTripleTriples
       {
         $prob = " " . $prob;
       }
-      push @tts, $this->highlightPlay($move, $player, $prob) .  $prob . " [". $filename_items[6] . "]";
+      push @tts, $this->labelPlay($move, $player, $filename_items[6], $prob);
     }
   }
   return \@tts;
@@ -560,30 +560,130 @@ sub getBingoNinesOrAbove
       {
         $prob = " " . $prob;
       }
-      push @bnas, $this->highlightPlay($move, $player, $prob) .  $prob . " [". $filename_items[6] . "]";
+      push @bnas, $this->labelPlay($move, $player, $filename_items[6], $prob);
     }
   }
   return \@bnas;
 }
 
-sub highlightPlay
+sub getPhoniesFormed
 {
   my $this = shift;
-  
-  my $move = shift;
+
   my $player = shift;
-  my $prob = shift;
-  $prob =~ s/\*//g;
 
+  my @moves = @{$this->{'moves'}};
 
-  my $highlighted_play = $this->readableMove($move);
+  my @phonies = ();
 
-  if ($this->{'html'})
+  my @filename_items = split /\./, $this->{'filename'};
+
+  foreach my $move (@moves)
   {
+    my $play = $move->{'play'};
+    if (
+        $player != $move->{'turn'} ||
+        !$play ||
+        $play eq '---' ||
+        $move->{'play_type'} ne Constants::PLAY_TYPE_WORD
+       )
+    {
+      next;
+    }
+
+    my $move_phonies = '';
+    my $readable_play = $this->readableMove($move);
+    my $caps_play = $this->readableMoveCapitalized($move);
+    my $prob = $this->{'lexicon'}->{$caps_play};
+    if (!$prob)
+    {
+      $move_phonies .= $readable_play."*";
+    }
+    my @words_made = @{$move->{'words_made'}};
+    foreach my $word (@words_made)
+    {
+      my $word_made_prob = $this->{'lexicon'}->{$word};
+      if (!$word_made_prob)
+      {
+        $move_phonies .= ' '.$word."*";
+      }
+    }
+    if ($move_phonies)
+    {
+      push @phonies, $this->labelPlay($move, $player, $filename_items[6], $move_phonies);
+
+    }
+  }
+  return \@phonies;
+}
+
+sub getPlaysChallenged
+{
+  my $this = shift;
+
+  my $player = shift;
+
+  my @moves = @{$this->{'moves'}};
+
+  my @plays_chal = ();
+
+  my @filename_items = split /\./, $this->{'filename'};
+
+  for (my $i = 0; $i < scalar @moves; $i++)
+  {
+    my $move = $moves[$i];
+    my $next_move = undef;
+    if ($i + 1 < scalar @moves)
+    {
+      $next_move = $moves[$i + 1];
+    }
+    if (
+         ($player == $move->{'turn'} && $move->{'play_type'} ne Constants::PLAY_TYPE_PASS && ($move->{'challenge_lost'} || $move->{'challenge_points'}))
+         || ($next_move && $player != $next_move->{'turn'} && $next_move->{'challenge_lost'} && $next_move->{'play_type'} eq Constants::PLAY_TYPE_PASS)
+       )
+    {
+      my $readable_play = $this->readableMove($move);
+      my $caps_play = $this->readableMoveCapitalized($move);
+      my $prob = $this->{'lexicon'}->{$caps_play};
+      if (!$prob)
+      {
+        $readable_play = $readable_play."*";
+      }
+      push @plays_chal, $this->labelPlay($move, $player, $filename_items[6], $readable_play);
+    }
+  }
+  return \@plays_chal;
+}
+
+
+sub labelPlay
+{
+
+  my $this    = shift;
+  
+  my $move    = shift;
+  my $player  = shift;
+  my $game_id = shift;
+  my $prob    = shift;
+
+  my $has_prob = $prob =~ /[0-9]/;
+
+  my $labeled_play = $this->readableMove($move);
+
+  if (!$has_prob)
+  {
+    $labeled_play = $prob;
+  }
+
+  if ($this->{'html'} && $has_prob)
+  {
+
+    my $numeric_prob = $prob;
+    $numeric_prob =~ s/[^\d]//g;
 
     my $is_tt = $move->isTripleTriple($player);
     my $is_na = $move->getLength($player) >= 9 && $move->isBingo($player);
-    my $is_im = $prob > 20000;
+    my $is_im = $numeric_prob > 20000;
 
     my $opening_mark_tag = "";
     my $closing_mark_tag = "";
@@ -633,98 +733,23 @@ sub highlightPlay
       $closing_mark_tag = "</mark>";  
     }
 
-    $highlighted_play = $opening_mark_tag . $highlighted_play . $closing_mark_tag
+    $labeled_play = $opening_mark_tag . $labeled_play . $closing_mark_tag
   }
 
-  return $highlighted_play;
-}
-
-sub getPhoniesFormed
-{
-  my $this = shift;
-
-  my $player = shift;
-
-  my @moves = @{$this->{'moves'}};
-
-  my @phonies = ();
-
-  my @filename_items = split /\./, $this->{'filename'};
-
-  foreach my $move (@moves)
+  if ($has_prob)
   {
-    my $play = $move->{'play'};
-    if (
-        $player != $move->{'turn'} ||
-        !$play ||
-        $play eq '---' ||
-        $move->{'play_type'} ne Constants::PLAY_TYPE_WORD
-       )
-    {
-      next;
-    }
-
-    my $move_phonies = '';
-    my $readable_play = $this->readableMove($move);
-    my $caps_play = $this->readableMoveCapitalized($move);
-    my $prob = $this->{'lexicon'}->{$caps_play};
-    if (!$prob)
-    {
-      $move_phonies .= $readable_play."*";
-    }
-    my @words_made = @{$move->{'words_made'}};
-    foreach my $word (@words_made)
-    {
-      my $word_made_prob = $this->{'lexicon'}->{$word};
-      if (!$word_made_prob)
-      {
-        $move_phonies .= ' '.$word."*";
-      }
-    }
-    if ($move_phonies)
-    {
-      push @phonies, $move_phonies . " [". $filename_items[6] . "]";
-    }
+    $labeled_play .= $prob;
   }
-  return \@phonies;
-}
 
-sub getPlaysChallenged
-{
-  my $this = shift;
+  $labeled_play =~ s/^\s+|\s+$//g;
 
-  my $player = shift;
-
-  my @moves = @{$this->{'moves'}};
-
-  my @plays_chal = ();
-
-  my @filename_items = split /\./, $this->{'filename'};
-
-  for (my $i = 0; $i < scalar @moves; $i++)
+  if ($this->{'html'})
   {
-    my $move = $moves[$i];
-    my $next_move = undef;
-    if ($i + 1 < scalar @moves)
-    {
-      $next_move = $moves[$i + 1];
-    }
-    if (
-         ($player == $move->{'turn'} && $move->{'play_type'} ne Constants::PLAY_TYPE_PASS && ($move->{'challenge_lost'} || $move->{'challenge_points'}))
-         || ($next_move && $player != $next_move->{'turn'} && $next_move->{'challenge_lost'} && $next_move->{'play_type'} eq Constants::PLAY_TYPE_PASS)
-       )
-    {
-      my $readable_play = $this->readableMove($move);
-      my $caps_play = $this->readableMoveCapitalized($move);
-      my $prob = $this->{'lexicon'}->{$caps_play};
-      if (!$prob)
-      {
-        $readable_play = $readable_play."*";
-      }
-      push @plays_chal, $readable_play . " [". $filename_items[6] . "]";
-    }
+    my $url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
+    $labeled_play = "<a href='$url$game_id' target='_blank'>$labeled_play</a>";
   }
-  return \@plays_chal;
+
+  return $labeled_play;
 }
 
 sub getNumWordsPlayed

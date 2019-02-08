@@ -31,6 +31,7 @@ sub retrieve
   my $opponent_name     = shift;
   my $startdate         = shift;
   my $enddate           = shift;
+  my $lexicon           = shift;
   my $verbose           = shift;
   my $resolve           = shift;
 
@@ -57,7 +58,7 @@ sub retrieve
   my $query_name = $name;
   $query_name =~ s/_/+/g;
 
-  # Run a query using the name to get the player id
+  # Run a query using the name to get the player ID
   my $query_url = $query_url_prefix . $query_name;
   open (CMDOUT, "wget $wget_flags $query_url -O ./$query_results_page_name 2>&1 |");
   my $player_id;
@@ -85,13 +86,13 @@ sub retrieve
     }
   }
   if (!$player_id){print "No player named $raw_name found\n"; return;}
-  # Use the player id to get the address of the annotated games page
+  # Use the player ID to get the address of the annotated games page
   my $annotated_games_url = $annotated_games_url_prefix . $player_id;
 
   # Get the player's annotated games page
   system "wget $wget_flags $annotated_games_url -O ./$annotated_games_page_name  >/dev/null 2>&1";
 
-  # Parse the annotated games page html to get the game ids
+  # Parse the annotated games page html to get the game IDs
   # of the player's annotated games
   my @game_ids = ();
   open(RESULTS, '<', $annotated_games_page_name);
@@ -116,7 +117,7 @@ sub retrieve
     if ($verbose) {print "Created $names_dir\n";}
   }
 
-  # Iterate through the annotated game ids to fetch all of
+  # Iterate through the annotated game IDs to fetch all of
   # the player's annotated games
   my $games_to_download = (scalar @game_ids) / 7;
   my $count = 0;
@@ -137,7 +138,8 @@ sub retrieve
     my $date_sanitized = $date;
     $date_sanitized =~ s/[^\d]//g;
     my $round_number    = shift @game_ids;
-    my $lexicon         = shift @game_ids;
+    my $this_lexicon    = shift @game_ids;
+    $this_lexicon = uc $this_lexicon;
 
     $count++;
     my $num_str = (sprintf "%-4s", $count) . " of $games_to_download:";
@@ -158,46 +160,51 @@ sub retrieve
     {
       $game_tourney_id = 0;
     }
-    if (!$lexicon)
+    if (!$this_lexicon)
     {
-      $lexicon = Constants::DEFAULT_LEXICON;
+      $this_lexicon = Constants::DEFAULT_LEXICON;
     }
 
     # Check if game needs to be downloaded
 
     if ($tourney_id && $tourney_id ne $game_tourney_id)
     {
-      if ($verbose) {print "$num_str Game with id $id was not played in the specified tournament\n";}
+      if ($verbose) {print "$num_str Game with ID $id was not played in the specified tournament\n";}
       next;
     }
     if ($single_game_id && $single_game_id ne $id)
     {
-      if ($verbose) {print "$num_str Game with id $id is not the specified game\n";}
+      if ($verbose) {print "$num_str Game with ID $id is not the specified game\n";}
       next;
     }
     if ($tourney_name eq Constants::NON_TOURNAMENT_GAME && uc $tourney_or_casual eq 'T')
     {
-      if ($verbose) {print "$num_str Game with id $id is not a tournament game\n";}
+      if ($verbose) {print "$num_str Game with ID $id is not a tournament game\n";}
       next;
     }
     if ($tourney_name ne Constants::NON_TOURNAMENT_GAME && uc $tourney_or_casual eq 'C')
     {
-      if ($verbose) {print "$num_str Game with id $id is a tournament game\n";}
+      if ($verbose) {print "$num_str Game with ID $id is a tournament game\n";}
       next;
     }
     if ($opponent_name && $this_opponent ne $opponent_name)
     {
-      if ($verbose) {print "$num_str Game with id $id is not against the specified opponent\n";}
+      if ($verbose) {print "$num_str Game with ID $id is not against the specified opponent\n";}
       next;
     }
     if (($startdate && $date_sanitized < $startdate) || ($enddate && $date_sanitized > $enddate))
     {
-      if ($verbose) {print "$num_str Game with id $id is not in the specified timeframe\n";}
+      if ($verbose) {print "$num_str Game with ID $id is not in the specified timeframe\n";}
+      next;  
+    }
+    if ($lexicon && $this_lexicon ne $lexicon)
+    {
+      if ($verbose) {print "$num_str Game with ID $id is not in the specified lexicon\n";}
       next;  
     }
     if ($blacklisted_tournaments->{$game_tourney_id})
     {
-      if ($verbose) {print "$num_str Game with id $id is from a blacklisted tournament\n";}
+      if ($verbose) {print "$num_str Game with ID $id is from a blacklisted tournament\n";}
       next;
     }
     # Check if game or game index already exists
@@ -241,19 +248,19 @@ sub retrieve
 
     if ($file_exists && !$index_exists && !$resolve)
     {
-      if ($verbose){print "$num_str Game with id $id already exists but does not have an index\n";}
+      if ($verbose){print "$num_str Game with ID $id already exists but does not have an index\n";}
       $game_with_no_index++;
       next;
     }
     if (!$file_exists && $index_exists && !$resolve)
     {
-      if ($verbose){print "$num_str Game with id $id does not exist but has an index\n";}
+      if ($verbose){print "$num_str Game with ID $id does not exist but has an index\n";}
       $index_with_no_game++;
       next;
     }
     if ($file_exists && $index_exists)
     {
-      if ($verbose){print "$num_str Game and Index with id $id already exist\n";}
+      if ($verbose){print "$num_str Game and Index with ID $id already exist\n";}
       next;
     }
 
@@ -287,7 +294,7 @@ sub retrieve
                               sanitize($game_tourney_id),
                               sanitize($round_number),
                               sanitize($tourney_name),
-                              sanitize($lexicon),
+                              sanitize($this_lexicon),
                               sanitize($id),
                               sanitize($player_one_name),
                               sanitize($player_two_name),

@@ -33,13 +33,14 @@ sub mine
   my $opponent_name     = shift;
   my $startdate         = shift;
   my $enddate           = shift;
+  my $lexicon           = shift;
   my $verbose           = shift;
   my $tourney_id        = shift;
   my $html              = shift;
 
   print_or_append( "\nStatistics for $player_name\n\n\n", $html, 0);
   
-  print_or_append( "\nSearch Parameters: \n", $html, 0);
+  print_or_append( "\nSEARCH PARAMETERS: \n", $html, 0);
   
   print_or_append( "\n  Player:        $player_name", $html, 0);
 
@@ -104,21 +105,6 @@ sub mine
     print_or_append( "\n\n", $html, 0);
   }
 
-  
-
-  print_or_append( "The two numbers after each bingo are the probability and the game number, respectively.\n", $html, 0);
-  print_or_append( "For example, the bingo:\n\n", $html, 0);
-  print_or_append( "TETrODE 3294 [30361]\n\n", $html, 0);
-  print_or_append( "Has a probability of 3294 and appears in game 30361.\n", $html, 0);
-  
-  print_or_append( "Phonies and challenged plays don't have probabilities listed and are followed only by the game number.\n\n", $html, 0);  
-
-  print_or_append( "You can access games by their game number by using this address:\n\n", $html, 0);
-  print_or_append( "https://www.cross-tables.com/annotated.php?u=game_number\n\n", $html, 0);
-  print_or_append( "For example, the TETrODE bingo appears in the game at this address:\n\n", $html, 0);
-  print_or_append( "https://www.cross-tables.com/annotated.php?u=30361\n\n\n\n", $html, 0);
-
-
   my $all_stats = Stats->new();
   my $single_game_stats = Stats->new();
   my %tourney_game_hash;
@@ -144,7 +130,7 @@ sub mine
       my $game_tourney_id = $meta_data[1];
       my $round_number    = $meta_data[2];
       my $tourney_name    = $meta_data[3];
-      my $lexicon         = $meta_data[4];
+      my $this_lexicon         = $meta_data[4];
       my $id              = $meta_data[5];
       my $player_one_name = $meta_data[6];
       my $player_two_name = $meta_data[7];
@@ -198,6 +184,11 @@ sub mine
         if ($verbose) {print_or_append( "Game $full_game_file_name is not in the specified timeframe\n", $html, 0);}
         next;  
       }
+      if ($lexicon && $this_lexicon ne $lexicon)
+      {
+        if ($verbose) {print_or_append( "Game $full_game_file_name is not in the specified lexicon\n", $html, 0);}
+        next;  
+      }
       if ($blacklisted_tournaments->{$game_tourney_id})
       {
         print_or_append( "Game $full_game_file_name is from a blacklisted tournament\n", $html, 0);
@@ -227,27 +218,27 @@ sub mine
 
       my $lexicon_ref;
 
-      if ($lexicon eq 'TWL98')
+      if ($this_lexicon eq 'TWL98')
       {
         $lexicon_ref = TWL98::TWL98_LEXICON;
       }
-      elsif ($lexicon eq 'TWL06')
+      elsif ($this_lexicon eq 'TWL06')
       {
         $lexicon_ref = TWL06::TWL06_LEXICON;
       }
-      elsif ($lexicon eq 'TWL15')
+      elsif ($this_lexicon eq 'TWL15')
       {
         $lexicon_ref = American::AMERICAN_LEXICON;
       }
-      elsif ($lexicon eq 'CSW07')
+      elsif ($this_lexicon eq 'CSW07')
       {
         $lexicon_ref = CSW07::CSW07_LEXICON;
       }
-      elsif ($lexicon eq 'CSW12')
+      elsif ($this_lexicon eq 'CSW12')
       {
         $lexicon_ref = CSW12::CSW12_LEXICON;
       }
-      elsif ($lexicon eq 'CSW15')
+      elsif ($this_lexicon eq 'CSW15')
       {
         $lexicon_ref = CSW15::CSW15_LEXICON;
       }
