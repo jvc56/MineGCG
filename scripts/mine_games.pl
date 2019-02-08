@@ -51,7 +51,7 @@ sub mine
   elsif (uc $cort eq 'T') {print_or_append( "TOURNAMENT", $html, 0);}
   else {print_or_append( "-", $html, 0);}
 
-  print_or_append( "\n  Lexicon:     ", $html, 0);
+  print_or_append( "\n  Lexicon:       ", $html, 0);
 
   if (!$lexicon) {print_or_append( "-", $html, 0);}
   else {print_or_append( $lexicon, $html, 0);}
