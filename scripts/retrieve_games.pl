@@ -125,6 +125,10 @@ sub retrieve
   my $index_with_no_game    = 0;
   my $num_invalid_filenames = 0;
   my $invalid_filenames     = "";
+
+  my $games_indexed    = 0;
+  my $games_downloaded = 0;
+
   while (@game_ids)
   {
 
@@ -321,6 +325,7 @@ sub retrieve
       print $fh $gcg_name."\n";
       close $fh;
       if ($verbose) {print "$num_str Indexed    game $gcg_name in $full_index_list_name\n";}
+      $games_indexed++;
     }
 
     # Download the game
@@ -329,6 +334,7 @@ sub retrieve
       my $gcg_url = $cross_tables_url . $gcg_url_suffix;
       system "wget $wget_flags $gcg_url -O '$dir/$gcg_name' >/dev/null 2>&1";
       if ($verbose) {print "$num_str Downloaded game $gcg_name to $dir\n";}
+      $games_downloaded++;
     }
   }
   
@@ -336,6 +342,11 @@ sub retrieve
   if ($num_invalid_filenames > 0)
   {
     print "Invalid filenames:\n$invalid_filenames\n";
+  }
+
+  if ($option eq "update" && ($games_indexed != 0 || $games_downloaded != 0))
+  {
+    print $name . ": $games_indexed indexes added and $games_downloaded games added\n";
   }
 
   if (!$resolve)
