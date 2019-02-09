@@ -40,6 +40,13 @@ print $full_test_log $full_end_time;
 
 close $full_test_log;
 
+my $log_name = localtime();
+$log_name =~ s/\s/_/g;
+
+system "mkdir $log_name";
+system "mv logs/* $log_name/";
+system "mv $log_name logs/";
+
 sub format_time
 {
   my $start = shift;
