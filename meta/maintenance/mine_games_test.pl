@@ -28,7 +28,7 @@ foreach my $name_file (@name_files)
   $name_file =~ /(.*)\.txt/;
   my $name = $1;
   $name =~ s/_/ /g;
-  system "./scripts/main.pl -n '$name' -ski --html >/dev/null 2>> $log_name";
+  system "./scripts/main.pl -n '$name' -ski >/dev/null 2>> $log_name";
   $count++;
 }
 
