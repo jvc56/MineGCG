@@ -148,14 +148,14 @@ sub mine
         $player_is_first = 1;
         if ($player_two_name ne $player_name)
         {
-          print_or_append( "\nERROR:  Matching player name not found\nFILE:   $game_file_name\n", $html, 1);
+          print_or_append( "\nERROR:  Matching player name not found\nFILE:   $game_file_name\n", $html, 1, $player_name);
           return;
         }
       }
 
       if (!$ext || $ext ne "gcg")
       {
-        print_or_append( "\nERROR:  invalid file extension\nFILE:   $game_file_name", $html, 1);
+        print_or_append( "\nERROR:  invalid file extension\nFILE:   $game_file_name", $html, 1, $player_name);
         $num_errors++;
         next;
       }
@@ -164,7 +164,7 @@ sub mine
       
       if (!(-e $full_game_file_name))
       {
-        print_or_append( "\nERROR: No GCG found for index $full_game_file_name\n", $html, 1);
+        print_or_append( "\nERROR: No GCG found for index $full_game_file_name\n", $html, 1, $player_name);
         $num_errors++;
         next;
       }
@@ -257,13 +257,13 @@ sub mine
       
       if (ref($game) ne "Game")
       {
-        print_or_append( "\nERROR:  $game", $html, 1);
+        print_or_append( "\nERROR:  $game", $html, 1, $player_name);
         $num_errors++;
         next;
       }
       elsif ($game->{'warnings'})
       {
-        print_or_append( "\n" . $game->{'warnings'}, $html, 0);
+        print_or_append( "\n" . $game->{'warnings'}, $html, 0, $player_name);
         $num_warnings++;
       }
 
@@ -315,8 +315,7 @@ sub print_or_append
 
   if ($html)
   {
-    my $dir_name = Constants::GAME_DIRECTORY_NAME;
-    if ($addition =~ /Game $dir_name.+\.(\d+)\.(\w+)\.(\w+)\.gcg/)
+    if ($addition =~ /\.(\d+)\.(\w+)\.(\w+)\.gcg/)
     {
       my $opp = $2;
       if ($opp eq $this_player)
@@ -325,10 +324,9 @@ sub print_or_append
       }
       my $url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
       my $link = "<a href='$url$1' target='_blank'>against $opp</a>";
-      $addition =~ s/Game .*\.gcg/Game $link/g;
+      $addition =~ s/ .*\.gcg/ $link/g;
     }
     $html_string .= $addition;
-
   }
   else
   {
