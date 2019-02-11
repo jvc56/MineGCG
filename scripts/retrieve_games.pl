@@ -346,7 +346,7 @@ sub retrieve
 
   if ($option eq "update" && ($games_indexed != 0 || $games_downloaded != 0))
   {
-    print (sprintf "%-30s", $name . ":") . "$games_indexed indexes added and $games_downloaded games added\n";
+    print ((sprintf "%-30s", $name . ":") . "$games_indexed indexes added and $games_downloaded games added\n");
   }
 
   if (!$resolve)
