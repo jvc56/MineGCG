@@ -17,7 +17,9 @@ open(my $log, '>', $log_name);
 print $log "Log file for mine_games_test on " . localtime() . "\n\n"; 
 
 
-my $count = 0;
+my $count = scalar @name_files;
+print $log "\n\n$count names tested\n\n";
+close $log;
 
 foreach my $name_file (@name_files)
 {
@@ -29,8 +31,6 @@ foreach my $name_file (@name_files)
   my $name = $1;
   $name =~ s/_/ /g;
   system "./scripts/main.pl -n '$name' -ski >/dev/null 2>> $log_name";
-  $count++;
 }
 
-print $log "\n\n$count names mined\n\n";
-close $log;
+
