@@ -44,7 +44,7 @@ my @t = localtime();
 $t[5] += 1900;
 $t[4]++;
 
-my $log_name = sprintf "%04d-%02d-%02d", @t[5,4,3];
+my $log_name = sprintf "%04d_%02d_%02d", @t[5,4,3];
 
 system "mkdir $log_name";
 system "mv logs/*.log $log_name/";
