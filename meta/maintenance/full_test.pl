@@ -40,8 +40,11 @@ print $full_test_log $full_end_time;
 
 close $full_test_log;
 
-my $log_name = localtime();
-$log_name =~ s/\s/_/g;
+my @t = localtime;
+$t[5] += 1900;
+$t[4]++;
+
+my $log_name = sprintf "%04d-%02d-%02d", @t[5,4,3];
 
 system "mkdir $log_name";
 system "mv logs/*.log $log_name/";
