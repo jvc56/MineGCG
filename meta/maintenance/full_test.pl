@@ -40,7 +40,7 @@ print $full_test_log $full_end_time;
 
 close $full_test_log;
 
-my @t = localtime;
+my @t = localtime();
 $t[5] += 1900;
 $t[4]++;
 
