@@ -35,7 +35,7 @@ sub validate_filename
   {
     $valid = 0;
   }
-  if (!($items[3] =~ /^[\w\d\-_]+$/))
+  if (!($items[3] eq "0" || $items[3] eq "1"))
   {
     $valid = 0;
   }

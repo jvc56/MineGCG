@@ -141,6 +141,10 @@ sub addGame
   {
     $this->__updateBingolessGames($game, $this_player);
   }
+  elsif ($name eq "Turns With a Blank")
+  {
+    $this->__updateTurnsWithBlank($game, $this_player);
+  }
   elsif ($name eq "Bonus Square Coverage")
   {
     $this->__updateNumBonusSquaresCovered($game, $this_player);
@@ -599,6 +603,20 @@ sub __updateBingolessGames
   }
 
   $this->{'total'} += $game->isBingoless($this_player);
+}
+
+sub __updateTurnsWithBlank
+{
+  my $this = shift;
+  my $game = shift;
+  my $this_player = shift;
+
+  if (!$this->{'init'})
+  {
+    $this->{'init'} = 1;
+  }
+
+  $this->{'total'} += $game->getTurnsWithBlank($this_player);
 }
 
 sub __updateNumBonusSquaresCovered

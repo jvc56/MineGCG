@@ -1,8 +1,0 @@
-TODO:
-
- - Add game number to phonies and bings
- - Add names to top of report maybe with short description
-
-LOWER PRIORITY:
-
- - Better TWL lost challenge / pass heuristics

@@ -135,7 +135,7 @@ sub mine
       my $game_tourney_id = $meta_data[1];
       my $round_number    = $meta_data[2];
       my $tourney_name    = $meta_data[3];
-      my $this_lexicon         = $meta_data[4];
+      my $this_lexicon    = $meta_data[4];
       my $id              = $meta_data[5];
       my $player_one_name = $meta_data[6];
       my $player_two_name = $meta_data[7];
@@ -200,7 +200,7 @@ sub mine
         next;
       }
 
-      my $is_tourney_game = $tourney_name ne Constants::NON_TOURNAMENT_GAME;
+      my $is_tourney_game = $tourney_name;
 
       # Check for casual/club or only tournament games
       if ( (uc $cort eq 'T' && !$is_tourney_game) || (uc $cort eq 'C' && $is_tourney_game))

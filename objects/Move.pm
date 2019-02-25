@@ -207,26 +207,41 @@ sub isTripleTriple
   my $c = $this->{'column'};
   my $v = $this->{'vertical'};
   
-  if (!($r == 0 || $r == 14 || $c == 0 || $c == 14))
+  if (!($r == 0 || $r == 7 || $r == 14 || $c == 0 || $c == 7 || $c == 14))
   {
   	return 0;
   }
   my $play = $this->{'play'};
   my $l = length $play;
-  if ($v && ($c == 0 || $c == 14) && $r <= 7)
+  if ($v && ($c == 0 || $c == 7 || $c == 14) && $r <= 7)
   {
     $play = ("." x $r) . $play . ("." x (Constants::BOARD_HEIGHT - ($r + $l)));
     $play =~ /(.)......(.)......(.)/;
-    return ($1 ne "." && $2 ne ".") || ($2 ne "." && $3 ne ".");
+    return ($1 ne "." && $2 ne ".") || ($2 ne "." && $3 ne ".") || ($1 ne "." && $3 ne ".");
   }
-  if (!$v && ($r == 0 || $r == 14) && $c <= 7)
+  if (!$v && ($r == 0 || $r == 7 || $r == 14) && $c <= 7)
   {
     $play = ("." x $c) . $play . ("." x (Constants::BOARD_WIDTH - ($c + $l)));
     $play =~ /(.)......(.)......(.)/;
-    return ($1 ne "." && $2 ne ".") || ($2 ne "." && $3 ne ".");
+    return ($1 ne "." && $2 ne ".") || ($2 ne "." && $3 ne ".") || ($1 ne "." && $3 ne ".");
   }
   return 0;
 }
+
+sub hasBlankOnRack
+{
+  my $this = shift;
+
+  my $this_player = shift;
+
+  if($this_player != $this->{'turn'})
+  {
+    return 0;
+  }
+
+  return $this->{'rack'} =~ /\?/;
+}
+
 sub toString
 {
   my $this = shift;

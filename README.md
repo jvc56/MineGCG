@@ -14,5 +14,11 @@ chmod +x ./scripts/*.pl<br/>
 ./scripts/main.pl<br/>
 
 A usage message telling you how to use the command should appear.
-This tool is still a work in progress, so if you find any bugs
-or want to suggest improvements, email them to joshuacastellano7@gmail.com
+If you find any bugs or want to suggest improvements, email them
+to joshuacastellano7@gmail.com
+
+# Contributions
+
+Turns with a blank statistic (Marlon Hill)<br/>
+Bingo lists, bingo probabilities, and various stats (Joshua Sokol)<br/>
+Initial idea (Matthew O'Connor)<br/>

@@ -371,7 +371,11 @@ sub new
   
   if (@moves)
   {
-    $board->addMoves(\@moves);
+    my $board_error = $board->addMoves(\@moves);
+    if ($board_error)
+    {
+      return "$board_error\nFILE:   $filename\n";
+    }
   }
   else
   {
@@ -810,6 +814,23 @@ sub getNumTripleTriplesPlayed
   foreach my $move (@moves)
   {
     if ($move->isTripleTriple($player))
+    {
+      $sum++;
+    }
+  }
+  return $sum;
+}
+
+sub getTurnsWithBlank
+{
+  my $this = shift;
+
+  my $player =shift;
+  my @moves = @{$this->{'moves'}};
+  my $sum = 0;
+  foreach my $move (@moves)
+  {
+    if ($move->hasBlankOnRack($player))
     {
       $sum++;
     }

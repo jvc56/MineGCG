@@ -150,7 +150,11 @@ sub retrieve
 
     if (!$tourney_name)
     {
-      $tourney_name = Constants::NON_TOURNAMENT_GAME;
+      $tourney_name = "0";
+    }
+    else
+    {
+      $tourney_name = "1";
     }
     if (!$date)
     {
@@ -181,12 +185,12 @@ sub retrieve
       if ($verbose) {print "$num_str Game with ID $id is not the specified game\n";}
       next;
     }
-    if ($tourney_name eq Constants::NON_TOURNAMENT_GAME && uc $tourney_or_casual eq 'T')
+    if (!$tourney_name && uc $tourney_or_casual eq 'T')
     {
       if ($verbose) {print "$num_str Game with ID $id is not a tournament game\n";}
       next;
     }
-    if ($tourney_name ne Constants::NON_TOURNAMENT_GAME && uc $tourney_or_casual eq 'C')
+    if ($tourney_name && uc $tourney_or_casual eq 'C')
     {
       if ($verbose) {print "$num_str Game with ID $id is a tournament game\n";}
       next;

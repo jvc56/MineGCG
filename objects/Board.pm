@@ -66,6 +66,10 @@ sub addMoves
 
       my $dotted_word = "";
 
+      my @added_positions = ();
+
+      my $play_is_connected = 0;
+
       foreach my $c (split //, $word)
       {
         my $pos = $row*Constants::BOARD_WIDTH + $column;
@@ -80,13 +84,63 @@ sub addMoves
         if ($c ne '.' && !$this->{'grid'}[$pos]->{'has_tile'})
         {
           $this->placeNewTile($c, $pos, $turn, $play_number);
+          push @added_positions, $pos;
           $dotted_word .= $c;
+          if ($pos == 112)
+          {
+            $play_is_connected = 1;
+          }
         }
         else
         {
           $dotted_word .= ".";
+          $play_is_connected = 1;
         }
         $displacement++;
+      }
+
+      if (!$play_is_connected)
+      {
+        my @adjacent_positions = ();
+        foreach my $added_pos (@added_positions)
+        {
+          my @four_adjacent = ();
+          push @four_adjacent, $added_pos - 1;
+          push @four_adjacent, $added_pos + 1;
+          push @four_adjacent, $added_pos - Constants::BOARD_WIDTH;
+          push @four_adjacent, $added_pos + Constants::BOARD_WIDTH;
+          foreach my $fa (@four_adjacent)
+          {
+            my $is_valid = 1;
+            if ($fa < 0 || $fa > Constants::BOARD_WIDTH*Constants::BOARD_HEIGHT - 1)
+            {
+              $is_valid = 0;
+            }
+            foreach my $added_pos (@added_positions)
+            {
+              if ($fa == $added_pos) {$is_valid = 0;}
+            }
+            if ($is_valid)
+            {
+              push @adjacent_positions, $fa;
+            }
+          }
+        }
+
+        foreach my $ap (@adjacent_positions)
+        {
+
+          if ($this->{'grid'}[$ap]->{'has_tile'})
+          {
+            $play_is_connected = 1;
+            last;
+          }
+        }
+      }
+
+      if (!$play_is_connected)
+      {
+        return "disconnected play detected";
       }
 
       $move->{'play'} = $dotted_word;
@@ -96,6 +150,7 @@ sub addMoves
   }
   $this->{'player_one_total'} = $moves[-1]->{'player_one_total'};
   $this->{'player_two_total'} = $moves[-1]->{'player_two_total'};
+  return "";
 }
 
 sub getNumBonusSquaresCovered

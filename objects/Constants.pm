@@ -21,7 +21,25 @@ use constant BLACKLISTED_TOURNAMENTS          => {
                                                     '9194' => 1 # Can-Am Match 08/29/15
                                                  };
 
-
+use constant PRELOAD_COUNTRIES =>
+(
+  'ARE',
+  'AUS',
+  'BHR',
+  'BRB',
+  'CAN',
+  'DEU',
+  'ENG',
+  'GBR',
+  'IND',
+  'ISR',
+  'JPN',
+  'MYS',
+  'NGA',
+  'NIR',
+  'SGP',
+  'USA'
+);
 
 use constant STAT_ITEM_GAME        => 'GAME STATS';
 use constant STAT_ITEM_PLAYER      => 'YOUR STATS';
@@ -54,6 +72,7 @@ use constant STATS_ITEMS =>
     {name => 'Bingo Probabilities',        type => STAT_ITEM_PLAYER},
     {name => 'Tiles Played',               type => STAT_ITEM_PLAYER},
     {name => 'Power Tiles Played',         type => STAT_ITEM_PLAYER},
+    {name => 'Turns With a Blank',         type => STAT_ITEM_PLAYER},
     {name => 'Triple Triples Played',      type => STAT_ITEM_PLAYER},
     {name => 'Bingoless Games',            type => STAT_ITEM_PLAYER},
     {name => 'Bonus Square Coverage',      type => STAT_ITEM_PLAYER},
@@ -68,6 +87,7 @@ use constant STATS_ITEMS =>
     {name => 'Bingo Probabilities',        type => STAT_ITEM_OPP},
     {name => 'Tiles Played',               type => STAT_ITEM_OPP},
     {name => 'Power Tiles Played',         type => STAT_ITEM_OPP},
+    {name => 'Turns With a Blank',         type => STAT_ITEM_OPP},
     {name => 'Triple Triples Played',      type => STAT_ITEM_OPP},
     {name => 'Bingoless Games',            type => STAT_ITEM_OPP},
     {name => 'Bonus Square Coverage',      type => STAT_ITEM_OPP},

@@ -10,24 +10,7 @@ require "./scripts/sanitize.pl";
 use lib './objects';
 use Constants;
 
-my @countries = (
-                  'ARE',
-                  'AUS',
-                  'BHR',
-                  'BRB',
-                  'CAN',
-                  'DEU',
-                  'ENG',
-                  'GBR',
-                  'IND',
-                  'ISR',
-                  'JPN',
-                  'MYS',
-                  'NGA',
-                  'NIR',
-                  'SGP',
-                  'USA'
-                );
+my @countries = Constants::PRELOAD_COUNTRIES;
 
 my $wget_flags = Constants::WGET_FLAGS;
 my $players_by_country_prefix = Constants::CROSS_TABLES_COUNTRY_PREFIX;
