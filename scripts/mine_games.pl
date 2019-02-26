@@ -215,7 +215,7 @@ sub mine
         my $key = $game_tourney_id.'+'.$round_number;
         if($tourney_game_hash{$key})
         {
-          print_or_append( "Game $full_game_file_name is a duplicate\n", $html, 0, $player_name);
+          print_or_append( "\nGame $full_game_file_name is a duplicate\n", $html, 0, $player_name);
           next;
         }
         $tourney_game_hash{$key} = 1;
@@ -324,7 +324,7 @@ sub print_or_append
       }
       my $url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
       my $link = "<a href='$url$1' target='_blank'>against $opp</a>";
-      $addition =~ s/ .*\.gcg/ $link/g;
+      $addition =~ s/\.[^\.]+\.[^\.]+\.[^\.]+\.[^\.]+\.[^\.]+\.[^\.]+\.[^\.]+\.[^\.]+\.gcg/$link/g;
     }
     $html_string .= $addition;
   }

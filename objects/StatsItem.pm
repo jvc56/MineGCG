@@ -73,9 +73,13 @@ sub addGame
   {
     $this->__updateBingoNinesOrAboveList($game, $this_player);
   }
-  elsif ($name eq "Phonies Formed")
+  elsif ($name eq "Challenged Phonies")
   {
-    $this->__updatePhoniesFormed($game, $this_player);
+    $this->__updatePhoniesFormed($game, $this_player, 1);
+  }
+  elsif ($name eq "Unchallenged Phonies")
+  {
+    $this->__updatePhoniesFormed($game, $this_player, 0);
   }
   elsif ($name eq "Plays That Were Challenged")
   {
@@ -202,9 +206,10 @@ sub __updateBingoNinesOrAboveList
 
 sub __updatePhoniesFormed
 {
-  my $this = shift;
-  my $game = shift;
+  my $this        = shift;
+  my $game        = shift;
   my $this_player = shift;
+  my $challenged  = shift;
 
   if (!$this->{'init'})
   {
@@ -212,7 +217,7 @@ sub __updatePhoniesFormed
     $this->{'list'} = ();
   }
 
-  push @{$this->{'list'}}, @{$game->getPhoniesFormed($this_player)};
+  push @{$this->{'list'}}, @{$game->getPhoniesFormed($this_player, $challenged)};
 }
 
 sub __updatePlaysChallenged

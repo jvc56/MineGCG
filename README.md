@@ -20,5 +20,6 @@ to joshuacastellano7@gmail.com
 # Contributions
 
 Turns with a blank statistic (Marlon Hill)<br/>
-Bingo lists, bingo probabilities, and various stats (Joshua Sokol)<br/>
+Discovery of GCG mining bug in the preload script (Ben Schoenbrun)<br/>
+Bingo lists, bingo probabilities, and various statistics (Joshua Sokol)<br/>
 Initial idea (Matthew O'Connor)<br/>

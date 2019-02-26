@@ -572,9 +572,11 @@ sub getBingoNinesOrAbove
 
 sub getPhoniesFormed
 {
-  my $this = shift;
+  my $this       = shift;
 
-  my $player = shift;
+  my $player     = shift;
+
+  my $challenged = shift;
 
   my @moves = @{$this->{'moves'}};
 
@@ -589,7 +591,9 @@ sub getPhoniesFormed
         $player != $move->{'turn'} ||
         !$play ||
         $play eq '---' ||
-        $move->{'play_type'} ne Constants::PLAY_TYPE_WORD
+        $move->{'play_type'} ne Constants::PLAY_TYPE_WORD ||
+        ($challenged && !$move->{'challenge_lost'}) ||
+        (!$challenged && $move->{'challenge_lost'})
        )
     {
       next;
@@ -615,7 +619,6 @@ sub getPhoniesFormed
     if ($move_phonies)
     {
       push @phonies, $this->labelPlay($move, $player, $filename_items[6], $move_phonies);
-
     }
   }
   return \@phonies;
