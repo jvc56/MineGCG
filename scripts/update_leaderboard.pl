@@ -23,8 +23,8 @@ sub update_leaderboard
 
   my $leaderboard_string = "";
 
-  $leaderboard_string .= "\n\nThe following leaderboards are based on cross-tables\n";
-  $leaderboard_string .= "statistics only and are not necessarily an accurate\n";
+  $leaderboard_string .= "\n\nThe following leaderboards are based on uploaded\n";
+  $leaderboard_string .= "cross-tables games and are not necessarily an accurate\n";
   $leaderboard_string .= "reflection of playing style or ability.\n";
   $leaderboard_string .= "\n";
   $leaderboard_string .= "With the exception of the GAMES leaderboard\n";
@@ -126,8 +126,8 @@ sub update_leaderboard
     for (my $j = 0; $j < $cutoff; $j++)
     {
       my $ranked_player_name = sprintf "%-" . $column_spacing . "s", $high_to_low[$j][1];
-      my $ranking = sprintf "%-4s", ($j+1);
-      $leaderboard_string .= $ranking . ". " . $ranked_player_name . $high_to_low[$j][0] . "\n";
+      my $ranking = sprintf "%-4s", ($j+1) . ".";
+      $leaderboard_string .= $ranking . $ranked_player_name . $high_to_low[$j][0] . "\n";
     }
     $leaderboard_string .= "\n\n";
 
@@ -136,8 +136,8 @@ sub update_leaderboard
     for (my $j = 0; $j < $cutoff; $j++)
     {
       my $ranked_player_name = sprintf "%-" . $column_spacing . "s", $low_to_high[$j][1];
-      my $ranking = sprintf "%-4s", ($j+1);
-      $leaderboard_string .= $ranking . ". " . $ranked_player_name . $low_to_high[$j][0] . "\n";
+      my $ranking = sprintf "%-4s", ($j+1) . ".";
+      $leaderboard_string .= $ranking . $ranked_player_name . $low_to_high[$j][0] . "\n";
     }
     $leaderboard_string .= "\n\n\n\n";
 
@@ -157,7 +157,7 @@ sub update_leaderboard
 
   system "rm -r $stats_dir";
 
-
+  system "scp -i /home/jvc/.ssh/randomracer.pem $leaderboard_name jvc\@media.wgvc.com:/home/bitnami/htdocs/rracer/leaderboard.html"
 
 }
 
