@@ -317,6 +317,15 @@ sub retrieve
       next;
     }
 
+    # Download the game
+    if (!$file_exists)
+    {
+      my $gcg_url = $cross_tables_url . $gcg_url_suffix;
+      system "wget $wget_flags $gcg_url -O '$dir/$gcg_name' >/dev/null 2>&1";
+      if ($verbose) {print "$num_str Downloaded game $gcg_name to $dir\n";}
+      $games_downloaded++;
+    }
+
     # Write the index
     if (!$index_exists)
     {
@@ -330,15 +339,6 @@ sub retrieve
       close $fh;
       if ($verbose) {print "$num_str Indexed    game $gcg_name in $full_index_list_name\n";}
       $games_indexed++;
-    }
-
-    # Download the game
-    if (!$file_exists)
-    {
-      my $gcg_url = $cross_tables_url . $gcg_url_suffix;
-      system "wget $wget_flags $gcg_url -O '$dir/$gcg_name' >/dev/null 2>&1";
-      if ($verbose) {print "$num_str Downloaded game $gcg_name to $dir\n";}
-      $games_downloaded++;
     }
   }
   

@@ -231,7 +231,8 @@ sub mine
       {
         $lexicon_ref = TWL06::TWL06_LEXICON;
       }
-      elsif ($this_lexicon eq 'TWL15')
+      # Holdover until I get the new dictionary
+      elsif ($this_lexicon eq 'TWL15' || $this_lexicon eq 'NSW18')
       {
         $lexicon_ref = American::AMERICAN_LEXICON;
       }
