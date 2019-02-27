@@ -16,6 +16,7 @@ use constant QUERY_RESULTS_PAGE_NAME          => './downloads/query_results.html
 use constant NON_TOURNAMENT_GAME              => 'NONTOURNAMENT';
 use constant GAME_DIRECTORY_NAME              => './games';
 use constant NAMES_DIRECTORY_NAME             => './names';
+use constant STATS_DIRECTORY_NAME             => './stats';
 use constant DEFAULT_LEXICON                  => 'CSW15';
 use constant BLACKLISTED_TOURNAMENTS          => {
                                                     '9194' => 1 # Can-Am Match 08/29/15
@@ -46,6 +47,12 @@ use constant STAT_ITEM_PLAYER      => 'YOUR STATS';
 use constant STAT_ITEM_OPP         => 'OPPONENT STATS';
 use constant STAT_ITEM_LIST_PLAYER => 'YOUR LISTS';
 use constant STAT_ITEM_LIST_OPP    => 'OPPONENT LISTS';
+
+
+use constant LEADERBOARD_CUTOFF         => 10;
+use constant LEADERBOARD_COLUMN_SPACING => 31;
+use constant LEADERBOARD_NAME           => "leaderboard";
+use constant LEADERBOARD_MIN_GAMES      => 50;
 
 use constant STATS_ITEMS =>
 (

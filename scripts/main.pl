@@ -23,6 +23,7 @@ my $opponent_sanitized;
 my $startdate      = '';
 my $enddate        = '';
 my $lexicon        = '';
+my $statsdump      = '';
 my $name;
 my $raw_name;
 
@@ -41,6 +42,7 @@ GetOptions (
             'enddate:s'        => \$enddate,
             'lexicon:s'        => \$lexicon,
             'html'             => \$html,
+            'statsdump'        => \$statsdump,
             'resolve'          => \$resolve,
             'name=s'           => \$name,
             'help|?'           => \$help
@@ -66,7 +68,7 @@ $enddate =~ s/[^\d]//g;
 $lexicon = uc $lexicon;
 
 retrieve($name, $raw_name, $option, $tid, $cort, $game, $opponent_sanitized, $startdate, $enddate, $lexicon, $verbose, $resolve);
-mine($name, $cort, $game, $opponent_sanitized, $startdate, $enddate, $lexicon, $verbose, $tid, $html);
+mine($name, $cort, $game, $opponent_sanitized, $startdate, $enddate, $lexicon, $verbose, $tid, $html, $statsdump);
 
 if (!$skipmetaupdate)
 {

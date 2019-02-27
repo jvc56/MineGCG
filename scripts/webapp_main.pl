@@ -29,5 +29,5 @@ GetOptions (
             'lexicon:s'   => \$lexicon
            );
 
-mine(sanitize($name), $cort, $game, $opponent, $startdate, $enddate, $lexicon, 0, $tid, 1);
+mine(sanitize($name), $cort, $game, $opponent, $startdate, $enddate, $lexicon, 0, $tid, 1, 0);
 

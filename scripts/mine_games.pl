@@ -25,6 +25,7 @@ sub mine
 {
   my $dir_name                = Constants::GAME_DIRECTORY_NAME;
   my $names_dir               = Constants::NAMES_DIRECTORY_NAME;
+  my $stats_dir               = Constants::STATS_DIRECTORY_NAME;
   my $blacklisted_tournaments = Constants::BLACKLISTED_TOURNAMENTS;
 
   my $player_name       = shift;
@@ -37,6 +38,7 @@ sub mine
   my $verbose           = shift;
   my $tourney_id        = shift;
   my $html              = shift;
+  my $statsdump         = shift;
 
   print_or_append( "\nStatistics for $player_name\n\n\n", $html, 0);
   
@@ -300,6 +302,32 @@ sub mine
   print_or_append( "Errors:   $num_errors\n", $html, 0);
   print_or_append( "Warnings: $num_warnings\n", $html, 0);
   print_or_append( "\n", $html, 0);
+
+  if ($statsdump && $all_stats->{'num_games'} >= Constants::LEADERBOARD_MIN_GAMES)
+  {
+    system "mkdir -p $stats_dir";
+    open(my $fh, '>', $stats_dir . "/" . $player_name . ".stats");
+    my @entries = @{$all_stats->{'entries'}};
+    foreach my $e (@entries)
+    {
+      my $type = $e->{'type'};
+      if ($type eq Constants::STAT_ITEM_GAME || $type eq Constants::STAT_ITEM_PLAYER)
+      {
+        print $fh $e->{'name'} . "," . $e->{'total'} . "\n";
+        if ($e->{'subitems'})
+        {
+          my %subitems = %{$e->{'subitems'}};
+          my @order    = @{$e->{'list'}};
+          for(my $i = 0; $i < scalar @order; $i ++)
+          {
+            my $key = $order[$i];
+            print $fh $e->{'name'} . " " . $key . "," . $subitems{$key} . "\n";
+          }
+        }
+      }
+    }
+    close $fh;
+  }
 
   if ($html)
   {
