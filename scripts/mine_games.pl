@@ -17,6 +17,7 @@ use CSW15;
 use TWL98;
 use TWL06;
 use American;
+use NSW18;
 
 my $html_string = "";
 
@@ -233,10 +234,13 @@ sub mine
       {
         $lexicon_ref = TWL06::TWL06_LEXICON;
       }
-      # Holdover until I get the new dictionary
-      elsif ($this_lexicon eq 'TWL15' || $this_lexicon eq 'NSW18')
+      elsif ($this_lexicon eq 'TWL15')
       {
         $lexicon_ref = American::AMERICAN_LEXICON;
+      }
+      elsif ($this_lexicon eq 'NSW18')
+      {
+        $lexicon_ref = NSW18::NSW18_LEXICON;
       }
       elsif ($this_lexicon eq 'CSW07')
       {

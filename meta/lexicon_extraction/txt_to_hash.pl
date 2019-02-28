@@ -3,8 +3,8 @@
 use warnings;
 use strict;
 
-my $file_loc = 'twl98.txt';
-my $mod_name = 'TWL98';
+my $file_loc = './meta/lexicon_extraction/nsw18.txt';
+my $mod_name = 'NSW18';
 
 open(LEX, '<', $file_loc);
 open(MOD, '>', 'lexicons/'.$mod_name.'.pm');
