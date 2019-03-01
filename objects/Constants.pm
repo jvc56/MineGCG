@@ -210,7 +210,7 @@ DOUBLE_LETTER . '  ' . DOUBLE_WORD . '   ' . DOUBLE_LETTER . '   ' . DOUBLE_WORD
 TRIPLE_WORD . '  ' . DOUBLE_LETTER . '   ' . TRIPLE_WORD . '   ' . DOUBLE_LETTER . '  ' . TRIPLE_WORD
 ;
 
-use constant STATS_NOTE => "********************* POTENTIAL INACCURACIES *********************\n\n".
+use constant STATS_NOTE => "\n\n\n********************* POTENTIAL INACCURACIES *********************\n\n".
                            "The Turns with a Blank statistic is only meaningful for\n".
                            "players who have their full racks recorded in their games.\n\n".
                            "The Challenges statistic for TWL may not be completely accurate\n".
