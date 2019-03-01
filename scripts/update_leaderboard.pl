@@ -170,7 +170,7 @@ sub update_leaderboard
 
   $leaderboard_string = "<pre style='white-space: pre-wrap;' > $leaderboard_string </pre>\n";
 
-  my $leaderboard_name = "./logs/" . Constants::LEADERBOARD_NAME . ".html";
+  my $leaderboard_name = "./logs/" . Constants::LEADERBOARD_NAME . ".log";
 
   open(my $new_leaderboard, '>', $leaderboard_name);
   print $new_leaderboard $leaderboard_string;
