@@ -41,11 +41,15 @@ sub mine
   my $html              = shift;
   my $statsdump         = shift;
 
-  print_or_append( "\nStatistics for $player_name\n\n\n", $html, 0);
+
+  my $player_name_no_underscore = $player_name;
+  $player_name_no_underscore =~ s/_/ /g;
+
+  print_or_append( "\nStatistics for $player_name_no_underscore\n\n\n", $html, 0);
   
   print_or_append( "\nSEARCH PARAMETERS: \n", $html, 0);
   
-  print_or_append( "\n  Player:        $player_name", $html, 0);
+  print_or_append( "\n  Player:        $player_name_no_underscore", $html, 0);
 
 
   print_or_append( "\n  Game type:     ", $html, 0);
@@ -288,7 +292,7 @@ sub mine
     }
   }
   if ($at_least_one)
-  {
+  {    
     if (!$html)
     {
       print_or_append( $all_stats->toString(), $html, 0);

@@ -137,6 +137,10 @@ sub addGame
   {
     $this->__updateNumPowerTilesPlayed($game, $this_player);
   }
+  elsif ($name eq "Es Played")
+  {
+    $this->__updateNumEsPlayed($game, $this_player);
+  }
   elsif ($name eq "Triple Triples Played")
   {
     $this->__updateNumTripleTriplesPlayed($game, $this_player);
@@ -580,6 +584,20 @@ sub __updateNumPowerTilesPlayed
   $this->{'subitems'}->{'X'} += $xs;
   $this->{'subitems'}->{'Z'} += $zs;
   $this->{'subitems'}->{'S'} += $ss;
+}
+
+sub __updateNumEsPlayed
+{
+  my $this = shift;
+  my $game = shift;
+  my $this_player = shift;
+
+  if (!$this->{'init'})
+  {
+    $this->{'init'} = 1;
+  }
+
+  $this->{'total'} += $game->getNumTilesPlayed($this_player, 'E');
 }
 
 sub __updateNumTripleTriplesPlayed

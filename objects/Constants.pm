@@ -81,6 +81,7 @@ use constant STATS_ITEMS =>
     {name => 'Bingo Probabilities',        type => STAT_ITEM_PLAYER},
     {name => 'Tiles Played',               type => STAT_ITEM_PLAYER},
     {name => 'Power Tiles Played',         type => STAT_ITEM_PLAYER},
+    {name => 'Es Played',                  type => STAT_ITEM_PLAYER},
     {name => 'Turns With a Blank',         type => STAT_ITEM_PLAYER},
     {name => 'Triple Triples Played',      type => STAT_ITEM_PLAYER},
     {name => 'Bingoless Games',            type => STAT_ITEM_PLAYER},
@@ -96,6 +97,7 @@ use constant STATS_ITEMS =>
     {name => 'Bingo Probabilities',        type => STAT_ITEM_OPP},
     {name => 'Tiles Played',               type => STAT_ITEM_OPP},
     {name => 'Power Tiles Played',         type => STAT_ITEM_OPP},
+    {name => 'Es Played',                  type => STAT_ITEM_OPP},
     {name => 'Turns With a Blank',         type => STAT_ITEM_OPP},
     {name => 'Triple Triples Played',      type => STAT_ITEM_OPP},
     {name => 'Bingoless Games',            type => STAT_ITEM_OPP},
@@ -207,6 +209,18 @@ DOUBLE_LETTER . '  ' . DOUBLE_WORD . '   ' . DOUBLE_LETTER . '   ' . DOUBLE_WORD
 ' ' . DOUBLE_WORD . '   ' . TRIPLE_LETTER . '   ' . TRIPLE_LETTER . '   ' . DOUBLE_LETTER . ' ' .
 TRIPLE_WORD . '  ' . DOUBLE_LETTER . '   ' . TRIPLE_WORD . '   ' . DOUBLE_LETTER . '  ' . TRIPLE_WORD
 ;
+
+use constant STATS_NOTE => "********************* POTENTIAL INACCURACIES *********************\n\n".
+                           "The Turns with a Blank statistic is only meaningful for\n".
+                           "players who have their full racks recorded in their games.\n\n".
+                           "The Challenges statistic for TWL may not be completely accurate\n".
+                           "as passes and lost challenges are indistinguishable in GCG files.\n".
+                           "The following heuristic is used to try and distinguish passes and.\n".
+                           "lost challenges:\n\n  If the game is played with a TWL dictionary and\n".
+                           "  there is a pass after a word is played (but not an exchange or pass),\n".
+                           "  that turn is considered a lost challenge.\n\n".
+                           "******************************************************************\n\n";
+
 
 1;
 
