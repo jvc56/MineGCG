@@ -78,6 +78,11 @@ sub update_leaderboard
 
       $stat = sprintf "%.4f", $stat;
 
+      if ($name eq "GAMES")
+      {
+        $stat = int($stat);
+      }
+
       if (!$init)
       {
         $leaderboards{$name} = [[$stat, $player_name]];
