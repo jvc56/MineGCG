@@ -215,7 +215,7 @@ use constant STATS_NOTE => "\n\n\n********************* POTENTIAL INACCURACIES *
                            "players who have their full racks recorded in their games.\n\n".
                            "The Challenges statistic for TWL may not be completely accurate\n".
                            "as passes and lost challenges are indistinguishable in GCG files.\n".
-                           "The following heuristic is used to try and distinguish passes and.\n".
+                           "The following heuristic is used to try and distinguish passes and\n".
                            "lost challenges:\n\n  If the game is played with a TWL dictionary and\n".
                            "  there is a pass after a word is played (but not an exchange or pass),\n".
                            "  that turn is considered a lost challenge.\n\n".
