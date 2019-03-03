@@ -45,6 +45,9 @@ sub mine
   my $player_name_no_underscore = $player_name;
   $player_name_no_underscore =~ s/_/ /g;
 
+  my $opponent_name_no_underscore = $opponent_name;
+  $opponent_name_no_underscore =~ s/_/ /g;
+
   print_or_append( "\nStatistics for $player_name_no_underscore\n\n\n", $html, 0);
   
   print_or_append( "\nSEARCH PARAMETERS: \n", $html, 0);
@@ -75,7 +78,7 @@ sub mine
 
   print_or_append( "\n  Opponent:      ", $html, 0);
   
-  if ($opponent_name) {print_or_append( $opponent_name, $html, 0);}
+  if ($opponent_name_no_underscore) {print_or_append( $opponent_name_no_underscore, $html, 0);}
   else {print_or_append( "-", $html, 0);}
 
   print_or_append( "\n  Start Date:    ", $html, 0);
