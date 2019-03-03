@@ -113,6 +113,11 @@ sub new
 
     my $name  = $items[0];
     my $rack  = $items[1];
+
+    # Remove parens from outplay rack
+
+    $rack =~ s/[\(\)]//g;
+
     my $loc;
     my $play;
     my $score;
@@ -134,6 +139,7 @@ sub new
     my $challenge_points = 0;
     my $out_points = 0;
     my $comment = "";
+    my $oppo_stuck_rack = "";
 
     if ($name eq $player_one_name)
     {
@@ -164,8 +170,9 @@ sub new
       {
         $moves[-1]->{'player_two_total'} = $total;
       }
-      $moves[-1]->{'score'} += $score;
-      $moves[-1]->{'out_points'} = $score;
+      $moves[-1]->{'score'}           += $score;
+      $moves[-1]->{'out_points'}      = $score;
+      $moves[-1]->{'oppo_stuck_rack'} = $rack;
       next;
     }
     elsif (scalar $num_items == 5)
@@ -269,6 +276,7 @@ sub new
         }
         $moves[-1]->{'score'} += $score;
         $moves[-1]->{'out_points'} = $score;
+        $moves[-1]->{'oppo_stuck_rack'} = $rack;
         next;
       }
       # Also an outplay for older quackle versions
@@ -361,7 +369,8 @@ sub new
                           $challenge_points,
                           $out_points,
                           $comment,
-                          $name
+                          $name,
+                          $oppo_stuck_rack
                       );
     push @moves, $move;
     $turn_number++;
@@ -805,6 +814,51 @@ sub getNumTilesPlayed
   	$sum += $inc
   }
   return $sum;
+}
+
+sub getNumTilesStuckWith
+{
+  my $this = shift;
+
+  my $player = shift;
+  my $tile   = shift;
+
+  my @moves = @{$this->{'moves'}};
+
+  my $last_move_index = (scalar @moves) - 1;
+
+  my $last_move   = $moves[$last_move_index];
+  my $penult_move = $moves[$last_move_index - 1];
+
+  my $rack = "";
+
+  # A nonword play ending the game
+  if ($last_move->{'play_type'} ne Constants::PLAY_TYPE_WORD && $penult_move->{'play_type'} ne Constants::PLAY_TYPE_WORD)
+  {
+    if ($last_move->{'turn'} == $player)
+    {
+      $rack = $last_move->{'rack'};
+    }
+    else
+    {
+      $rack = $penult_move->{'rack'};
+    }
+  }
+  # Opponent goes out with a play
+  elsif ($last_move->{'play_type'} eq Constants::PLAY_TYPE_WORD && $last_move->{'turn'} != $player)
+  {
+    $rack = $last_move->{'oppo_stuck_rack'};
+  }
+
+  if ($rack)
+  {
+    if ($tile)
+    {
+      $rack =~ s/[^$tile]//g;
+    }
+    return length $rack;
+  }
+  return 0;
 }
 
 sub getNumTripleTriplesPlayed

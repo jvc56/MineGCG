@@ -81,6 +81,7 @@ use constant STATS_ITEMS =>
     {name => 'Bingo Probabilities',        type => STAT_ITEM_PLAYER},
     {name => 'Tiles Played',               type => STAT_ITEM_PLAYER},
     {name => 'Power Tiles Played',         type => STAT_ITEM_PLAYER},
+    {name => 'Power Tiles Stuck With',     type => STAT_ITEM_PLAYER},
     {name => 'Es Played',                  type => STAT_ITEM_PLAYER},
     {name => 'Turns With a Blank',         type => STAT_ITEM_PLAYER},
     {name => 'Triple Triples Played',      type => STAT_ITEM_PLAYER},
@@ -97,6 +98,7 @@ use constant STATS_ITEMS =>
     {name => 'Bingo Probabilities',        type => STAT_ITEM_OPP},
     {name => 'Tiles Played',               type => STAT_ITEM_OPP},
     {name => 'Power Tiles Played',         type => STAT_ITEM_OPP},
+    {name => 'Power Tiles Stuck With',     type => STAT_ITEM_OPP},
     {name => 'Es Played',                  type => STAT_ITEM_OPP},
     {name => 'Turns With a Blank',         type => STAT_ITEM_OPP},
     {name => 'Triple Triples Played',      type => STAT_ITEM_OPP},
@@ -187,7 +189,7 @@ use constant TRIPLE_LETTER  => '"';
 use constant DOUBLE_WORD    => '-';
 use constant TRIPLE_WORD    => '=';
 
-use constant TITLE_WIDTH   => 25;
+use constant TITLE_WIDTH   => 30;
 use constant AVERAGE_WIDTH => 20;
 use constant TOTAL_WIDTH   => 20;
 

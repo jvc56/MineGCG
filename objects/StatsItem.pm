@@ -137,6 +137,10 @@ sub addGame
   {
     $this->__updateNumPowerTilesPlayed($game, $this_player);
   }
+  elsif ($name eq "Power Tiles Stuck With")
+  {
+    $this->__updateNumPowerTilesStuckWith($game, $this_player);
+  }
   elsif ($name eq "Es Played")
   {
     $this->__updateNumEsPlayed($game, $this_player);
@@ -571,11 +575,57 @@ sub __updateNumPowerTilesPlayed
     $this->{'list'} = \@order;
   }
   my $blanks = $game->getNumTilesPlayed($this_player, 'a-z');
-  my $js = $game->getNumTilesPlayed($this_player, 'J');
-  my $qs = $game->getNumTilesPlayed($this_player, 'Q');
-  my $xs = $game->getNumTilesPlayed($this_player, 'X');
-  my $zs = $game->getNumTilesPlayed($this_player, 'Z');
-  my $ss = $game->getNumTilesPlayed($this_player, 'S');
+  my $js     = $game->getNumTilesPlayed($this_player, 'J');
+  my $qs     = $game->getNumTilesPlayed($this_player, 'Q');
+  my $xs     = $game->getNumTilesPlayed($this_player, 'X');
+  my $zs     = $game->getNumTilesPlayed($this_player, 'Z');
+  my $ss     = $game->getNumTilesPlayed($this_player, 'S');
+
+  $this->{'total'} += $blanks + $js + $qs + $xs + $zs + $ss;
+  $this->{'subitems'}->{'?'} += $blanks;
+  $this->{'subitems'}->{'J'} += $js;
+  $this->{'subitems'}->{'Q'} += $qs;
+  $this->{'subitems'}->{'X'} += $xs;
+  $this->{'subitems'}->{'Z'} += $zs;
+  $this->{'subitems'}->{'S'} += $ss;
+}
+
+sub __updateNumPowerTilesStuckWith
+{
+  my $this = shift;
+  my $game = shift;
+  my $this_player = shift;
+
+  if (!$this->{'init'})
+  {
+    $this->{'init'} = 1;
+    my %subitems =
+    (
+      '?' => 0,
+      'J' => 0,
+      'Q' => 0,
+      'X' => 0,
+      'Z' => 0,
+      'S' => 0
+    );
+    $this->{'subitems'} = \%subitems;
+    my @order =
+    (
+      '?',
+      'J',
+      'Q',
+      'X',
+      'Z',
+      'S'
+    );
+    $this->{'list'} = \@order;
+  }
+  my $blanks = $game->getNumTilesStuckWith($this_player, '?');
+  my $js     = $game->getNumTilesStuckWith($this_player, 'J');
+  my $qs     = $game->getNumTilesStuckWith($this_player, 'Q');
+  my $xs     = $game->getNumTilesStuckWith($this_player, 'X');
+  my $zs     = $game->getNumTilesStuckWith($this_player, 'Z');
+  my $ss     = $game->getNumTilesStuckWith($this_player, 'S');
 
   $this->{'total'} += $blanks + $js + $qs + $xs + $zs + $ss;
   $this->{'subitems'}->{'?'} += $blanks;

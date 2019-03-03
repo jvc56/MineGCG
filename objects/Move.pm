@@ -27,6 +27,7 @@ sub new
   my $out_points = shift;
   my $comment = shift;
   my $last_name = shift;
+  my $oppo_stuck_rack = shift;
   my @words_made = ();
 
   my %move = (
@@ -44,7 +45,8 @@ sub new
       	       play_type        => $play_type,
       	       challenge_lost   => $challenge_lost,
       	       challenge_points => $challenge_points,
-      	       out_points       => $out_points,
+               out_points       => $out_points,
+      	       oppo_stuck_rack  => $oppo_stuck_rack,
       	       comment          => $comment,
                last_name        => $last_name,
                is_phony         => 1,
