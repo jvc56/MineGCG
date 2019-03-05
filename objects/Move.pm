@@ -244,6 +244,29 @@ sub hasBlankOnRack
   return $this->{'rack'} =~ /\?/;
 }
 
+sub getCommentLength
+{
+  my $this = shift;
+
+  my $this_player = shift;
+
+  return length $this->{'comment'};
+}
+
+sub getCommentWordLength
+{
+  my $this = shift;
+
+  my $this_player = shift;
+
+  my $text = $this->{'comment'};
+
+  my $num = 0; 
+  $num++ while $text =~ /\S+/g;
+
+  return $num;
+}
+
 sub toString
 {
   my $this = shift;

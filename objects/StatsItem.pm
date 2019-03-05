@@ -165,6 +165,14 @@ sub addGame
   {
     $this->__updateNumPhonyPlays($game, $this_player);
   }
+  elsif ($name eq "Comments")
+  {
+    $this->__updateNumComments($game);
+  }
+  elsif ($name eq "Comments Word Length")
+  {
+    $this->__updateNumCommentsWordLength($game);
+  }
 }
 
 sub __updateBingoList
@@ -806,6 +814,34 @@ sub __updateNumPhonyPlays
   $this->{'subitems'}->{Constants::UNCHALLENGED} += $num_phonies_unchal;
   $this->{'subitems'}->{Constants::CHALLENGED_OFF} += $num_phonies - $num_phonies_unchal;
 
+}
+
+sub __updateNumComments
+{
+  my $this   = shift;
+  my $game   = shift;
+  my $player = shift;
+
+  if (!$this->{'init'})
+  {
+    $this->{'init'} = 1;
+  }
+
+  $this->{'total'} += $game->getNumComments($player);
+}
+
+sub __updateNumCommentsWordLength
+{
+  my $this   = shift;
+  my $game   = shift;
+  my $player = shift;
+
+  if (!$this->{'init'})
+  {
+    $this->{'init'} = 1;
+  }
+
+  $this->{'total'} += $game->getNumCommentsWordLength($player);
 }
 
 sub makeRow

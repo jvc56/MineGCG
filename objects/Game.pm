@@ -70,7 +70,7 @@ sub new
     {
       if (!(@moves))
       {
-        $warning .= "Warning: note before moves detected\nFILE:   $filename\nLINE $line_number: $line\n";
+        $warning .= "WARNING: note before moves detected\nFILE:   $filename\nLINE $line_number: $line\n";
       }
       else
       {
@@ -978,6 +978,32 @@ sub isBingoless
   my $player = shift;
   # Add 0 at the end to include phonies
   return sum(@{$this->getNumWordsPlayed($player, 1, 0)}) == 0;
+}
+
+sub getNumComments
+{
+  my $this = shift;
+
+  my @moves = @{$this->{'moves'}};
+  my $sum = 0;
+  foreach my $move (@moves)
+  {
+    $sum += !!$move->getCommentLength;
+  }
+  return $sum;
+}
+
+sub getNumCommentsWordLength
+{
+  my $this = shift;
+
+  my @moves = @{$this->{'moves'}};
+  my $sum = 0;
+  foreach my $move (@moves)
+  {
+    $sum += $move->getCommentWordLength;
+  }
+  return $sum;
 }
 
 sub readableMove

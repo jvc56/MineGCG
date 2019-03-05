@@ -290,7 +290,12 @@ sub mine
       #  $single_game_stats->resetStats();
       # }
       
-      $all_stats->addGame($game);
+      my $possible_warnings = $all_stats->addGame($game);
+      if ($possible_warnings)
+      {
+        print_or_append($possible_warnings, $html, 0, $player_name);
+        $num_warnings++;
+      }
       $at_least_one = 1;
     }
   }

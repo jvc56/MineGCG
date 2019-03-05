@@ -88,6 +88,8 @@ use constant STATS_ITEMS =>
     {name => 'Bingoless Games',            type => STAT_ITEM_PLAYER},
     {name => 'Bonus Square Coverage',      type => STAT_ITEM_PLAYER},
     {name => 'Phony Plays',                type => STAT_ITEM_PLAYER},
+    {name => 'Comments',                   type => STAT_ITEM_PLAYER},
+    {name => 'Comments Word Length',       type => STAT_ITEM_PLAYER},
     {name => 'Wins',                       type => STAT_ITEM_OPP},
     {name => 'Score',                      type => STAT_ITEM_OPP},
     {name => 'Turns',                      type => STAT_ITEM_OPP},
@@ -105,6 +107,8 @@ use constant STATS_ITEMS =>
     {name => 'Bingoless Games',            type => STAT_ITEM_OPP},
     {name => 'Bonus Square Coverage',      type => STAT_ITEM_OPP},
     {name => 'Phony Plays',                type => STAT_ITEM_OPP},
+    {name => 'Comments',                   type => STAT_ITEM_OPP},
+    {name => 'Comments Word Length',       type => STAT_ITEM_OPP}
 );
 
 use constant INDEX_COLUMN_MAPPING =>
