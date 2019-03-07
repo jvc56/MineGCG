@@ -168,13 +168,14 @@ sub retrieve
     {
       $game_tourney_id = 0;
     }
-    if (!$this_lexicon)
-    {
-      $this_lexicon = Constants::DEFAULT_LEXICON;
-    }
 
     # Check if game needs to be downloaded
 
+    if (!$this_lexicon)
+    {
+      if ($verbose) {print "$num_str Game with ID $id does not have a specified lexicon\n";}
+      next;
+    }
     if ($tourney_id && $tourney_id ne $game_tourney_id)
     {
       if ($verbose) {print "$num_str Game with ID $id was not played in the specified tournament\n";}

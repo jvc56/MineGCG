@@ -191,11 +191,15 @@ sub new
 
         $play_type =  Constants::PLAY_TYPE_PASS;
 
-        if (@moves && $moves[-1]->{'play_type'} eq Constants::PLAY_TYPE_WORD && $filename =~ /TWL/)
+        if (
+            @moves &&
+            $moves[-1]->{'play_type'} eq Constants::PLAY_TYPE_WORD &&
+            $filename =~ /(TWL)|(NSW)/ &&
+            scalar @moves < 20
+           )
         {
           $challenge_lost = 1;
         }
-
       }
       # Word challenged off
       elsif ($items[2] eq "--")
