@@ -57,6 +57,7 @@ sub update_leaderboard
       }
       elsif (
               $name eq "SCORE PER TURN" ||
+              $name eq "FULL RACK PER TURN" ||
               $name eq "HIGH GAME" ||
               $name eq "LOW GAME" || 
               $name =~ /BINGO PROBABILITIES/
