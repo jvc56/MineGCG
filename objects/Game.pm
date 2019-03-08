@@ -1119,8 +1119,6 @@ sub postConstruction
   my $tiles_in_bag   = 86;
   my @full_rack_nums = (7, 7);
 
-  my $incomplete_turns = "";
-
   # Determine phoniness and probabilities and if the bag is empty
   foreach my $move (@moves)
   {
@@ -1130,11 +1128,6 @@ sub postConstruction
     my $turn = $move->{'turn'};
     my $tiles_played = $move->getNumTilesPlayed($turn);
     $move->{'is_full_rack'} = $full_rack_nums[$turn] <= length $move->{'rack'};
-
-    if ($move->{'last_name'} =~ /josh/i && !$move->{'is_full_rack'})
-    {
-      $incomplete_turns .= "    turn: " . $move->{'number'} . "\n";
-    }
 
     if ($tiles_in_bag >= 0 && $tiles_in_bag - $tiles_played < 0)
     {
