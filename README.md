@@ -35,7 +35,7 @@ After running a search, a new page will appear with your bingos and other statis
 Below the lists are the statistics for all of the games in the search. The AVERAGE column refers to the average per game unless otherwise stated in the statistic title to the left. Several statistics might be inaccurate for various reasons or warrant further explanation:<br/><br/>
 
 <h5>Challenges You Won/You Lost</h5>
-This statistic may not be completely accurate for games using double challenge (TWL or NSW games) as passes and lost challenges in a double challenge game are indistinguishable in the GCG file. If the following criteria are met, the play is considered a lost challenge:
+This statistic may not be completely accurate for games using double challenge (TWL or NSW games) as passes and lost challenges in a double challenge game are indistinguishable in the GCG file. If the following criteria are met, the play is considered a lost challenge:<br/>
 
  - The previous play formed at least one word
  - The game is played with a TWL or NSW lexicon
@@ -53,7 +53,7 @@ The <a href='http://randomracer.com'>randomracer.com</a> website maintains <a hr
 
 # Errors, Warnings, and Omitted Games
 
-If there were errors or warnings during a search, they will appear just under the color key. There are a variety of errors and warnings, but only a few are common:
+If there were errors or warnings during a search, they will appear just under the color key. There are a variety of errors and warnings, but only a few are common:<br/><br/>
 
 <h5>Game against ... is a duplicate</h5>
 This appears when two games with the same tournament and round number are detected. It is not considered a warning or error, though it probably means that both you and your opponent uploaded the same game. In this case the racks that you recorded might have been overwritten when you opponent uploaded their game.
