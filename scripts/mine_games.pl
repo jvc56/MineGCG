@@ -264,8 +264,9 @@ sub mine
       }
       else
       {
-        print_or_append( "Game $full_game_file_name does not use a recognized lexicon, using CSW15 as a default\n", $html, 0, $player_name);
-        $lexicon_ref = CSW15::CSW15_LEXICON;
+        print_or_append( "\nERROR: no lexicon found for index $full_game_file_name\n", $html, 1, $player_name);
+        $num_errors++;
+        next;
       }
 
       my $game = Game->new($full_game_file_name, $player_is_first, $lexicon_ref, $player_one_name, $player_two_name, $html);
