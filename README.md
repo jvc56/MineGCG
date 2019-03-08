@@ -29,6 +29,48 @@ Opponent Name: An optional parameter used to search for only game against a spec
 Start Date: An optional parameter used to search for only games beyond a certain date.<br/><br/>
 End Date: An optional parameter used to search for only games before a certain date.<br/><br/>
 
+# Statistics and Lists
+
+After running a search, a new page will appear with your bingos and other statistics. For all of the lists, each word listed links to the annotated cross-tables game in which it appears. For bingos and triple triples, the number next to the word is the probability order as it appears on Zyzzyva.<br/><br/>
+Below the lists are the statistics for all of the games in the search. The AVERAGE column refers to the average per game unless otherwise stated in the statistic title to the left. Several statistics might be inaccurate for various reasons or warrant further explanation:<br/><br/>
+
+The Challenges You Won/You Lost statistic may not be completely accurate for games using double challenge (TWL or NSW games) as passes and lost challenges in a double challenge game are indistinguishable in the GCG file. If the following criteria are met, the play is considered a lost challenge:<br/><br/>
+ - The previous play formed at least one word<br/>
+ - The game is played with a TWL or NSW lexicon<br/>
+ - The game has less than 20 turns<br/>
+If you think you can improve these heuristics, please message me.<br/><br/>
+The Full Rack per Turn statistic refers to the percentage of racks that contain all seven (or a certain lower number during the endgame) tiles.<br/><br/>
+The Turns with a Blank statistic is only meaningful for players with a significant percentage of their full racks recorded.<br/><br/>
+
+# Leaderboards
+
+The <a href='http://randomracer.com'>randomracer.com</a> website maintains <a href='http://randomracer.com/leaderboards.html'>leaderboards</a> for all of the statistics that are shown in a search. Only players with 50 or more annotated games are included in the leaderboards.
+
+# Errors, Warnings, and Omitted Games
+
+If there were errors or warnings during a search, they will appear just under the color key. There are a variety of errors and warnings, but only a few are common:
+
+<h5>Game against ... is a duplicate</h5>
+This appears when two games with the same tournament and round number are detected. It is not considered a warning or error, though it probably means that both you and your opponent uploaded the same game. In this case the racks that you recorded might have been overwritten when you opponent uploaded their game.
+
+<h5>ERORR: no moves found</h5>
+This error appears when an empty GCG file is detected.
+
+<h5>ERORR: disconnected play detected</h5>
+This error appears when a play is made that does not connect to other tiles on the board.
+
+The errors above are relatively common and well-tested. If you encounter any of these errors, it probably means that the GCG file of the game is somehow malformed. To correct these errors, update the game on <a href='https://cross-tables.com'>cross-tables.com</a> and then message me so I can delete the outdated game that is cache in the database. It is also possible that there is a bug that is causing the error. If you think this is the case, message me and I will add you to the contributions list!<br/><br/>
+
+Currently, the only warnings is for notes that start before moves. If you see this warning no action is needed. More warnings might be added in the future.<br/><br/>
+
+You might notice that there are some annotated games that are not included in your statistics or in the leaderboards. Games are omitted if they meet any of the following criteria:
+
+<h5>The game gives an error</h5>
+<h5>The game does not have any associated lexicon</h5>
+<h5>The game is from a blacklisted tournament</h5>
+
+Games with no lexicons are omitted because the lexicons are necessary for computing several statistics and the resulting inaccuracies could be misleading and introduce error (or more error anyway) into the leaderboards. Currently there is only one blacklisted tournament (Can-Am Match CSW, 2015). Tournaments are blacklisted if an annoyingly significant portion of their annotated games are empty or otherwise malformed.
+
 # Contributions
 
 Turns with a blank statistic (Marlon Hill)<br/>
