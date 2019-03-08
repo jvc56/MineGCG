@@ -16,18 +16,18 @@ A usage message telling you how to use the command should appear.
 # Usage
 
 This section describes the usage of the web version. For questions about the command line version, message me directly for now. To search for someone's statistics, go to <a href='http://randomracer.com'>randomracer.com</a> and enter their name into the 'Player Name' field. The name must exactly match their name as it appears on <a href='https://cross-tables.com'>cross-tables.com</a> except for capitalization and punctuation. There are other parameters you can use to narrow your search which are described below:<br/><br/>
-Player Name: Specifies the name of the player (ignoring capitalization and punctuaion).<br/><br/>
-Game Type:   An optional parameter used to search for only casual and club games or only tournament games. Games are considered tournament games if they are associated with a tournament and a round number. Games tagged as 'Tournament Game' in cross-tables with no specific tournament are not considered tournament games.<br/><br/>
-Tournament ID: An optional parameter used to search for only games of a specific tournament. To find a tournament's ID, go to that tournament's page on <a href='https://cross-tables.com'>cross-tables.com</a> and look for the number in the address bar. For example, the address of the 29th National Championship Main Event is<br/><br/>
+<h5>Player Name</h5> Specifies the name of the player (ignoring capitalization and punctuaion).<br/><br/>
+<h5>Game Type</h5>   An optional parameter used to search for only casual and club games or only tournament games. Games are considered tournament games if they are associated with a tournament and a round number. Games tagged as 'Tournament Game' in cross-tables with no specific tournament are not considered tournament games.<br/><br/>
+<h5>Tournament ID</h5> An optional parameter used to search for only games of a specific tournament. To find a tournament's ID, go to that tournament's page on <a href='https://cross-tables.com'>cross-tables.com</a> and look for the number in the address bar. For example, the address of the 29th National Championship Main Event is<br/><br/>
 https://www.cross-tables.com/tourney.php?t=10353&div=1<br/><br/>
 which has a tournament ID of 10353.<br/><br/>
-Lexicon: An optional parameter used to search for only games of a specific lexicon.<br/><br/>
-Game ID: An optional parameter used to search for only one game. To find a game's ID, go to that game's page on <a href='https://cross-tables.com'>cross-tables.com</a> and look for the number in the address bar. For example, the address of one of my games against Marlon is<br/><br/>
+<h5>Lexicon</h5> An optional parameter used to search for only games of a specific lexicon.<br/><br/>
+<h5>Game ID</h5> An optional parameter used to search for only one game. To find a game's ID, go to that game's page on <a href='https://cross-tables.com'>cross-tables.com</a> and look for the number in the address bar. For example, the address of one of my games against Marlon is<br/><br/>
 https://www.cross-tables.com/annotated.php?u=31231#0#<br/><br/>
 which has a game ID of 31231.<br/><br/>
-Opponent Name: An optional parameter used to search for only game against a specific opponent. The name must exactly match their name as it appears on <a href='https://cross-tables.com'>cross-tables.com</a> (ignoring capitalization and punctuaion).<br/><br/>
-Start Date: An optional parameter used to search for only games beyond a certain date.<br/><br/>
-End Date: An optional parameter used to search for only games before a certain date.<br/><br/>
+<h5>Opponent Name</h5> An optional parameter used to search for only game against a specific opponent. The name must exactly match their name as it appears on <a href='https://cross-tables.com'>cross-tables.com</a> (ignoring capitalization and punctuaion).<br/><br/>
+<h5>Start Date</h5> An optional parameter used to search for only games beyond a certain date.<br/><br/>
+<h5>End Date</h5> An optional parameter used to search for only games before a certain date.<br/><br/>
 
 # Statistics and Lists
 
@@ -37,7 +37,7 @@ Below the lists are the statistics for all of the games in the search. The AVERA
 The Challenges You Won/You Lost statistic may not be completely accurate for games using double challenge (TWL or NSW games) as passes and lost challenges in a double challenge game are indistinguishable in the GCG file. If the following criteria are met, the play is considered a lost challenge:<br/><br/>
  - The previous play formed at least one word<br/>
  - The game is played with a TWL or NSW lexicon<br/>
- - The game has less than 20 turns<br/>
+ - The game has less than 20 turns<br/><br/><br/>
 If you think you can improve these heuristics, please message me.<br/><br/>
 The Full Rack per Turn statistic refers to the percentage of racks that contain all seven (or a certain lower number during the endgame) tiles.<br/><br/>
 The Turns with a Blank statistic is only meaningful for players with a significant percentage of their full racks recorded.<br/><br/>
@@ -65,9 +65,9 @@ Currently, the only warnings is for notes that start before moves. If you see th
 
 You might notice that there are some annotated games that are not included in your statistics or in the leaderboards. Games are omitted if they meet any of the following criteria:
 
-<h5>The game gives an error</h5>
-<h5>The game does not have any associated lexicon</h5>
-<h5>The game is from a blacklisted tournament</h5>
+ - The game gives an error
+ - The game does not have any associated lexicon
+ - The game is from a blacklisted tournament
 
 Games with no lexicons are omitted because the lexicons are necessary for computing several statistics and the resulting inaccuracies could be misleading and introduce error (or more error anyway) into the leaderboards. Currently there is only one blacklisted tournament (Can-Am Match CSW, 2015). Tournaments are blacklisted if an annoyingly significant portion of their annotated games are empty or otherwise malformed.
 
