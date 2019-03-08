@@ -1,6 +1,6 @@
 # MineGCG
 
-MineGCG is a tool that computes statistics for annotated cross-tables.com games. Matthew O'Connor thought of the original idea in the summer of 2018 while we were on vacation in Cloyne. It has since accumulated many new statistics and features and continues to be updated regularly. The web version can be found at <a href='http://randomracer.com'>randomracer.com</a> or you can install it from the command line. If you find any bugs or want to suggest improvements, email them to joshuacastellano7@gmail.com and I'll add your name to the contributions list.
+MineGCG is a tool that computes statistics for annotated cross-tables.com games. Matthew O'Connor thought of the original idea in the summer of 2018 while we were on vacation in Cloyne. It has since accumulated many new statistics and features and continues to be updated regularly. The web version can be found at <a href='http://randomracer.com'>randomracer.com</a> or you can install it from the command line. If you find any bugs or want to suggest improvements, email them to joshuacastellano7@gmail.com and I'll add your name to the contributions list!
 
 # Installation
 
@@ -25,7 +25,7 @@ which has a tournament ID of 10353.<br/><br/>
 <h5>Game ID</h5> An optional parameter used to search for only one game. To find a game's ID, go to that game's page on <a href='https://cross-tables.com'>cross-tables.com</a> and look for the number in the address bar. For example, the address of one of my games against Marlon is<br/><br/>
 https://www.cross-tables.com/annotated.php?u=31231#0#<br/><br/>
 which has a game ID of 31231.<br/><br/>
-<h5>Opponent Name</h5> An optional parameter used to search for only game against a specific opponent. The name must exactly match their name as it appears on <a href='https://cross-tables.com'>cross-tables.com</a> (ignoring capitalization and punctuaion).<br/><br/>
+<h5>Opponent Name</h5> An optional parameter used to search for only games against a specific opponent. The name must exactly match their name as it appears on <a href='https://cross-tables.com'>cross-tables.com</a> (ignoring capitalization and punctuaion).<br/><br/>
 <h5>Start Date</h5> An optional parameter used to search for only games beyond a certain date.<br/><br/>
 <h5>End Date</h5> An optional parameter used to search for only games before a certain date.<br/><br/>
 
@@ -34,13 +34,13 @@ which has a game ID of 31231.<br/><br/>
 After running a search, a new page will appear with your bingos and other statistics. For all of the lists, each word listed links to the annotated cross-tables game in which it appears. For bingos and triple triples, the number next to the word is the probability order as it appears on Zyzzyva.<br/><br/>
 Below the lists are the statistics for all of the games in the search. The AVERAGE column refers to the average per game unless otherwise stated in the statistic title to the left. Several statistics might be inaccurate for various reasons or warrant further explanation:<br/><br/>
 
-The Challenges You Won/You Lost statistic may not be completely accurate for games using double challenge (TWL or NSW games) as passes and lost challenges in a double challenge game are indistinguishable in the GCG file. If the following criteria are met, the play is considered a lost challenge:<br/><br/>
+<h5>Challenges You Won/You Lost</h5>This statistic may not be completely accurate for games using double challenge (TWL or NSW games) as passes and lost challenges in a double challenge game are indistinguishable in the GCG file. If the following criteria are met, the play is considered a lost challenge:
  - The previous play formed at least one word<br/>
  - The game is played with a TWL or NSW lexicon<br/>
- - The game has less than 20 turns<br/><br/><br/>
-If you think you can improve these heuristics, please message me.<br/><br/>
-The Full Rack per Turn statistic refers to the percentage of racks that contain all seven (or a certain lower number during the endgame) tiles.<br/><br/>
-The Turns with a Blank statistic is only meaningful for players with a significant percentage of their full racks recorded.<br/><br/>
+ - The game has less than 20 turns<br/>
+If you think you can improve these heuristics, please message me.
+<h5>The Full Rack per Turn</h5>This statistic refers to the percentage of racks that contain all seven (or a certain lower number during the endgame) tiles.
+<h5>The Turns with a Blank statistic</h5>This statistic is only meaningful for players with a significant percentage of their full racks recorded.
 
 # Leaderboards
 
