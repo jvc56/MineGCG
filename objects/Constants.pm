@@ -75,6 +75,7 @@ use constant STATS_ITEMS =>
     {name => 'Score',                      type => STAT_ITEM_PLAYER},
     {name => 'Turns',                      type => STAT_ITEM_PLAYER},
     {name => 'Score per Turn',             type => STAT_ITEM_PLAYER},
+    {name => 'Full Rack per Turn',         type => STAT_ITEM_PLAYER},
     {name => 'High Game',                  type => STAT_ITEM_PLAYER},
     {name => 'Low Game',                   type => STAT_ITEM_PLAYER},
     {name => 'Bingos Played',              type => STAT_ITEM_PLAYER},
@@ -94,6 +95,7 @@ use constant STATS_ITEMS =>
     {name => 'Score',                      type => STAT_ITEM_OPP},
     {name => 'Turns',                      type => STAT_ITEM_OPP},
     {name => 'Score per Turn',             type => STAT_ITEM_OPP},
+    {name => 'Full Rack per Turn',         type => STAT_ITEM_OPP},
     {name => 'High Game',                  type => STAT_ITEM_OPP},
     {name => 'Low Game',                   type => STAT_ITEM_OPP},
     {name => 'Bingos Played',              type => STAT_ITEM_OPP},
@@ -215,17 +217,6 @@ DOUBLE_LETTER . '  ' . DOUBLE_WORD . '   ' . DOUBLE_LETTER . '   ' . DOUBLE_WORD
 ' ' . DOUBLE_WORD . '   ' . TRIPLE_LETTER . '   ' . TRIPLE_LETTER . '   ' . DOUBLE_LETTER . ' ' .
 TRIPLE_WORD . '  ' . DOUBLE_LETTER . '   ' . TRIPLE_WORD . '   ' . DOUBLE_LETTER . '  ' . TRIPLE_WORD
 ;
-
-use constant STATS_NOTE => "\n\n\n********************* POTENTIAL INACCURACIES *********************\n\n".
-                           "The Turns with a Blank statistic is only meaningful for\n".
-                           "players who have their full racks recorded in their games.\n\n".
-                           "The Challenges statistic for TWL may not be completely accurate\n".
-                           "as passes and lost challenges are indistinguishable in GCG files.\n".
-                           "The following heuristic is used to try and distinguish passes and\n".
-                           "lost challenges:\n\n  If the game is played with a TWL dictionary and\n".
-                           "  there is a pass after a word is played (but not an exchange or pass),\n".
-                           "  that turn is considered a lost challenge.\n\n".
-                           "******************************************************************\n\n";
 
 
 1;

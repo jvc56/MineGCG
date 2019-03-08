@@ -74,7 +74,9 @@ sub toString
 {
   my $this = shift;
 
-  my $stats_note = Constants::STATS_NOTE;
+  my $stats_note = "\n\n\n";
+  
+
   my $tiw        = Constants::TITLE_WIDTH;
   my $aw         = Constants::AVERAGE_WIDTH;
   my $tow        = Constants::TOTAL_WIDTH;

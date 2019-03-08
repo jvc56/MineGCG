@@ -113,6 +113,10 @@ sub addGame
   {
     $this->__updateScorePerTurn($game, $this_player);
   }
+  elsif ($name eq "Full Rack per Turn")
+  {
+    $this->__updateFullRackPerTurn($game, $this_player);
+  }
   elsif ($name eq "High Game")
   {
     $this->__updateHighGame($game, $this_player);
@@ -320,6 +324,23 @@ sub __updateScorePerTurn
   $this->{'total_score'} += $game->getScore($this_player);
   $this->{'total_turns'} += $game->getNumTurns($this_player);
   $this->{'total'} = sprintf "%.2f", $this->{'total_score'} / $this->{'total_turns'};
+}
+
+sub __updateFullRackPerTurn
+{
+  my $this = shift;
+  my $game = shift;
+  my $this_player = shift;
+
+  if (!$this->{'init'})
+  {
+    $this->{'init'} = 1;
+    $this->{'single'} = 1;
+  }
+
+  $this->{'total_full_racks'} += $game->getNumFullRacks($this_player);
+  $this->{'total_turns'}      += $game->getNumTurns($this_player);
+  $this->{'total'} = sprintf "%.2f", $this->{'total_full_racks'} / $this->{'total_turns'};
 }
 
 sub __updateHighGame

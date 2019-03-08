@@ -32,7 +32,7 @@ sub new
   my $player_two_total_after_move = 0;
   my $is_tourney_game = 0;
 
-  my $in_note = 0;
+  my $in_note     = 0;
   my $line_number = 0;
   my $warning     = "";
 
@@ -432,6 +432,22 @@ sub getNumTurns
     {
       $sum++;
     }
+  }
+  return $sum;
+}
+
+sub getNumFullRacks
+{
+  my $this = shift;
+
+  my $player = shift;
+
+  my @moves = @{$this->{'moves'}};
+
+  my $sum = 0;
+  foreach my $move (@moves)
+  {
+    $sum += $move->isFullRack($player);
   }
   return $sum;
 }
@@ -1100,9 +1116,37 @@ sub postConstruction
   my $this = shift;
   my @moves = @{$this->{'moves'}};
 
-  # Determine phoniness and probabilities
+  my $tiles_in_bag   = 86;
+  my @full_rack_nums = (7, 7);
+
+  my $incomplete_turns = "";
+
+  # Determine phoniness and probabilities and if the bag is empty
   foreach my $move (@moves)
   {
+    # Determine rack fullness
+    
+    $move->{'tiles_in_bag'} = $tiles_in_bag;
+    my $turn = $move->{'turn'};
+    my $tiles_played = $move->getNumTilesPlayed($turn);
+    $move->{'is_full_rack'} = $full_rack_nums[$turn] <= length $move->{'rack'};
+
+    if ($move->{'last_name'} =~ /josh/i && !$move->{'is_full_rack'})
+    {
+      $incomplete_turns .= "    turn: " . $move->{'number'} . "\n";
+    }
+
+    if ($tiles_in_bag >= 0 && $tiles_in_bag - $tiles_played < 0)
+    {
+      $full_rack_nums[$turn] += ($tiles_in_bag - $tiles_played)
+    }
+    elsif ($tiles_in_bag < 0)
+    {
+      $full_rack_nums[$turn] -= $tiles_played;
+    }
+
+    $tiles_in_bag -= $tiles_played;
+    
     if ($move->{'play_type'} ne Constants::PLAY_TYPE_WORD)
     {
       $move->{'is_phony'} = 0;

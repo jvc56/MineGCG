@@ -195,6 +195,23 @@ sub isBingo
   return 0;
 }
 
+sub isFullRack
+{
+  my $this = shift;
+
+  my $this_player = shift;
+  my $play = $this->{'play'};
+  
+  if ($this_player != $this->{'turn'})
+  {
+    return 0;
+  }
+  else
+  {
+    return $this->{'is_full_rack'};
+  }
+}
+
 sub isTripleTriple
 {
   my $this = shift;

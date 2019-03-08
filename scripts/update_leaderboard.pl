@@ -13,7 +13,8 @@ sub update_leaderboard
   my $min_games      = Constants::LEADERBOARD_MIN_GAMES;
   my $column_spacing = Constants::LEADERBOARD_COLUMN_SPACING;
   my $query_prefix   = Constants::RR_URL_PREFIX;
-  my $stats_note     = Constants::STATS_NOTE;
+  
+  my $stats_note     = "\n\n\n";
   
   opendir my $stats, $stats_dir or die "Cannot open directory: $!";
   my @stat_files = readdir $stats;
@@ -25,15 +26,7 @@ sub update_leaderboard
   my $total_players = 0;
 
   my $leaderboard_string = "";
-
-  $leaderboard_string .= "\n\nThe following leaderboards are based on uploaded\n";
-  $leaderboard_string .= "cross-tables games and are not necessarily an accurate\n";
-  $leaderboard_string .= "reflection of playing style or ability.\n";
-  $leaderboard_string .= "\n";
-  $leaderboard_string .= "With the exception of the GAMES leaderboard\n";
-  $leaderboard_string .= "all statistics are listed as per game.\n";
-  $leaderboard_string .= "\n";
-
+  my $table_of_contents  = "<h1><a id='leaderboards'></a>LEADERBOARDS</h1>";
 
   foreach my $stat_file (@stat_files)
   {
@@ -97,8 +90,6 @@ sub update_leaderboard
     $init = 1;
   }
 
-  $leaderboard_string .= "Leaderboard calculations included $total_players players with a minimum of $min_games games.\n\n\n";
-  $leaderboard_string .= $stats_note;
 
   for (my $i = 0; $i < scalar @name_order; $i++)
   {
@@ -115,20 +106,23 @@ sub update_leaderboard
 
     $sum = sprintf "%.4f", $sum / $total_players;
 
-    my $average_title_text = "AVERAGE " . $name;
+    $table_of_contents .= "<a href='#$name'>$name</a>\n";
 
-    $leaderboard_string .= $average_title_text . ": $sum\n\n";
+    $leaderboard_string .= "<h2><a id='$name'></a>AVERAGE $name: $sum</h2>";
 
     for (my $j = 0; $j < 2; $j++)
     {
       my @ranked_array;
+      my $title;
       if ($j == 0)
       {
         @ranked_array = sort { $b->[0] <=> $a->[0] } @array;
+        $title = "<h3>MOST $name</h3>";
       }
       else
       {
         @ranked_array = sort { $a->[0] <=> $b->[0] } @array;
+        $title = "\n\n<h3>LEAST $name</h3>";
       }
       my $all_zeros = 1;
       for (my $k = 0; $k < $cutoff; $k++)
@@ -143,37 +137,60 @@ sub update_leaderboard
       {
         next;
       }
-      if ($j == 0)
-      {
-        $leaderboard_string .= "MOST " . $name . "\n\n";
-      }
-      else
-      {
-        $leaderboard_string .= "\n\nLEAST " . $name . "\n\n";
-      }
-      for (my $k = 0; $k < $cutoff; $k++)
+
+      $leaderboard_string .= $title;
+
+      $title =~ />([^<]+)</g;
+
+      $title = $1;
+
+      for (my $k = 0; $k < $total_players; $k++)
       {
         my $name = $ranked_array[$k][1];
         my $name_with_plus = $name;
         $name_with_plus =~ s/ /+/g;
 
+        if ($k == $cutoff)
+        { 
+          $leaderboard_string .= "<div id='$title' style='display: none;'>";
+        }
+
         my $link = "<a href='$query_prefix$name_with_plus' target='_blank'>$name</a>";
 
         my $spacing = $column_spacing + (length $link) - (length $name);
         my $ranked_player_name = sprintf "%-" . $spacing . "s", $link;
-        my $ranking = sprintf "%-4s", ($k+1) . ".";
+        my $ranking = sprintf "%-5s", ($k+1) . ".";
         $leaderboard_string .= $ranking . $ranked_player_name . $ranked_array[$k][0] . "\n";
       }
+      $leaderboard_string .= "</div>\n";
+      $leaderboard_string .= "<button onclick='toggle(\"$title\")'>Toggle Full Standings for $title</button>\n";
     }
-
+    $leaderboard_string .= "\n\n\n\n";
+    $leaderboard_string .= "<a href='#leaderboards'>Back to Top</a>\n";
     $leaderboard_string .= "\n\n\n\n";
   }
 
   my $lt = localtime();
 
-  $leaderboard_string = "\nUpdated on $lt\n\n" . $leaderboard_string;
+  $leaderboard_string = "\nUpdated on $lt\n\n" . $stats_note . $table_of_contents . $leaderboard_string;
 
   $leaderboard_string = "<pre style='white-space: pre-wrap;' > $leaderboard_string </pre>\n";
+
+  my $javascript = "";
+  $javascript .= "";
+
+  $javascript .= "<script>\n";
+  $javascript .= "function toggle(id) {\n";
+  $javascript .= "var x = document.getElementById(id);\n";
+  $javascript .= "if (x.style.display === 'none') {\n";
+  $javascript .= "x.style.display = 'block';\n";
+  $javascript .= "} else {\n";
+  $javascript .= "x.style.display = 'none';\n";
+  $javascript .= "}\n";
+  $javascript .= "}\n";
+  $javascript .= "</script>\n";
+
+  $leaderboard_string = $javascript . $leaderboard_string;
 
   my $leaderboard_name = "./logs/" . Constants::LEADERBOARD_NAME . ".log";
 
