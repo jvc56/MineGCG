@@ -52,7 +52,7 @@ This statistic is only meaningful for players with a significant percentage of t
 
 # Leaderboards
 
-The <a href='http://randomracer.com'>randomracer.com</a> website maintains <a href='http://randomracer.com/leaderboards.html'>leaderboards</a> for all of the statistics that are shown in a search. Only players with 50 or more annotated games are included in the leaderboards.
+The <a href='http://randomracer.com'>randomracer.com</a> website maintains <a href='http://randomracer.com/leaderboard.html'>leaderboards</a> for all of the statistics that are shown in a search. Only players with 50 or more annotated games are included in the leaderboards.
 
 # Errors, Warnings, and Omitted Games
 
