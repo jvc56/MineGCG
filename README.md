@@ -1,6 +1,6 @@
 # MineGCG
 
-MineGCG is a tool that computes statistics for annotated cross-tables.com games. Matthew O'Connor thought of the original idea in the summer of 2018 while we were on vacation in Cloyne. It has since acculumated many new statistics and features and continues to be updated regularly. The web version can be found at randomracer.com or you can install it from the command line. If you find any bugs or want to suggest improvements, email them to joshuacastellano7@gmail.com and I'll add your name to the contributions list.
+MineGCG is a tool that computes statistics for annotated cross-tables.com games. Matthew O'Connor thought of the original idea in the summer of 2018 while we were on vacation in Cloyne. It has since accumulated many new statistics and features and continues to be updated regularly. The web version can be found at randomracer.com or you can install it from the command line. If you find any bugs or want to suggest improvements, email them to joshuacastellano7@gmail.com and I'll add your name to the contributions list.
 
 # Installation
 
