@@ -35,12 +35,14 @@ After running a search, a new page will appear with your bingos and other statis
 Below the lists are the statistics for all of the games in the search. The AVERAGE column refers to the average per game unless otherwise stated in the statistic title to the left. Several statistics might be inaccurate for various reasons or warrant further explanation:<br/><br/>
 
 <h5>Challenges You Won/You Lost</h5>This statistic may not be completely accurate for games using double challenge (TWL or NSW games) as passes and lost challenges in a double challenge game are indistinguishable in the GCG file. If the following criteria are met, the play is considered a lost challenge:
- - The previous play formed at least one word<br/>
- - The game is played with a TWL or NSW lexicon<br/>
- - The game has less than 20 turns<br/>
+
+ - The previous play formed at least one word
+ - The game is played with a TWL or NSW lexicon
+ - The game has less than 20 turns
+
 If you think you can improve these heuristics, please message me.
-<h5>The Full Rack per Turn</h5>This statistic refers to the percentage of racks that contain all seven (or a certain lower number during the endgame) tiles.
-<h5>The Turns with a Blank statistic</h5>This statistic is only meaningful for players with a significant percentage of their full racks recorded.
+<h5>Full Rack per Turn</h5>This statistic refers to the percentage of racks that contain all seven (or a certain lower number during the endgame) tiles.
+<h5>Turns with a Blank</h5>This statistic is only meaningful for players with a significant percentage of their full racks recorded.
 
 # Leaderboards
 
