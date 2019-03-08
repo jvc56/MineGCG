@@ -264,7 +264,7 @@ sub mine
       }
       else
       {
-        print_or_append( "\nERROR: no lexicon found for index $full_game_file_name\n", $html, 1, $player_name);
+        print_or_append( "\nERROR: no lexicon found for game $full_game_file_name\n", $html, 1, $player_name);
         $num_errors++;
         next;
       }
