@@ -74,9 +74,6 @@ sub toString
 {
   my $this = shift;
 
-  my $stats_note = "\n\n\n";
-  
-
   my $tiw        = Constants::TITLE_WIDTH;
   my $aw         = Constants::AVERAGE_WIDTH;
   my $tow        = Constants::TOTAL_WIDTH;
@@ -106,8 +103,6 @@ sub toString
 
   my $title_divider = ("_" x ($tot+2)) . "\n";
   my $empty_line = "|" . (" " x $tot) . "|\n";
-
-  $s .= $stats_note;
 
   $s .= "\nResults for $num game(s)\n";
   $s .= $title_divider;

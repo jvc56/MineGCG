@@ -13,8 +13,8 @@ sub update_leaderboard
   my $min_games      = Constants::LEADERBOARD_MIN_GAMES;
   my $column_spacing = Constants::LEADERBOARD_COLUMN_SPACING;
   my $query_prefix   = Constants::RR_URL_PREFIX;
+  my $stats_note     = Constants::STATS_NOTE;
   
-  my $stats_note     = "\n\n\n";
   
   opendir my $stats, $stats_dir or die "Cannot open directory: $!";
   my @stat_files = readdir $stats;

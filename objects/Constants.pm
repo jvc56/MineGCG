@@ -218,6 +218,7 @@ DOUBLE_LETTER . '  ' . DOUBLE_WORD . '   ' . DOUBLE_LETTER . '   ' . DOUBLE_WORD
 TRIPLE_WORD . '  ' . DOUBLE_LETTER . '   ' . TRIPLE_WORD . '   ' . DOUBLE_LETTER . '  ' . TRIPLE_WORD
 ;
 
+use constant STATS_NOTE => "\n\nFor more information about how these statistcs were computed, check the <a href='https://github.com/jvc56/MineGCG#minegcg'>documentation</a>.\n\n";
 
 1;
 

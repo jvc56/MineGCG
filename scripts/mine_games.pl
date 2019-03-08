@@ -28,6 +28,7 @@ sub mine
   my $names_dir               = Constants::NAMES_DIRECTORY_NAME;
   my $stats_dir               = Constants::STATS_DIRECTORY_NAME;
   my $blacklisted_tournaments = Constants::BLACKLISTED_TOURNAMENTS;
+  my $stats_note = Constants::STATS_NOTE;
 
   my $player_name       = shift;
   my $cort              = shift;
@@ -299,6 +300,9 @@ sub mine
       $at_least_one = 1;
     }
   }
+
+  print_or_append($stats_note, $html, 0);
+
   if ($at_least_one)
   {    
     if (!$html)
