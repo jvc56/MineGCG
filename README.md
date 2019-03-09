@@ -68,9 +68,11 @@ This error appears when an empty GCG file is detected.
 <h5>ERROR: disconnected play detected</h5>
 This error appears when a play is made that does not connect to other tiles on the board.
 
-<br/><br/>The errors above are relatively common and well-tested. If you encounter any of these errors, it probably means that the GCG file of the game is somehow malformed. To correct these errors, update the game on <a href='https://cross-tables.com'>cross-tables.com</a> and then message me so I can delete the outdated game that is cached in the database. It is also possible that there is a bug that is causing the error. If you think this is the case, message me and I will add you to the contributions list!<br/><br/>
+<br/><br/>The errors above are relatively common and well-tested. If you encounter any of these errors, it probably means that the GCG file of the game is somehow malformed. To correct these errors, update the game on <a href='https://cross-tables.com'>cross-tables.com</a> and then message me so I can delete the outdated game that is cached in the database.<br/><br/>
 
 Currently, the only warning is for notes that start before moves. If you see this warning no action is needed. More warnings might be added in the future.<br/><br/>
+
+Any other errors or warnings that appear are rare and likely due to a bug. If you see an error or warning that was not described above, please message me.
 
 # Omitted Games
 
