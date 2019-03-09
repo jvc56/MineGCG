@@ -323,7 +323,7 @@ sub __updateScorePerTurn
 
   $this->{'total_score'} += $game->getScore($this_player);
   $this->{'total_turns'} += $game->getNumTurns($this_player);
-  $this->{'total'} = sprintf "%.2f", $this->{'total_score'} / $this->{'total_turns'};
+  $this->{'total'} = sprintf "%.4f", $this->{'total_score'} / $this->{'total_turns'};
 }
 
 sub __updateFullRackPerTurn
@@ -340,7 +340,7 @@ sub __updateFullRackPerTurn
 
   $this->{'total_full_racks'} += $game->getNumFullRacks($this_player);
   $this->{'total_turns'}      += $game->getNumTurns($this_player);
-  $this->{'total'} = sprintf "%.2f", $this->{'total_full_racks'} / $this->{'total_turns'};
+  $this->{'total'} = sprintf "%.4f", $this->{'total_full_racks'} / $this->{'total_turns'};
 }
 
 sub __updateHighGame

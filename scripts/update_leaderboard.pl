@@ -72,7 +72,7 @@ sub update_leaderboard
 
       $stat = sprintf "%.4f", $stat;
 
-      if ($name eq "GAMES")
+      if ($name eq "GAMES" || $name eq "HIGH GAME" || $name eq "LOW GAME")
       {
         $stat = int($stat);
       }
