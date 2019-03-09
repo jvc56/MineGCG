@@ -60,7 +60,7 @@ The <a href='http://randomracer.com'>randomracer.com</a> website maintains <a hr
 If there were errors or warnings during a search, they will appear just under the color key. There are a variety of errors and warnings, but only a few are common:<br/><br/>
 
 <h5>Game against ... is a duplicate</h5>
-This appears when two games with the same tournament and round number are detected. It is not considered a warning or error, though it probably means that both you and your opponent uploaded the same game. In this case the racks that you recorded might have been overwritten when you opponent uploaded their game.
+This appears when two games with the same tournament and round number are detected. It is considered a warning and the duplicate game is not included in statistics or leaderboards. It probably means that both you and your opponent uploaded the same game. In this case the racks that you recorded might have been overwritten when you opponent uploaded their game.
 
 <h5>ERROR: no moves found</h5>
 This error appears when an empty GCG file is detected.
