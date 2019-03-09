@@ -55,7 +55,7 @@ This statistic is only meaningful for players with a significant percentage of t
 
 The <a href='http://randomracer.com'>randomracer.com</a> website maintains <a href='http://randomracer.com/leaderboard.html'>leaderboards</a> for all of the statistics that are shown in a search. Only players with 50 or more annotated games are included in the leaderboards. With the exception of the number of games, all statistics are listed as per game unless otherwise stated in the title.
 
-# Errors
+# Errors and Warnings
 
 If there were errors or warnings during a search, they will appear just under the color key. There are a variety of errors and warnings, but only a few are common:<br/><br/>
 
@@ -69,8 +69,6 @@ This error appears when an empty GCG file is detected.
 This error appears when a play is made that does not connect to other tiles on the board.
 
 <br/><br/>The errors above are relatively common and well-tested. If you encounter any of these errors, it probably means that the GCG file of the game is somehow malformed. To correct these errors, update the game on <a href='https://cross-tables.com'>cross-tables.com</a> and then message me so I can delete the outdated game that is cached in the database. It is also possible that there is a bug that is causing the error. If you think this is the case, message me and I will add you to the contributions list!<br/><br/>
-
-# Warnings
 
 Currently, the only warning is for notes that start before moves. If you see this warning no action is needed. More warnings might be added in the future.<br/><br/>
 
