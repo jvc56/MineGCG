@@ -38,6 +38,7 @@ Below the lists are the statistics for all of the games in the search. The AVERA
 
 This statistic may not be completely accurate for games using double challenge (TWL or NSW games) as passes and lost challenges in a double challenge game are indistinguishable in the GCG file. If the following criteria are met, the play is considered a lost challenge:
 
+ - The play is a pass
  - The previous play formed at least one word
  - The game is played with a TWL or NSW lexicon
  - The game has less than 20 turns
@@ -54,7 +55,7 @@ This statistic is only meaningful for players with a significant percentage of t
 
 The <a href='http://randomracer.com'>randomracer.com</a> website maintains <a href='http://randomracer.com/leaderboard.html'>leaderboards</a> for all of the statistics that are shown in a search. Only players with 50 or more annotated games are included in the leaderboards. With the exception of the number of games, all statistics are listed as per game unless otherwise stated in the title.
 
-# Errors, Warnings, and Omitted Games
+# Errors
 
 If there were errors or warnings during a search, they will appear just under the color key. There are a variety of errors and warnings, but only a few are common:<br/><br/>
 
@@ -69,10 +70,15 @@ This error appears when a play is made that does not connect to other tiles on t
 
 <br/><br/>The errors above are relatively common and well-tested. If you encounter any of these errors, it probably means that the GCG file of the game is somehow malformed. To correct these errors, update the game on <a href='https://cross-tables.com'>cross-tables.com</a> and then message me so I can delete the outdated game that is cached in the database. It is also possible that there is a bug that is causing the error. If you think this is the case, message me and I will add you to the contributions list!<br/><br/>
 
+# Warnings
+
 Currently, the only warning is for notes that start before moves. If you see this warning no action is needed. More warnings might be added in the future.<br/><br/>
+
+# Omitted Games
 
 You might notice that there are some annotated games that are not included in your statistics or in the leaderboards. Games are omitted if they meet any of the following criteria:
 
+ - The game does not appear on your annotated games page on <a href='https://cross-tables.com'>cross-tables.com</a>
  - The game gives an error
  - The game does not have any associated lexicon
  - The game is from a blacklisted tournament
