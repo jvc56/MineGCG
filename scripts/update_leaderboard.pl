@@ -35,7 +35,7 @@ sub update_leaderboard
       next;
     }
 
-    $stat_file =~ /([^\.]+).stats/;
+    $stat_file =~ /([^\.]+)\.stats/;
     my $player_name = $1;
     $player_name =~ s/_/ /g;
     my $total_games = 0;
