@@ -14,9 +14,9 @@ sub new
 
   my $position = shift;
   my $turn = shift;
-  my @bsm = split //, Constants::BONUS_SQUARE_STRING;
-  my $bonus = $bsm[$position];
-  
+
+  my $bonus = substr(Constants::BONUS_SQUARE_STRING, $position, 1);
+
   my %square =
   (
   	position => $position,
