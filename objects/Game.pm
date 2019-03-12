@@ -58,6 +58,12 @@ sub new
     {
       $player_two_name = $1;
       $player_two_name =~ s/_/ /g;
+
+      if ($player_one_name eq $player_two_name)
+      {
+        return "Both players have the same name\nFILE:   $filename\nLINE $line_number: $line\n";
+      }
+
       next;
     }
 
@@ -1083,10 +1089,20 @@ sub readableMoveCapitalized
 {
   my $this = shift;
   my $move = shift;
+
+  my $maybe_rmc = $move->{'readable_move_capitalized'};
+
+  if ($maybe_rmc)
+  {
+    return $maybe_rmc;
+  }
+
   my $play = $move->{'play'};
   my @play_array = split //, $play;
 
-  for (my $i = 0; $i < scalar @play_array; $i++)
+  my $num_plays = scalar @play_array;
+
+  for (my $i = 0; $i < $num_plays; $i++)
   {
     if ($play_array[$i] eq ".")
     {
@@ -1108,7 +1124,12 @@ sub readableMoveCapitalized
     }
     $play_array[$i] = uc $play_array[$i];
   }
-  return join "", @play_array;
+
+  my $rmc = join "", @play_array;
+
+  $move->{'readable_move_capitalized'} = $rmc;
+
+  return $rmc;
 }
 
 sub postConstruction
@@ -1122,6 +1143,9 @@ sub postConstruction
   # Determine phoniness and probabilities and if the bag is empty
   foreach my $move (@moves)
   {
+
+
+
     # Determine rack fullness
     
     $move->{'tiles_in_bag'} = $tiles_in_bag;

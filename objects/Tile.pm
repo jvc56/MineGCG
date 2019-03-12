@@ -16,7 +16,7 @@ sub new
   my $value = $this->charToValue($c);
 
   my $is_blank = 0;
-  if ($value == 0)
+  if (!$value || $value == 0)
   {
   	$is_blank = 1;
   }
@@ -39,42 +39,9 @@ sub charToValue
   my $this = shift;
   
   my $c = shift;
-  if ($c eq '?')
-  {
-    return 0;
-  }
-  if ('AEILNORSTU' =~ /$c/)
-  {
-    return 1;
-  }
-  elsif ('DG' =~ /$c/)
-  {
-    return 2;
-  }
-  elsif ('BCMP' =~ /$c/)
-  {
-  	return 3;
-  }
-  elsif ('FHVWY' =~ /$c/)
-  {
-  	return 4;
-  }
-  elsif ('K' =~ /$c/)
-  {
-  	return 5;
-  }
-  elsif ('JX' =~ /$c/)
-  {
-  	return 8;
-  }
-  elsif ('QZ' =~ /$c/)
-  {
-  	return 10;
-  }
-  else
-  {
-  	return 0;
-  }
+
+  return Constants::CHAR_TO_VALUE->{$c};
 }
+
 1;
 

@@ -200,7 +200,6 @@ sub isFullRack
   my $this = shift;
 
   my $this_player = shift;
-  my $play = $this->{'play'};
   
   if ($this_player != $this->{'turn'})
   {

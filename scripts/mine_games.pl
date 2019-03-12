@@ -154,30 +154,16 @@ sub mine
 
       my $player_is_first = 0;
 
+      my $full_game_file_name = $dir_name . '/' . $game_file_name;
+
       if ($player_one_name ne $player_name)
       {
         $player_is_first = 1;
         if ($player_two_name ne $player_name)
         {
-          print_or_append( "\nERROR:  Matching player name not found\nFILE:   $game_file_name\n", $html, 1, $player_name);
+          print_or_append( "\nERROR:  Matching player name not found\nFILE:   $full_game_file_name\n", $html, 1, $player_name);
           return;
         }
-      }
-
-      if (!$ext || $ext ne "gcg")
-      {
-        print_or_append( "\nERROR:  invalid file extension\nFILE:   $game_file_name", $html, 1, $player_name);
-        $num_errors++;
-        next;
-      }
-
-      my $full_game_file_name = $dir_name . '/' . $game_file_name;
-      
-      if (!(-e $full_game_file_name))
-      {
-        print_or_append( "\nERROR: No GCG found for index $full_game_file_name\n", $html, 1, $player_name);
-        $num_errors++;
-        next;
       }
 
       if ($single_game_id && $single_game_id ne $id)
@@ -230,6 +216,27 @@ sub mine
           next;
         }
         $tourney_game_hash{$key} = 1;
+      }
+
+      if ($player_one_name eq $player_two_name)
+      {
+        print_or_append( "\nERROR:  Both players have the same name\nFILE:   $full_game_file_name\n", $html, 1, $player_name);
+        $num_errors++;
+        next;
+      }
+
+      if (!$ext || $ext ne "gcg")
+      {
+        print_or_append( "\nERROR:  Invalid file extension\nFILE:   $full_game_file_name", $html, 1, $player_name);
+        $num_errors++;
+        next;
+      }
+
+      if (!(-e $full_game_file_name))
+      {
+        print_or_append( "\nERROR: No GCG found for index $full_game_file_name\n", $html, 1, $player_name);
+        $num_errors++;
+        next;
       }
 
       my $lexicon_ref;

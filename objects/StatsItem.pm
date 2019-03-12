@@ -351,9 +351,10 @@ sub __updateHighGame
 
   if (!$this->{'init'})
   {
-    $this->{'init'} = 1;
+    $this->{'init'}   = 1;
     $this->{'single'} = 1;
-    $this->{'total'} = $game->getScore($this_player);
+    $this->{'link'}   = $game->{'filename'};
+    $this->{'total'}  = $game->getScore($this_player);
     return;
   }
 
@@ -361,6 +362,7 @@ sub __updateHighGame
   if ($score > $this->{'total'})
   {
     $this->{'total'} = $score;
+    $this->{'link'}  = $game->{'filename'};
   }
 }
 
@@ -372,9 +374,10 @@ sub __updateLowGame
 
   if (!$this->{'init'})
   {
-    $this->{'init'} = 1;
+    $this->{'init'}   = 1;
     $this->{'single'} = 1;
-    $this->{'total'} = $game->getScore($this_player);
+    $this->{'link'}   = $game->{'filename'};
+    $this->{'total'}  = $game->getScore($this_player);
     return;
   }
 
@@ -382,6 +385,7 @@ sub __updateLowGame
   if ($score < $this->{'total'})
   {
     $this->{'total'} = $score;
+    $this->{'link'}  = $game->{'filename'};
   }
 }
 
@@ -883,6 +887,16 @@ sub makeRow
   {
     $average = $total;
     $total = '-';
+  }
+
+  if ($this->{'link'})
+  {
+    my @items = split /\./, $this->{'link'};
+    my $id = $items[6];
+    my $link = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX . $id;
+    $tiw -= length $name;
+    $name = "<a href='$link' target='_blank'>$name</a>";
+    $tiw += length $name;
   }
 
   my $spaces = $1;
