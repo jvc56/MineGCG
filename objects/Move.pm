@@ -30,6 +30,9 @@ sub new
   my $oppo_stuck_rack = shift;
   my @words_made = ();
 
+  my $num_tiles_played = {'0' => 0, '1' => 0};
+  my $length           = {'0' => 0, '1' => 0};
+
   my %move = (
   	           number           => $turn_number,
       	       play             => $play,
@@ -50,7 +53,9 @@ sub new
       	       comment          => $comment,
                last_name        => $last_name,
                is_phony         => 1,
-               prob             => 0
+               prob             => 0,
+               num_tiles_played => $num_tiles_played,
+               length           => $length
       	     );
 
   my $self = bless \%move, $this;
@@ -186,11 +191,11 @@ sub isBingo
 
   my $this_player = shift;
 
-  my $l = $this->getNumTilesPlayed($this_player);
+  my $l = $this->{'num_tiles_played'}->{$this_player};
 
   if ($l == 7)
   {
-    return $this->getLength($this_player);
+    return $this->{'length'}->{$this_player};
   }
   return 0;
 }

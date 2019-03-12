@@ -173,7 +173,9 @@ sub update_leaderboard
 
   my $lt = localtime();
 
-  $leaderboard_string = "\nUpdated on $lt\n\n" . $stats_note . $table_of_contents . $leaderboard_string;
+  my $expand_all_button = "\n<button onclick='toggle_all()'>Toggle Full Standings for all leaderboards</button>\n";
+
+  $leaderboard_string = "\nUpdated on $lt\n\n" . $stats_note . $table_of_contents . $expand_all_button . $leaderboard_string;
 
   $leaderboard_string = "<pre style='white-space: pre-wrap;' > $leaderboard_string </pre>\n";
 
@@ -181,6 +183,7 @@ sub update_leaderboard
   $javascript .= "";
 
   $javascript .= "<script>\n";
+
   $javascript .= "function toggle(id) {\n";
   $javascript .= "var x = document.getElementById(id);\n";
   $javascript .= "if (x.style.display === 'none') {\n";
@@ -189,6 +192,21 @@ sub update_leaderboard
   $javascript .= "x.style.display = 'none';\n";
   $javascript .= "}\n";
   $javascript .= "}\n";
+
+  $javascript .= "function toggle_all() {\n";
+  $javascript .= "var list = document.getElementsByTagName('DIV');\n";
+  $javascript .= "for (i = 0; i < list.length; i++)\n";
+  $javascript .= "{ \n";
+  $javascript .= "var x = list[i];\n";
+  $javascript .= "if (x.style.display === 'none') {\n";
+  $javascript .= "x.style.display = 'block';\n";
+  $javascript .= "} else {\n";
+  $javascript .= "x.style.display = 'none';\n";
+  $javascript .= "}\n";
+  $javascript .= "}\n";
+  $javascript .= "}\n";
+
+
   $javascript .= "</script>\n";
 
   $leaderboard_string = $javascript . $leaderboard_string;
@@ -199,9 +217,9 @@ sub update_leaderboard
   print $new_leaderboard $leaderboard_string;
   close $new_leaderboard;
 
-  system "rm -r $stats_dir";
+  #system "rm -r $stats_dir";
 
-  system "scp -i /home/jvc/.ssh/randomracer.pem $leaderboard_name jvc\@media.wgvc.com:/home/bitnami/htdocs/rracer/leaderboard.html"
+  #system "scp -i /home/jvc/.ssh/randomracer.pem $leaderboard_name jvc\@media.wgvc.com:/home/bitnami/htdocs/rracer/leaderboard.html"
 
 }
 

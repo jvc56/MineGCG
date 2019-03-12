@@ -401,23 +401,52 @@ sub new
     return "no moves found\nFILE:   $filename\n";
   }
 
+  my $tiles_played =
+  {
+    '0' =>
+      {
+        'total' => 0,
+        '?' => 0,
+        'Z' => 0,
+        'Q' => 0,
+        'X' => 0,
+        'J' => 0,
+        'S' => 0,
+        'E' => 0,
+      },
+    '1' =>
+      {
+        'total' => 0,
+        '?' => 0,
+        'Z' => 0,
+        'Q' => 0,
+        'X' => 0,
+        'J' => 0,
+        'S' => 0,
+        'E' => 0,
+      }
+  };
+
   my %game = 
   (
     filename        => $filename,
     lexicon         => $lexicon_ref,
     tourney_game    => $is_tourney_game,
-  	this_player     => !$player_is_first,
+  	this_player     => 1 - $player_is_first,
   	player_one_name => $player_one_real_name,
   	player_two_name => $player_two_real_name,
     board           => $board,
     moves           => \@moves,
     warnings        => $warning,
-    html            => $html
+    html            => $html,
+    tiles_played    => $tiles_played
   );
 
   my $self = bless \%game, $this;
 
   $self->postConstruction();
+
+  #print Dumper($self->{'tiles_played'});
 
   return $self;
 }
@@ -586,7 +615,7 @@ sub getBingoNinesOrAbove
 
   foreach my $move (@moves)
   {
-    my $bna = $move->getLength($player) >= 9 && $move->isBingo($player);
+    my $bna = $move->{'length'}->{$player} >= 9 && $move->isBingo($player);
     if ($bna)
     {
       my $bna_cap = $this->readableMoveCapitalized($move);
@@ -807,7 +836,7 @@ sub getNumWordsPlayed
   {
   	my $bingo = $move->isBingo($player);
     my $bingo_cap = $this->readableMoveCapitalized($move);
-    my $l = $move->getLength($player);
+    my $l = $move->{'length'}->{$player};
     if (
         (($bingos_only && $bingo) || !$bingos_only) &&
         (!$valid_only || $this->{'lexicon'}->{$bingo_cap})
@@ -817,29 +846,6 @@ sub getNumWordsPlayed
     }
   }
   return \@sums;
-}
-
-sub getNumTilesPlayed
-{
-  my $this = shift;
-
-  my $player = shift;
-  my $tile   = shift;
-
-  my @moves = @{$this->{'moves'}};
-  my $sum = 0;
-  foreach my $move (@moves)
-  {
-    my $inc = $move->getNumTilesPlayed($player);
-    if ($inc && $tile)
-    {
-      my $play = $move->{'play'};
-      $play =~ s/[^$tile]//g;
-      $inc  = length $play;
-    }
-  	$sum += $inc
-  }
-  return $sum;
 }
 
 sub getNumTilesStuckWith
@@ -982,7 +988,7 @@ sub getWordsProbability
   my @prob_sums = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
   foreach my $move (@moves)
   {
-    my $l = $move->getLength($player);
+    my $l = $move->{'length'}->{$player};
     my $bo = 1;
     if ($bingos_only)
     {
@@ -1143,9 +1149,6 @@ sub postConstruction
   # Determine phoniness and probabilities and if the bag is empty
   foreach my $move (@moves)
   {
-
-
-
     # Determine rack fullness
     
     $move->{'tiles_in_bag'} = $tiles_in_bag;
@@ -1277,6 +1280,53 @@ sub postConstruction
         $move->{'row'} = $new_r;
         $move->{'vertical'} = 1;
       }
+    }
+
+    # Predetermine tiles played for performance
+
+    if (!$move->{'challenge_lost'})
+    {
+      my $total_tiles_played = 0;
+      my $length = 0;
+      foreach my $c (split //, $move->{'play'})
+      {
+        $length++;
+        if ($c ne ".")
+        {
+          $total_tiles_played++;
+          $this->{'tiles_played'}->{$turn}->{'total'}++;
+          if ($c eq 'E')
+          {
+            $this->{'tiles_played'}->{$turn}->{'E'}++;
+          }
+          elsif ($c eq 'Z')
+          {
+            $this->{'tiles_played'}->{$turn}->{'Z'}++;
+          }
+          elsif ($c eq 'Q')
+          {
+            $this->{'tiles_played'}->{$turn}->{'Q'}++;
+          }
+          elsif ($c eq 'X')
+          {
+            $this->{'tiles_played'}->{$turn}->{'X'}++;
+          }
+          elsif ($c eq 'J')
+          {
+            $this->{'tiles_played'}->{$turn}->{'J'}++;
+          }
+          elsif ($c eq 'S')
+          {
+            $this->{'tiles_played'}->{$turn}->{'S'}++;
+          }        
+          elsif ($c =~ /[a-z]/)
+          {
+            $this->{'tiles_played'}->{$turn}->{'?'}++;
+          }
+        }
+      }
+      $move->{'num_tiles_played'}->{$turn} = $total_tiles_played;
+      $move->{'length'}->{$turn} = $length;
     }
 
     # Set is_phony and probability

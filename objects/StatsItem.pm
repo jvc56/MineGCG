@@ -353,7 +353,10 @@ sub __updateHighGame
   {
     $this->{'init'}   = 1;
     $this->{'single'} = 1;
-    $this->{'link'}   = $game->{'filename'};
+    if ($game->{'html'})
+    {
+      $this->{'link'}   = $game->{'filename'};
+    }
     $this->{'total'}  = $game->getScore($this_player);
     return;
   }
@@ -362,7 +365,10 @@ sub __updateHighGame
   if ($score > $this->{'total'})
   {
     $this->{'total'} = $score;
-    $this->{'link'}  = $game->{'filename'};
+    if ($game->{'html'})
+    {
+      $this->{'link'}   = $game->{'filename'};
+    }
   }
 }
 
@@ -376,7 +382,10 @@ sub __updateLowGame
   {
     $this->{'init'}   = 1;
     $this->{'single'} = 1;
-    $this->{'link'}   = $game->{'filename'};
+    if ($game->{'html'})
+    {
+      $this->{'link'}   = $game->{'filename'};
+    }
     $this->{'total'}  = $game->getScore($this_player);
     return;
   }
@@ -385,7 +394,10 @@ sub __updateLowGame
   if ($score < $this->{'total'})
   {
     $this->{'total'} = $score;
-    $this->{'link'}  = $game->{'filename'};
+    if ($game->{'html'})
+    {
+      $this->{'link'}   = $game->{'filename'};
+    }
   }
 }
 
@@ -574,7 +586,7 @@ sub __updateNumTilesPlayed
     $this->{'init'} = 1;
   }
 
-  $this->{'total'} += $game->getNumTilesPlayed($this_player);
+  $this->{'total'} += $game->{'tiles_played'}->{$this_player}->{'total'};
 }
 
 sub __updateNumPowerTilesPlayed
@@ -607,12 +619,12 @@ sub __updateNumPowerTilesPlayed
     );
     $this->{'list'} = \@order;
   }
-  my $blanks = $game->getNumTilesPlayed($this_player, 'a-z');
-  my $js     = $game->getNumTilesPlayed($this_player, 'J');
-  my $qs     = $game->getNumTilesPlayed($this_player, 'Q');
-  my $xs     = $game->getNumTilesPlayed($this_player, 'X');
-  my $zs     = $game->getNumTilesPlayed($this_player, 'Z');
-  my $ss     = $game->getNumTilesPlayed($this_player, 'S');
+  my $blanks = $game->{'tiles_played'}->{$this_player}->{'?'};
+  my $js     = $game->{'tiles_played'}->{$this_player}->{'J'};
+  my $qs     = $game->{'tiles_played'}->{$this_player}->{'Q'};
+  my $xs     = $game->{'tiles_played'}->{$this_player}->{'X'};
+  my $zs     = $game->{'tiles_played'}->{$this_player}->{'Z'};
+  my $ss     = $game->{'tiles_played'}->{$this_player}->{'S'};
 
   $this->{'total'} += $blanks + $js + $qs + $xs + $zs + $ss;
   $this->{'subitems'}->{'?'} += $blanks;
@@ -680,7 +692,7 @@ sub __updateNumEsPlayed
     $this->{'init'} = 1;
   }
 
-  $this->{'total'} += $game->getNumTilesPlayed($this_player, 'E');
+  $this->{'total'} += $game->{'tiles_played'}->{$this_player}->{'E'};
 }
 
 sub __updateNumTripleTriplesPlayed
