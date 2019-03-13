@@ -381,7 +381,7 @@ sub mine
   
   my $final_output = "<pre style='white-space: pre-wrap;' > $html_string </pre>";
 
-  if ($cache_condition)
+  if ($cache_condition && $at_least_one)
   {
     if (!(-e $cache_filename))
     {
