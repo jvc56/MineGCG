@@ -33,6 +33,7 @@ foreach my $name_file (@name_files)
   my $name = $1;
   $name =~ s/_/ /g;
   system "./scripts/main.pl -n '$name' -ski -stats >/dev/null 2>> $log_name";
+  system "./scripts/main.pl -n '$name' -ski --html >/dev/null 2>> /dev/null";
 }
 
 update_leaderboard();
