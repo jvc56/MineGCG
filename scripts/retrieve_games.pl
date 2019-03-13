@@ -21,6 +21,7 @@ sub retrieve
   my $blacklisted_tournaments    = Constants::BLACKLISTED_TOURNAMENTS;
   my $dir                        = Constants::GAME_DIRECTORY_NAME;
   my $names_dir                  = Constants::NAMES_DIRECTORY_NAME;
+  my $cache_dir                  = Constants::CACHE_DIRECTORY_NAME;
 
   my $name              = shift;
   my $raw_name          = shift;
@@ -351,6 +352,11 @@ sub retrieve
 
   if ($option eq "update" && ($games_indexed != 0 || $games_downloaded != 0))
   {
+    my $cache_filename = "$cache_dir/$name.cache";
+    if (-e $cache_filename)
+    {
+      system "rm $cache_filename";
+    }
     print ((sprintf "%-30s", $name . ":") . "$games_indexed indexes added and $games_downloaded games added\n");
   }
 

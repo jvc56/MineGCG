@@ -28,7 +28,8 @@ sub mine
   my $names_dir               = Constants::NAMES_DIRECTORY_NAME;
   my $stats_dir               = Constants::STATS_DIRECTORY_NAME;
   my $blacklisted_tournaments = Constants::BLACKLISTED_TOURNAMENTS;
-  my $stats_note = Constants::STATS_NOTE;
+  my $cache_dir               = Constants::CACHE_DIRECTORY_NAME;
+  my $stats_note              = Constants::STATS_NOTE;
 
   my $player_name       = shift;
   my $cort              = shift;
@@ -42,6 +43,27 @@ sub mine
   my $html              = shift;
   my $statsdump         = shift;
 
+  my $cache_filename = "$cache_dir/$player_name.cache";
+  my $cache_condition = !$cort &&
+                        !$single_game_id &&
+                        !$opponent_name &&
+                        !$startdate &&
+                        !$enddate &&
+                        !$lexicon &&
+                        !$tourney_id &&
+                        $html;
+
+  if ($cache_condition && -e $cache_filename)
+  {
+    my $game_string = "";
+    open(GAME, '<', $cache_filename);
+    while (<GAME>)
+    {
+      $game_string .= $_;
+    }
+    print $game_string;
+    return;
+  }
 
   my $player_name_no_underscore = $player_name;
   $player_name_no_underscore =~ s/_/ /g;
@@ -356,10 +378,24 @@ sub mine
     }
     close $fh;
   }
+  
+  my $final_output = "<pre style='white-space: pre-wrap;' > $html_string </pre>";
+
+  if ($cache_condition)
+  {
+    if (!(-e $cache_filename))
+    {
+      my $lt = localtime();
+      system "mkdir -p $cache_dir";
+      open(my $fh, '>', $cache_filename);
+      print $fh "<pre style='white-space: pre-wrap;' > $html_string \n\nThis report was produced from a file cached on $lt\n</pre>";
+      close $fh;
+    }
+  }
 
   if ($html)
   {
-    print "<pre style='white-space: pre-wrap;' > $html_string </pre>";
+    print $final_output;
   }
 }
 

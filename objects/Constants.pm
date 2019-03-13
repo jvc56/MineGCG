@@ -18,6 +18,7 @@ use constant NON_TOURNAMENT_GAME              => 'NONTOURNAMENT';
 use constant GAME_DIRECTORY_NAME              => './games';
 use constant NAMES_DIRECTORY_NAME             => './names';
 use constant STATS_DIRECTORY_NAME             => './stats';
+use constant CACHE_DIRECTORY_NAME             => './cache';
 use constant BLACKLISTED_TOURNAMENTS          => {
                                                     '9194' => 1 # Can-Am Match 08/29/15
                                                  };
