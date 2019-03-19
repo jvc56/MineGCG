@@ -13,19 +13,10 @@ sub new
   my $placed_by = shift;
   my $play_number = shift;
 
-  my $value = $this->charToValue($c);
-
-  my $is_blank = 0;
-  if (!$value || $value == 0)
-  {
-  	$is_blank = 1;
-  }
 
   my %tile =
   (
   	char        => $c,
-    value       => $value,
-    is_blank    => $is_blank,
     placed_by   => $placed_by,
     play_number => $play_number
   );

@@ -519,6 +519,16 @@ sub getNumWins
   return 0.1;
 }
 
+sub getNumFirsts
+{
+  my $this = shift;
+
+  my $player = shift;
+
+  return 1 - $player;
+
+}
+
 sub getScore
 {
   my $this = shift;
