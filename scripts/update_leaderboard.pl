@@ -12,7 +12,7 @@ sub update_leaderboard
   my $cutoff         = Constants::LEADERBOARD_CUTOFF;
   my $min_games      = Constants::LEADERBOARD_MIN_GAMES;
   my $column_spacing = Constants::LEADERBOARD_COLUMN_SPACING;
-  my $query_prefix   = Constants::RR_URL_PREFIX;
+  my $query_prefix   = Constants::CACHE_URL_PREFIX;
   my $stats_note     = Constants::STATS_NOTE;
   
   
@@ -148,15 +148,15 @@ sub update_leaderboard
       for (my $k = 0; $k < $total_players; $k++)
       {
         my $name = $ranked_array[$k][1];
-        my $name_with_plus = $name;
-        $name_with_plus =~ s/ /+/g;
+        my $name_with_underscores = $name;
+        $name_with_underscores =~ s/ /_/g;
 
         if ($k == $cutoff)
         { 
           $leaderboard_string .= "<div id='$title' style='display: none;'>";
         }
 
-        my $link = "<a href='$query_prefix$name_with_plus' target='_blank'>$name</a>";
+        my $link = "<a href='$query_prefix$name_with_underscores.cache' target='_blank'>$name</a>";
 
         my $spacing = $column_spacing + (length $link) - (length $name);
         my $ranked_player_name = sprintf "%-" . $spacing . "s", $link;
