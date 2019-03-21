@@ -87,7 +87,7 @@ Games with no lexicons are omitted because the lexicons are necessary for comput
 
 # Contributions
 
-Firsts statistics (Ben Schoenbrun)<br/>
+Firsts statistic (Ben Schoenbrun)<br/>
 Turns with a blank statistic (Marlon Hill)<br/>
 Discovery of GCG mining bug in the preload script (Ben Schoenbrun)<br/>
 Bingo lists, bingo probabilities, and various statistics (Joshua Sokol)<br/>

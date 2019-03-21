@@ -5,6 +5,10 @@ use strict;
 
 chdir("/home/jvc/MineGCG");
 
+use lib "./objects"; 
+
+use Constants;
+
 my $full_start_time =  "\nStarted: " . localtime() . "\n";
 
 my $preload_start_time = time;
