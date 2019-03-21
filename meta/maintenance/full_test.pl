@@ -5,64 +5,70 @@ use strict;
 
 chdir("/home/jvc/MineGCG");
 
-my $full_start_time =  "\nStarted: " . localtime() . "\n";
+# my $full_start_time =  "\nStarted: " . localtime() . "\n";
 
-my $preload_start_time = time;
+# my $preload_start_time = time;
 
-system "./meta/maintenance/preload.pl > ./logs/preload.log 2>&1";
+# system "./meta/maintenance/preload.pl > ./logs/preload.log 2>&1";
 
-my $preload_end_time = time;
+# my $preload_end_time = time;
 
-my $check_start_time = time;
+# my $check_start_time = time;
 
-system "./meta/maintenance/check_data.pl > ./logs/check_data.log 2>&1";
+# system "./meta/maintenance/check_data.pl > ./logs/check_data.log 2>&1";
 
-my $check_end_time = time;
+# my $check_end_time = time;
 
-my $mine_start_time = time;
+# my $mine_start_time = time;
 
-system "./meta/maintenance/mine_games_test.pl";
+# system "./meta/maintenance/mine_games_test.pl";
 
-my $mine_end_time = time;
+# my $mine_end_time = time;
 
-my $full_end_time = "Ended:   " . localtime() . "\n";
+# my $full_end_time = "Ended:   " . localtime() . "\n";
 
-system "scp -i /home/jvc/.ssh/randomracer.pem -r ./cache jvc\@media.wgvc.com:/home/bitnami/htdocs/rracer/";
+use lib "./objects"; 
 
-open(my $full_test_log, ">", "./logs/full_test.log");
+use Constants;
 
-print $full_test_log "Full Test Report\n\n";
+my $cache_name = Constants::CACHE_DIRECTORY_NAME;
 
-print $full_test_log "Preload: " . format_time($preload_start_time, $preload_end_time);
-print $full_test_log "Check:   " . format_time($check_start_time, $check_end_time);
-print $full_test_log "Mine:    " . format_time($mine_start_time, $mine_end_time);
+system "scp -i /home/jvc/.ssh/randomracer.pem -r $cache_name jvc\@media.wgvc.com:/home/bitnami/htdocs/rracer/";
 
-print $full_test_log $full_start_time;
-print $full_test_log $full_end_time;
+# open(my $full_test_log, ">", "./logs/full_test.log");
 
-close $full_test_log;
+# print $full_test_log "Full Test Report\n\n";
 
-my @t = localtime();
-$t[5] += 1900;
-$t[4]++;
+# print $full_test_log "Preload: " . format_time($preload_start_time, $preload_end_time);
+# print $full_test_log "Check:   " . format_time($check_start_time, $check_end_time);
+# print $full_test_log "Mine:    " . format_time($mine_start_time, $mine_end_time);
 
-my $log_name = sprintf "%04d_%02d_%02d", @t[5,4,3];
+# print $full_test_log $full_start_time;
+# print $full_test_log $full_end_time;
 
-system "mkdir $log_name";
-system "mv logs/*.log $log_name/";
-system "mv $log_name logs/";
+# close $full_test_log;
 
-sub format_time
-{
-  my $start = shift;
-  my $end   = shift;
+# my @t = localtime();
+# $t[5] += 1900;
+# $t[4]++;
 
-  my $h = int (($end - $start) / 3600);
-  my $m = int ((($end - $start) % 3600) / 60);
-  my $s = ($end - $start) % 60;
+# my $log_name = sprintf "%04d_%02d_%02d", @t[5,4,3];
 
-  return "$h" . "h  " . "$m" . "m  $s". "s\n";
-}
+# system "mkdir $log_name";
+# system "mv logs/*.log $log_name/";
+# system "mv $log_name logs/";
+
+# sub format_time
+# {
+#   my $start = shift;
+#   my $end   = shift;
+
+#   my $h = int (($end - $start) / 3600);
+#   my $m = int ((($end - $start) % 3600) / 60);
+#   my $s = ($end - $start) % 60;
+
+#   return "$h" . "h  " . "$m" . "m  $s". "s\n";
+# }
 
 
 
