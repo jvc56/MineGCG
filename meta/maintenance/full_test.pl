@@ -5,10 +5,6 @@ use strict;
 
 chdir("/home/jvc/MineGCG");
 
-use lib "./objects"; 
-
-use Constants;
-
 my $full_start_time =  "\nStarted: " . localtime() . "\n";
 
 my $preload_start_time = time;
@@ -31,9 +27,7 @@ my $mine_end_time = time;
 
 my $full_end_time = "Ended:   " . localtime() . "\n";
 
-my $cache_name = Constants::CACHE_DIRECTORY_NAME;
-
-system "scp -i /home/jvc/.ssh/randomracer.pem -r $cache_name jvc\@media.wgvc.com:/home/bitnami/htdocs/rracer/";
+system "scp -i /home/jvc/.ssh/randomracer.pem -r ./cache jvc\@media.wgvc.com:/home/bitnami/htdocs/rracer/";
 
 open(my $full_test_log, ">", "./logs/full_test.log");
 
