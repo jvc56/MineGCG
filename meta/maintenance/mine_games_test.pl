@@ -16,7 +16,7 @@ closedir $names;
 my $log_name = './logs/mine_games_test.log';
 
 open(my $log, '>', $log_name);
-print $log "Log file for mine_games_test on " . localtime() . "\n\n"; 
+print $log "Error log file for mine_games_test on " . localtime() . "\n\n"; 
 
 
 my $count = (scalar @name_files) - 2;

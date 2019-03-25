@@ -5,7 +5,6 @@ use strict;
 use Data::Dumper;
 use lib './objects';
 use Constants;
-use Getopt::Long;
 
 require "./scripts/validate_filename.pl";
 
