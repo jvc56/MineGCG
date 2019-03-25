@@ -71,7 +71,7 @@ for (my $i = 0; $i < scalar @log_names; $i++)
   open(LOGFILE, '<', $log_name);
   while (<LOGFILE>)
   {
-    if (/(\/cache\/w+\.cache)|(\/cgi-bin\/mine_webapp\.pl)/)
+    if (/(\/cache\/\w+\.cache)|(\/cgi-bin\/mine_webapp\.pl)/)
     {
       $_ =~ /(\d+).(\w+).(\d+):(\d+):(\d+):(\d+)/;
 
