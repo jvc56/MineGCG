@@ -11,6 +11,12 @@ my %known_users =
   "66.249.66.88"   => "Crawler",
   "66.249.66.89"   => "Crawler",
   "66.249.66.90"   => "Crawler",
+  "66.249.66.150"  => "Crawler",
+  "66.249.66.152"  => "Crawler",
+  "66.249.66.148"  => "Crawler",
+  "45.67.213.155"  => "Crawler",
+  "89.191.228.29"  => "Crawler",
+  "121.98.150.20"  => "Crawler",
   "46.229.168.141" => "Crawler"
 );
 
@@ -69,6 +75,7 @@ my %abbr = (
   "Dec" => 12,
 );
 
+my $num_accesses = 0;
 
 for (my $i = 0; $i < scalar @log_names; $i++)
 {
@@ -81,7 +88,7 @@ for (my $i = 0; $i < scalar @log_names; $i++)
   open(LOGFILE, '<', $log_name);
   while (<LOGFILE>)
   {
-    if (/(\/cache\/\w+\.cache)|(\/cgi-bin\/mine_webapp\.pl)/)
+    if (/(\/cache\/\w+\.cache)|(\/cgi-bin\/mine_webapp\.pl)|(leaderboard.html)/)
     {
       $_ =~ /(\d+).(\w+).(\d+):(\d+):(\d+):(\d+)/;
 
@@ -99,25 +106,34 @@ for (my $i = 0; $i < scalar @log_names; $i++)
 
       if ($now_gm_epoch - $then_gm_epoch < 86400)
       {
+        $num_accesses++;
         $_ =~ /^(\S+)\s/;
 
         my $ip = $1;
         my $user = $known_users{$ip};
-        if ($user)
+        my $is_known_user = $user;
+        if (!$is_known_user)
         {
-          $_ =~ s/^\S+/$user/g;
+          $user = "Unknown User";
         }
+
+        $user = (sprintf "%-20s", $user) . " - ";
+        $_ = $user . $_;
 
         $final_access_log .= $_;
 
-        my $curlinfo = "";
-        my $padding = "                 ";
-        my $curlcmd = "curl ipinfo.io/$ip |"; 
-        open (CURLCMDOUT, $curlcmd) or die "$!\n";
-        while (<CURLCMDOUT>)
+        if (!$is_known_user)
         {
-          $final_access_log .= $padding . $_;
+          my $curlinfo = "";
+          my $padding = " " x 20;
+          my $curlcmd = "curl ipinfo.io/$ip?token=002cac0572fbd0 |"; 
+          open (CURLCMDOUT, $curlcmd) or die "$!\n";
+          while (<CURLCMDOUT>)
+          {
+            $final_access_log .= $padding . $_;
+          }
         }
+
         $final_access_log .= "\n";
       }
     }
@@ -127,6 +143,7 @@ for (my $i = 0; $i < scalar @log_names; $i++)
 my $final_access_log_name = "./logs/access.log";
 open(my $log, '>', $final_access_log_name);
 print $log "Access log file for mine_games_test on " . localtime() . "\n\n"; 
+print $log "$num_accesses requests logged\n\n"; 
 print $log "\n\n$final_access_log\n\n";
 close $log;
 
