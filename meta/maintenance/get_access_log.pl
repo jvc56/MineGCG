@@ -4,6 +4,16 @@ use warnings;
 use strict;
 use DateTime;
 
+my %known_users = 
+(
+  "67.249.88.136"  => "Joshua Castellano",
+  "46.229.168.146" => "Crawler",
+  "66.249.66.88"   => "Crawler",
+  "66.249.66.89"   => "Crawler",
+  "66.249.66.90"   => "Crawler",
+  "46.229.168.141" => "Crawler"
+);
+
 # Get most recent weekly access log .gz from bitnami
 
 my $dashi = "-i /home/jvc/.ssh/randomracer.pem";
@@ -89,7 +99,26 @@ for (my $i = 0; $i < scalar @log_names; $i++)
 
       if ($now_gm_epoch - $then_gm_epoch < 86400)
       {
+        $_ =~ /^(\S+)\s/;
+
+        my $ip = $1;
+        my $user = $known_users{$ip};
+        if ($user)
+        {
+          $_ =~ s/^\S+/$user/g;
+        }
+
         $final_access_log .= $_;
+
+        my $curlinfo = "";
+        my $padding = "                 ";
+        my $curlcmd = "curl ipinfo.io/$ip |"; 
+        open (CURLCMDOUT, $curlcmd) or die "$!\n";
+        while (<CURLCMDOUT>)
+        {
+          $final_access_log .= $padding . $_;
+        }
+        $final_access_log .= "\n";
       }
     }
   }

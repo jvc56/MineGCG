@@ -25,9 +25,20 @@ system "./meta/maintenance/mine_games_test.pl";
 
 my $mine_end_time = time;
 
-my $full_end_time = "Ended:   " . localtime() . "\n";
+my $access_start_time = time;
+
+system "./meta/maintenance/get_access_log.pl";
+
+my $access_end_time = time;
+
+my $cache_start_time = time;
 
 system "scp -i /home/jvc/.ssh/randomracer.pem -r ./cache jvc\@media.wgvc.com:/home/bitnami/htdocs/rracer/";
+
+my $cache_end_time = time;
+
+my $full_end_time = "Ended:   " . localtime() . "\n";
+
 
 open(my $full_test_log, ">", "./logs/full_test.log");
 
@@ -36,6 +47,8 @@ print $full_test_log "Full Test Report\n\n";
 print $full_test_log "Preload: " . format_time($preload_start_time, $preload_end_time);
 print $full_test_log "Check:   " . format_time($check_start_time, $check_end_time);
 print $full_test_log "Mine:    " . format_time($mine_start_time, $mine_end_time);
+print $full_test_log "Access:  " . format_time($access_start_time, $access_end_time);
+print $full_test_log "Cache:   " . format_time($cache_start_time, $cache_end_time);
 
 print $full_test_log $full_start_time;
 print $full_test_log $full_end_time;
