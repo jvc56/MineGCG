@@ -6,19 +6,27 @@ use DateTime;
 
 my %known_users = 
 (
-  "67.249.88.136"  => "Joshua Castellano",
-  "46.229.168.146" => "Crawler",
-  "66.249.66.88"   => "Crawler",
-  "66.249.66.89"   => "Crawler",
-  "66.249.66.90"   => "Crawler",
-  "66.249.66.150"  => "Crawler",
-  "66.249.66.152"  => "Crawler",
-  "66.249.66.148"  => "Crawler",
-  "45.67.213.155"  => "Crawler",
-  "89.191.228.29"  => "Crawler",
-  "121.98.150.20"  => "Crawler",
-  "46.229.168.152" => "Crawler",
-  "46.229.168.141" => "Crawler"
+  "67.249.88.136"   => "Joshua Castellano",
+  "46.229.168.146"  => "Crawler",
+  "66.249.66.88"    => "Crawler",
+  "66.249.66.89"    => "Crawler",
+  "66.249.66.90"    => "Crawler",
+  "66.249.66.150"   => "Crawler",
+  "66.249.66.152"   => "Crawler",
+  "66.249.66.148"   => "Crawler",
+  "45.67.213.155"   => "Crawler",
+  "89.191.228.29"   => "Crawler",
+  "121.98.150.20"   => "Crawler",
+  "46.229.168.152"  => "Crawler",
+  "446.229.168.150" => "Crawler",
+  "78.46.149.254"   => "Crawler",
+  "46.229.168.130"  => "Crawler",
+  "141.222.36.215"  => "Matthew O'Connor",
+  "46.229.168.133"  => "Crawler",
+  "46.229.168.161"  => "Crawler",
+  "46.229.168.137"  => "Crawler",  
+  "46.229.168.150"  => "Crawler",  
+  "46.229.168.141"  => "Crawler"
 );
 
 # Get most recent weekly access log .gz from bitnami
@@ -78,6 +86,8 @@ my %abbr = (
 
 my $num_accesses = 0;
 
+my %cached_ipinfo;
+
 for (my $i = 0; $i < scalar @log_names; $i++)
 {
   my $log_name = $log_names[$i];
@@ -125,13 +135,22 @@ for (my $i = 0; $i < scalar @log_names; $i++)
 
         if (!$is_known_user)
         {
-          my $curlinfo = "";
-          my $padding = " " x 20;
-          my $curlcmd = "curl ipinfo.io/$ip?token=002cac0572fbd0 |"; 
-          open (CURLCMDOUT, $curlcmd) or die "$!\n";
-          while (<CURLCMDOUT>)
+          if (!$cached_ipinfo{$ip})
           {
-            $final_access_log .= $padding . $_;
+            my $curlinfo = "";
+            my $padding = " " x 20;
+            my $curlcmd = "curl ipinfo.io/$ip?token=002cac0572fbd0 |"; 
+            open (CURLCMDOUT, $curlcmd) or die "$!\n";
+            while (<CURLCMDOUT>)
+            {
+              my $info_line = $padding . $_;
+              $final_access_log .= $info_line;
+              $cached_ipinfo{$ip} .= $info_line;
+            }
+          }
+          else
+          {
+            $final_access_log .= $cached_ipinfo{$ip};
           }
         }
 
