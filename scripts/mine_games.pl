@@ -415,6 +415,7 @@ sub print_or_append
       {
         $opp = $3;
       }
+      $opp =~ s/_/ /g;
       my $url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
       my $link = "<a href='$url$1' target='_blank'>against $opp</a>";
       $addition =~ s/\.[^\.]+\.[^\.]+\.[^\.]+\.[^\.]+\.[^\.]+\.[^\.]+\.[^\.]+\.[^\.]+\.gcg/$link/g;
