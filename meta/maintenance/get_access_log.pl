@@ -6,7 +6,7 @@ use DateTime;
 
 my %known_users = 
 (
-  "67.249.88.136"   => "Joshua Castellano",
+  "67.249.88.136"   => "105 Bool Street",
   "46.229.168.146"  => "Crawler",
   "66.249.66.88"    => "Crawler",
   "66.249.66.89"    => "Crawler",
@@ -26,6 +26,7 @@ my %known_users =
   "46.229.168.161"  => "Crawler",
   "46.229.168.137"  => "Crawler",  
   "46.229.168.150"  => "Crawler",  
+  "98.169.40.117"   => "9654 Scotch Haven Drive",  
   "46.229.168.141"  => "Crawler"
 );
 
