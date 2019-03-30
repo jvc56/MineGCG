@@ -68,7 +68,13 @@ This error appears when an empty GCG file is detected.
 <h5>ERROR: disconnected play detected</h5>
 This error appears when a play is made that does not connect to other tiles on the board.
 
-<br/><br/>The errors above are relatively common and well-tested. If you encounter any of these errors, it probably means that the GCG file of the game is somehow malformed. To correct these errors, update the game on <a href='https://cross-tables.com'>cross-tables.com</a> and then message me so I can delete the outdated game that is cached in the database.<br/><br/>
+<h5>ERROR: both players have the same name</h5>
+This error appears when both players have the exact same name. In this case the program cannot distinguish who is making which plays.
+
+<h5>ERROR: no lexicon found for game ...</h5>
+This error appears when the game is not tagged with a lexicon or the game uses an unrecognized lexicon, such as THTWL85.
+
+<br/><br/>The errors above are relatively common and well-tested. If you encounter any of these errors, it probably means that the GCG file of the game is somehow malformed or tagged incorrectly. To correct these errors, update the game on <a href='https://cross-tables.com'>cross-tables.com</a> and then message me so I can delete the outdated game that is cached in the database.<br/><br/>
 
 Currently, the only warning is for notes that start before moves. If you see this warning no action is needed. More warnings might be added in the future.<br/><br/>
 
@@ -87,6 +93,7 @@ Games with no lexicons are omitted because the lexicons are necessary for comput
 
 # Contributions
 
+Notable games (Matthew O'Connor)<br/>
 Firsts statistic (Ben Schoenbrun)<br/>
 Turns with a blank statistic (Marlon Hill)<br/>
 Discovery of GCG mining bug in the preload script (Ben Schoenbrun)<br/>
