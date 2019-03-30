@@ -71,7 +71,7 @@ This error appears when a play is made that does not connect to other tiles on t
 <h5>ERROR: both players have the same name</h5>
 This error appears when both players have the exact same name. In this case the program cannot distinguish who is making which plays.
 
-<h5>ERROR: no lexicon found for game ...</h5>
+<h5>ERROR: no valid lexicon found</h5>
 This error appears when the game is not tagged with a lexicon or the game uses an unrecognized lexicon, such as THTWL85.
 
 <br/><br/>The errors above are relatively common and well-tested. If you encounter any of these errors, it probably means that the GCG file of the game is somehow malformed or tagged incorrectly. To correct these errors, update the game on <a href='https://cross-tables.com'>cross-tables.com</a> and then message me so I can delete the outdated game that is cached in the database.<br/><br/>
