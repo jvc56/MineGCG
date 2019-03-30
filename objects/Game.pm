@@ -67,7 +67,7 @@ sub new
 
       if ($player_one_name eq $player_two_name)
       {
-        return "Both players have the same name\nFILE:   $filename\nLINE $line_number: $line\n";
+        return "both players have the same name\nFILE:   $filename\nLINE $line_number: $line\n";
       }
 
       next;

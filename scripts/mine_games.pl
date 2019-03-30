@@ -244,14 +244,14 @@ sub mine
 
       if ($player_one_name eq $player_two_name)
       {
-        print_or_append( "\nERROR:  Both players have the same name\nFILE:   $full_game_file_name\n", $html, 1, $player_name);
+        print_or_append( "\nERROR:  both players have the same name\nFILE:   $full_game_file_name\n", $html, 1, $player_name);
         $num_errors++;
         next;
       }
 
       if (!$ext || $ext ne "gcg")
       {
-        print_or_append( "\nERROR:  Invalid file extension\nFILE:   $full_game_file_name", $html, 1, $player_name);
+        print_or_append( "\nERROR:  Invalid file extension\nFILE:   $full_game_file_name\n", $html, 1, $player_name);
         $num_errors++;
         next;
       }
@@ -295,7 +295,7 @@ sub mine
       }
       else
       {
-        print_or_append( "\nERROR: no lexicon found for game $full_game_file_name\n", $html, 1, $player_name);
+        print_or_append( "\nERROR: no valid lexicon found\nFILE:   $full_game_file_name\n", $html, 1, $player_name);
         $num_errors++;
         next;
       }
