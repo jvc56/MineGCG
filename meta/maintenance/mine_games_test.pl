@@ -6,6 +6,7 @@ use lib './objects';
 use Constants;
 
 require "./scripts/update_leaderboard.pl";
+require "./scripts/update_notable.pl";
 
 my $names_dir = Constants::NAMES_DIRECTORY_NAME;
 

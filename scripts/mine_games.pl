@@ -251,14 +251,14 @@ sub mine
 
       if (!$ext || $ext ne "gcg")
       {
-        print_or_append( "\nERROR:  Invalid file extension\nFILE:   $full_game_file_name\n", $html, 1, $player_name);
+        print_or_append( "\nERROR:  invalid file extension\nFILE:   $full_game_file_name\n", $html, 1, $player_name);
         $num_errors++;
         next;
       }
 
       if (!(-e $full_game_file_name))
       {
-        print_or_append( "\nERROR: No GCG found for index $full_game_file_name\n", $html, 1, $player_name);
+        print_or_append( "\nERROR: no GCG found for index $full_game_file_name\n", $html, 1, $player_name);
         $num_errors++;
         next;
       }

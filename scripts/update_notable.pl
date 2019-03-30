@@ -83,9 +83,9 @@ sub update_notable
   print $new_notable $notable_string;
   close $new_notable;
 
-  #system "rm -r $notable_dir";
+  system "rm -r $notable_dir";
 
-  #system "scp -i /home/jvc/.ssh/randomracer.pem $notable_name jvc\@media.wgvc.com:/home/bitnami/htdocs/rracer/notable.html"
+  system "scp -i /home/jvc/.ssh/randomracer.pem $notable_name jvc\@media.wgvc.com:/home/bitnami/htdocs/rracer/notable.html"
 }
 
 1;
