@@ -27,6 +27,7 @@ sub mine
   my $dir_name                = Constants::GAME_DIRECTORY_NAME;
   my $names_dir               = Constants::NAMES_DIRECTORY_NAME;
   my $stats_dir               = Constants::STATS_DIRECTORY_NAME;
+  my $notable_dir             = Constants::NOTABLE_DIRECTORY_NAME;
   my $blacklisted_tournaments = Constants::BLACKLISTED_TOURNAMENTS;
   my $cache_dir               = Constants::CACHE_DIRECTORY_NAME;
   my $stats_note              = Constants::STATS_NOTE;
@@ -42,6 +43,7 @@ sub mine
   my $tourney_id        = shift;
   my $html              = shift;
   my $statsdump         = shift;
+  my $notabledump       = shift;
 
   my $cache_filename = "$cache_dir/$player_name.cache";
   my $cache_condition = !$cort &&
@@ -379,6 +381,29 @@ sub mine
     close $fh;
   }
   
+  if ($notabledump)
+  {
+    system "mkdir -p $notable_dir";
+    open(my $fh, '>', $notable_dir . "/" . $player_name . ".notable");
+    my @entries = @{$all_stats->{'entries'}};
+    foreach my $e (@entries)
+    {
+      my $type = $e->{'type'};
+      if ($type eq Constants::STAT_ITEM_LIST_NOTABLE)
+      {
+        print $fh $e->{'name'} . ": ";
+        my @list = @{$e->{'list'}};
+        for (my $i = 0; $i < scalar @list; $i++)
+        {
+          print $fh $list[$i] . ",";
+        }
+        print $fh "\n";
+      }
+    }
+    close $fh;
+  }
+
+
   my $final_output = "<pre style='white-space: pre-wrap;' > $html_string </pre>";
 
   if ($cache_condition && $at_least_one)
@@ -410,6 +435,7 @@ sub print_or_append
   {
     if ($addition =~ /\.(\d+)\.(\w+)\.(\w+)\.gcg/)
     {
+      my $id  = $1;
       my $opp = $2;
       if ($opp eq $this_player)
       {
@@ -417,7 +443,7 @@ sub print_or_append
       }
       $opp =~ s/_/ /g;
       my $url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
-      my $link = "<a href='$url$1' target='_blank'>against $opp</a>";
+      my $link = "<a href='$url$id' target='_blank'>against $opp</a>";
       $addition =~ s/\.[^\.]+\.[^\.]+\.[^\.]+\.[^\.]+\.[^\.]+\.[^\.]+\.[^\.]+\.[^\.]+\.gcg/$link/g;
     }
     $html_string .= $addition;

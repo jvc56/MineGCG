@@ -24,6 +24,7 @@ my $startdate      = '';
 my $enddate        = '';
 my $lexicon        = '';
 my $statsdump      = '';
+my $notabledump    = '';
 my $name;
 my $raw_name;
 
@@ -36,13 +37,14 @@ GetOptions (
             'game:s'           => \$game,
             'reset'            => \$reset,
             'cort:s'           => \$cort,
-            'tournament-id:s'  => \$tid,
+            'tournamentid:s'   => \$tid,
             'opponent:s'       => \$opponent,
             'startdate:s'      => \$startdate,
             'enddate:s'        => \$enddate,
             'lexicon:s'        => \$lexicon,
             'html'             => \$html,
             'statsdump'        => \$statsdump,
+            'notabledump'      => \$notabledump,
             'resolve'          => \$resolve,
             'name=s'           => \$name,
             'help|?'           => \$help
@@ -68,7 +70,7 @@ $enddate =~ s/[^\d]//g;
 $lexicon = uc $lexicon;
 
 retrieve($name, $raw_name, $option, $tid, $cort, $game, $opponent_sanitized, $startdate, $enddate, $lexicon, $verbose, $resolve);
-mine($name, $cort, $game, $opponent_sanitized, $startdate, $enddate, $lexicon, $verbose, $tid, $html, $statsdump);
+mine($name, $cort, $game, $opponent_sanitized, $startdate, $enddate, $lexicon, $verbose, $tid, $html, $statsdump, $notabledump);
 
 if (!$skipmetaupdate)
 {

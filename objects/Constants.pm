@@ -19,6 +19,7 @@ use constant NON_TOURNAMENT_GAME              => 'NONTOURNAMENT';
 use constant GAME_DIRECTORY_NAME              => './games';
 use constant NAMES_DIRECTORY_NAME             => './names';
 use constant STATS_DIRECTORY_NAME             => './stats';
+use constant NOTABLE_DIRECTORY_NAME           => './notable';
 use constant CACHE_DIRECTORY_NAME             => './cache';
 use constant BLACKLISTED_TOURNAMENTS          => {
                                                     '9194' => 1 # Can-Am Match 08/29/15
@@ -44,11 +45,12 @@ use constant PRELOAD_COUNTRIES =>
   'USA'
 );
 
-use constant STAT_ITEM_GAME        => 'GAME STATS';
-use constant STAT_ITEM_PLAYER      => 'YOUR STATS';
-use constant STAT_ITEM_OPP         => 'OPPONENT STATS';
-use constant STAT_ITEM_LIST_PLAYER => 'YOUR LISTS';
-use constant STAT_ITEM_LIST_OPP    => 'OPPONENT LISTS';
+use constant STAT_ITEM_GAME         => 'GAME STATS';
+use constant STAT_ITEM_PLAYER       => 'YOUR STATS';
+use constant STAT_ITEM_OPP          => 'OPPONENT STATS';
+use constant STAT_ITEM_LIST_PLAYER  => 'YOUR LISTS';
+use constant STAT_ITEM_LIST_OPP     => 'OPPONENT LISTS';
+use constant STAT_ITEM_LIST_NOTABLE => 'NOTABLE GAMES';
 
 
 use constant LEADERBOARD_CUTOFF         => 10;
@@ -56,65 +58,78 @@ use constant LEADERBOARD_COLUMN_SPACING => 31;
 use constant LEADERBOARD_NAME           => "leaderboard";
 use constant LEADERBOARD_MIN_GAMES      => 50;
 
+use constant NOTABLE_NAME               => "notable";
+
 use constant STATS_ITEMS =>
 (
-    {name => 'Bingos',                     type => STAT_ITEM_LIST_PLAYER},
-    {name => 'Triple Triples',             type => STAT_ITEM_LIST_PLAYER},
-    {name => 'Bingo Nines or Above',       type => STAT_ITEM_LIST_PLAYER},
-    {name => 'Challenged Phonies',         type => STAT_ITEM_LIST_PLAYER},
-    {name => 'Unchallenged Phonies',       type => STAT_ITEM_LIST_PLAYER},
-    {name => 'Plays That Were Challenged', type => STAT_ITEM_LIST_PLAYER},
-    {name => 'Bingos',                     type => STAT_ITEM_LIST_OPP},
-    {name => 'Triple Triples',             type => STAT_ITEM_LIST_OPP},
-    {name => 'Bingo Nines or Above',       type => STAT_ITEM_LIST_OPP},
-    {name => 'Challenged Phonies',         type => STAT_ITEM_LIST_OPP},
-    {name => 'Unchallenged Phonies',       type => STAT_ITEM_LIST_OPP},
-    {name => 'Plays That Were Challenged', type => STAT_ITEM_LIST_OPP},
-    {name => 'Games',                      type => STAT_ITEM_GAME},
-    {name => 'Total Turns',                type => STAT_ITEM_GAME},
-    {name => 'Challenges',                 type => STAT_ITEM_GAME},
-    {name => 'Wins',                       type => STAT_ITEM_PLAYER},
-    {name => 'Score',                      type => STAT_ITEM_PLAYER},
-    {name => 'Turns',                      type => STAT_ITEM_PLAYER},
-    {name => 'Score per Turn',             type => STAT_ITEM_PLAYER},
-    {name => 'Firsts',                     type => STAT_ITEM_PLAYER},
-    {name => 'Full Rack per Turn',         type => STAT_ITEM_PLAYER},
-    {name => 'High Game',                  type => STAT_ITEM_PLAYER},
-    {name => 'Low Game',                   type => STAT_ITEM_PLAYER},
-    {name => 'Bingos Played',              type => STAT_ITEM_PLAYER},
-    {name => 'Bingo Probabilities',        type => STAT_ITEM_PLAYER},
-    {name => 'Tiles Played',               type => STAT_ITEM_PLAYER},
-    {name => 'Power Tiles Played',         type => STAT_ITEM_PLAYER},
-    {name => 'Power Tiles Stuck With',     type => STAT_ITEM_PLAYER},
-    {name => 'Es Played',                  type => STAT_ITEM_PLAYER},
-    {name => 'Turns With a Blank',         type => STAT_ITEM_PLAYER},
-    {name => 'Triple Triples Played',      type => STAT_ITEM_PLAYER},
-    {name => 'Bingoless Games',            type => STAT_ITEM_PLAYER},
-    {name => 'Bonus Square Coverage',      type => STAT_ITEM_PLAYER},
-    {name => 'Phony Plays',                type => STAT_ITEM_PLAYER},
-    {name => 'Comments',                   type => STAT_ITEM_PLAYER},
-    {name => 'Comments Word Length',       type => STAT_ITEM_PLAYER},
-    {name => 'Wins',                       type => STAT_ITEM_OPP},
-    {name => 'Score',                      type => STAT_ITEM_OPP},
-    {name => 'Turns',                      type => STAT_ITEM_OPP},
-    {name => 'Score per Turn',             type => STAT_ITEM_OPP},
-    {name => 'Firsts',                     type => STAT_ITEM_OPP},
-    {name => 'Full Rack per Turn',         type => STAT_ITEM_OPP},
-    {name => 'High Game',                  type => STAT_ITEM_OPP},
-    {name => 'Low Game',                   type => STAT_ITEM_OPP},
-    {name => 'Bingos Played',              type => STAT_ITEM_OPP},
-    {name => 'Bingo Probabilities',        type => STAT_ITEM_OPP},
-    {name => 'Tiles Played',               type => STAT_ITEM_OPP},
-    {name => 'Power Tiles Played',         type => STAT_ITEM_OPP},
-    {name => 'Power Tiles Stuck With',     type => STAT_ITEM_OPP},
-    {name => 'Es Played',                  type => STAT_ITEM_OPP},
-    {name => 'Turns With a Blank',         type => STAT_ITEM_OPP},
-    {name => 'Triple Triples Played',      type => STAT_ITEM_OPP},
-    {name => 'Bingoless Games',            type => STAT_ITEM_OPP},
-    {name => 'Bonus Square Coverage',      type => STAT_ITEM_OPP},
-    {name => 'Phony Plays',                type => STAT_ITEM_OPP},
-    {name => 'Comments',                   type => STAT_ITEM_OPP},
-    {name => 'Comments Word Length',       type => STAT_ITEM_OPP}
+    {name => 'Bingos',                            type => STAT_ITEM_LIST_PLAYER},
+    {name => 'Triple Triples',                    type => STAT_ITEM_LIST_PLAYER},
+    {name => 'Bingo Nines or Above',              type => STAT_ITEM_LIST_PLAYER},
+    {name => 'Challenged Phonies',                type => STAT_ITEM_LIST_PLAYER},
+    {name => 'Unchallenged Phonies',              type => STAT_ITEM_LIST_PLAYER},
+    {name => 'Plays That Were Challenged',        type => STAT_ITEM_LIST_PLAYER},
+    {name => 'Bingos',                            type => STAT_ITEM_LIST_OPP},
+    {name => 'Triple Triples',                    type => STAT_ITEM_LIST_OPP},
+    {name => 'Bingo Nines or Above',              type => STAT_ITEM_LIST_OPP},
+    {name => 'Challenged Phonies',                type => STAT_ITEM_LIST_OPP},
+    {name => 'Unchallenged Phonies',              type => STAT_ITEM_LIST_OPP},
+    {name => 'Plays That Were Challenged',        type => STAT_ITEM_LIST_OPP},
+    {name => 'All Double Letters Covered',        type => STAT_ITEM_LIST_NOTABLE},
+    {name => 'All Double Words Covered',          type => STAT_ITEM_LIST_NOTABLE},
+    {name => 'All Triple Letters Covered',        type => STAT_ITEM_LIST_NOTABLE},
+    {name => 'All Triple Words Covered',          type => STAT_ITEM_LIST_NOTABLE},
+    {name => 'High Scoring',                      type => STAT_ITEM_LIST_NOTABLE},
+    {name => 'Combined High Scoring',             type => STAT_ITEM_LIST_NOTABLE},
+    {name => 'Combined Low Scoring',              type => STAT_ITEM_LIST_NOTABLE},
+    {name => 'Ties',                              type => STAT_ITEM_LIST_NOTABLE},
+    {name => 'One Player Plays Every Power Tile', type => STAT_ITEM_LIST_NOTABLE},
+    {name => 'One Player Plays Every E',          type => STAT_ITEM_LIST_NOTABLE},
+    {name => 'Many Challenges',                   type => STAT_ITEM_LIST_NOTABLE},
+    {name => 'Games',                             type => STAT_ITEM_GAME},
+    {name => 'Total Turns',                       type => STAT_ITEM_GAME},
+    {name => 'Challenges',                        type => STAT_ITEM_GAME},
+    {name => 'Wins',                              type => STAT_ITEM_PLAYER},
+    {name => 'Score',                             type => STAT_ITEM_PLAYER},
+    {name => 'Turns',                             type => STAT_ITEM_PLAYER},
+    {name => 'Score per Turn',                    type => STAT_ITEM_PLAYER},
+    {name => 'Firsts',                            type => STAT_ITEM_PLAYER},
+    {name => 'Full Rack per Turn',                type => STAT_ITEM_PLAYER},
+    {name => 'High Game',                         type => STAT_ITEM_PLAYER},
+    {name => 'Low Game',                          type => STAT_ITEM_PLAYER},
+    {name => 'Bingos Played',                     type => STAT_ITEM_PLAYER},
+    {name => 'Bingo Probabilities',               type => STAT_ITEM_PLAYER},
+    {name => 'Tiles Played',                      type => STAT_ITEM_PLAYER},
+    {name => 'Power Tiles Played',                type => STAT_ITEM_PLAYER},
+    {name => 'Power Tiles Stuck With',            type => STAT_ITEM_PLAYER},
+    {name => 'Es Played',                         type => STAT_ITEM_PLAYER},
+    {name => 'Turns With a Blank',                type => STAT_ITEM_PLAYER},
+    {name => 'Triple Triples Played',             type => STAT_ITEM_PLAYER},
+    {name => 'Bingoless Games',                   type => STAT_ITEM_PLAYER},
+    {name => 'Bonus Square Coverage',             type => STAT_ITEM_PLAYER},
+    {name => 'Phony Plays',                       type => STAT_ITEM_PLAYER},
+    {name => 'Comments',                          type => STAT_ITEM_PLAYER},
+    {name => 'Comments Word Length',              type => STAT_ITEM_PLAYER},
+    {name => 'Wins',                              type => STAT_ITEM_OPP},
+    {name => 'Score',                             type => STAT_ITEM_OPP},
+    {name => 'Turns',                             type => STAT_ITEM_OPP},
+    {name => 'Score per Turn',                    type => STAT_ITEM_OPP},
+    {name => 'Firsts',                            type => STAT_ITEM_OPP},
+    {name => 'Full Rack per Turn',                type => STAT_ITEM_OPP},
+    {name => 'High Game',                         type => STAT_ITEM_OPP},
+    {name => 'Low Game',                          type => STAT_ITEM_OPP},
+    {name => 'Bingos Played',                     type => STAT_ITEM_OPP},
+    {name => 'Bingo Probabilities',               type => STAT_ITEM_OPP},
+    {name => 'Tiles Played',                      type => STAT_ITEM_OPP},
+    {name => 'Power Tiles Played',                type => STAT_ITEM_OPP},
+    {name => 'Power Tiles Stuck With',            type => STAT_ITEM_OPP},
+    {name => 'Es Played',                         type => STAT_ITEM_OPP},
+    {name => 'Turns With a Blank',                type => STAT_ITEM_OPP},
+    {name => 'Triple Triples Played',             type => STAT_ITEM_OPP},
+    {name => 'Bingoless Games',                   type => STAT_ITEM_OPP},
+    {name => 'Bonus Square Coverage',             type => STAT_ITEM_OPP},
+    {name => 'Phony Plays',                       type => STAT_ITEM_OPP},
+    {name => 'Comments',                          type => STAT_ITEM_OPP},
+    {name => 'Comments Word Length',              type => STAT_ITEM_OPP}
 );
 
 use constant INDEX_COLUMN_MAPPING =>

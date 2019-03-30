@@ -181,6 +181,50 @@ sub addGame
   {
     $this->__updateNumCommentsWordLength($game);
   }
+  elsif ($name eq "All Double Letters Covered")
+  {
+    $this->__updateAllDoubleLettersCovered($game);
+  }
+  elsif ($name eq "All Double Words Covered")
+  {
+    $this->__updateAllDoubleWordsCovered($game);
+  }
+  elsif ($name eq "All Triple Letters Covered")
+  {
+    $this->__updateAllTripleLettersCovered($game);
+  }
+  elsif ($name eq "All Triple Words Covered")
+  {
+    $this->__updateAllTripleWordsCovered($game);
+  }
+  elsif ($name eq "High Scoring")
+  {
+    $this->__updateHighScoring($game);
+  }
+  elsif ($name eq "Combined High Scoring")
+  {
+    $this->__updateCombinedHighScoring($game);
+  }
+  elsif ($name eq "Combined Low Scoring")
+  {
+    $this->__updateCombinedLowScoring($game);
+  }
+  elsif ($name eq "Ties")
+  {
+    $this->__updateTies($game);
+  }
+  elsif ($name eq "One Player Plays Every Power Tile")
+  {
+    $this->__updateAllPowerTilesPlayed($game);
+  }
+  elsif ($name eq "One Player Plays Every E")
+  {
+    $this->__updateAllEsPlayed($game);
+  }
+  elsif ($name eq "Many Challenges")
+  {
+    $this->__updateManyChallenges($game);
+  }
 }
 
 sub __updateBingoList
@@ -192,7 +236,7 @@ sub __updateBingoList
   if (!$this->{'init'})
   {
     $this->{'init'} = 1;
-    $this->{'list'} = ();
+    $this->{'list'} = [];
   }
 
   push @{$this->{'list'}}, @{$game->getBingos($this_player)};
@@ -207,7 +251,7 @@ sub __updateTripleTripleList
   if (!$this->{'init'})
   {
     $this->{'init'} = 1;
-    $this->{'list'} = ();
+    $this->{'list'} = [];
   }
 
   push @{$this->{'list'}}, @{$game->getTripleTriples($this_player)};
@@ -222,7 +266,7 @@ sub __updateBingoNinesOrAboveList
   if (!$this->{'init'})
   {
     $this->{'init'} = 1;
-    $this->{'list'} = ();
+    $this->{'list'} = [];
   }
 
   push @{$this->{'list'}}, @{$game->getBingoNinesOrAbove($this_player)};
@@ -238,7 +282,7 @@ sub __updatePhoniesFormed
   if (!$this->{'init'})
   {
     $this->{'init'} = 1;
-    $this->{'list'} = ();
+    $this->{'list'} = [];
   }
 
   push @{$this->{'list'}}, @{$game->getPhoniesFormed($this_player, $challenged)};
@@ -253,7 +297,7 @@ sub __updatePlaysChallenged
   if (!$this->{'init'})
   {
     $this->{'init'} = 1;
-    $this->{'list'} = ();
+    $this->{'list'} = [];
   }
 
   push @{$this->{'list'}}, @{$game->getPlaysChallenged($this_player)};
@@ -899,6 +943,237 @@ sub __updateNumCommentsWordLength
   $this->{'total'} += $game->getNumCommentsWordLength($player);
 }
 
+
+sub __updateAllDoubleLettersCovered
+{
+  my $this = shift;
+  my $game = shift;
+
+  if (!$this->{'init'})
+  {
+    $this->{'init'} = 1;
+    $this->{'list'} = [];
+  }
+
+  if (24 == $game->getNumBonusSquaresCovered(0)->{Constants::DOUBLE_LETTER} + $game->getNumBonusSquaresCovered(1)->{Constants::DOUBLE_LETTER})
+  {
+    push @{$this->{'list'}}, format_notable($game);
+  }
+}
+
+sub __updateAllDoubleWordsCovered
+{
+  my $this = shift;
+  my $game = shift;
+
+  if (!$this->{'init'})
+  {
+    $this->{'init'} = 1;
+    $this->{'list'} = [];
+  }
+
+  if (17 == $game->getNumBonusSquaresCovered(0)->{Constants::DOUBLE_WORD} + $game->getNumBonusSquaresCovered(1)->{Constants::DOUBLE_WORD})
+  {
+    push @{$this->{'list'}}, format_notable($game);
+  }
+}
+
+sub __updateAllTripleLettersCovered
+{
+  my $this = shift;
+  my $game = shift;
+
+  if (!$this->{'init'})
+  {
+    $this->{'init'} = 1;
+    $this->{'list'} = [];
+  }
+
+  if (12 == $game->getNumBonusSquaresCovered(0)->{Constants::TRIPLE_LETTER} + $game->getNumBonusSquaresCovered(1)->{Constants::TRIPLE_LETTER})
+  {
+    push @{$this->{'list'}}, format_notable($game);
+  }
+}
+
+sub __updateAllTripleWordsCovered
+{
+  my $this = shift;
+  my $game = shift;
+  my $this_player = shift;
+
+  if (!$this->{'init'})
+  {
+    $this->{'init'} = 1;
+    $this->{'list'} = [];
+  }
+
+  if (8 == $game->getNumBonusSquaresCovered(0)->{Constants::TRIPLE_WORD} + $game->getNumBonusSquaresCovered(1)->{Constants::TRIPLE_WORD})
+  {
+    push @{$this->{'list'}}, format_notable($game);
+  }
+}
+
+sub __updateHighScoring
+{
+  my $this = shift;
+  my $game = shift;
+
+  if (!$this->{'init'})
+  {
+    $this->{'init'} = 1;
+    $this->{'list'} = [];
+  }
+
+  if (700 <= $game->{'board'}->{"player_one_total"} || 700 <= $game->{'board'}->{"player_two_total"})
+  {
+    push @{$this->{'list'}}, format_notable($game);
+  }
+}
+
+sub __updateCombinedHighScoring
+{
+  my $this = shift;
+  my $game = shift;
+
+  if (!$this->{'init'})
+  {
+    $this->{'init'} = 1;
+    $this->{'list'} = [];
+  }
+
+  if (1100 <= $game->{'board'}->{"player_one_total"} + $game->{'board'}->{"player_two_total"})
+  {
+    push @{$this->{'list'}}, format_notable($game);
+  }
+}
+
+sub __updateCombinedLowScoring
+{
+  my $this = shift;
+  my $game = shift;
+
+  if (!$this->{'init'})
+  {
+    $this->{'init'} = 1;
+    $this->{'list'} = [];
+  }
+
+  if (200 >= $game->{'board'}->{"player_one_total"} + $game->{'board'}->{"player_two_total"})
+  {
+    push @{$this->{'list'}}, format_notable($game);
+  }
+}
+
+sub __updateTies
+{
+  my $this = shift;
+  my $game = shift;
+
+  if (!$this->{'init'})
+  {
+    $this->{'init'} = 1;
+    $this->{'list'} = [];
+  }
+
+  if ($game->{'board'}->{"player_one_total"} == $game->{'board'}->{"player_two_total"})
+  {
+    push @{$this->{'list'}}, format_notable($game);
+  }
+}
+
+sub __updateAllPowerTilesPlayed
+{
+  my $this = shift;
+  my $game = shift;
+  if (!$this->{'init'})
+  {
+    $this->{'init'} = 1;
+    $this->{'list'} = [];
+  }
+
+  my $sum1 =  $game->{'tiles_played'}->{0}->{'?'} + 
+              $game->{'tiles_played'}->{0}->{'Z'} + 
+              $game->{'tiles_played'}->{0}->{'X'} + 
+              $game->{'tiles_played'}->{0}->{'Q'} + 
+              $game->{'tiles_played'}->{0}->{'J'} + 
+              $game->{'tiles_played'}->{0}->{'S'};
+
+  my $sum2 =  $game->{'tiles_played'}->{1}->{'?'} + 
+              $game->{'tiles_played'}->{1}->{'Z'} + 
+              $game->{'tiles_played'}->{1}->{'X'} + 
+              $game->{'tiles_played'}->{1}->{'Q'} + 
+              $game->{'tiles_played'}->{1}->{'J'} + 
+              $game->{'tiles_played'}->{1}->{'S'};
+
+  if ($sum1 == 10 || $sum2 == 10)
+  {
+    push @{$this->{'list'}}, format_notable($game);
+  }
+}
+
+sub __updateAllEsPlayed
+{
+  my $this = shift;
+  my $game = shift;
+  my $this_player = shift;
+
+  if (!$this->{'init'})
+  {
+    $this->{'init'} = 1;
+    $this->{'list'} = [];
+  }
+
+  my $sum1 = $game->{'tiles_played'}->{0}->{'E'};
+
+  my $sum2 = $game->{'tiles_played'}->{1}->{'E'};
+
+  if ($sum1 == 12 || $sum2 == 12)
+  {
+    push @{$this->{'list'}}, format_notable($game);
+  }
+}
+
+sub __updateManyChallenges
+{
+  my $this = shift;
+  my $game = shift;
+
+  if (!$this->{'init'})
+  {
+    $this->{'init'} = 1;
+    $this->{'list'} = [];
+  }
+
+  my $chal = $game->getNumChallenges(0);
+
+  my $pcw  = $chal->{Constants::PLAYER_CHALLENGE_WON};
+  my $pcl  = $chal->{Constants::PLAYER_CHALLENGE_LOST};
+  my $ocw  = $chal->{Constants::OPP_CHALLENGE_WON};
+  my $ocl  = $chal->{Constants::OPP_CHALLENGE_LOST};
+
+  if (5 <= $pcw + $pcl + $ocw + $ocl)
+  {
+    push @{$this->{'list'}}, format_notable($game);
+  }
+}
+
+sub format_notable
+{
+  my $game = shift;
+
+  my @filename_items = split /\./, $game->{'filename'};
+  my $id = $filename_items[6];
+  my $readable_name = $game->{'readable_name'} . " (Game $id)";
+
+  if ($game->{'html'})
+  {
+    my $url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
+
+    return "<a href='$url$id' target='_blank'>$readable_name</a>";
+  }
+  return $readable_name;
+}
+
 sub makeRow
 {
   my $this = shift;
@@ -973,8 +1248,7 @@ sub toString
   my $tot = $tiw + $aw + $tow;
 
   my $s = "";
-
-  if ($this->{'type'} eq Constants::STAT_ITEM_LIST_PLAYER || $this->{'type'} eq Constants::STAT_ITEM_LIST_OPP)
+  if ($this->{'type'} eq Constants::STAT_ITEM_LIST_PLAYER || $this->{'type'} eq Constants::STAT_ITEM_LIST_OPP  || $this->{'type'} eq Constants::STAT_ITEM_LIST_NOTABLE)
   {
     $s .= "\n".$this->{'name'} . ": ";
     my @list = @{$this->{'list'}};

@@ -101,6 +101,16 @@ sub toString
     }
   }
 
+  $s .= "\n".Constants::STAT_ITEM_LIST_NOTABLE . "\n";
+  for (my $i = 0; $i < scalar @{$this->{'entries'}}; $i++)
+  {
+    my $stat_item = ${$this->{'entries'}}[$i];
+    if ($stat_item->{'type'} eq Constants::STAT_ITEM_LIST_NOTABLE)
+    {
+      $s .= $stat_item->toString($num);
+    }
+  }
+
   my $title_divider = ("_" x ($tot+2)) . "\n";
   my $empty_line = "|" . (" " x $tot) . "|\n";
 

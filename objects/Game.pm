@@ -36,6 +36,12 @@ sub new
   my $line_number = 0;
   my $warning     = "";
 
+  my $player_one_real_name_readable = $player_one_real_name;
+  my $player_two_real_name_readable = $player_two_real_name;
+
+  $player_one_real_name_readable =~ s/_/ /g;
+  $player_two_real_name_readable =~ s/_/ /g;
+
   open(GCG, '<', $filename);
   while(<GCG>)
   {
@@ -439,7 +445,8 @@ sub new
     moves           => \@moves,
     warnings        => $warning,
     html            => $html,
-    tiles_played    => $tiles_played
+    tiles_played    => $tiles_played,
+    readable_name   => "$player_one_real_name_readable vs. $player_two_real_name_readable"
   );
 
   my $self = bless \%game, $this;
