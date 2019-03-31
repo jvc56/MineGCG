@@ -37,11 +37,15 @@ sub update_notable
 
       my $type = $1;
 
+      if (!$init)
+      {
+        push @ordering, $type;
+        $notable_hash{$type} = "</br>";
+      }
+
       $_ =~ s/(.*)://g;
 
       my @matches = ($_ =~ /([^,]+),/g);
-
-      $notable_hash{$type} .= "</br>";
 
       foreach my $m (@matches)
       {
@@ -54,10 +58,6 @@ sub update_notable
         $m =~ /\(Game (\d+)\)/;
         my $id = $1;
         $notable_hash{$type} .= "<a href='$url$id' target='_blank'>$m</a></br>";
-      }
-      if (!$init)
-      {
-        push @ordering, $type;
       }
     }
     $init = 1;
