@@ -458,6 +458,103 @@ sub new
   return $self;
 }
 
+sub getReadableName
+{
+  my $game = shift;
+
+  my @filename_items = split /\./, $game->{'filename'};
+  my $id = $filename_items[6];
+  my $readable_name = $game->{'readable_name'} . " (Game $id)";
+
+  if ($game->{'html'})
+  {
+    my $url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
+
+    return "<a href='$url$id' target='_blank'>$readable_name</a>";
+  }
+  return $readable_name;
+}
+
+sub getNumMistakes
+{
+  my $this = shift;
+
+  my $player = shift;
+
+  my @moves = @{$this->{'moves'}};
+
+  my @categories = Constants::MISTAKES;
+
+  my %mistakes;
+
+  foreach my $cat (@categories)
+  {
+    $mistakes{$cat} = 0;
+  }
+
+  foreach my $move (@moves)
+  {
+    my $turn = $move->{'turn'};
+    if ($turn == $player)
+    {
+      my $comment = $move->{'comment'};
+      foreach my $cat (@categories)
+      {
+        if ($comment =~ /#$cat/i)
+        {
+          $mistakes{$cat}++;
+        }
+      }
+    }
+  }
+  return \%mistakes;
+}
+
+sub getMistakes
+{
+  my $this = shift;
+
+  my $player = shift;
+
+  my @moves = @{$this->{'moves'}};
+
+  my @categories = Constants::MISTAKES;
+
+  my @mistakes_list = ();
+
+  foreach my $move (@moves)
+  {
+    my $turn = $move->{'turn'};
+    if ($turn == $player)
+    {
+      my $comment = $move->{'comment'};
+      foreach my $cat (@categories)
+      {
+        if ($comment =~ /#$cat/i)
+        {
+          my $mistake_mag;
+          my @mistake_magnitudes = Constants::MISTAKES_MAGNITUDE;
+          foreach my $mag (@mistake_magnitudes)
+          {
+            if ($comment =~ /#$mag/i)
+            {
+              $mistake_mag = $mag;
+              last;
+            }
+          }
+          if (!$mistake_mag)
+          {
+            $mistake_mag = Constants::UNSPECIFIED_MISTAKE_NAME;
+          }
+          push @mistakes_list, [$cat, $mistake_mag, $this->getReadableName(), $move->toString($this->readableMove($move)), $comment];
+          last;
+        }
+      }
+    }
+  }
+  return \@mistakes_list;
+}
+
 sub getNumTurns
 {
 	my $this = shift;

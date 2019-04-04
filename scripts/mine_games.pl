@@ -336,14 +336,14 @@ sub mine
   print_or_append($stats_note, $html, 0);
 
   if ($at_least_one)
-  {    
-    if (!$html)
+  {
+    if ($html)
     {
-      print_or_append( $all_stats->toString(), $html, 0);
+      $html_string .= $all_stats->toString();
     }
     else
     {
-      print_or_append( $all_stats->toStringHTML(), $html, 0);
+      print $all_stats->toString();
     }
   }
   else
@@ -404,7 +404,7 @@ sub mine
   }
 
 
-  my $final_output = "<pre style='white-space: pre-wrap;' > $html_string </pre>";
+  my $final_output = "<pre style='white-space: pre-wrap;' > $html_string </pre>\n";
 
   if ($cache_condition && $at_least_one)
   {
@@ -413,7 +413,7 @@ sub mine
       my $lt = localtime();
       system "mkdir -p $cache_dir";
       open(my $fh, '>', $cache_filename);
-      print $fh "<pre style='white-space: pre-wrap;' > $html_string \n\nThis report was produced from a file cached on $lt\n</pre>";
+      print $fh "<pre style='white-space: pre-wrap;' > $html_string \n\nThis report was produced from a file cached on $lt\n</pre>\n";
       close $fh;
     }
   }

@@ -25,6 +25,36 @@ use constant BLACKLISTED_TOURNAMENTS          => {
                                                     '9194' => 1 # Can-Am Match 08/29/15
                                                  };
 
+use constant UNSPECIFIED_MISTAKE_NAME => 'Unspecified';
+
+use constant MISTAKES =>
+(
+  'Knowledge',
+  'Finding',
+  'Vision',
+  'Tactics',
+  'Strategy',
+);
+
+use constant MISTAKES_MAGNITUDE =>
+(
+  'Large',
+  'Medium',
+  'Small',
+  UNSPECIFIED_MISTAKE_NAME,
+);
+
+use constant MISTAKE_COLORS =>
+{
+  'Knowledge' => 'yellow',
+  'Finding'   => 'purple',
+  'Vision'    => 'cyan',
+  'Tactics'   => 'red',
+  'Strategy'  => 'green',
+};
+
+
+
 use constant PRELOAD_COUNTRIES =>
 (
   'ARE',
@@ -45,12 +75,14 @@ use constant PRELOAD_COUNTRIES =>
   'USA'
 );
 
-use constant STAT_ITEM_GAME         => 'GAME STATS';
-use constant STAT_ITEM_PLAYER       => 'YOUR STATS';
-use constant STAT_ITEM_OPP          => 'OPPONENT STATS';
-use constant STAT_ITEM_LIST_PLAYER  => 'YOUR LISTS';
-use constant STAT_ITEM_LIST_OPP     => 'OPPONENT LISTS';
-use constant STAT_ITEM_LIST_NOTABLE => 'NOTABLE GAMES';
+use constant STAT_ITEM_GAME            => 'GAME STATS';
+use constant STAT_ITEM_PLAYER          => 'YOUR STATS';
+use constant STAT_ITEM_OPP             => 'OPPONENT STATS';
+use constant STAT_ITEM_LIST_PLAYER     => 'YOUR LISTS';
+use constant MISTAKE_ITEM_LIST_PLAYER  => 'YOUR MISTAKES';
+use constant MISTAKE_ITEM_LIST_OPP     => 'OPPONENT MISTAKES';
+use constant STAT_ITEM_LIST_OPP        => 'OPPONENT LISTS';
+use constant STAT_ITEM_LIST_NOTABLE    => 'NOTABLE GAMES';
 
 
 use constant LEADERBOARD_CUTOFF         => 10;
@@ -109,6 +141,7 @@ use constant STATS_ITEMS =>
     {name => 'Phony Plays',                       type => STAT_ITEM_PLAYER},
     {name => 'Comments',                          type => STAT_ITEM_PLAYER},
     {name => 'Comments Word Length',              type => STAT_ITEM_PLAYER},
+    {name => 'Mistakes',                          type => STAT_ITEM_PLAYER},
     {name => 'Wins',                              type => STAT_ITEM_OPP},
     {name => 'Score',                             type => STAT_ITEM_OPP},
     {name => 'Turns',                             type => STAT_ITEM_OPP},
@@ -129,7 +162,10 @@ use constant STATS_ITEMS =>
     {name => 'Bonus Square Coverage',             type => STAT_ITEM_OPP},
     {name => 'Phony Plays',                       type => STAT_ITEM_OPP},
     {name => 'Comments',                          type => STAT_ITEM_OPP},
-    {name => 'Comments Word Length',              type => STAT_ITEM_OPP}
+    {name => 'Comments Word Length',              type => STAT_ITEM_OPP},
+    {name => 'Mistakes',                          type => STAT_ITEM_OPP},
+    {name => 'Mistakes List',                     type => MISTAKE_ITEM_LIST_PLAYER},
+    {name => 'Mistakes List',                     type => MISTAKE_ITEM_LIST_OPP}
 );
 
 use constant INDEX_COLUMN_MAPPING =>

@@ -34,7 +34,7 @@ foreach my $name_file (@name_files)
   my $name = $1;
   $name =~ s/_/ /g;
   system "./scripts/main.pl --name '$name' -ski -stats -notable >/dev/null 2>> $log_name";
-  system "./scripts/main.pl --name '$name' -ski --html >/dev/null 2>> /dev/null";
+  system "./scripts/main.pl --name '$name' -ski --html >/dev/null 2>> $log_name";
 }
 
 update_leaderboard();

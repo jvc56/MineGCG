@@ -54,7 +54,7 @@ sub addGame
 
   my $this_player = $game->{'this_player'};
 
-  if ($this->{'type'} eq Constants::STAT_ITEM_OPP || $this->{'type'} eq Constants::STAT_ITEM_LIST_OPP)
+  if ($this->{'type'} eq Constants::STAT_ITEM_OPP || $this->{'type'} eq Constants::STAT_ITEM_LIST_OPP || $this->{'type'} eq Constants::MISTAKE_ITEM_LIST_OPP)
   {
     $this_player = 1 - $this_player;
   }
@@ -224,6 +224,14 @@ sub addGame
   elsif ($name eq "Many Challenges")
   {
     $this->__updateManyChallenges($game);
+  }
+  elsif ($name eq "Mistakes")
+  {
+    $this->__updateNumMistakes($game, $this_player);
+  }
+  elsif ($name eq "Mistakes List")
+  {
+    $this->__updateMistakesList($game, $this_player);
   }
 }
 
@@ -957,7 +965,7 @@ sub __updateAllDoubleLettersCovered
 
   if (24 == $game->getNumBonusSquaresCovered(0)->{Constants::DOUBLE_LETTER} + $game->getNumBonusSquaresCovered(1)->{Constants::DOUBLE_LETTER})
   {
-    push @{$this->{'list'}}, format_notable($game);
+    push @{$this->{'list'}}, $game->getReadableName();
   }
 }
 
@@ -974,7 +982,7 @@ sub __updateAllDoubleWordsCovered
 
   if (17 == $game->getNumBonusSquaresCovered(0)->{Constants::DOUBLE_WORD} + $game->getNumBonusSquaresCovered(1)->{Constants::DOUBLE_WORD})
   {
-    push @{$this->{'list'}}, format_notable($game);
+    push @{$this->{'list'}}, $game->getReadableName();
   }
 }
 
@@ -991,7 +999,7 @@ sub __updateAllTripleLettersCovered
 
   if (12 == $game->getNumBonusSquaresCovered(0)->{Constants::TRIPLE_LETTER} + $game->getNumBonusSquaresCovered(1)->{Constants::TRIPLE_LETTER})
   {
-    push @{$this->{'list'}}, format_notable($game);
+    push @{$this->{'list'}}, $game->getReadableName();
   }
 }
 
@@ -1009,7 +1017,7 @@ sub __updateAllTripleWordsCovered
 
   if (8 == $game->getNumBonusSquaresCovered(0)->{Constants::TRIPLE_WORD} + $game->getNumBonusSquaresCovered(1)->{Constants::TRIPLE_WORD})
   {
-    push @{$this->{'list'}}, format_notable($game);
+    push @{$this->{'list'}}, $game->getReadableName();
   }
 }
 
@@ -1026,7 +1034,7 @@ sub __updateHighScoring
 
   if (700 <= $game->{'board'}->{"player_one_total"} || 700 <= $game->{'board'}->{"player_two_total"})
   {
-    push @{$this->{'list'}}, format_notable($game);
+    push @{$this->{'list'}}, $game->getReadableName();
   }
 }
 
@@ -1043,7 +1051,7 @@ sub __updateCombinedHighScoring
 
   if (1100 <= $game->{'board'}->{"player_one_total"} + $game->{'board'}->{"player_two_total"})
   {
-    push @{$this->{'list'}}, format_notable($game);
+    push @{$this->{'list'}}, $game->getReadableName();
   }
 }
 
@@ -1060,7 +1068,7 @@ sub __updateCombinedLowScoring
 
   if (200 >= $game->{'board'}->{"player_one_total"} + $game->{'board'}->{"player_two_total"})
   {
-    push @{$this->{'list'}}, format_notable($game);
+    push @{$this->{'list'}}, $game->getReadableName();
   }
 }
 
@@ -1077,7 +1085,7 @@ sub __updateTies
 
   if ($game->{'board'}->{"player_one_total"} == $game->{'board'}->{"player_two_total"})
   {
-    push @{$this->{'list'}}, format_notable($game);
+    push @{$this->{'list'}}, $game->getReadableName();
   }
 }
 
@@ -1107,7 +1115,7 @@ sub __updateAllPowerTilesPlayed
 
   if ($sum1 == 10 || $sum2 == 10)
   {
-    push @{$this->{'list'}}, format_notable($game);
+    push @{$this->{'list'}}, $game->getReadableName();
   }
 }
 
@@ -1129,7 +1137,7 @@ sub __updateAllEsPlayed
 
   if ($sum1 == 12 || $sum2 == 12)
   {
-    push @{$this->{'list'}}, format_notable($game);
+    push @{$this->{'list'}}, $game->getReadableName();
   }
 }
 
@@ -1153,26 +1161,58 @@ sub __updateManyChallenges
 
   if (5 <= $pcw + $pcl + $ocw + $ocl)
   {
-    push @{$this->{'list'}}, format_notable($game);
+    push @{$this->{'list'}}, $game->getReadableName();
   }
 }
 
-sub format_notable
+sub __updateNumMistakes
 {
-  my $game = shift;
+  my $this   = shift;
+  my $game   = shift;
+  my $player = shift;
+  
+  my @categories = Constants::MISTAKES;
 
-  my @filename_items = split /\./, $game->{'filename'};
-  my $id = $filename_items[6];
-  my $readable_name = $game->{'readable_name'} . " (Game $id)";
 
-  if ($game->{'html'})
+  if (!$this->{'init'})
   {
-    my $url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
+    $this->{'init'} = 1;
 
-    return "<a href='$url$id' target='_blank'>$readable_name</a>";
+    my %subitems;
+    foreach my $cat (@categories)
+    {
+      $subitems{$cat} = 0;
+    }
+    $this->{'subitems'} = \%subitems;
+    $this->{'list'} = \@categories;
   }
-  return $readable_name;
+
+  my $mistakes_hash_ref = $game->getNumMistakes($player);
+
+  foreach my $cat (@categories)
+  {
+    my $val                      = $mistakes_hash_ref->{$cat};
+    $this->{'total'}            += $val;
+    $this->{'subitems'}->{$cat} += $val;
+  }
 }
+
+sub __updateMistakesList
+{
+  my $this   = shift;
+  my $game   = shift;
+  my $player = shift;
+
+  if (!$this->{'init'})
+  {
+    $this->{'init'} = 1;
+    $this->{'list'} = [];
+    $this->{'html'} = $game->{'html'}
+  }
+
+  push @{$this->{'list'}}, @{$game->getMistakes($player)};
+}
+
 
 sub makeRow
 {
@@ -1237,6 +1277,56 @@ sub makeItem
   return $r;
 }
 
+sub makeMistakeItem
+{
+  my $this         = shift;
+  my $mistake_item = shift;
+  my $is_title_row = shift;
+  my $html         = $this->{'html'};
+
+  my $s = "";
+
+  if ($is_title_row)
+  {
+    if ($html)
+    {
+      $s .= "<tr>\n";
+      $s .= "<td colspan='$is_title_row' align='center'><b>$mistake_item Mistakes</b></td>\n";
+      $s .= "</tr>\n";
+    }
+    else
+    {
+      $s .= "\n$mistake_item Mistakes\n";
+    }
+    return $s;
+  }
+
+  my @mistake_array = @{$mistake_item};
+  my $mm = $mistake_array[1];
+  if ($html)
+  {
+    my $color_hash = Constants::MISTAKE_COLORS;
+    my $color = $color_hash->{$mistake_array[0]};
+
+    $s .= "<tr style='background-color: $color'>\n";
+    $s .= "<td>$mistake_array[0]</td>\n";
+    $s .= "<td>$mm</td>\n";
+    $s .= "<td>$mistake_array[2]</td>\n";
+    $s .= "<td>$mistake_array[3]</td>\n";
+    $s .= "<td>$mistake_array[4]</td>\n";
+    $s .= "</tr>\n";
+  }
+  else
+  {
+    $s .= "Mistake:   $mistake_array[0]\n";
+    $s .= "Magnitude: $mm              \n";
+    $s .= "Game:      $mistake_array[2]\n";
+    $s .= "Play:      $mistake_array[3]\n";
+    $s .= "Comment:   $mistake_array[4]\n";
+  }
+  return $s;
+}
+
 sub toString
 {
   my $this = shift;
@@ -1261,6 +1351,60 @@ sub toString
       }
       $s .= $list[$i] . $commaspace;
     }
+    $s .= "\n";
+  }
+  elsif ($this->{'type'} eq Constants::MISTAKE_ITEM_LIST_PLAYER || $this->{'type'} eq Constants::MISTAKE_ITEM_LIST_OPP)
+  {
+    $s .= "\n";
+    my $html = $this->{'html'};
+    my @list = @{$this->{'list'}};
+
+    if ($html && scalar @list > 0)
+    {
+      $s .= "<table>\n<tbody>\n";
+    }
+
+    my @mistakes_magnitude = Constants::MISTAKES_MAGNITUDE;
+
+    my %magnitude_strings = ();
+
+    foreach my $mag (@mistakes_magnitude)
+    {
+      $magnitude_strings{$mag} = "";
+    }
+
+    my $mistake_elements_length;
+
+    for (my $i = 0; $i < scalar @list; $i++)
+    {
+      my @mistake_elements = @{$list[$i]};
+      $mistake_elements_length = scalar @mistake_elements;
+      $magnitude_strings{$mistake_elements[1]} .= $this->makeMistakeItem($list[$i], 0);
+    }
+
+    for (my $i = 0; $i < scalar @mistakes_magnitude; $i++)
+    {
+      my $mag = $mistakes_magnitude[$i];
+      if ($magnitude_strings{$mag})
+      {
+        $s .= "<tr><td style='height: 50px'></td></tr>\n";
+        $s .= $this->makeMistakeItem($mag, $mistake_elements_length);
+        $s .= "<tr>\n";
+        $s .= "<th>Mistake</th>\n";
+        $s .= "<th>Magnitude</th>\n";
+        $s .= "<th>Game</th>\n";
+        $s .= "<th>Play</th>\n";
+        $s .= "<th>Comment</th>\n";
+        $s .= "</tr>\n";
+        $s .= $magnitude_strings{$mag};
+      }
+    }
+
+    if ($html && scalar @list > 0)
+    {
+      $s .= "</tbody>\n</table>\n";
+    }
+
     $s .= "\n";
   }
   else

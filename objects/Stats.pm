@@ -152,14 +152,28 @@ sub toString
     }
   }
   $s .= ("_" x ($tot+2)) . "\n\n";
+
+  $s .= "\n".Constants::MISTAKE_ITEM_LIST_PLAYER . "\n";
+  for (my $i = 0; $i < scalar @{$this->{'entries'}}; $i++)
+  {
+    my $stat_item = ${$this->{'entries'}}[$i];
+    if ($stat_item->{'type'} eq Constants::MISTAKE_ITEM_LIST_PLAYER)
+    {
+      $s .= $stat_item->toString($num);
+    }
+  }
+
+  $s .= "\n\n\n".Constants::MISTAKE_ITEM_LIST_OPP . "\n";
+  for (my $i = 0; $i < scalar @{$this->{'entries'}}; $i++)
+  {
+    my $stat_item = ${$this->{'entries'}}[$i];
+    if ($stat_item->{'type'} eq Constants::MISTAKE_ITEM_LIST_OPP)
+    {
+      $s .= $stat_item->toString($num);
+    }
+  }
+
   return $s; 
-}
-
-sub toStringHTML
-{
-  my $this = shift;
-
-  return $this->toString;
 }
 
 1;

@@ -51,6 +51,14 @@ This statistic refers to the percentage of racks that contain all seven (or a ce
 
 This statistic is only meaningful for players with a significant percentage of their full racks recorded.
 
+# Mistakes
+
+The mistakes statistic if a self-reported statistic that is divided into 5 categories (knowledge, finding, vision, tactics, strategy). To mark a move as a mistake in your annotated game, include the tag of the mistake in the comment of the move. You can also tag the magnitude (large, medium, or small) of the mistake which will organize your mistakes by magnitude in the mistakes table. For example, if you missed a bingo because you haven't studied it yet, that would probably be a large mistake due to word knowledge (called 'knowledge' in this case) which you can tag by adding the following in your comment of the move:
+
+\#knowledge \#large
+
+The tags are case insensitive and can appear anywhere in any order in the comment. If you only include the magntitude tag, it will not be counted as a mistake at all. If you only include the mistake tag, the mistake will appear under the 'Unspecified' category in the mistakes table.
+
 # Leaderboards
 
 The <a href='http://randomracer.com'>randomracer.com</a> website maintains <a href='http://randomracer.com/leaderboard.html'>leaderboards</a> for all of the statistics that are shown in a search. Only players with 50 or more annotated games are included in the leaderboards. With the exception of the number of games, all statistics are listed as per game unless otherwise stated in the title.
