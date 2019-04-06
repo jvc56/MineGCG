@@ -536,7 +536,7 @@ sub getMistakes
           my @mistake_magnitudes = Constants::MISTAKES_MAGNITUDE;
           foreach my $mag (@mistake_magnitudes)
           {
-            if ($comment =~ /#$mag/i)
+            if ($comment =~ /#$cat$mag/i)
             {
               $mistake_mag = $mag;
               last;
