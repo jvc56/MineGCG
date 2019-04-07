@@ -46,11 +46,11 @@ use constant MISTAKES_MAGNITUDE =>
 
 use constant MISTAKE_COLORS =>
 {
-  'Knowledge' => 'yellow',
-  'Finding'   => 'purple',
-  'Vision'    => 'cyan',
-  'Tactics'   => 'red',
-  'Strategy'  => 'green',
+  'Knowledge' => 'yellow', #purple
+  'Finding'   => 'cyan', #blue
+  'Vision'    => 'orange', #orange
+  'Tactics'   => 'red', #red
+  'Strategy'  => 'green', #green
 };
 
 

@@ -1282,6 +1282,8 @@ sub makeMistakeItem
   my $this         = shift;
   my $mistake_item = shift;
   my $is_title_row = shift;
+  my $num_mistakes = shift;
+
   my $html         = $this->{'html'};
 
   my $s = "";
@@ -1291,7 +1293,7 @@ sub makeMistakeItem
     if ($html)
     {
       $s .= "<tr>\n";
-      $s .= "<td colspan='$is_title_row' align='center'><b>$mistake_item Mistakes</b></td>\n";
+      $s .= "<td colspan='$is_title_row' align='center'><b>$mistake_item Mistakes ($num_mistakes)</b></td>\n";
       $s .= "</tr>\n";
     }
     else
@@ -1368,9 +1370,12 @@ sub toString
 
     my %magnitude_strings = ();
 
+    my %mistakes_magnitude_count = ();
+
     foreach my $mag (@mistakes_magnitude)
     {
       $magnitude_strings{$mag} = "";
+      $mistakes_magnitude_count{$mag} = 0;
     }
 
     my $mistake_elements_length;
@@ -1380,6 +1385,7 @@ sub toString
       my @mistake_elements = @{$list[$i]};
       $mistake_elements_length = scalar @mistake_elements;
       $magnitude_strings{$mistake_elements[1]} .= $this->makeMistakeItem($list[$i], 0);
+      $mistakes_magnitude_count{$mistake_elements[1]}++;
     }
 
     for (my $i = 0; $i < scalar @mistakes_magnitude; $i++)
@@ -1388,7 +1394,7 @@ sub toString
       if ($magnitude_strings{$mag})
       {
         $s .= "<tr><td style='height: 50px'></td></tr>\n";
-        $s .= $this->makeMistakeItem($mag, $mistake_elements_length);
+        $s .= $this->makeMistakeItem($mag, $mistake_elements_length, $mistakes_magnitude_count{$mag});
         $s .= "<tr>\n";
         $s .= "<th>Mistake</th>\n";
         $s .= "<th>Magnitude</th>\n";
