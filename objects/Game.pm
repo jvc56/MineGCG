@@ -500,10 +500,8 @@ sub getNumMistakes
       my $comment = $move->{'comment'};
       foreach my $cat (@categories)
       {
-        if ($comment =~ /#$cat/i)
-        {
-          $mistakes{$cat}++;
-        }
+        my @matches = ($comment =~ /#$cat/gi);
+        $mistakes{$cat} += scalar @matches;
       }
     }
   }
@@ -530,16 +528,16 @@ sub getMistakes
       my $comment = $move->{'comment'};
       foreach my $cat (@categories)
       {
-        if ($comment =~ /#$cat/i)
+        my @matches = ($comment =~ /#($cat\S+)/gi);
+        foreach my $m (@matches)
         {
           my $mistake_mag;
           my @mistake_magnitudes = Constants::MISTAKES_MAGNITUDE;
           foreach my $mag (@mistake_magnitudes)
           {
-            if ($comment =~ /#$cat$mag/i)
+            if (uc ($cat . $mag) eq uc $m)
             {
               $mistake_mag = $mag;
-              last;
             }
           }
           if (!$mistake_mag)
@@ -547,7 +545,6 @@ sub getMistakes
             $mistake_mag = Constants::UNSPECIFIED_MISTAKE_NAME;
           }
           push @mistakes_list, [$cat, $mistake_mag, $this->getReadableName(), $move->toString($this->readableMove($move)), $comment];
-          last;
         }
       }
     }
