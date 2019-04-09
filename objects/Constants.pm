@@ -12,7 +12,7 @@ use constant RR_URL_PREFIX                    => 'http://randomracer.com/cgi-bin
 use constant CACHE_URL_PREFIX                 => 'http://randomracer.com/cache/';
 use constant ANNOTATED_GAMES_URL_PREFIX       => 'http://www.cross-tables.com/anno.php?p=';
 use constant SINGLE_ANNOTATED_GAME_URL_PREFIX => 'http://www.cross-tables.com/annotated.php?u=';
-use constant CROSS_TABLES_COUNTRY_PREFIX      => 'https://www.cross-tables.com/bycountry.php?country=';
+use constant CROSS_TABLES_COUNTRY_PREFIX      => 'http://www.cross-tables.com/bycountry.php?country=';
 use constant ANNOTATED_GAMES_PAGE_NAME        => './downloads/anno_page.html';
 use constant QUERY_RESULTS_PAGE_NAME          => './downloads/query_results.html';
 use constant NON_TOURNAMENT_GAME              => 'NONTOURNAMENT';
@@ -34,6 +34,7 @@ use constant MISTAKES =>
   'Vision',
   'Tactics',
   'Strategy',
+  'Endgame',
 );
 
 use constant MISTAKES_MAGNITUDE =>
@@ -46,11 +47,12 @@ use constant MISTAKES_MAGNITUDE =>
 
 use constant MISTAKE_COLORS =>
 {
-  'Knowledge' => 'yellow', #purple
-  'Finding'   => 'cyan', #blue
-  'Vision'    => 'orange', #orange
-  'Tactics'   => 'red', #red
-  'Strategy'  => 'green', #green
+  'Knowledge' => 'yellow',
+  'Finding'   => 'cyan',
+  'Vision'    => 'orange',
+  'Tactics'   => 'red',
+  'Strategy'  => 'green',
+  'Endgame'   => 'purple',
 };
 
 
@@ -139,6 +141,7 @@ use constant STATS_ITEMS =>
     {name => 'Bingoless Games',                   type => STAT_ITEM_PLAYER},
     {name => 'Bonus Square Coverage',             type => STAT_ITEM_PLAYER},
     {name => 'Phony Plays',                       type => STAT_ITEM_PLAYER},
+    {name => 'Successful Challenge %',            type => STAT_ITEM_PLAYER},
     {name => 'Comments',                          type => STAT_ITEM_PLAYER},
     {name => 'Comments Word Length',              type => STAT_ITEM_PLAYER},
     {name => 'Mistakes',                          type => STAT_ITEM_PLAYER},
@@ -161,6 +164,7 @@ use constant STATS_ITEMS =>
     {name => 'Bingoless Games',                   type => STAT_ITEM_OPP},
     {name => 'Bonus Square Coverage',             type => STAT_ITEM_OPP},
     {name => 'Phony Plays',                       type => STAT_ITEM_OPP},
+    {name => 'Successful Challenge %',            type => STAT_ITEM_OPP},
     {name => 'Comments',                          type => STAT_ITEM_OPP},
     {name => 'Comments Word Length',              type => STAT_ITEM_OPP},
     {name => 'Mistakes',                          type => STAT_ITEM_OPP},

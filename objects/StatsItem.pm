@@ -173,6 +173,10 @@ sub addGame
   {
     $this->__updateNumPhonyPlays($game, $this_player);
   }
+  elsif ($name eq "Successful Challenge %")
+  {
+    $this->__updateSuccessfulChallenge($game, $this_player);
+  }
   elsif ($name eq "Comments")
   {
     $this->__updateNumComments($game);
@@ -923,6 +927,33 @@ sub __updateNumPhonyPlays
 
 }
 
+sub __updateSuccessfulChallenge
+{
+  my $this   = shift;
+  my $game   = shift;
+  my $player = shift;
+
+  if (!$this->{'init'})
+  {
+    $this->{'init'} = 1;
+    $this->{'single'} = 1;
+  }
+
+  my $chal = $game->getNumChallenges($player);
+
+  my $pcw = $chal->{Constants::PLAYER_CHALLENGE_WON};
+  my $pcl = $chal->{Constants::PLAYER_CHALLENGE_LOST};
+
+  if ($pcw + $pcl == 0)
+  {
+    return;
+  }
+
+  $this->{'challenges'}            += $pcw + $pcl;
+  $this->{'successful_challenges'} += $pcw;
+  $this->{'total'}                  = sprintf "%.4f", $this->{'successful_challenges'} / $this->{'challenges'};
+}
+
 sub __updateNumComments
 {
   my $this   = shift;
@@ -1393,15 +1424,25 @@ sub toString
       my $mag = $mistakes_magnitude[$i];
       if ($magnitude_strings{$mag})
       {
-        $s .= "<tr><td style='height: 50px'></td></tr>\n";
+        if ($html)
+        {
+          $s .= "<tr><td style='height: 50px'></td></tr>\n";
+        }
         $s .= $this->makeMistakeItem($mag, $mistake_elements_length, $mistakes_magnitude_count{$mag});
-        $s .= "<tr>\n";
-        $s .= "<th>Mistake</th>\n";
-        $s .= "<th>Magnitude</th>\n";
-        $s .= "<th>Game</th>\n";
-        $s .= "<th>Play</th>\n";
-        $s .= "<th>Comment</th>\n";
-        $s .= "</tr>\n";
+        if ($html)
+        {
+          $s .= "<tr>\n";
+          $s .= "<th>Mistake</th>\n";
+          $s .= "<th>Magnitude</th>\n";
+          $s .= "<th>Game</th>\n";
+          $s .= "<th>Play</th>\n";
+          $s .= "<th>Comment</th>\n";
+          $s .= "</tr>\n";
+        }
+        else
+        {
+          $s .= "\n\n\n";
+        }
         $s .= $magnitude_strings{$mag};
       }
     }
