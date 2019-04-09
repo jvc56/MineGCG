@@ -141,7 +141,8 @@ use constant STATS_ITEMS =>
     {name => 'Bingoless Games',                   type => STAT_ITEM_PLAYER},
     {name => 'Bonus Square Coverage',             type => STAT_ITEM_PLAYER},
     {name => 'Phony Plays',                       type => STAT_ITEM_PLAYER},
-    {name => 'Successful Challenge %',            type => STAT_ITEM_PLAYER},
+    {name => 'Challenge Percentage',              type => STAT_ITEM_PLAYER},
+    {name => 'Defending Challenge Percentage',    type => STAT_ITEM_PLAYER},
     {name => 'Comments',                          type => STAT_ITEM_PLAYER},
     {name => 'Comments Word Length',              type => STAT_ITEM_PLAYER},
     {name => 'Mistakes',                          type => STAT_ITEM_PLAYER},
@@ -164,7 +165,8 @@ use constant STATS_ITEMS =>
     {name => 'Bingoless Games',                   type => STAT_ITEM_OPP},
     {name => 'Bonus Square Coverage',             type => STAT_ITEM_OPP},
     {name => 'Phony Plays',                       type => STAT_ITEM_OPP},
-    {name => 'Successful Challenge %',            type => STAT_ITEM_OPP},
+    {name => 'Challenge Percentage',              type => STAT_ITEM_OPP},
+    {name => 'Defending Challenge Percentage',    type => STAT_ITEM_OPP},
     {name => 'Comments',                          type => STAT_ITEM_OPP},
     {name => 'Comments Word Length',              type => STAT_ITEM_OPP},
     {name => 'Mistakes',                          type => STAT_ITEM_OPP},
@@ -285,7 +287,7 @@ use constant TRIPLE_LETTER  => '"';
 use constant DOUBLE_WORD    => '-';
 use constant TRIPLE_WORD    => '=';
 
-use constant TITLE_WIDTH   => 30;
+use constant TITLE_WIDTH   => 40;
 use constant AVERAGE_WIDTH => 20;
 use constant TOTAL_WIDTH   => 20;
 

@@ -173,9 +173,13 @@ sub addGame
   {
     $this->__updateNumPhonyPlays($game, $this_player);
   }
-  elsif ($name eq "Successful Challenge %")
+  elsif ($name eq "Challenge Percentage")
   {
-    $this->__updateSuccessfulChallenge($game, $this_player);
+    $this->__updateChallengePercentage($game, $this_player);
+  }
+  elsif ($name eq "Defending Challenge Percentage")
+  {
+    $this->__updateDefendingChallengePercentage($game, $this_player);
   }
   elsif ($name eq "Comments")
   {
@@ -927,7 +931,7 @@ sub __updateNumPhonyPlays
 
 }
 
-sub __updateSuccessfulChallenge
+sub __updateChallengePercentage
 {
   my $this   = shift;
   my $game   = shift;
@@ -951,6 +955,33 @@ sub __updateSuccessfulChallenge
 
   $this->{'challenges'}            += $pcw + $pcl;
   $this->{'successful_challenges'} += $pcw;
+  $this->{'total'}                  = sprintf "%.4f", $this->{'successful_challenges'} / $this->{'challenges'};
+}
+
+sub __updateDefendingChallengePercentage
+{
+  my $this   = shift;
+  my $game   = shift;
+  my $player = shift;
+
+  if (!$this->{'init'})
+  {
+    $this->{'init'} = 1;
+    $this->{'single'} = 1;
+  }
+
+  my $chal = $game->getNumChallenges($player);
+
+  my $ocw = $chal->{Constants::OPP_CHALLENGE_WON};
+  my $ocl = $chal->{Constants::OPP_CHALLENGE_LOST};
+
+  if ($ocw + $ocl == 0)
+  {
+    return;
+  }
+
+  $this->{'challenges'}            += $ocw + $ocl;
+  $this->{'successful_challenges'} += $ocl;
   $this->{'total'}                  = sprintf "%.4f", $this->{'successful_challenges'} / $this->{'challenges'};
 }
 
