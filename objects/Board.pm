@@ -31,7 +31,7 @@ sub new
   return $self;
 }
 
-sub placeNewTile
+sub __placeNewTile
 {
   my $this = shift;
 
@@ -83,7 +83,7 @@ sub addMoves
         }
         if ($c ne '.' && !$this->{'grid'}[$pos]->{'has_tile'})
         {
-          $this->placeNewTile($c, $pos, $turn, $play_number);
+          $this->__placeNewTile($c, $pos, $turn, $play_number);
           push @added_positions, $pos;
           $dotted_word .= $c;
           if ($pos == 112)

@@ -73,51 +73,51 @@ sub mine
   my $opponent_name_no_underscore = $opponent_name;
   $opponent_name_no_underscore =~ s/_/ /g;
 
-  print_or_append( "\nStatistics for $player_name_no_underscore\n\n\n", $html, 0);
+  __print_or_append( "\nStatistics for $player_name_no_underscore\n\n\n", $html, 0);
   
-  print_or_append( "\nSEARCH PARAMETERS: \n", $html, 0);
+  __print_or_append( "\nSEARCH PARAMETERS: \n", $html, 0);
   
-  print_or_append( "\n  Player:        $player_name_no_underscore", $html, 0);
+  __print_or_append( "\n  Player:        $player_name_no_underscore", $html, 0);
 
 
-  print_or_append( "\n  Game type:     ", $html, 0);
+  __print_or_append( "\n  Game type:     ", $html, 0);
 
-  if (uc $cort eq 'C') {print_or_append( "CLUB OR CASUAL", $html, 0);}
-  elsif (uc $cort eq 'T') {print_or_append( "TOURNAMENT", $html, 0);}
-  else {print_or_append( "-", $html, 0);}
+  if (uc $cort eq 'C') {__print_or_append( "CLUB OR CASUAL", $html, 0);}
+  elsif (uc $cort eq 'T') {__print_or_append( "TOURNAMENT", $html, 0);}
+  else {__print_or_append( "-", $html, 0);}
 
-  print_or_append( "\n  Lexicon:       ", $html, 0);
+  __print_or_append( "\n  Lexicon:       ", $html, 0);
 
-  if (!$lexicon) {print_or_append( "-", $html, 0);}
-  else {print_or_append( $lexicon, $html, 0);}
+  if (!$lexicon) {__print_or_append( "-", $html, 0);}
+  else {__print_or_append( $lexicon, $html, 0);}
 
-  print_or_append( "\n  Tournament ID: ", $html, 0);
+  __print_or_append( "\n  Tournament ID: ", $html, 0);
   
-  if ($tourney_id) {print_or_append( $tourney_id, $html, 0);}
-  else {print_or_append( "-", $html, 0);}
+  if ($tourney_id) {__print_or_append( $tourney_id, $html, 0);}
+  else {__print_or_append( "-", $html, 0);}
 
-  print_or_append( "\n  Game ID:       ", $html, 0);
+  __print_or_append( "\n  Game ID:       ", $html, 0);
   
-  if ($single_game_id) {print_or_append( $single_game_id, $html, 0);}
-  else {print_or_append( "-", $html, 0);}
+  if ($single_game_id) {__print_or_append( $single_game_id, $html, 0);}
+  else {__print_or_append( "-", $html, 0);}
 
-  print_or_append( "\n  Opponent:      ", $html, 0);
+  __print_or_append( "\n  Opponent:      ", $html, 0);
   
-  if ($opponent_name_no_underscore) {print_or_append( $opponent_name_no_underscore, $html, 0);}
-  else {print_or_append( "-", $html, 0);}
+  if ($opponent_name_no_underscore) {__print_or_append( $opponent_name_no_underscore, $html, 0);}
+  else {__print_or_append( "-", $html, 0);}
 
-  print_or_append( "\n  Start Date:    ", $html, 0);
+  __print_or_append( "\n  Start Date:    ", $html, 0);
   
-  if ($startdate) {print_or_append( $startdate, $html, 0);}
-  else {print_or_append( "-", $html, 0);}
+  if ($startdate) {__print_or_append( $startdate, $html, 0);}
+  else {__print_or_append( "-", $html, 0);}
 
-  print_or_append( "\n  End Date:      ", $html, 0);
+  __print_or_append( "\n  End Date:      ", $html, 0);
   
-  if ($enddate) {print_or_append( $enddate, $html, 0);}
-  else {print_or_append( "-", $html, 0);}
+  if ($enddate) {__print_or_append( $enddate, $html, 0);}
+  else {__print_or_append( "-", $html, 0);}
   
 
-  print_or_append( "\n\n\n", $html, 0);
+  __print_or_append( "\n\n\n", $html, 0);
 
   if ($html)
   {
@@ -133,16 +133,16 @@ sub mine
     my $opening_mark_tag = "<mark style='background-color: ";
     my $closing_mark_tag = "</mark>";  
 
-    print_or_append( "COLOR KEY:\n\n", $html, 0);
-    print_or_append( "  $opening_mark_tag $tt_color'>Triple Triple$closing_mark_tag\n\n", $html, 0);
-    print_or_append( "  $opening_mark_tag $na_color'>Bingo Nine or Above$closing_mark_tag\n\n", $html, 0);
-    print_or_append( "  $opening_mark_tag $im_color'>Improbable$closing_mark_tag\n\n", $html, 0);
-    print_or_append( "  $opening_mark_tag $tt_na_color'>Triple Triple and Bingo Nine or Above$closing_mark_tag\n\n", $html, 0);
-    print_or_append( "  $opening_mark_tag $im_na_color'>Improbable and Bingo Nine or Above$closing_mark_tag\n\n", $html, 0);
-    print_or_append( "  $opening_mark_tag $im_tt_color'>Triple Triple and Improbable$closing_mark_tag\n\n", $html, 0);
-    print_or_append( "  $opening_mark_tag $at_color'>Triple Triple and Bingo Nine or Above and Improbable$closing_mark_tag\n\n", $html, 0);
+    __print_or_append( "COLOR KEY:\n\n", $html, 0);
+    __print_or_append( "  $opening_mark_tag $tt_color'>Triple Triple$closing_mark_tag\n\n", $html, 0);
+    __print_or_append( "  $opening_mark_tag $na_color'>Bingo Nine or Above$closing_mark_tag\n\n", $html, 0);
+    __print_or_append( "  $opening_mark_tag $im_color'>Improbable$closing_mark_tag\n\n", $html, 0);
+    __print_or_append( "  $opening_mark_tag $tt_na_color'>Triple Triple and Bingo Nine or Above$closing_mark_tag\n\n", $html, 0);
+    __print_or_append( "  $opening_mark_tag $im_na_color'>Improbable and Bingo Nine or Above$closing_mark_tag\n\n", $html, 0);
+    __print_or_append( "  $opening_mark_tag $im_tt_color'>Triple Triple and Improbable$closing_mark_tag\n\n", $html, 0);
+    __print_or_append( "  $opening_mark_tag $at_color'>Triple Triple and Bingo Nine or Above and Improbable$closing_mark_tag\n\n", $html, 0);
     
-    print_or_append( "\n\n", $html, 0);
+    __print_or_append( "\n\n", $html, 0);
   }
 
   my $all_stats = Stats->new();
@@ -185,39 +185,39 @@ sub mine
         $player_is_first = 1;
         if ($player_two_name ne $player_name)
         {
-          print_or_append( "\nERROR:  Matching player name not found\nFILE:   $full_game_file_name\n", $html, 1, $player_name);
+          __print_or_append( "\nERROR:  Matching player name not found\nFILE:   $full_game_file_name\n", $html, 1, $player_name);
           return;
         }
       }
 
       if ($single_game_id && $single_game_id ne $id)
       {
-        if ($verbose) {print_or_append( "Game $full_game_file_name is not the specified game\n", $html, 0, $player_name);}
+        if ($verbose) {__print_or_append( "Game $full_game_file_name is not the specified game\n", $html, 0, $player_name);}
         next;
       }
       if ($tourney_id && $game_tourney_id ne $tourney_id)
       {
-        if ($verbose) {print_or_append( "Game $full_game_file_name is not in the specified tournament\n", $html, 0, $player_name);}
+        if ($verbose) {__print_or_append( "Game $full_game_file_name is not in the specified tournament\n", $html, 0, $player_name);}
         next;
       }
       if ($opponent_name && $opponent_name ne $player_one_name && $opponent_name ne $player_two_name)
       {
-        if ($verbose) {print_or_append( "Game $full_game_file_name is not against the specified opponent\n", $html, 0, $player_name);}
+        if ($verbose) {__print_or_append( "Game $full_game_file_name is not against the specified opponent\n", $html, 0, $player_name);}
         next;
       }
       if (($startdate && $date_sanitized < $startdate) || ($enddate && $date_sanitized > $enddate))
       {
-        if ($verbose) {print_or_append( "Game $full_game_file_name is not in the specified timeframe\n", $html, 0, $player_name);}
+        if ($verbose) {__print_or_append( "Game $full_game_file_name is not in the specified timeframe\n", $html, 0, $player_name);}
         next;  
       }
       if ($lexicon && $this_lexicon ne $lexicon)
       {
-        if ($verbose) {print_or_append( "Game $full_game_file_name is not in the specified lexicon\n", $html, 0, $player_name);}
+        if ($verbose) {__print_or_append( "Game $full_game_file_name is not in the specified lexicon\n", $html, 0, $player_name);}
         next;  
       }
       if ($blacklisted_tournaments->{$game_tourney_id})
       {
-        print_or_append( "Game $full_game_file_name is from a blacklisted tournament\n", $html, 0, $player_name);
+        __print_or_append( "Game $full_game_file_name is from a blacklisted tournament\n", $html, 0, $player_name);
         next;
       }
 
@@ -226,7 +226,7 @@ sub mine
       # Check for casual/club or only tournament games
       if ( (uc $cort eq 'T' && !$is_tourney_game) || (uc $cort eq 'C' && $is_tourney_game))
       {
-        if ($verbose) {print_or_append( "Game $full_game_file_name is not the specified type\n", $html, 0, $player_name);}
+        if ($verbose) {__print_or_append( "Game $full_game_file_name is not the specified type\n", $html, 0, $player_name);}
         next;
       }
 
@@ -236,7 +236,7 @@ sub mine
         my $key = $game_tourney_id.'+'.$round_number;
         if($tourney_game_hash{$key})
         {
-          print_or_append( "\nGame $full_game_file_name is a duplicate\n", $html, 0, $player_name);
+          __print_or_append( "\nGame $full_game_file_name is a duplicate\n", $html, 0, $player_name);
           next;
         }
         $tourney_game_hash{$key} = 1;
@@ -244,21 +244,21 @@ sub mine
 
       if ($player_one_name eq $player_two_name)
       {
-        print_or_append( "\nERROR:  both players have the same name\nFILE:   $full_game_file_name\n", $html, 1, $player_name);
+        __print_or_append( "\nERROR:  both players have the same name\nFILE:   $full_game_file_name\n", $html, 1, $player_name);
         $num_errors++;
         next;
       }
 
       if (!$ext || $ext ne "gcg")
       {
-        print_or_append( "\nERROR:  invalid file extension\nFILE:   $full_game_file_name\n", $html, 1, $player_name);
+        __print_or_append( "\nERROR:  invalid file extension\nFILE:   $full_game_file_name\n", $html, 1, $player_name);
         $num_errors++;
         next;
       }
 
       if (!(-e $full_game_file_name))
       {
-        print_or_append( "\nERROR: no GCG found for index $full_game_file_name\n", $html, 1, $player_name);
+        __print_or_append( "\nERROR: no GCG found for index $full_game_file_name\n", $html, 1, $player_name);
         $num_errors++;
         next;
       }
@@ -295,7 +295,7 @@ sub mine
       }
       else
       {
-        print_or_append( "\nERROR:  no valid lexicon found\nFILE:   $full_game_file_name\n", $html, 1, $player_name);
+        __print_or_append( "\nERROR:  no valid lexicon found\nFILE:   $full_game_file_name\n", $html, 1, $player_name);
         $num_errors++;
         next;
       }
@@ -304,36 +304,36 @@ sub mine
       
       if (ref($game) ne "Game")
       {
-        print_or_append( "\nERROR:  $game", $html, 1, $player_name);
+        __print_or_append( "\nERROR:  $game", $html, 1, $player_name);
         $num_errors++;
         next;
       }
       elsif ($game->{'warnings'})
       {
-        print_or_append( "\n" . $game->{'warnings'}, $html, 0, $player_name);
+        __print_or_append( "\n" . $game->{'warnings'}, $html, 0, $player_name);
         $num_warnings++;
       }
 
       # if ($verbose)
       # {
-      #  print_or_append( "\nData structures for $full_game_file_name\n\n", $html, 0);
-      #  print_or_append( $game->toString(), $html, 0);
+      #  __print_or_append( "\nData structures for $full_game_file_name\n\n", $html, 0);
+      #  __print_or_append( $game->toString(), $html, 0);
       #  $single_game_stats->addGame($game);
-      #  print_or_append( $single_game_stats->toString(), $html, 0);
+      #  __print_or_append( $single_game_stats->toString(), $html, 0);
       #  $single_game_stats->resetStats();
       # }
       
       my $possible_warnings = $all_stats->addGame($game);
       if ($possible_warnings)
       {
-        print_or_append($possible_warnings, $html, 0, $player_name);
+        __print_or_append($possible_warnings, $html, 0, $player_name);
         $num_warnings++;
       }
       $at_least_one = 1;
     }
   }
 
-  print_or_append($stats_note, $html, 0);
+  __print_or_append($stats_note, $html, 0);
 
   if ($at_least_one)
   {
@@ -348,12 +348,12 @@ sub mine
   }
   else
   {
-    print_or_append( "\nNo valid games found\n", $html, 0);
+    __print_or_append( "\nNo valid games found\n", $html, 0);
   }
-  print_or_append( "\n", $html, 0);
-  print_or_append( "Errors:   $num_errors\n", $html, 0);
-  print_or_append( "Warnings: $num_warnings\n", $html, 0);
-  print_or_append( "\n", $html, 0);
+  __print_or_append( "\n", $html, 0);
+  __print_or_append( "Errors:   $num_errors\n", $html, 0);
+  __print_or_append( "Warnings: $num_warnings\n", $html, 0);
+  __print_or_append( "\n", $html, 0);
 
   if ($statsdump && $all_stats->{'num_games'} >= Constants::LEADERBOARD_MIN_GAMES)
   {
@@ -424,7 +424,7 @@ sub mine
   }
 }
 
-sub print_or_append
+sub __print_or_append
 {
   my $addition    = shift;
   my $html        = shift;
