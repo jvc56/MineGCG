@@ -63,187 +63,187 @@ sub addGame
 
   if ($name eq "Bingos")
   {
-    $this->__updateBingoList($game, $this_player);
+    $this->updateBingoList($game, $this_player);
   }
   elsif ($name eq "Triple Triples")
   {
-    $this->__updateTripleTripleList($game, $this_player);
+    $this->updateTripleTripleList($game, $this_player);
   }
   elsif ($name eq "Bingo Nines or Above")
   {
-    $this->__updateBingoNinesOrAboveList($game, $this_player);
+    $this->updateBingoNinesOrAboveList($game, $this_player);
   }
   elsif ($name eq "Challenged Phonies")
   {
-    $this->__updatePhoniesFormed($game, $this_player, 1);
+    $this->updatePhoniesFormed($game, $this_player, 1);
   }
   elsif ($name eq "Unchallenged Phonies")
   {
-    $this->__updatePhoniesFormed($game, $this_player, 0);
+    $this->updatePhoniesFormed($game, $this_player, 0);
   }
   elsif ($name eq "Plays That Were Challenged")
   {
-    $this->__updatePlaysChallenged($game, $this_player);
+    $this->updatePlaysChallenged($game, $this_player);
   }
   elsif ($name eq "Games")
   {
-    $this->__updateNumGames($game);
+    $this->updateNumGames($game);
   }
   elsif ($name eq "Total Turns")
   {
-    $this->__updateNumTurns($game, -1);
+    $this->updateNumTurns($game, -1);
   }
   elsif ($name eq "Challenges")
   {
-    $this->__updateNumChallenges($game, $this_player);
+    $this->updateNumChallenges($game, $this_player);
   }
   elsif ($name eq "Wins")
   {
-    $this->__updateNumWins($game, $this_player);
+    $this->updateNumWins($game, $this_player);
   }
   elsif ($name eq "Score")
   {
-    $this->__updateScore($game, $this_player);
+    $this->updateScore($game, $this_player);
   }
   elsif ($name eq "Turns")
   {
-    $this->__updateNumTurns($game, $this_player);
+    $this->updateNumTurns($game, $this_player);
   }
   elsif ($name eq "Score per Turn")
   {
-    $this->__updateScorePerTurn($game, $this_player);
+    $this->updateScorePerTurn($game, $this_player);
   }
   elsif ($name eq "Firsts")
   {
-    $this->__updateNumFirsts($game, $this_player);
+    $this->updateNumFirsts($game, $this_player);
   }
   elsif ($name eq "Full Rack per Turn")
   {
-    $this->__updateFullRackPerTurn($game, $this_player);
+    $this->updateFullRackPerTurn($game, $this_player);
   }
   elsif ($name eq "High Game")
   {
-    $this->__updateHighGame($game, $this_player);
+    $this->updateHighGame($game, $this_player);
   }
   elsif ($name eq "Low Game")
   {
-    $this->__updateLowGame($game, $this_player);
+    $this->updateLowGame($game, $this_player);
   }
   elsif ($name eq "Bingos Played")
   {
-    $this->__updateNumBingosPlayed($game, $this_player);
+    $this->updateNumBingosPlayed($game, $this_player);
   }
   elsif ($name eq "Bingo Probabilities")
   {
-    $this->__updateBingoProbabilities($game, $this_player);
+    $this->updateBingoProbabilities($game, $this_player);
   }
   elsif ($name eq "Tiles Played")
   {
-    $this->__updateNumTilesPlayed($game, $this_player);
+    $this->updateNumTilesPlayed($game, $this_player);
   }
   elsif ($name eq "Power Tiles Played")
   {
-    $this->__updateNumPowerTilesPlayed($game, $this_player);
+    $this->updateNumPowerTilesPlayed($game, $this_player);
   }
   elsif ($name eq "Power Tiles Stuck With")
   {
-    $this->__updateNumPowerTilesStuckWith($game, $this_player);
+    $this->updateNumPowerTilesStuckWith($game, $this_player);
   }
   elsif ($name eq "Es Played")
   {
-    $this->__updateNumEsPlayed($game, $this_player);
+    $this->updateNumEsPlayed($game, $this_player);
   }
   elsif ($name eq "Triple Triples Played")
   {
-    $this->__updateNumTripleTriplesPlayed($game, $this_player);
+    $this->updateNumTripleTriplesPlayed($game, $this_player);
   }
   elsif ($name eq "Bingoless Games")
   {
-    $this->__updateBingolessGames($game, $this_player);
+    $this->updateBingolessGames($game, $this_player);
   }
   elsif ($name eq "Turns With a Blank")
   {
-    $this->__updateTurnsWithBlank($game, $this_player);
+    $this->updateTurnsWithBlank($game, $this_player);
   }
   elsif ($name eq "Bonus Square Coverage")
   {
-    $this->__updateNumBonusSquaresCovered($game, $this_player);
+    $this->updateNumBonusSquaresCovered($game, $this_player);
   }
   elsif ($name eq "Phony Plays")
   {
-    $this->__updateNumPhonyPlays($game, $this_player);
+    $this->updateNumPhonyPlays($game, $this_player);
   }
   elsif ($name eq "Challenge Percentage")
   {
-    $this->__updateChallengePercentage($game, $this_player);
+    $this->updateChallengePercentage($game, $this_player);
   }
   elsif ($name eq "Defending Challenge Percentage")
   {
-    $this->__updateDefendingChallengePercentage($game, $this_player);
+    $this->updateDefendingChallengePercentage($game, $this_player);
   }
   elsif ($name eq "Comments")
   {
-    $this->__updateNumComments($game);
+    $this->updateNumComments($game);
   }
   elsif ($name eq "Comments Word Length")
   {
-    $this->__updateNumCommentsWordLength($game);
+    $this->updateNumCommentsWordLength($game);
   }
   elsif ($name eq "All Double Letters Covered")
   {
-    $this->__updateAllDoubleLettersCovered($game);
+    $this->updateAllDoubleLettersCovered($game);
   }
   elsif ($name eq "All Double Words Covered")
   {
-    $this->__updateAllDoubleWordsCovered($game);
+    $this->updateAllDoubleWordsCovered($game);
   }
   elsif ($name eq "All Triple Letters Covered")
   {
-    $this->__updateAllTripleLettersCovered($game);
+    $this->updateAllTripleLettersCovered($game);
   }
   elsif ($name eq "All Triple Words Covered")
   {
-    $this->__updateAllTripleWordsCovered($game);
+    $this->updateAllTripleWordsCovered($game);
   }
   elsif ($name eq "High Scoring")
   {
-    $this->__updateHighScoring($game);
+    $this->updateHighScoring($game);
   }
   elsif ($name eq "Combined High Scoring")
   {
-    $this->__updateCombinedHighScoring($game);
+    $this->updateCombinedHighScoring($game);
   }
   elsif ($name eq "Combined Low Scoring")
   {
-    $this->__updateCombinedLowScoring($game);
+    $this->updateCombinedLowScoring($game);
   }
   elsif ($name eq "Ties")
   {
-    $this->__updateTies($game);
+    $this->updateTies($game);
   }
   elsif ($name eq "One Player Plays Every Power Tile")
   {
-    $this->__updateAllPowerTilesPlayed($game);
+    $this->updateAllPowerTilesPlayed($game);
   }
   elsif ($name eq "One Player Plays Every E")
   {
-    $this->__updateAllEsPlayed($game);
+    $this->updateAllEsPlayed($game);
   }
   elsif ($name eq "Many Challenges")
   {
-    $this->__updateManyChallenges($game);
+    $this->updateManyChallenges($game);
   }
   elsif ($name eq "Mistakes")
   {
-    $this->__updateNumMistakes($game, $this_player);
+    $this->updateNumMistakes($game, $this_player);
   }
   elsif ($name eq "Mistakes List")
   {
-    $this->__updateMistakesList($game, $this_player);
+    $this->updateMistakesList($game, $this_player);
   }
 }
 
-sub __updateBingoList
+sub updateBingoList
 {
   my $this = shift;
   my $game = shift;
@@ -258,7 +258,7 @@ sub __updateBingoList
   push @{$this->{'list'}}, @{$game->getBingos($this_player)};
 }
 
-sub __updateTripleTripleList
+sub updateTripleTripleList
 {
   my $this = shift;
   my $game = shift;
@@ -273,7 +273,7 @@ sub __updateTripleTripleList
   push @{$this->{'list'}}, @{$game->getTripleTriples($this_player)};
 }
 
-sub __updateBingoNinesOrAboveList
+sub updateBingoNinesOrAboveList
 {
   my $this = shift;
   my $game = shift;
@@ -288,7 +288,7 @@ sub __updateBingoNinesOrAboveList
   push @{$this->{'list'}}, @{$game->getBingoNinesOrAbove($this_player)};
 }
 
-sub __updatePhoniesFormed
+sub updatePhoniesFormed
 {
   my $this        = shift;
   my $game        = shift;
@@ -304,7 +304,7 @@ sub __updatePhoniesFormed
   push @{$this->{'list'}}, @{$game->getPhoniesFormed($this_player, $challenged)};
 }
 
-sub __updatePlaysChallenged
+sub updatePlaysChallenged
 {
   my $this = shift;
   my $game = shift;
@@ -319,7 +319,7 @@ sub __updatePlaysChallenged
   push @{$this->{'list'}}, @{$game->getPlaysChallenged($this_player)};
 }
 
-sub __updateNumGames
+sub updateNumGames
 {
   my $this = shift;
   my $game = shift;
@@ -332,7 +332,7 @@ sub __updateNumGames
   $this->{'total'}++;
 }
 
-sub __updateNumTurns
+sub updateNumTurns
 {
   my $this   = shift;
   my $game   = shift;
@@ -345,7 +345,7 @@ sub __updateNumTurns
   $this->{'total'} += $game->getNumTurns($player);
 }
 
-sub __updateNumWins
+sub updateNumWins
 {
   my $this = shift;
   my $game = shift;
@@ -359,7 +359,7 @@ sub __updateNumWins
   $this->{'total'} += $game->getNumWins($this_player);
 }
 
-sub __updateScore
+sub updateScore
 {
   my $this = shift;
   my $game = shift;
@@ -373,7 +373,7 @@ sub __updateScore
   $this->{'total'} += $game->getScore($this_player);
 }
 
-sub __updateScorePerTurn
+sub updateScorePerTurn
 {
   my $this = shift;
   my $game = shift;
@@ -390,7 +390,7 @@ sub __updateScorePerTurn
   $this->{'total'} = sprintf "%.4f", $this->{'total_score'} / $this->{'total_turns'};
 }
 
-sub __updateNumFirsts
+sub updateNumFirsts
 {
   my $this = shift;
   my $game = shift;
@@ -404,7 +404,7 @@ sub __updateNumFirsts
   $this->{'total'} += $game->getNumFirsts($this_player);
 }
 
-sub __updateFullRackPerTurn
+sub updateFullRackPerTurn
 {
   my $this = shift;
   my $game = shift;
@@ -421,7 +421,7 @@ sub __updateFullRackPerTurn
   $this->{'total'} = sprintf "%.4f", $this->{'total_full_racks'} / $this->{'total_turns'};
 }
 
-sub __updateHighGame
+sub updateHighGame
 {
   my $this = shift;
   my $game = shift;
@@ -450,7 +450,7 @@ sub __updateHighGame
   }
 }
 
-sub __updateLowGame
+sub updateLowGame
 {
   my $this = shift;
   my $game = shift;
@@ -479,7 +479,7 @@ sub __updateLowGame
   }
 }
 
-sub __updateNumBingosPlayed
+sub updateNumBingosPlayed
 {
   my $this = shift;
   my $game = shift;
@@ -529,7 +529,7 @@ sub __updateNumBingosPlayed
   $this->{'subitems'}->{Constants::FIFTEENS_TITLE}  += $bingos[14];
 }
 
-sub __updateBingoProbabilities
+sub updateBingoProbabilities
 {
   my $this = shift;
   my $game = shift;
@@ -653,7 +653,7 @@ sub __updateBingoProbabilities
   $this->{'subitems'}->{Constants::FIFTEENS_TITLE}  = sprintf "%.2f", ($this->{'prob_totals'}->{Constants::FIFTEENS_TITLE}  / $dems[8]);
 }
 
-sub __updateNumTilesPlayed
+sub updateNumTilesPlayed
 {
   my $this = shift;
   my $game = shift;
@@ -667,7 +667,7 @@ sub __updateNumTilesPlayed
   $this->{'total'} += $game->{'tiles_played'}->{$this_player}->{'total'};
 }
 
-sub __updateNumPowerTilesPlayed
+sub updateNumPowerTilesPlayed
 {
   my $this = shift;
   my $game = shift;
@@ -713,7 +713,7 @@ sub __updateNumPowerTilesPlayed
   $this->{'subitems'}->{'S'} += $ss;
 }
 
-sub __updateNumPowerTilesStuckWith
+sub updateNumPowerTilesStuckWith
 {
   my $this = shift;
   my $game = shift;
@@ -759,7 +759,7 @@ sub __updateNumPowerTilesStuckWith
   $this->{'subitems'}->{'S'} += $ss;
 }
 
-sub __updateNumEsPlayed
+sub updateNumEsPlayed
 {
   my $this = shift;
   my $game = shift;
@@ -773,7 +773,7 @@ sub __updateNumEsPlayed
   $this->{'total'} += $game->{'tiles_played'}->{$this_player}->{'E'};
 }
 
-sub __updateNumTripleTriplesPlayed
+sub updateNumTripleTriplesPlayed
 {
   my $this = shift;
   my $game = shift;
@@ -787,7 +787,7 @@ sub __updateNumTripleTriplesPlayed
   $this->{'total'} += $game->getNumTripleTriplesPlayed($this_player);
 }
 
-sub __updateBingolessGames
+sub updateBingolessGames
 {
   my $this = shift;
   my $game = shift;
@@ -801,7 +801,7 @@ sub __updateBingolessGames
   $this->{'total'} += $game->isBingoless($this_player);
 }
 
-sub __updateTurnsWithBlank
+sub updateTurnsWithBlank
 {
   my $this = shift;
   my $game = shift;
@@ -815,7 +815,7 @@ sub __updateTurnsWithBlank
   $this->{'total'} += $game->getTurnsWithBlank($this_player);
 }
 
-sub __updateNumBonusSquaresCovered
+sub updateNumBonusSquaresCovered
 {
   my $this = shift;
   my $game = shift;
@@ -855,7 +855,7 @@ sub __updateNumBonusSquaresCovered
   $this->{'subitems'}->{Constants::TRIPLE_WORD_TITLE}   += $tw;
 }
 
-sub __updateNumChallenges
+sub updateNumChallenges
 {
   my $this = shift;
   my $game = shift;
@@ -896,7 +896,7 @@ sub __updateNumChallenges
   $this->{'subitems'}->{Constants::OPP_CHALLENGE_LOST}    += $ocl;
 }
 
-sub __updateNumPhonyPlays
+sub updateNumPhonyPlays
 {
   my $this = shift;
   my $game = shift;
@@ -931,7 +931,7 @@ sub __updateNumPhonyPlays
 
 }
 
-sub __updateChallengePercentage
+sub updateChallengePercentage
 {
   my $this   = shift;
   my $game   = shift;
@@ -958,7 +958,7 @@ sub __updateChallengePercentage
   $this->{'total'}                  = sprintf "%.4f", $this->{'successful_challenges'} / $this->{'challenges'};
 }
 
-sub __updateDefendingChallengePercentage
+sub updateDefendingChallengePercentage
 {
   my $this   = shift;
   my $game   = shift;
@@ -985,7 +985,7 @@ sub __updateDefendingChallengePercentage
   $this->{'total'}                  = sprintf "%.4f", $this->{'successful_challenges'} / $this->{'challenges'};
 }
 
-sub __updateNumComments
+sub updateNumComments
 {
   my $this   = shift;
   my $game   = shift;
@@ -999,7 +999,7 @@ sub __updateNumComments
   $this->{'total'} += $game->getNumComments($player);
 }
 
-sub __updateNumCommentsWordLength
+sub updateNumCommentsWordLength
 {
   my $this   = shift;
   my $game   = shift;
@@ -1014,7 +1014,7 @@ sub __updateNumCommentsWordLength
 }
 
 
-sub __updateAllDoubleLettersCovered
+sub updateAllDoubleLettersCovered
 {
   my $this = shift;
   my $game = shift;
@@ -1031,7 +1031,7 @@ sub __updateAllDoubleLettersCovered
   }
 }
 
-sub __updateAllDoubleWordsCovered
+sub updateAllDoubleWordsCovered
 {
   my $this = shift;
   my $game = shift;
@@ -1048,7 +1048,7 @@ sub __updateAllDoubleWordsCovered
   }
 }
 
-sub __updateAllTripleLettersCovered
+sub updateAllTripleLettersCovered
 {
   my $this = shift;
   my $game = shift;
@@ -1065,7 +1065,7 @@ sub __updateAllTripleLettersCovered
   }
 }
 
-sub __updateAllTripleWordsCovered
+sub updateAllTripleWordsCovered
 {
   my $this = shift;
   my $game = shift;
@@ -1083,7 +1083,7 @@ sub __updateAllTripleWordsCovered
   }
 }
 
-sub __updateHighScoring
+sub updateHighScoring
 {
   my $this = shift;
   my $game = shift;
@@ -1100,7 +1100,7 @@ sub __updateHighScoring
   }
 }
 
-sub __updateCombinedHighScoring
+sub updateCombinedHighScoring
 {
   my $this = shift;
   my $game = shift;
@@ -1117,7 +1117,7 @@ sub __updateCombinedHighScoring
   }
 }
 
-sub __updateCombinedLowScoring
+sub updateCombinedLowScoring
 {
   my $this = shift;
   my $game = shift;
@@ -1134,7 +1134,7 @@ sub __updateCombinedLowScoring
   }
 }
 
-sub __updateTies
+sub updateTies
 {
   my $this = shift;
   my $game = shift;
@@ -1151,7 +1151,7 @@ sub __updateTies
   }
 }
 
-sub __updateAllPowerTilesPlayed
+sub updateAllPowerTilesPlayed
 {
   my $this = shift;
   my $game = shift;
@@ -1181,7 +1181,7 @@ sub __updateAllPowerTilesPlayed
   }
 }
 
-sub __updateAllEsPlayed
+sub updateAllEsPlayed
 {
   my $this = shift;
   my $game = shift;
@@ -1203,7 +1203,7 @@ sub __updateAllEsPlayed
   }
 }
 
-sub __updateManyChallenges
+sub updateManyChallenges
 {
   my $this = shift;
   my $game = shift;
@@ -1227,7 +1227,7 @@ sub __updateManyChallenges
   }
 }
 
-sub __updateNumMistakes
+sub updateNumMistakes
 {
   my $this   = shift;
   my $game   = shift;
@@ -1259,7 +1259,7 @@ sub __updateNumMistakes
   }
 }
 
-sub __updateMistakesList
+sub updateMistakesList
 {
   my $this   = shift;
   my $game   = shift;

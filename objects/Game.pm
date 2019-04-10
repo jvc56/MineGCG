@@ -451,7 +451,7 @@ sub new
 
   my $self = bless \%game, $this;
 
-  $self->__postConstruction();
+  $self->postConstruction();
 
   #print Dumper($self->{'tiles_played'});
 
@@ -544,7 +544,7 @@ sub getMistakes
           {
             $mistake_mag = Constants::UNSPECIFIED_MISTAKE_NAME;
           }
-          push @mistakes_list, [$cat, $mistake_mag, $this->getReadableName(), $move->toString($this->__readableMove($move)), $comment];
+          push @mistakes_list, [$cat, $mistake_mag, $this->getReadableName(), $move->toString($this->readableMove($move)), $comment];
         }
       }
     }
@@ -662,7 +662,7 @@ sub getBingos
     my $bingo = $move->isBingo($player);
     if ($bingo)
     {
-      my $bing_cap = $this->__readableMoveCapitalized($move);
+      my $bing_cap = $this->readableMoveCapitalized($move);
       my $prob = $this->{'lexicon'}->{$bing_cap};
       if (!$prob)
       {
@@ -696,7 +696,7 @@ sub getTripleTriples
     my $tt = $move->isTripleTriple($player);
     if ($tt)
     {
-      my $tt_cap = $this->__readableMoveCapitalized($move);
+      my $tt_cap = $this->readableMoveCapitalized($move);
       my $prob = $this->{'lexicon'}->{$tt_cap};
       if (!$prob)
       {
@@ -729,7 +729,7 @@ sub getBingoNinesOrAbove
     my $bna = $move->{'length'}->{$player} >= 9 && $move->isBingo($player);
     if ($bna)
     {
-      my $bna_cap = $this->__readableMoveCapitalized($move);
+      my $bna_cap = $this->readableMoveCapitalized($move);
       my $prob = $this->{'lexicon'}->{$bna_cap};
       if (!$prob)
       {
@@ -775,8 +775,8 @@ sub getPhoniesFormed
     }
 
     my $move_phonies = '';
-    my $readable_play = $this->__readableMove($move);
-    my $caps_play = $this->__readableMoveCapitalized($move);
+    my $readable_play = $this->readableMove($move);
+    my $caps_play = $this->readableMoveCapitalized($move);
     my $prob = $this->{'lexicon'}->{$caps_play};
     if (!$prob)
     {
@@ -824,8 +824,8 @@ sub getPlaysChallenged
          || ($next_move && $player != $next_move->{'turn'} && $next_move->{'challenge_lost'} && $next_move->{'play_type'} eq Constants::PLAY_TYPE_PASS)
        )
     {
-      my $readable_play = $this->__readableMove($move);
-      my $caps_play = $this->__readableMoveCapitalized($move);
+      my $readable_play = $this->readableMove($move);
+      my $caps_play = $this->readableMoveCapitalized($move);
       my $prob = $this->{'lexicon'}->{$caps_play};
       if (!$prob)
       {
@@ -850,7 +850,7 @@ sub labelPlay
 
   my $has_prob = $prob =~ /[0-9]/;
 
-  my $labeled_play = $this->__readableMove($move);
+  my $labeled_play = $this->readableMove($move);
 
   if (!$has_prob)
   {
@@ -946,7 +946,7 @@ sub getNumWordsPlayed
   foreach my $move (@moves)
   {
   	my $bingo = $move->isBingo($player);
-    my $bingo_cap = $this->__readableMoveCapitalized($move);
+    my $bingo_cap = $this->readableMoveCapitalized($move);
     my $l = $move->{'length'}->{$player};
     if (
         (($bingos_only && $bingo) || !$bingos_only) &&
@@ -1149,7 +1149,7 @@ sub getNumCommentsWordLength
   return $sum;
 }
 
-sub __readableMove
+sub readableMove
 {
   my $this = shift;
 
@@ -1202,7 +1202,7 @@ sub __readableMove
   return join "", @play_array;
 }
 
-sub __readableMoveCapitalized
+sub readableMoveCapitalized
 {
   my $this = shift;
   my $move = shift;
@@ -1249,7 +1249,7 @@ sub __readableMoveCapitalized
   return $rmc;
 }
 
-sub __postConstruction
+sub postConstruction
 {
   my $this = shift;
   my @moves = @{$this->{'moves'}};
@@ -1441,7 +1441,7 @@ sub __postConstruction
     }
 
     # Set is_phony and probability
-    my $caps_move = $this->__readableMoveCapitalized($move);
+    my $caps_move = $this->readableMoveCapitalized($move);
     my $prob = $this->{'lexicon'}->{$caps_move};
     if ($prob)
     {
@@ -1558,7 +1558,7 @@ sub toString
     {
       $s .= sprintf "%-".$number_column."s", ( (int ($i / 2)) + 1);
     }
-  	$s .= sprintf "%-".$c1."s", $this->{'moves'}[$i]->toString($this->__readableMove($this->{'moves'}[$i]));
+  	$s .= sprintf "%-".$c1."s", $this->{'moves'}[$i]->toString($this->readableMove($this->{'moves'}[$i]));
     if ($i % 2 == 1)
     {
       $s .= "\n";
