@@ -392,6 +392,10 @@ sub mine
       if ($type eq Constants::STAT_ITEM_LIST_NOTABLE)
       {
         print $fh $e->{'name'} . ": ";
+        if (!($e->{'list'}))
+        {
+          print STDERR "\nUndefined List for: $player_name\n";
+        }
         my @list = @{$e->{'list'}};
         for (my $i = 0; $i < scalar @list; $i++)
         {
