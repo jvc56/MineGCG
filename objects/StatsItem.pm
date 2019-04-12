@@ -181,6 +181,10 @@ sub addGame
   {
     $this->updateDefendingChallengePercentage($game, $this_player);
   }
+  elsif ($name eq "Percentage Phonies Unchallenged")
+  {
+    $this->updatePercentagePhoniesUnchallenged($game, $this_player);
+  }
   elsif ($name eq "Comments")
   {
     $this->updateNumComments($game);
@@ -983,6 +987,33 @@ sub updateDefendingChallengePercentage
   $this->{'challenges'}            += $ocw + $ocl;
   $this->{'successful_challenges'} += $ocl;
   $this->{'total'}                  = sprintf "%.4f", $this->{'successful_challenges'} / $this->{'challenges'};
+}
+
+sub updatePercentagePhoniesUnchallenged
+{
+  my $this   = shift;
+  my $game   = shift;
+  my $player = shift;
+
+  if (!$this->{'init'})
+  {
+    $this->{'init'} = 1;
+    $this->{'single'} = 1;
+  }
+
+  # 0 to get all phonies, 1 to get unchallenged phonies
+  my $num_phonies        = $game->getNumPhonyPlays($player, 0);
+  my $num_phonies_unchal = $game->getNumPhonyPlays($player, 1);
+
+  if ($num_phonies == 0)
+  {
+    return;
+  }
+
+  $this->{'num_phonies'}        += $num_phonies;
+  $this->{'num_phonies_unchal'} += $num_phonies_unchal;
+
+  $this->{'total'} = sprintf "%.4f", $this->{'num_phonies_unchal'} / $this->{'num_phonies'};
 }
 
 sub updateNumComments
