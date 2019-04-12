@@ -42,11 +42,13 @@ sub new
   $player_one_real_name_readable =~ s/_/ /g;
   $player_two_real_name_readable =~ s/_/ /g;
 
+  my $line = "";
+
   open(GCG, '<', $filename);
   while(<GCG>)
   {
     $line_number++;
-    my $line = $_;
+    $line = $_;
     chomp $_;
     # Skip if line is empty or all whitespace
     if (!$_ || $_ =~ /^\s+$/)
@@ -392,6 +394,11 @@ sub new
     $turn_number++;
   }
   
+  if ($line =~ /^#rack/)
+  {
+    return "game is incomplete\nFILE:   $filename\nLINE $line_number: $line\n";
+  }
+
   my $board = Board->new();
   
   if (@moves)

@@ -189,11 +189,11 @@ sub addGame
   {
     $this->updateNumCommentsWordLength($game);
   }
-  elsif ($name eq "All Double Letters Covered")
+  elsif ($name eq "Many Double Letters Covered")
   {
     $this->updateAllDoubleLettersCovered($game);
   }
-  elsif ($name eq "All Double Words Covered")
+  elsif ($name eq "Many Double Words Covered")
   {
     $this->updateAllDoubleWordsCovered($game);
   }
@@ -1024,8 +1024,8 @@ sub updateAllDoubleLettersCovered
     $this->{'init'} = 1;
     $this->{'list'} = [];
   }
-
-  if (24 == $game->getNumBonusSquaresCovered(0)->{Constants::DOUBLE_LETTER} + $game->getNumBonusSquaresCovered(1)->{Constants::DOUBLE_LETTER})
+  # All is 24
+  if (20 <= $game->getNumBonusSquaresCovered(0)->{Constants::DOUBLE_LETTER} + $game->getNumBonusSquaresCovered(1)->{Constants::DOUBLE_LETTER})
   {
     push @{$this->{'list'}}, $game->getReadableName();
   }
@@ -1041,8 +1041,8 @@ sub updateAllDoubleWordsCovered
     $this->{'init'} = 1;
     $this->{'list'} = [];
   }
-
-  if (17 == $game->getNumBonusSquaresCovered(0)->{Constants::DOUBLE_WORD} + $game->getNumBonusSquaresCovered(1)->{Constants::DOUBLE_WORD})
+  # All is 17
+  if (15 <= $game->getNumBonusSquaresCovered(0)->{Constants::DOUBLE_WORD} + $game->getNumBonusSquaresCovered(1)->{Constants::DOUBLE_WORD})
   {
     push @{$this->{'list'}}, $game->getReadableName();
   }
