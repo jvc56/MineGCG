@@ -1073,9 +1073,19 @@ sub updateAllDoubleWordsCovered
     $this->{'list'} = [];
   }
   # All is 17
-  if (15 <= $game->getNumBonusSquaresCovered(0)->{Constants::DOUBLE_WORD} + $game->getNumBonusSquaresCovered(1)->{Constants::DOUBLE_WORD})
+
+  my $sum = $game->getNumBonusSquaresCovered(0)->{Constants::DOUBLE_WORD} + $game->getNumBonusSquaresCovered(1)->{Constants::DOUBLE_WORD};
+
+  if (15 <= $sum)
   {
-    push @{$this->{'list'}}, $game->getReadableName();
+    if ($sum == 15)
+    {
+      push @{$this->{'list'}}, $game->getReadableName();
+    }
+    else
+    {
+      unshift @{$this->{'list'}}, $game->getReadableName();
+    }
   }
 }
 
