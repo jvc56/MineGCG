@@ -23,6 +23,17 @@ my $mine_start_time = time;
 
 system "./meta/maintenance/mine_games_test.pl";
 
+my $cmd = "ls -ltr logs |";
+open (CMDOUT, $cmd) or die "$!\n";
+my $yesterday_log_name = "";
+while (<CMDOUT>)
+{
+  /(\d\d\d\d_\d\d_\d\d)/;
+  $yesterday_log_name = $1;
+}
+my $diff_cmd = "diff logs/$yesterday_log_name/mine_games_test.log logs/mine_games_test.log > logs/mine_games_diff.log";
+system "$diff_cmd";
+
 my $mine_end_time = time;
 
 my $access_start_time = time;

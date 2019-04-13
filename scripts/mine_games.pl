@@ -381,7 +381,7 @@ sub mine
     close $fh;
   }
   
-  if ($notabledump)
+  if ($notabledump && $at_least_one)
   {
     system "mkdir -p $notable_dir";
     open(my $fh, '>', $notable_dir . "/" . $player_name . ".notable");
