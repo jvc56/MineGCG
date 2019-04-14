@@ -60,7 +60,7 @@ sub update_leaderboard
               $name eq "FULL RACK PER TURN" ||
               $name eq "HIGH GAME" ||
               $name eq "LOW GAME" || 
-              $name =~ /CHALLENGE PERCENTAGE/ || 
+              $name =~ /PERCENTAGE/ || 
               $name =~ /BINGO PROBABILITIES/
              )
       {
