@@ -35,6 +35,7 @@ use constant MISTAKES =>
   'Tactics',
   'Strategy',
   'Endgame',
+  'Time'
 );
 
 use constant MISTAKES_MAGNITUDE =>
@@ -53,6 +54,7 @@ use constant MISTAKE_COLORS =>
   'Tactics'   => 'red',
   'Strategy'  => 'green',
   'Endgame'   => 'purple',
+  'Endgame'   => 'magenta',
 };
 
 

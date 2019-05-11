@@ -7,30 +7,8 @@ use DateTime;
 my %known_users = 
 (
   "67.249.88.136"   => "105 Bool Street",
-  "46.229.168.146"  => "Crawler",
-  "66.249.66.88"    => "Crawler",
-  "66.249.66.89"    => "Crawler",
-  "66.249.66.90"    => "Crawler",
-  "66.249.66.150"   => "Crawler",
-  "66.249.66.152"   => "Crawler",
-  "66.249.66.148"   => "Crawler",
-  "45.67.213.155"   => "Crawler",
-  "89.191.228.29"   => "Crawler",
-  "121.98.150.20"   => "Crawler",
-  "46.229.168.152"  => "Crawler",
-  "446.229.168.150" => "Crawler",
-  "78.46.149.254"   => "Crawler",
-  "46.229.168.130"  => "Crawler",
-  "141.222.36.215"  => "Matthew O'Connor",
-  "46.229.168.133"  => "Crawler",
-  "46.229.168.161"  => "Crawler",
-  "46.229.168.137"  => "Crawler",  
-  "46.229.168.150"  => "Crawler",  
-  "46.229.168.139"  => "Crawler",  
-  "46.229.168.142"  => "Crawler",  
-  "46.229.168.147"  => "Crawler",  
+  "141.222.36.215"  => "Matthew O'Connor", 
   "98.169.40.117"   => "9654 Scotch Haven Drive",  
-  "46.229.168.141"  => "Crawler"
 );
 
 # Get most recent weekly access log .gz from bitnami
