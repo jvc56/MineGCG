@@ -54,7 +54,7 @@ use constant MISTAKE_COLORS =>
   'Tactics'   => 'red',
   'Strategy'  => 'green',
   'Endgame'   => 'purple',
-  'Endgame'   => 'magenta',
+  'Time'      => 'magenta',
 };
 
 
