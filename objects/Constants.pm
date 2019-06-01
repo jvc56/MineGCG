@@ -89,6 +89,8 @@ use constant STAT_ITEM_LIST_OPP        => 'OPPONENT LISTS';
 use constant STAT_ITEM_LIST_NOTABLE    => 'NOTABLE GAMES';
 
 
+use constant ERROR_DIV_ID              => 'error';
+
 use constant LEADERBOARD_CUTOFF         => 10;
 use constant LEADERBOARD_COLUMN_SPACING => 31;
 use constant LEADERBOARD_NAME           => "leaderboard";
@@ -137,7 +139,7 @@ use constant STATS_ITEMS =>
     {name => 'Tiles Played',                      type => STAT_ITEM_PLAYER},
     {name => 'Power Tiles Played',                type => STAT_ITEM_PLAYER},
     {name => 'Power Tiles Stuck With',            type => STAT_ITEM_PLAYER},
-    {name => 'Es Played',                         type => STAT_ITEM_PLAYER},
+  #  {name => 'Es Played',                         type => STAT_ITEM_PLAYER},
     {name => 'Turns With a Blank',                type => STAT_ITEM_PLAYER},
     {name => 'Triple Triples Played',             type => STAT_ITEM_PLAYER},
     {name => 'Bingoless Games',                   type => STAT_ITEM_PLAYER},
@@ -162,7 +164,7 @@ use constant STATS_ITEMS =>
     {name => 'Tiles Played',                      type => STAT_ITEM_OPP},
     {name => 'Power Tiles Played',                type => STAT_ITEM_OPP},
     {name => 'Power Tiles Stuck With',            type => STAT_ITEM_OPP},
-    {name => 'Es Played',                         type => STAT_ITEM_OPP},
+  #  {name => 'Es Played',                         type => STAT_ITEM_OPP},
     {name => 'Turns With a Blank',                type => STAT_ITEM_OPP},
     {name => 'Triple Triples Played',             type => STAT_ITEM_OPP},
     {name => 'Bingoless Games',                   type => STAT_ITEM_OPP},

@@ -73,6 +73,25 @@ sub mine
   my $opponent_name_no_underscore = $opponent_name;
   $opponent_name_no_underscore =~ s/_/ /g;
 
+  if ($html)
+  {
+    my $javascript .= "<script>\n";
+
+    $javascript .= "function toggle(id) {\n";
+    $javascript .= "var x = document.getElementById(id);\n";
+    $javascript .= "if (x.style.display === 'none') {\n";
+    $javascript .= "x.style.display = 'block';\n";
+    $javascript .= "} else {\n";
+    $javascript .= "x.style.display = 'none';\n";
+    $javascript .= "}\n";
+    $javascript .= "}\n";
+
+    $javascript .= "</script>\n";
+
+    __print_or_append($javascript, $html, 0);
+
+  }
+
   __print_or_append( "\nStatistics for $player_name_no_underscore\n\n\n", $html, 0);
   
   __print_or_append( "\nSEARCH PARAMETERS: \n", $html, 0);
@@ -143,6 +162,9 @@ sub mine
     __print_or_append( "  $opening_mark_tag $at_color'>Triple Triple and Bingo Nine or Above and Improbable$closing_mark_tag\n\n", $html, 0);
     
     __print_or_append( "\n\n", $html, 0);
+
+    __print_or_append("<div id='" . Constants::ERROR_DIV_ID . "' style='display: none;'>", $html, 0);
+
   }
 
   my $all_stats = Stats->new();
@@ -236,7 +258,8 @@ sub mine
         my $key = $game_tourney_id.'+'.$round_number;
         if($tourney_game_hash{$key})
         {
-          __print_or_append( "\nGame $full_game_file_name is a duplicate\n", $html, 0, $player_name);
+          __print_or_append( "\nWARNING: duplicate game detected\nFILE:    $full_game_file_name\n", $html, 0, $player_name);
+          $num_warnings++;
           next;
         }
         $tourney_game_hash{$key} = 1;
@@ -331,6 +354,16 @@ sub mine
       }
       $at_least_one = 1;
     }
+  }
+
+  if ($html)
+  {
+      __print_or_append("</div>\n", $html, 0);
+      __print_or_append( "\n", $html, 0);
+      __print_or_append( "Errors:   $num_errors\n", $html, 0);
+      __print_or_append( "Warnings: $num_warnings\n", $html, 0);
+      __print_or_append( "\n", $html, 0);
+      __print_or_append("<button onclick='toggle(\"" . Constants::ERROR_DIV_ID . "\")'>Toggle Error and Warning Report</button>\n", $html, 0);
   }
 
   __print_or_append($stats_note, $html, 0);

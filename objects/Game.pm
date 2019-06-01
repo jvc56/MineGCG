@@ -1055,7 +1055,7 @@ sub getNumTripleTriplesPlayed
 {
   my $this = shift;
 
-  my $player =shift;
+  my $player = shift;
   my @moves = @{$this->{'moves'}};
   my $sum = 0;
   foreach my $move (@moves)
