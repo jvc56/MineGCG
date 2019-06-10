@@ -75,8 +75,8 @@ The <a href='http://randomracer.com'>randomracer.com</a> website maintains <a hr
 
 If there were errors or warnings during a search, they will appear just under the color key. There are a variety of errors and warnings, but only a few are common:<br/><br/>
 
-<h5>Game against ... is a duplicate</h5>
-This appears when two games with the same tournament and round number are detected. It is considered a warning and the duplicate game is not included in statistics or leaderboards. It probably means that both you and your opponent uploaded the same game. In this case the racks that you recorded might have been overwritten when you opponent uploaded their game.
+<h5>WARNING: duplicate game detected</h5>
+This appears when two games with the same tournament and round number are detected. The duplicate game is not included in statistics or leaderboards. It probably means that both you and your opponent uploaded the same game. In this case the racks that you recorded might have been overwritten when you opponent uploaded their game.
 
 <h5>ERROR: no moves found</h5>
 This error appears when an empty GCG file is detected.
@@ -94,8 +94,6 @@ This error appears when the game is not tagged with a lexicon or the game uses a
 This error appears when the GCG file is incomplete.
 
 <br/><br/>The errors above are relatively common and well-tested. If you encounter any of these errors, it probably means that the GCG file of the game is somehow malformed or tagged incorrectly. To correct these errors, update the game on <a href='https://cross-tables.com'>cross-tables.com</a> and then message me so I can delete the outdated game that is cached in the database.<br/><br/>
-
-Currently, the only warning is for notes that start before moves. If you see this warning no action is needed. More warnings might be added in the future.<br/><br/>
 
 Any other errors or warnings that appear are rare and likely due to a bug. If you see an error or warning that was not described above, please message me.
 
