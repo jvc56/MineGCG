@@ -14,6 +14,7 @@ use Stats;
 use CSW07;
 use CSW12;
 use CSW15;
+use CSW19;
 use TWL98;
 use TWL06;
 use American;
@@ -315,6 +316,10 @@ sub mine
       elsif ($this_lexicon eq 'CSW15')
       {
         $lexicon_ref = CSW15::CSW15_LEXICON;
+      }
+      elsif ($this_lexicon eq 'CSW19')
+      {
+        $lexicon_ref = CSW19::CSW19_LEXICON;
       }
       else
       {

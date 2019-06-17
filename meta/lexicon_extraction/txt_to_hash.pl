@@ -2,11 +2,25 @@
 
 use warnings;
 use strict;
+use Getopt::Long;
 
-my $file_loc = './meta/lexicon_extraction/nsw18.txt';
-my $mod_name = 'NSW18';
+my $lexicon = '';
 
-open(LEX, '<', $file_loc);
+GetOptions (
+          'lexicon=s' => \$lexicon
+         );
+
+if (!$lexicon)
+{
+  print "Must specify a lexicon\n";
+  exit(0);
+}
+
+my $file_loc = "./meta/lexicon_extraction/$lexicon.txt";
+
+my $mod_name = uc $lexicon;
+
+open(LEX, '<', $file_loc) or die "Cannot open $file_loc: $!";
 open(MOD, '>', 'lexicons/'.$mod_name.'.pm');
 
 print MOD "#!/usr/bin/perl\n\n";
@@ -18,8 +32,8 @@ print MOD "{\n";
 
 while (<LEX>)
 {
-	chomp $_;
-	/(\w+)\t(\d+)/;
+  chomp $_;
+  /(\w+)\t(\d+)/;
     print MOD "'".$1 . "' => " . $2 . ",\n";
 }
 print MOD "};\n\n1;\n";
