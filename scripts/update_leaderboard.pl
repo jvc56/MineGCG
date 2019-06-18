@@ -220,7 +220,7 @@ sub update_leaderboard
 
   system "rm -r $stats_dir";
 
-  system "scp -i /home/jvc/.ssh/randomracer.pem $leaderboard_name jvc\@media.wgvc.com:/home/bitnami/htdocs/rracer/leaderboard.html"
+  system "scp -i /home/jvc/.ssh/randomracer.pem $leaderboard_name jvc\@randomracer.com:/home/bitnami/htdocs/rracer/leaderboard.html"
 
 }
 
