@@ -44,7 +44,7 @@ my $access_end_time = time;
 
 my $cache_start_time = time;
 
-system "scp -i /home/jvc/.ssh/randomracer.pem -r ./cache jvc\@randomracer.com:/home/bitnami/htdocs/rracer/";
+system "scp -r ./cache jvc\@randomracer.com:/home/bitnami/htdocs/rracer/";
 
 my $cache_end_time = time;
 

@@ -13,9 +13,7 @@ my %known_users =
 
 # Get most recent weekly access log .gz from bitnami
 
-my $dashi = "-i /home/jvc/.ssh/randomracer.pem";
-
-my $cmd = "ssh -q $dashi -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null jvc\@randomracer.com ls -ltr /opt/bitnami/apache2/logs |";
+my $cmd = "ssh -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null jvc\@randomracer.com ls -ltr /opt/bitnami/apache2/logs |";
 open (CMDOUT, $cmd) or die "$!\n";
 my $last_week_log_name = "";
 while (<CMDOUT>)
@@ -29,8 +27,8 @@ while (<CMDOUT>)
 my $gz_log_file   = "./downloads/log1.gz";
 my $log2 = "./downloads/log2.log";
 
-system "scp $dashi jvc\@randomracer.com:/opt/bitnami/apache2/logs/$last_week_log_name $gz_log_file";
-system "scp $dashi jvc\@randomracer.com:/opt/bitnami/apache2/logs/access_log $log2";
+system "scp jvc\@randomracer.com:/opt/bitnami/apache2/logs/$last_week_log_name $gz_log_file";
+system "scp jvc\@randomracer.com:/opt/bitnami/apache2/logs/access_log $log2";
 
 my $log1 = "./downloads/log1.log";
 

@@ -85,7 +85,7 @@ sub update_notable
 
   system "rm -r $notable_dir";
 
-  system "scp -i /home/jvc/.ssh/randomracer.pem $notable_name jvc\@randomracer.com:/home/bitnami/htdocs/rracer/notable.html"
+  system "scp $notable_name jvc\@randomracer.com:/home/bitnami/htdocs/rracer/notable.html"
 }
 
 1;
