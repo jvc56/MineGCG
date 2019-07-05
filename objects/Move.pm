@@ -212,6 +212,35 @@ sub isFullRack
   }
   else
   {
+    my $play = $this->{'play'};
+    my $rack = $this->{'rack'};
+    my @rack = split //, $rack;
+
+    foreach my $t (split //, $play)
+    {
+      if ($t eq '.')
+      {
+        next;
+      }
+      if ($t =~ /[a-z]/)
+      {
+        $t = '?';
+      }
+      my $in_rack = 0;
+      for (my $i = 0; $i < scalar @rack; $i++)
+      {
+        if ($t eq $rack[$i])
+        {
+          splice @rack, $i, 1;
+          $in_rack = 1;
+          last;
+        }
+      }
+      if (!$in_rack)
+      {
+        return 0;
+      }
+    }
     return $this->{'is_full_rack'};
   }
 }
