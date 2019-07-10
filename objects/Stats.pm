@@ -73,6 +73,7 @@ sub makeTitleRow
 sub toString
 {
   my $this = shift;
+  my $html = shift;
 
   my $tiw        = Constants::TITLE_WIDTH;
   my $aw         = Constants::AVERAGE_WIDTH;
@@ -153,6 +154,11 @@ sub toString
   }
   $s .= ("_" x ($tot+2)) . "\n\n";
 
+  if ($html)
+  {
+    $s .= "<div id='" . Constants::MISTAKES_DIV_ID . "' style='display: none;'>";
+  }
+
   $s .= "\n".Constants::MISTAKE_ITEM_LIST_PLAYER . "\n";
   for (my $i = 0; $i < scalar @{$this->{'entries'}}; $i++)
   {
@@ -171,6 +177,12 @@ sub toString
     {
       $s .= $stat_item->toString($num);
     }
+  }
+
+  if ($html)
+  {
+      $s .=  "</div>\n\n";
+      $s .=  "<button onclick='toggle(\"" . Constants::MISTAKES_DIV_ID . "\")'>Toggle Mistakes List</button>\n";
   }
 
   return $s; 

@@ -110,6 +110,7 @@ Games with no lexicons are omitted because the lexicons are necessary for comput
 
 # Contributions
 
+Highest Scoring Play statistic (Will Anderson)<br/>
 Discovery of a bug in the Full Rack per Turn statistic (Will Anderson)<br/>
 Notable games (Matthew O'Connor)<br/>
 Firsts statistic (Ben Schoenbrun)<br/>

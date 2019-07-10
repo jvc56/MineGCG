@@ -45,6 +45,7 @@ sub mine
   my $html              = shift;
   my $statsdump         = shift;
   my $notabledump       = shift;
+  my $missingracks      = shift;
 
   my $cache_filename = "$cache_dir/$player_name.cache";
   my $cache_condition = !$cort &&
@@ -328,7 +329,7 @@ sub mine
         next;
       }
 
-      my $game = Game->new($full_game_file_name, $player_is_first, $lexicon_ref, $player_one_name, $player_two_name, $html);
+      my $game = Game->new($full_game_file_name, $player_is_first, $lexicon_ref, $player_one_name, $player_two_name, $html, $missingracks);
       
       if (ref($game) ne "Game")
       {
@@ -377,11 +378,11 @@ sub mine
   {
     if ($html)
     {
-      $html_string .= $all_stats->toString();
+      $html_string .= $all_stats->toString($html);
     }
     else
     {
-      print $all_stats->toString();
+      print $all_stats->toString($html);
     }
   }
   else

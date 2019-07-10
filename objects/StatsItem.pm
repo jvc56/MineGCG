@@ -73,6 +73,10 @@ sub addGame
   {
     $this->updateBingoNinesOrAboveList($game, $this_player);
   }
+  elsif ($name eq "Highest Scoring Play")
+  {
+    $this->updateHighestScoringPlay($game, $this_player);
+  }
   elsif ($name eq "Challenged Phonies")
   {
     $this->updatePhoniesFormed($game, $this_player, 1);
@@ -290,6 +294,30 @@ sub updateBingoNinesOrAboveList
   }
 
   push @{$this->{'list'}}, @{$game->getBingoNinesOrAbove($this_player)};
+}
+
+sub updateHighestScoringPlay
+{
+  my $this = shift;
+  my $game = shift;
+  my $this_player = shift;
+
+  if (!$this->{'init'})
+  {
+    $this->{'init'} = 1;
+    $this->{'score'} = -1;
+    $this->{'list'} = [];
+  }
+
+  my $game_highest = $game->getHighestScoringPlay($this_player);
+
+  my @current_list = @{$this->{'list'}};
+
+  if (!@current_list || $this->{'score'} < $game_highest->[1])
+  {
+    $this->{'score'} = $game_highest->[1];
+    $this->{'list'}  = [$game_highest->[0] . " ($game_highest->[1] points)"];
+  }
 }
 
 sub updatePhoniesFormed

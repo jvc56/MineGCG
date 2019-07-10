@@ -11,6 +11,8 @@ use Board;
 use Move;
 use Tile;
 
+my $missingracks;
+
 sub new
 {
   my $this = shift;
@@ -23,6 +25,7 @@ sub new
   my $player_two_real_name = shift;
 
   my $html                 = shift;
+     $missingracks         = shift;
 
   my $player_one_name;
   my $player_two_name;
@@ -575,7 +578,7 @@ sub getMistakes
       my $comment = $move->{'comment'};
       foreach my $cat (@categories)
       {
-        my @matches = ($comment =~ /#($cat\S+)/gi);
+        my @matches = ($comment =~ /#($cat\w*)/gi);
         foreach my $m (@matches)
         {
           my $mistake_mag;
@@ -630,7 +633,15 @@ sub getNumFullRacks
   my $sum = 0;
   foreach my $move (@moves)
   {
-    $sum += $move->isFullRack($player);
+    my $is_full = $move->isFullRack($player);
+    my $turn = $move->{'turn'};
+    if ($missingracks && !$is_full && $turn == $player)
+    {
+      my $play = $move->{'play'};
+      my $rack = $move->{'rack'};
+      print "Incomplete Rack Found:\nPlay: $play\nRack: $rack\n";
+    }
+    $sum += $is_full;
   }
   return $sum;
 }
@@ -790,6 +801,35 @@ sub getBingoNinesOrAbove
     }
   }
   return \@bnas;
+}
+
+sub getHighestScoringPlay
+{
+  my $this = shift;
+
+  my $player = shift;
+
+  my @moves = @{$this->{'moves'}};
+
+  my @highest = ("", 0);
+
+  my @filename_items = split /\./, $this->{'filename'};
+
+  foreach my $move (@moves)
+  {
+    if ($player != $move->{'turn'})
+    {
+      next;
+    }
+
+    my $score = $move->{'score'} - ($move->{'challenge_points'} + $move->{'out_points'});
+    if ($score > $highest[1])
+    {
+      my $high_cap = $this->readableMove($move);
+      @highest = ($this->labelPlay($move, $player, $filename_items[6], $high_cap) , $score);
+    }
+  }
+  return \@highest;
 }
 
 sub getPhoniesFormed

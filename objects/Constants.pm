@@ -90,6 +90,7 @@ use constant STAT_ITEM_LIST_NOTABLE    => 'NOTABLE GAMES';
 
 
 use constant ERROR_DIV_ID              => 'error';
+use constant MISTAKES_DIV_ID           => 'mistakes';
 
 use constant LEADERBOARD_CUTOFF         => 10;
 use constant LEADERBOARD_COLUMN_SPACING => 31;
@@ -103,12 +104,14 @@ use constant STATS_ITEMS =>
     {name => 'Bingos',                            type => STAT_ITEM_LIST_PLAYER},
     {name => 'Triple Triples',                    type => STAT_ITEM_LIST_PLAYER},
     {name => 'Bingo Nines or Above',              type => STAT_ITEM_LIST_PLAYER},
+    {name => 'Highest Scoring Play',              type => STAT_ITEM_LIST_PLAYER},
     {name => 'Challenged Phonies',                type => STAT_ITEM_LIST_PLAYER},
     {name => 'Unchallenged Phonies',              type => STAT_ITEM_LIST_PLAYER},
     {name => 'Plays That Were Challenged',        type => STAT_ITEM_LIST_PLAYER},
     {name => 'Bingos',                            type => STAT_ITEM_LIST_OPP},
     {name => 'Triple Triples',                    type => STAT_ITEM_LIST_OPP},
     {name => 'Bingo Nines or Above',              type => STAT_ITEM_LIST_OPP},
+    {name => 'Highest Scoring Play',              type => STAT_ITEM_LIST_OPP},
     {name => 'Challenged Phonies',                type => STAT_ITEM_LIST_OPP},
     {name => 'Unchallenged Phonies',              type => STAT_ITEM_LIST_OPP},
     {name => 'Plays That Were Challenged',        type => STAT_ITEM_LIST_OPP},
