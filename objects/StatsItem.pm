@@ -75,7 +75,11 @@ sub addGame
   }
   elsif ($name eq "Highest Scoring Play")
   {
-    $this->updateHighestScoringPlay($game, $this_player);
+    $this->updateHighestScoringPlayList($game, $this_player);
+  }
+  elsif ($name eq "Highest Scoring Turn")
+  {
+    $this->updateHighestScoringTurn($game, $this_player);
   }
   elsif ($name eq "Challenged Phonies")
   {
@@ -296,7 +300,7 @@ sub updateBingoNinesOrAboveList
   push @{$this->{'list'}}, @{$game->getBingoNinesOrAbove($this_player)};
 }
 
-sub updateHighestScoringPlay
+sub updateHighestScoringPlayList
 {
   my $this = shift;
   my $game = shift;
@@ -319,6 +323,36 @@ sub updateHighestScoringPlay
     $this->{'list'}  = [$game_highest->[0] . " ($game_highest->[1] points)"];
   }
 }
+
+sub updateHighestScoringTurn
+{
+  my $this = shift;
+  my $game = shift;
+  my $this_player = shift;
+
+  if (!$this->{'init'})
+  {
+    $this->{'init'}   = 1;
+    $this->{'single'} = 1;
+    if ($game->{'html'})
+    {
+      $this->{'link'}   = $game->{'filename'};
+    }
+    $this->{'total'}  = $game->getHighestScoringPlay($this_player)->[1];
+    return;
+  }
+
+  my $score = $game->getHighestScoringPlay($this_player)->[1];
+  if ($score > $this->{'total'})
+  {
+    $this->{'total'} = $score;
+    if ($game->{'html'})
+    {
+      $this->{'link'}   = $game->{'filename'};
+    }
+  }
+}
+
 
 sub updatePhoniesFormed
 {
