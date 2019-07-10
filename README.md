@@ -53,7 +53,7 @@ This statistic is only meaningful for players with a significant percentage of t
 
 # Mistakes
 
-The mistakes statistic if a self-reported statistic that is divided into 5 categories (knowledge, finding, vision, tactics, strategy, time, endgame). To mark a move as a mistake in your annotated game, include the tag of the mistake in the comment of the move. You can also tag the magnitude (large, medium, or small) of the mistake which will organize your mistakes by magnitude in the mistakes table. For example, if you missed a bingo because you haven't studied it yet, that would probably be a large mistake due to word knowledge (called 'knowledge' in this case) which you can tag by adding the following in your comment of the move:
+The mistakes statistic if a self-reported statistic that is divided into 7 categories (knowledge, finding, vision, tactics, strategy, time, endgame). To mark a move as a mistake in your annotated game, include the tag of the mistake in the comment of the move. You can also tag the magnitude (large, medium, or small) of the mistake which will organize your mistakes by magnitude in the mistakes table. For example, if you missed a bingo because you haven't studied it yet, that would probably be a large mistake due to word knowledge (called 'knowledge' in this case) which you can tag by adding the following in your comment of the move:
 
 \#knowledgelarge
 
