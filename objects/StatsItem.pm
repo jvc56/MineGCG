@@ -129,6 +129,10 @@ sub addGame
   {
     $this->updateFullRackPerTurn($game, $this_player);
   }
+  elsif ($name eq "Exchanges")
+  {
+    $this->updateExchanges($game, $this_player);
+  }
   elsif ($name eq "High Game")
   {
     $this->updateHighGame($game, $this_player);
@@ -485,6 +489,20 @@ sub updateFullRackPerTurn
   $this->{'total_full_racks'} += $game->getNumFullRacks($this_player);
   $this->{'total_turns'}      += $game->getNumTurns($this_player);
   $this->{'total'} = sprintf "%.4f", $this->{'total_full_racks'} / $this->{'total_turns'};
+}
+
+sub updateExchanges
+{
+  my $this = shift;
+  my $game = shift;
+  my $this_player = shift;
+
+  if (!$this->{'init'})
+  {
+    $this->{'init'} = 1;
+  }
+
+  $this->{'total'} += $game->getNumExchanges($this_player);
 }
 
 sub updateHighGame

@@ -685,7 +685,28 @@ sub getNumFirsts
   my $player = shift;
 
   return 1 - $player;
+}
 
+sub getNumExchanges
+{
+  my $this = shift;
+  my $player = shift;
+
+  my @moves = @{$this->{'moves'}};
+
+  my $sum = 0;
+
+  foreach my $move (@moves)
+  {
+    my $turn = $move->{'turn'};
+    my $move_type = $move->{'play_type'};
+    if ($move_type eq Constants::PLAY_TYPE_EXCHANGE && $turn == $player)
+    {
+      $sum++;
+    }
+  }
+
+  return $sum;
 }
 
 sub getScore
