@@ -5,6 +5,7 @@ package StatsItem;
 use warnings;
 use strict;
 use List::Util qw(sum);
+use List::MoreUtils qw(uniq);
 use Data::Dumper;
 use lib '.';
 use Constants;
@@ -1620,7 +1621,7 @@ sub toString
       $s .= "<table>\n<tbody>\n";
     }
 
-    my @mistakes_magnitude = Constants::MISTAKES_MAGNITUDE;
+    my @mistakes_magnitude = Constants::MISTAKES_ORDER;
 
     my %magnitude_strings = ();
 

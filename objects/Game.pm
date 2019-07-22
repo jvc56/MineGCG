@@ -582,12 +582,12 @@ sub getMistakes
         foreach my $m (@matches)
         {
           my $mistake_mag;
-          my @mistake_magnitudes = Constants::MISTAKES_MAGNITUDE;
-          foreach my $mag (@mistake_magnitudes)
+          my $mistake_magnitudes = Constants::MISTAKES_MAGNITUDE;
+          foreach my $mag (keys %{$mistake_magnitudes})
           {
             if (uc ($cat . $mag) eq uc $m)
             {
-              $mistake_mag = $mag;
+              $mistake_mag = $mistake_magnitudes->{$mag};
             }
           }
           if (!$mistake_mag)

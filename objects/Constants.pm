@@ -39,11 +39,21 @@ use constant MISTAKES =>
 );
 
 use constant MISTAKES_MAGNITUDE =>
+{
+  'Large'   => 'Large',
+  'Medium'  => 'Medium',
+  'Small'   => 'Small',
+
+  'Saddest' => 'Large',
+  'Sadder'  => 'Medium',
+  'Sad'     => 'Small'
+};
+
+use constant MISTAKES_ORDER =>
 (
   'Large',
   'Medium',
-  'Small',
-  UNSPECIFIED_MISTAKE_NAME,
+  'Small'
 );
 
 use constant MISTAKE_COLORS =>
