@@ -57,6 +57,10 @@ The mistakes statistic if a self-reported statistic that is divided into 7 categ
 
 \#knowledgelarge
 
+The large, medium, and small magnitudes can also be denoted by 'saddest', 'sadder', and 'sad' respecitvely. For example, to tag a mistake as a large time mistake, you can write:
+
+\#timeSADDEST
+
 If you do not want to specify the magnitude of the mistake you can omit the magnitude part of the tag:
 
 \#knowledge
