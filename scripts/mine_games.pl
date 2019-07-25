@@ -75,9 +75,11 @@ sub mine
   my $opponent_name_no_underscore = $opponent_name;
   $opponent_name_no_underscore =~ s/_/ /g;
 
+  my $javascript = "";
+
   if ($html)
   {
-    my $javascript .= "<script>\n";
+    $javascript .= "<script>\n";
 
     $javascript .= "function toggle(id) {\n";
     $javascript .= "var x = document.getElementById(id);\n";
@@ -89,9 +91,6 @@ sub mine
     $javascript .= "}\n";
 
     $javascript .= "</script>\n";
-
-    __print_or_append($javascript, $html, 0);
-
   }
 
   __print_or_append( "\nStatistics for $player_name_no_underscore\n\n\n", $html, 0);
@@ -442,8 +441,10 @@ sub mine
     close $fh;
   }
 
+  my $start_tags = "<!DOCTYPE HTML><html><body> $javascript <pre style='white-space: pre-wrap;' >";
+  my $end_tags   = "</pre></body></html>";
 
-  my $final_output = "<pre style='white-space: pre-wrap;' > $html_string </pre>\n";
+  my $final_output = "$start_tags $html_string $end_tags\n";
 
   if ($cache_condition && $at_least_one)
   {
@@ -452,7 +453,7 @@ sub mine
       my $lt = localtime();
       system "mkdir -p $cache_dir";
       open(my $fh, '>', $cache_filename);
-      print $fh "<pre style='white-space: pre-wrap;' > $html_string \n\nThis report was produced from a file cached on $lt\n</pre>\n";
+      print $fh "$start_tags $html_string \n\nThis report was produced from a file cached on $lt\n$end_tags\n";
       close $fh;
     }
   }
