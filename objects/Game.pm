@@ -525,6 +525,40 @@ sub getReadableName
   return $readable_name;
 }
 
+sub getNumMistakelessTurns
+{
+  my $this = shift;
+
+  my $player = shift;
+
+  my @moves = @{$this->{'moves'}};
+
+  my @categories = Constants::MISTAKES;
+
+  my $sum = 0;
+
+  foreach my $move (@moves)
+  {
+    my $turn = $move->{'turn'};
+    if ($turn == $player)
+    {
+      my $no_mistake = 1;
+      my $comment = $move->{'comment'};
+      foreach my $cat (@categories)
+      {
+        my @matches = ($comment =~ /#$cat/gi);
+        if (scalar @matches > 0)
+        {
+          $no_mistake = 0;
+          last;
+        }
+      }
+      $sum += $no_mistake;
+    }
+  }
+  return $sum;
+}
+
 sub getNumMistakes
 {
   my $this = shift;

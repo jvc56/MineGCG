@@ -250,6 +250,10 @@ sub addGame
   {
     $this->updateManyChallenges($game);
   }
+  elsif ($name eq "Mistakeless Turns")
+  {
+    $this->updateNumMistakelessTurns($game, $this_player);
+  }
   elsif ($name eq "Mistakes")
   {
     $this->updateNumMistakes($game, $this_player);
@@ -1418,6 +1422,20 @@ sub updateManyChallenges
   {
     push @{$this->{'list'}}, $game->getReadableName();
   }
+}
+
+sub updateNumMistakelessTurns
+{
+  my $this   = shift;
+  my $game   = shift;
+  my $player = shift;
+
+  if (!$this->{'init'})
+  {
+    $this->{'init'} = 1;
+  }
+
+  $this->{'total'}  += $game->getNumMistakelessTurns($player);
 }
 
 sub updateNumMistakes
