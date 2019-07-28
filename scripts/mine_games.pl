@@ -47,7 +47,7 @@ sub mine
   my $notabledump       = shift;
   my $missingracks      = shift;
 
-  my $cache_filename = "$cache_dir/$player_name.cache";
+  my $cache_filename = "$cache_dir/$player_name.html";
   my $cache_condition = !$cort &&
                         !$single_game_id &&
                         !$opponent_name &&
