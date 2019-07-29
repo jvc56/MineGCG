@@ -3,6 +3,12 @@
 use warnings;
 use strict;
 use DateTime;
+use lib './objects';
+use Constants;
+
+my $rr_host         = Constants::RR_HOSTNAME;
+my $rr_username     = Constants::RR_USERNAME;
+my $rr_logs_source  = Constants::RR_LOGS_SOURCE;
 
 my %known_users = 
 (
@@ -13,7 +19,7 @@ my %known_users =
 
 # Get most recent weekly access log .gz from bitnami
 
-my $cmd = "ssh -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null jvc\@randomracer.com ls -ltr /opt/bitnami/apache2/logs |";
+my $cmd = "ssh -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $rr_username\@$rr_host ls -ltr $rr_logs_source |";
 open (CMDOUT, $cmd) or die "$!\n";
 my $last_week_log_name = "";
 while (<CMDOUT>)
@@ -27,8 +33,8 @@ while (<CMDOUT>)
 my $gz_log_file   = "./downloads/log1.gz";
 my $log2 = "./downloads/log2.log";
 
-system "scp jvc\@randomracer.com:/opt/bitnami/apache2/logs/$last_week_log_name $gz_log_file";
-system "scp jvc\@randomracer.com:/opt/bitnami/apache2/logs/access_log $log2";
+system "scp $rr_username\@$rr_host:$rr_logs_source/$last_week_log_name $gz_log_file";
+system "scp $rr_username\@$rr_host:$rr_logs_source/access_log $log2";
 
 my $log1 = "./downloads/log1.log";
 

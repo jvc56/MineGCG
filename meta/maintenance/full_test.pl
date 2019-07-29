@@ -3,7 +3,16 @@
 use warnings;
 use strict;
 
-chdir("/home/jvc/MineGCG");
+use constant FULLPATH => "/home/josh/Dropbox/MineGCG";
+
+use lib  FULLPATH . "/objects";
+use Constants;
+
+chdir(FULLPATH);
+
+my $rr_host         = Constants::RR_HOSTNAME;
+my $rr_username     = Constants::RR_USERNAME;
+my $rr_working_dir  = Constants::RR_WORKING_DIR;
 
 my $full_start_time =  "\nStarted: " . localtime() . "\n";
 
@@ -44,7 +53,7 @@ my $access_end_time = time;
 
 my $cache_start_time = time;
 
-system "scp -r ./cache jvc\@randomracer.com:/home/bitnami/htdocs/rracer/";
+system "scp -r ./cache $rr_username\@$rr_host:$rr_working_dir";
 
 my $cache_end_time = time;
 

@@ -15,6 +15,9 @@ sub update_leaderboard
   my $query_prefix   = Constants::CACHE_URL_PREFIX;
   my $stats_note     = Constants::STATS_NOTE;
   
+  my $rr_host             = Constants::RR_HOSTNAME;
+  my $rr_username         = Constants::RR_USERNAME;
+  my $rr_leaderboard_dest = Constants::RR_LEADERBOARD_DEST;
   
   opendir my $stats, $stats_dir or die "Cannot open directory: $!";
   my @stat_files = readdir $stats;
@@ -221,7 +224,7 @@ sub update_leaderboard
 
   system "rm -r $stats_dir";
 
-  system "scp $leaderboard_name jvc\@randomracer.com:/home/bitnami/htdocs/rracer/leaderboard.html"
+  system "scp $leaderboard_name $rr_username\@$rr_host:$rr_leaderboard_dest"
 
 }
 

@@ -5,11 +5,19 @@ package Constants;
 use warnings;
 use strict;
 
+use constant RR_HOSTNAME                      => 'randomracer.com';
+use constant RR_USERNAME                      => 'jvc';
+
+use constant RR_NOTABLE_DEST                  => '/home/bitnami/htdocs/rracer/notable.html';
+use constant RR_LEADERBOARD_DEST              => '/home/bitnami/htdocs/rracer/leaderboard.html';
+use constant RR_LOGS_SOURCE                   => '/opt/bitnami/apache2/logs';
+use constant RR_WORKING_DIR                   => '/home/bitnami/htdocs/rracer/';
+
 use constant WGET_FLAGS                       => '--no-check-certificate';
 use constant CROSS_TABLES_URL                 => 'http://www.cross-tables.com/';
 use constant QUERY_URL_PREFIX                 => 'http://www.cross-tables.com/players.php?query=';
-use constant RR_URL_PREFIX                    => 'http://randomracer.com/cgi-bin/mine_webapp.pl?name=';
-use constant CACHE_URL_PREFIX                 => 'http://randomracer.com/cache/';
+use constant RR_URL_PREFIX                    => 'http://' . RR_HOSTNAME . '/cgi-bin/mine_webapp.pl?name=';
+use constant CACHE_URL_PREFIX                 => 'http://' . RR_HOSTNAME . '/cache/';
 use constant ANNOTATED_GAMES_URL_PREFIX       => 'http://www.cross-tables.com/anno.php?p=';
 use constant SINGLE_ANNOTATED_GAME_URL_PREFIX => 'http://www.cross-tables.com/annotated.php?u=';
 use constant CROSS_TABLES_COUNTRY_PREFIX      => 'http://www.cross-tables.com/bycountry.php?country=';

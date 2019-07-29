@@ -12,6 +12,10 @@ sub update_notable
   my $url            = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
   my $stats_note     = Constants::STATS_NOTE;
   
+  my $rr_host         = Constants::RR_HOSTNAME;
+  my $rr_username     = Constants::RR_USERNAME;
+  my $rr_notable_dest = Constants::RR_NOTABLE_DEST;
+
   opendir my $notables, $notable_dir or die "Cannot open directory: $!";
   my @notable_files = readdir $notables;
   closedir $notables;
@@ -85,7 +89,8 @@ sub update_notable
 
   system "rm -r $notable_dir";
 
-  system "scp $notable_name jvc\@randomracer.com:/home/bitnami/htdocs/rracer/notable.html"
+  system "scp $notable_name $rr_username\@$rr_host:$rr_notable_dest"
+
 }
 
 1;
