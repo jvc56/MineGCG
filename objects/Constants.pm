@@ -8,6 +8,8 @@ use strict;
 use constant RR_HOSTNAME                      => 'randomracer.com';
 use constant RR_USERNAME                      => 'jvc';
 
+use constant SSH_ARGS                         => '';
+
 use constant RR_NOTABLE_DEST                  => '/home/bitnami/htdocs/rracer/notable.html';
 use constant RR_LEADERBOARD_DEST              => '/home/bitnami/htdocs/rracer/leaderboard.html';
 use constant RR_LOGS_SOURCE                   => '/opt/bitnami/apache2/logs';

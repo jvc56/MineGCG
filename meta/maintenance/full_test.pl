@@ -13,6 +13,7 @@ chdir(FULLPATH);
 my $rr_host         = Constants::RR_HOSTNAME;
 my $rr_username     = Constants::RR_USERNAME;
 my $rr_working_dir  = Constants::RR_WORKING_DIR;
+my $ssh_args        = Constants::SSH_ARGS;
 
 my $full_start_time =  "\nStarted: " . localtime() . "\n";
 
@@ -53,7 +54,7 @@ my $access_end_time = time;
 
 my $cache_start_time = time;
 
-system "scp -r ./cache $rr_username\@$rr_host:$rr_working_dir";
+system "scp $ssh_args -r ./cache $rr_username\@$rr_host:$rr_working_dir";
 
 my $cache_end_time = time;
 

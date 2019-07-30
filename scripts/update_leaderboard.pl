@@ -18,7 +18,8 @@ sub update_leaderboard
   my $rr_host             = Constants::RR_HOSTNAME;
   my $rr_username         = Constants::RR_USERNAME;
   my $rr_leaderboard_dest = Constants::RR_LEADERBOARD_DEST;
-  
+  my $ssh_args            = Constants::SSH_ARGS;
+
   opendir my $stats, $stats_dir or die "Cannot open directory: $!";
   my @stat_files = readdir $stats;
   closedir $stats;
@@ -224,7 +225,7 @@ sub update_leaderboard
 
   system "rm -r $stats_dir";
 
-  system "scp $leaderboard_name $rr_username\@$rr_host:$rr_leaderboard_dest"
+  system "scp $ssh_args $leaderboard_name $rr_username\@$rr_host:$rr_leaderboard_dest"
 
 }
 
