@@ -3,7 +3,7 @@
 use warnings;
 use strict;
 
-use constant FULLPATH => "/home/josh/Dropbox/MineGCG";
+use constant FULLPATH => "/home/jvc/MineGCG";
 
 use lib  FULLPATH . "/objects";
 use Constants;
