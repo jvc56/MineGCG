@@ -352,7 +352,7 @@ sub retrieve
 
   if ($option eq "update" && ($games_indexed != 0 || $games_downloaded != 0))
   {
-    my $cache_filename = "$cache_dir/$name.cache";
+    my $cache_filename = "$cache_dir/$name.html";
     if (-e $cache_filename)
     {
       system "rm $cache_filename";
