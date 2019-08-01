@@ -63,7 +63,8 @@ use constant MISTAKES_ORDER =>
 (
   'Large',
   'Medium',
-  'Small'
+  'Small',
+  UNSPECIFIED_MISTAKE_NAME
 );
 
 use constant MISTAKE_COLORS =>
