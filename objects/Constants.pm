@@ -5,15 +5,20 @@ package Constants;
 use warnings;
 use strict;
 
-use constant RR_HOSTNAME                      => 'randomracer.com';
-use constant RR_USERNAME                      => 'jvc';
+use constant RR_HOSTNAME                      => '3.13.229.56';
+use constant RR_USERNAME                      => 'ubuntu';
 
-use constant SSH_ARGS                         => '';
+use constant SSH_ARGS                         => ' -i /home/jvc/randomracer-keypair1.pem ';
 
-use constant RR_NOTABLE_DEST                  => '/home/bitnami/htdocs/rracer/notable.html';
-use constant RR_LEADERBOARD_DEST              => '/home/bitnami/htdocs/rracer/leaderboard.html';
+use constant RR_NOTABLE_NAME                  => 'notable.html'
+use constant RR_LEADERBOARD_NAME              => 'leaderboard.html'
+
 use constant RR_LOGS_SOURCE                   => '/opt/bitnami/apache2/logs';
-use constant RR_WORKING_DIR                   => '/home/bitnami/htdocs/rracer/';
+use constant RR_WORKING_DIR                   => '/home/ubuntu/';
+use constant RR_REAL_DIR                      => '/var/www/html/';
+
+use constant RR_NOTABLE_DEST                  => RR_WORKING_DIR . RR_NOTABLE_NAME;
+use constant RR_LEADERBOARD_DEST              => RR_WORKING_DIR . RR_LEADERBOARD_NAME;
 
 use constant WGET_FLAGS                       => '--no-check-certificate';
 use constant CROSS_TABLES_URL                 => 'http://www.cross-tables.com/';
