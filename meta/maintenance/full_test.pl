@@ -60,7 +60,7 @@ my $cache_end_time = time;
 
 my $full_end_time = "Ended:   " . localtime() . "\n";
 
-my $notable_name     = Constants::RR_NOTABLE_NAME:
+my $notable_name     = Constants::RR_NOTABLE_NAME;
 my $leaderboard_name = Constants::RR_LEADERBOARD_NAME;
 my $rr_real_dir      = Constants::RR_REAL_DIR;
 
@@ -72,7 +72,7 @@ my $copy_to_real_cmd =
   sudo cp    $rr_working_dir/$notable_name     $rr_real_dir/
   sudo cp    $rr_working_dir/$leaderboard_name $rr_real_dir/
   \"
-"
+";
 
 system $copy_to_real_cmd;
 
