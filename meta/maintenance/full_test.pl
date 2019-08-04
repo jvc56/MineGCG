@@ -48,7 +48,7 @@ my $mine_end_time = time;
 
 my $access_start_time = time;
 
-# system "./meta/maintenance/get_access_log.pl > /dev/null 2>&1";
+system "./meta/maintenance/get_access_log.pl > /dev/null 2>&1";
 
 my $access_end_time = time;
 

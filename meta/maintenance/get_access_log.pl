@@ -25,7 +25,7 @@ open (CMDOUT, $cmd) or die "$!\n";
 my $last_week_log_name = "";
 while (<CMDOUT>)
 {
-  if (/(access_log.*gz)/)
+  if (/(access.*gz)/)
   {
       $last_week_log_name = $1;
   }
@@ -35,7 +35,7 @@ my $gz_log_file   = "./downloads/log1.gz";
 my $log2 = "./downloads/log2.log";
 
 system "scp $ssh_args $rr_username\@$rr_host:$rr_logs_source/$last_week_log_name $gz_log_file";
-system "scp $ssh_args $rr_username\@$rr_host:$rr_logs_source/access_log $log2";
+system "scp $ssh_args $rr_username\@$rr_host:$rr_logs_source/access.log $log2";
 
 my $log1 = "./downloads/log1.log";
 
