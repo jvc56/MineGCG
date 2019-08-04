@@ -86,7 +86,7 @@ for (my $i = 0; $i < scalar @log_names; $i++)
   open(LOGFILE, '<', $log_name);
   while (<LOGFILE>)
   {
-    if (/(\/cache\/\w+\.cache)|(\/cgi-bin\/mine_webapp\.pl)|(leaderboard.html)|(notable.html)/)
+    if (/(\/cache\/\w+\.html)|(\/cgi-bin\/mine_webapp\.pl)|(leaderboard.html)|(notable.html)/)
     {
       $_ =~ /(\d+).(\w+).(\d+):(\d+):(\d+):(\d+)/;
 

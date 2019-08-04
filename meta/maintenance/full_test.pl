@@ -68,9 +68,9 @@ my $copy_to_real_cmd =
 "
   ssh $ssh_args $rr_username\@$rr_host
   \"
-  sudo cp -r $rr_working_dir/cache             $rr_real_dir/
-  sudo cp    $rr_working_dir/$notable_name     $rr_real_dir/
-  sudo cp    $rr_working_dir/$leaderboard_name $rr_real_dir/
+  sudo cp -r $rr_working_dir/cache             $rr_real_dir/;
+  sudo cp    $rr_working_dir/$notable_name     $rr_real_dir/;
+  sudo cp    $rr_working_dir/$leaderboard_name $rr_real_dir/;
   \"
 ";
 

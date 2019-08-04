@@ -13,7 +13,7 @@ use constant SSH_ARGS                         => ' -i /home/jvc/randomracer-keyp
 use constant RR_NOTABLE_NAME                  => 'notable.html';
 use constant RR_LEADERBOARD_NAME              => 'leaderboard.html';
 
-use constant RR_LOGS_SOURCE                   => '/opt/bitnami/apache2/logs';
+use constant RR_LOGS_SOURCE                   => '/var/log/apache2/';
 use constant RR_WORKING_DIR                   => '/home/ubuntu/';
 use constant RR_REAL_DIR                      => '/var/www/html/';
 
