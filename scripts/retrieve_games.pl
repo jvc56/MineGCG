@@ -45,14 +45,6 @@ sub retrieve
 
   system "mkdir -p downloads";
 
-  if ($verbose) {print "Retrieving games...\n";}
-  if ($option eq "reset" && -e $dir)
-  {
-    system "rm -r $dir";
-    if ($verbose) {print "Deleted $dir\n";}
-    system "rm -r $names_dir";
-    if ($verbose) {print "Deleted $names_dir\n";}
-  }
 
   # Prepare name for cross-tables query
   # by replacing ' ' with '+'
