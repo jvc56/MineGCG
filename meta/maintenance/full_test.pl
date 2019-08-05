@@ -60,19 +60,7 @@ my $cache_end_time = time;
 
 my $full_end_time = "Ended:   " . localtime() . "\n";
 
-my $notable_name     = Constants::RR_NOTABLE_NAME;
-my $leaderboard_name = Constants::RR_LEADERBOARD_NAME;
-my $rr_real_dir      = Constants::RR_REAL_DIR;
-
-my $copy_to_real_cmd =
-"
-  ssh $ssh_args $rr_username\@$rr_host
-  \"
-  sudo cp -r $rr_working_dir/cache             $rr_real_dir/;
-  sudo cp    $rr_working_dir/$notable_name     $rr_real_dir/;
-  sudo cp    $rr_working_dir/$leaderboard_name $rr_real_dir/;
-  \"
-";
+my $copy_to_real_cmd = "ssh $ssh_args $rr_username\@$rr_host  \"sudo $rr_working_dir/copy_to_html.sh\"";
 
 system $copy_to_real_cmd;
 
