@@ -45,6 +45,9 @@ sub new
   $player_one_real_name_readable =~ s/_/ /g;
   $player_two_real_name_readable =~ s/_/ /g;
 
+  $player_one_real_name_readable =~ s/^\s+|\s+$//g;
+  $player_two_real_name_readable =~ s/^\s+|\s+$//g;
+
   my $line = "";
 
   open(GCG, '<', $filename);
@@ -488,7 +491,6 @@ sub new
     filename        => $filename,
     lexicon         => $lexicon_ref,
     tourney_game    => $is_tourney_game,
-  	this_player     => 1 - $player_is_first,
   	player_one_name => $player_one_real_name,
   	player_two_name => $player_two_real_name,
     board           => $board,

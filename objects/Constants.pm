@@ -28,17 +28,56 @@ use constant CACHE_URL_PREFIX                 => 'http://' . RR_HOSTNAME . '/cac
 use constant ANNOTATED_GAMES_URL_PREFIX       => 'http://www.cross-tables.com/anno.php?p=';
 use constant SINGLE_ANNOTATED_GAME_URL_PREFIX => 'http://www.cross-tables.com/annotated.php?u=';
 use constant CROSS_TABLES_COUNTRY_PREFIX      => 'http://www.cross-tables.com/bycountry.php?country=';
-use constant ANNOTATED_GAMES_PAGE_NAME        => './downloads/anno_page.html';
-use constant QUERY_RESULTS_PAGE_NAME          => './downloads/query_results.html';
-use constant NON_TOURNAMENT_GAME              => 'NONTOURNAMENT';
-use constant GAME_DIRECTORY_NAME              => './games';
-use constant NAMES_DIRECTORY_NAME             => './names';
+use constant ANNOTATED_GAMES_PAGE_NAME        => 'anno_page.html';
+use constant QUERY_RESULTS_PAGE_NAME          => 'query_results.html';
+use constant DOWNLOADS_DIRECTORY_NAME         => './downloads';
 use constant STATS_DIRECTORY_NAME             => './stats';
 use constant NOTABLE_DIRECTORY_NAME           => './notable';
 use constant CACHE_DIRECTORY_NAME             => './cache';
 use constant BLACKLISTED_TOURNAMENTS          => {
                                                     '9194' => 1 # Can-Am Match 08/29/15
                                                  };
+
+use constant DATABASE_DRIVER   => 'Pg';
+use constant DATABASE_NAME     => 'minegcg';
+use constant DATABASE_HOSTNAME => 'localhost';
+use constant DATABASE_USERNAME => 'postgres';
+use constant DATABASE_PASSWORD => 'password';
+
+use constant PLAYERS_TABLE_NAME => 'players';
+use constant GAMES_TABLE_NAME   => 'games';
+
+use constant TABLE_CREATION_ORDER =>
+[
+  Constants::PLAYERS_TABLE_NAME,
+  Constants::GAMES_TABLE_NAME
+];
+
+use constant DATABASE_TABLES =>
+{
+  Constants::PLAYERS_TABLE_NAME =>
+  [
+    "id SERIAL PRIMARY  KEY",
+    "cross_tables_id    INT",
+    "name               VARCHAR(255)",
+    "sanitized_name     VARCHAR(255)",
+    "country_trigraph   VARCHAR(255)"
+  ],
+  Constants::GAMES_TABLE_NAME   =>
+  [
+    "id SERIAL       PRIMARY KEY",
+    "player1_id      INT REFERENCES " . Constants::PLAYERS_TABLE_NAME . " (id)",
+    "player2_id      INT REFERENCES " . Constants::PLAYERS_TABLE_NAME . " (id)",
+    "cross_tables_id INT",
+    "gcg             TEXT",
+    "stats           JSON",
+    "tournament_id   INT",
+    "lexicon         VARCHAR(5)",
+    "round           INT",
+    "name            TEXT",
+    "date            DATE"
+  ]
+};
 
 use constant UNSPECIFIED_MISTAKE_NAME => 'Unspecified';
 
@@ -125,93 +164,6 @@ use constant LEADERBOARD_MIN_GAMES      => 50;
 
 use constant NOTABLE_NAME               => "notable";
 
-use constant STATS_ITEMS =>
-(
-    {name => 'Bingos',                            type => STAT_ITEM_LIST_PLAYER},
-    {name => 'Triple Triples',                    type => STAT_ITEM_LIST_PLAYER},
-    {name => 'Bingo Nines or Above',              type => STAT_ITEM_LIST_PLAYER},
-    {name => 'Highest Scoring Play',              type => STAT_ITEM_LIST_PLAYER},
-    {name => 'Challenged Phonies',                type => STAT_ITEM_LIST_PLAYER},
-    {name => 'Unchallenged Phonies',              type => STAT_ITEM_LIST_PLAYER},
-    {name => 'Plays That Were Challenged',        type => STAT_ITEM_LIST_PLAYER},
-    {name => 'Bingos',                            type => STAT_ITEM_LIST_OPP},
-    {name => 'Triple Triples',                    type => STAT_ITEM_LIST_OPP},
-    {name => 'Bingo Nines or Above',              type => STAT_ITEM_LIST_OPP},
-    {name => 'Highest Scoring Play',              type => STAT_ITEM_LIST_OPP},
-    {name => 'Challenged Phonies',                type => STAT_ITEM_LIST_OPP},
-    {name => 'Unchallenged Phonies',              type => STAT_ITEM_LIST_OPP},
-    {name => 'Plays That Were Challenged',        type => STAT_ITEM_LIST_OPP},
-    {name => 'Many Double Letters Covered',       type => STAT_ITEM_LIST_NOTABLE},
-    {name => 'Many Double Words Covered',         type => STAT_ITEM_LIST_NOTABLE},
-    {name => 'All Triple Letters Covered',        type => STAT_ITEM_LIST_NOTABLE},
-    {name => 'All Triple Words Covered',          type => STAT_ITEM_LIST_NOTABLE},
-    {name => 'High Scoring',                      type => STAT_ITEM_LIST_NOTABLE},
-    {name => 'Combined High Scoring',             type => STAT_ITEM_LIST_NOTABLE},
-    {name => 'Combined Low Scoring',              type => STAT_ITEM_LIST_NOTABLE},
-    {name => 'Ties',                              type => STAT_ITEM_LIST_NOTABLE},
-    {name => 'One Player Plays Every Power Tile', type => STAT_ITEM_LIST_NOTABLE},
-    {name => 'One Player Plays Every E',          type => STAT_ITEM_LIST_NOTABLE},
-    {name => 'Many Challenges',                   type => STAT_ITEM_LIST_NOTABLE},
-    {name => 'Games',                             type => STAT_ITEM_GAME},
-    {name => 'Total Turns',                       type => STAT_ITEM_GAME},
-    {name => 'Challenges',                        type => STAT_ITEM_GAME},
-    {name => 'Wins',                              type => STAT_ITEM_PLAYER},
-    {name => 'Score',                             type => STAT_ITEM_PLAYER},
-    {name => 'Turns',                             type => STAT_ITEM_PLAYER},
-    {name => 'Score per Turn',                    type => STAT_ITEM_PLAYER},
-    {name => 'Firsts',                            type => STAT_ITEM_PLAYER},
-    {name => 'Full Rack per Turn',                type => STAT_ITEM_PLAYER},
-    {name => 'Exchanges',                         type => STAT_ITEM_PLAYER},
-    {name => 'High Game',                         type => STAT_ITEM_PLAYER},
-    {name => 'Low Game',                          type => STAT_ITEM_PLAYER},
-    {name => 'Highest Scoring Turn',              type => STAT_ITEM_PLAYER},
-    {name => 'Bingos Played',                     type => STAT_ITEM_PLAYER},
-    {name => 'Bingo Probabilities',               type => STAT_ITEM_PLAYER},
-    {name => 'Tiles Played',                      type => STAT_ITEM_PLAYER},
-    {name => 'Power Tiles Played',                type => STAT_ITEM_PLAYER},
-    {name => 'Power Tiles Stuck With',            type => STAT_ITEM_PLAYER},
-    {name => 'Turns With a Blank',                type => STAT_ITEM_PLAYER},
-    {name => 'Triple Triples Played',             type => STAT_ITEM_PLAYER},
-    {name => 'Bingoless Games',                   type => STAT_ITEM_PLAYER},
-    {name => 'Bonus Square Coverage',             type => STAT_ITEM_PLAYER},
-    {name => 'Phony Plays',                       type => STAT_ITEM_PLAYER},
-    {name => 'Challenge Percentage',              type => STAT_ITEM_PLAYER},
-    {name => 'Defending Challenge Percentage',    type => STAT_ITEM_PLAYER},
-    {name => 'Percentage Phonies Unchallenged',   type => STAT_ITEM_PLAYER},
-    {name => 'Comments',                          type => STAT_ITEM_PLAYER},
-    {name => 'Comments Word Length',              type => STAT_ITEM_PLAYER},
-    {name => 'Mistakeless Turns',                 type => STAT_ITEM_PLAYER},
-    {name => 'Mistakes',                          type => STAT_ITEM_PLAYER},
-    {name => 'Wins',                              type => STAT_ITEM_OPP},
-    {name => 'Score',                             type => STAT_ITEM_OPP},
-    {name => 'Turns',                             type => STAT_ITEM_OPP},
-    {name => 'Score per Turn',                    type => STAT_ITEM_OPP},
-    {name => 'Firsts',                            type => STAT_ITEM_OPP},
-    {name => 'Full Rack per Turn',                type => STAT_ITEM_OPP},
-    {name => 'Exchanges',                         type => STAT_ITEM_OPP},
-    {name => 'High Game',                         type => STAT_ITEM_OPP},
-    {name => 'Low Game',                          type => STAT_ITEM_OPP},
-    {name => 'Highest Scoring Turn',              type => STAT_ITEM_OPP},
-    {name => 'Bingos Played',                     type => STAT_ITEM_OPP},
-    {name => 'Bingo Probabilities',               type => STAT_ITEM_OPP},
-    {name => 'Tiles Played',                      type => STAT_ITEM_OPP},
-    {name => 'Power Tiles Played',                type => STAT_ITEM_OPP},
-    {name => 'Power Tiles Stuck With',            type => STAT_ITEM_OPP},
-    {name => 'Turns With a Blank',                type => STAT_ITEM_OPP},
-    {name => 'Triple Triples Played',             type => STAT_ITEM_OPP},
-    {name => 'Bingoless Games',                   type => STAT_ITEM_OPP},
-    {name => 'Bonus Square Coverage',             type => STAT_ITEM_OPP},
-    {name => 'Phony Plays',                       type => STAT_ITEM_OPP},
-    {name => 'Challenge Percentage',              type => STAT_ITEM_OPP},
-    {name => 'Defending Challenge Percentage',    type => STAT_ITEM_OPP},
-    {name => 'Percentage Phonies Unchallenged',   type => STAT_ITEM_OPP},
-    {name => 'Comments',                          type => STAT_ITEM_OPP},
-    {name => 'Comments Word Length',              type => STAT_ITEM_OPP},
-    {name => 'Mistakeless Turns',                 type => STAT_ITEM_OPP},
-    {name => 'Mistakes',                          type => STAT_ITEM_OPP},
-    {name => 'Mistakes List',                     type => MISTAKE_ITEM_LIST_PLAYER},
-    {name => 'Mistakes List',                     type => MISTAKE_ITEM_LIST_OPP}
-);
 
 use constant INDEX_COLUMN_MAPPING =>
 {
@@ -234,21 +186,21 @@ use constant INDEX_COLUMN_MAPPING =>
 
 use constant COLUMN_INDEX_MAPPING =>
 {
-    A => 0,
-    B => 1,
-    C => 2,
-    D => 3,
-    E => 4,
-    F => 5,
-    G => 6,
-    H => 7,
-    I => 8,
-    J => 9,
-    K => 10,
-    L => 11,
-    M => 12,
-    N => 13,
-    O => 14
+    'A' => 0,
+    'B' => 1,
+    'C' => 2,
+    'D' => 3,
+    'E' => 4,
+    'F' => 5,
+    'G' => 6,
+    'H' => 7,
+    'I' => 8,
+    'J' => 9,
+    'K' => 10,
+    'L' => 11,
+    'M' => 12,
+    'N' => 13,
+    'O' => 14
 };
 
 use constant CHAR_TO_VALUE =>
@@ -350,6 +302,20 @@ TRIPLE_WORD . '  ' . DOUBLE_LETTER . '   ' . TRIPLE_WORD . '   ' . DOUBLE_LETTER
 ;
 
 use constant STATS_NOTE => "\n\nFor more information about how these statistcs were computed, check the <a href='https://github.com/jvc56/MineGCG#minegcg'>documentation</a>.\n\n";
+
+
+use constant STAT_DATATYPE_NAME    => 'datatype';
+use constant STAT_METATYPE_NAME    => 'metatype';
+use constant STAT_FUNCTION_NAME    => 'function';
+use constant STAT_ITEM_OBJECT_NAME => 'object';
+use constant STAT_NAME             => 'name';
+
+use constant DATATYPE_LIST => 'list';
+use constant DATATYPE_ITEM => 'item';
+
+use constant METATYPE_PLAYER  => 'player';
+use constant METATYPE_GAME    => 'game';
+use constant METATYPE_NOTABLE => 'notable';
 
 1;
 

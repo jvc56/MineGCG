@@ -6,8 +6,8 @@ use Getopt::Long;
 use Pod::Usage qw(pod2usage);
 
 require "./scripts/retrieve_games.pl";
-require "./scripts/mine_games.pl";
-require "./scripts/sanitize.pl";
+# require "./scripts/mine_games.pl";
+require "./scripts/utils.pl";
 
 my $verbose        = '';
 my $update         = '';
@@ -34,9 +34,7 @@ my $help = 0;
 GetOptions (
             'verbose'          => \$verbose,
             'update'           => \$update,
-            'skipmetaupdate'   => \$skipmetaupdate,
             'game:s'           => \$game,
-            'reset'            => \$reset,
             'cort:s'           => \$cort,
             'tournamentid:s'   => \$tid,
             'opponent:s'       => \$opponent,
@@ -47,22 +45,11 @@ GetOptions (
             'statsdump'        => \$statsdump,
             'notabledump'      => \$notabledump,
             'missingracks'     => \$missingracks,
-            'resolve'          => \$resolve,
             'name=s'           => \$name,
             'help|?'           => \$help
            );
 
 pod2usage(1) if $help || !$name;
-
-my $option = "";
-if ($update)
-{
-  $option = "update";
-}
-if ($reset)
-{
-  $option = "reset";
-}
 
 $raw_name = $name;
 $name = sanitize($name);
@@ -71,28 +58,8 @@ $startdate =~ s/[^\d]//g;
 $enddate =~ s/[^\d]//g;
 $lexicon = uc $lexicon;
 
-retrieve($name, $raw_name, $option, $tid, $cort, $game, $opponent_sanitized, $startdate, $enddate, $lexicon, $verbose, $resolve);
-mine($name, $cort, $game, $opponent_sanitized, $startdate, $enddate, $lexicon, $verbose, $tid, $html, $statsdump, $notabledump, $missingracks);
-
-if (!$skipmetaupdate)
-{
-  open (CMDOUT, "git fetch --dry-run 2>&1 |");
-  my $response = '';
-  while (<CMDOUT>)
-  {
-    $response .= $_;
-  }
-
-  if (!$response)
-  {
-    print "Completed with the latest version of MineGCG\n"
-  }
-  else
-  {
-    print "Your current version of MineGCG is out of date!\n";
-    print "Use 'git pull' to get the latest version\n";
-  }
-}
+retrieve($name, $raw_name, $update, $tid, $cort, $game, $opponent_sanitized, $startdate, $enddate, $lexicon, $verbose, $html, $missingracks);
+# mine($name, $cort, $game, $opponent_sanitized, $startdate, $enddate, $lexicon, $verbose, $tid, $html, $statsdump, $notabledump, $missingracks);
 
 
 __END__

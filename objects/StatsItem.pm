@@ -51,14 +51,8 @@ sub addGame
 {
   my $this = shift;
 
-  my $game = shift;
-
-  my $this_player = $game->{'this_player'};
-
-  if ($this->{'type'} eq Constants::STAT_ITEM_OPP || $this->{'type'} eq Constants::STAT_ITEM_LIST_OPP || $this->{'type'} eq Constants::MISTAKE_ITEM_LIST_OPP)
-  {
-    $this_player = 1 - $this_player;
-  }
+  my $game   = shift;
+  my $player = shift;
 
   my $name = $this->{'name'};
 
