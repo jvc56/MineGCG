@@ -52,48 +52,74 @@ sub query_table
   my $fieldname = shift;
   my $value     = shift;
 
-  my $arrayref =  $dbh->selectall_arrayref("SELECT * FROM $tablename WHERE $fieldname = '$value'") or die DBI::errstr;
+  my $arrayref =  $dbh->selectall_arrayref("SELECT * FROM $tablename WHERE $fieldname = '$value'", {Slice => {}}) or die DBI::errstr;
   return $arrayref;
 }
 
-sub insert_hash_into_table
+sub insert_or_set_hash_into_table
 {
   my $dbh       = shift;
   my $table     = shift;
   my $hashref   = shift;
+  my $record_id = shift;
 
-  my $keys_string   = "("; 
-  my $values_string = "("; 
+  my $stmt;
 
-  foreach my $key (keys %{$hashref})
+  if (!$record_id)
   {
-    $keys_string   .= "$key,";
-    if (defined $hashref->{$key})
-    {    
-      $values_string .= "'$hashref->{$key}',";
-    }
-    else
+    my $keys_string   = "("; 
+    my $values_string = "("; 
+
+    foreach my $key (keys %{$hashref})
     {
-      $values_string .= "NULL,";
+      $keys_string   .= "$key,";
+      if (defined $hashref->{$key})
+      {    
+        $values_string .= "'$hashref->{$key}',";
+      }
+      else
+      {
+        $values_string .= "NULL,";
+      }
     }
+
+    chop($keys_string);
+    chop($values_string);
+
+    if (!$keys_string || !$values_string)
+    {
+      return undef;
+    }
+
+    $keys_string   .= ")"; 
+    $values_string .= ")"; 
+
+    $stmt = "INSERT INTO $table $keys_string VALUES $values_string;";
+    $dbh->do($stmt) or die DBI::errstr;
+    return $dbh->last_insert_id(undef, undef, $table, undef);
   }
-
-  chop($keys_string);
-  chop($values_string);
-
-  if (!$keys_string || !$values_string)
+  else
   {
-    return undef;
+    my $set_stmt   = ""; 
+    foreach my $key (keys %{$hashref})
+    {
+      my $value;
+      if (defined $hashref->{$key})
+      {    
+        $value = "'$hashref->{$key}'";
+      }
+      else
+      {
+        $value = "NULL";
+      }
+      $set_stmt = "$key = $value,";
+    }
+    chop($set_stmt);
+    $stmt = "UPDATE $table SET $set_stmt WHERE id = '$record_id'";
+    $dbh->do($stmt) or die DBI::errstr;
+    return $record_id;
   }
 
-  $keys_string   .= ")"; 
-  $values_string .= ")"; 
-
-  my $stmt = "INSERT INTO $table $keys_string VALUES $values_string;";
-  print $stmt;
-
-  $dbh->do($stmt) or die DBI::errstr;
-  return $dbh->last_insert_id(undef, undef, undef, undef);
 }
 
 sub delete_function_from_statslist

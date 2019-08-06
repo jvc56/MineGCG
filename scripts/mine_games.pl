@@ -6,6 +6,7 @@ use Data::Dumper;
 
 use lib "./objects"; 
 use lib "./lexicons";
+require "./scripts/utils.pl";
 
 use Game;
 use Constants;
@@ -33,6 +34,8 @@ sub mine
   my $cache_dir               = Constants::CACHE_DIRECTORY_NAME;
   my $stats_note              = Constants::STATS_NOTE;
 
+  my $dbh = connect_to_database();
+
   my $player_name       = shift;
   my $cort              = shift;
   my $single_game_id    = shift;
@@ -46,6 +49,7 @@ sub mine
   my $statsdump         = shift;
   my $notabledump       = shift;
   my $missingracks      = shift;
+
 
   my $cache_filename = "$cache_dir/$player_name.html";
   my $cache_condition = !$cort &&
@@ -79,65 +83,54 @@ sub mine
 
   if ($html)
   {
-    $javascript .= "<script>\n";
-
-    $javascript .= "function toggle(id) {\n";
-    $javascript .= "var x = document.getElementById(id);\n";
-    $javascript .= "if (x.style.display === 'none') {\n";
-    $javascript .= "x.style.display = 'block';\n";
-    $javascript .= "} else {\n";
-    $javascript .= "x.style.display = 'none';\n";
-    $javascript .= "}\n";
-    $javascript .= "}\n";
-
-    $javascript .= "</script>\n";
+    $javascript .= Constants::RESULTS_PAGE_JAVASCRIPT;
   }
 
-  __print_or_append( "\nStatistics for $player_name_no_underscore\n\n\n", $html, 0);
+  print_or_append( "\nStatistics for $player_name_no_underscore\n\n\n", $html, 0);
   
-  __print_or_append( "\nSEARCH PARAMETERS: \n", $html, 0);
+  print_or_append( "\nSEARCH PARAMETERS: \n", $html, 0);
   
-  __print_or_append( "\n  Player:        $player_name_no_underscore", $html, 0);
+  print_or_append( "\n  Player:        $player_name_no_underscore", $html, 0);
 
 
-  __print_or_append( "\n  Game type:     ", $html, 0);
+  print_or_append( "\n  Game type:     ", $html, 0);
 
-  if (uc $cort eq 'C') {__print_or_append( "CLUB OR CASUAL", $html, 0);}
-  elsif (uc $cort eq 'T') {__print_or_append( "TOURNAMENT", $html, 0);}
-  else {__print_or_append( "-", $html, 0);}
+  if (uc $cort eq 'C') {print_or_append( "CLUB OR CASUAL", $html, 0);}
+  elsif (uc $cort eq 'T') {print_or_append( "TOURNAMENT", $html, 0);}
+  else {print_or_append( "-", $html, 0);}
 
-  __print_or_append( "\n  Lexicon:       ", $html, 0);
+  print_or_append( "\n  Lexicon:       ", $html, 0);
 
-  if (!$lexicon) {__print_or_append( "-", $html, 0);}
-  else {__print_or_append( $lexicon, $html, 0);}
+  if (!$lexicon) {print_or_append( "-", $html, 0);}
+  else {print_or_append( $lexicon, $html, 0);}
 
-  __print_or_append( "\n  Tournament ID: ", $html, 0);
+  print_or_append( "\n  Tournament ID: ", $html, 0);
   
-  if ($tourney_id) {__print_or_append( $tourney_id, $html, 0);}
-  else {__print_or_append( "-", $html, 0);}
+  if ($tourney_id) {print_or_append( $tourney_id, $html, 0);}
+  else {print_or_append( "-", $html, 0);}
 
-  __print_or_append( "\n  Game ID:       ", $html, 0);
+  print_or_append( "\n  Game ID:       ", $html, 0);
   
-  if ($single_game_id) {__print_or_append( $single_game_id, $html, 0);}
-  else {__print_or_append( "-", $html, 0);}
+  if ($single_game_id) {print_or_append( $single_game_id, $html, 0);}
+  else {print_or_append( "-", $html, 0);}
 
-  __print_or_append( "\n  Opponent:      ", $html, 0);
+  print_or_append( "\n  Opponent:      ", $html, 0);
   
-  if ($opponent_name_no_underscore) {__print_or_append( $opponent_name_no_underscore, $html, 0);}
-  else {__print_or_append( "-", $html, 0);}
+  if ($opponent_name_no_underscore) {print_or_append( $opponent_name_no_underscore, $html, 0);}
+  else {print_or_append( "-", $html, 0);}
 
-  __print_or_append( "\n  Start Date:    ", $html, 0);
+  print_or_append( "\n  Start Date:    ", $html, 0);
   
-  if ($startdate) {__print_or_append( $startdate, $html, 0);}
-  else {__print_or_append( "-", $html, 0);}
+  if ($startdate) {print_or_append( $startdate, $html, 0);}
+  else {print_or_append( "-", $html, 0);}
 
-  __print_or_append( "\n  End Date:      ", $html, 0);
+  print_or_append( "\n  End Date:      ", $html, 0);
   
-  if ($enddate) {__print_or_append( $enddate, $html, 0);}
-  else {__print_or_append( "-", $html, 0);}
+  if ($enddate) {print_or_append( $enddate, $html, 0);}
+  else {print_or_append( "-", $html, 0);}
   
 
-  __print_or_append( "\n\n\n", $html, 0);
+  print_or_append( "\n\n\n", $html, 0);
 
   if ($html)
   {
@@ -153,225 +146,133 @@ sub mine
     my $opening_mark_tag = "<mark style='background-color: ";
     my $closing_mark_tag = "</mark>";  
 
-    __print_or_append( "COLOR KEY:\n\n", $html, 0);
-    __print_or_append( "  $opening_mark_tag $tt_color'>Triple Triple$closing_mark_tag\n\n", $html, 0);
-    __print_or_append( "  $opening_mark_tag $na_color'>Bingo Nine or Above$closing_mark_tag\n\n", $html, 0);
-    __print_or_append( "  $opening_mark_tag $im_color'>Improbable$closing_mark_tag\n\n", $html, 0);
-    __print_or_append( "  $opening_mark_tag $tt_na_color'>Triple Triple and Bingo Nine or Above$closing_mark_tag\n\n", $html, 0);
-    __print_or_append( "  $opening_mark_tag $im_na_color'>Improbable and Bingo Nine or Above$closing_mark_tag\n\n", $html, 0);
-    __print_or_append( "  $opening_mark_tag $im_tt_color'>Triple Triple and Improbable$closing_mark_tag\n\n", $html, 0);
-    __print_or_append( "  $opening_mark_tag $at_color'>Triple Triple and Bingo Nine or Above and Improbable$closing_mark_tag\n\n", $html, 0);
+    print_or_append( "COLOR KEY:\n\n", $html, 0);
+    print_or_append( "  $opening_mark_tag $tt_color'>Triple Triple$closing_mark_tag\n\n", $html, 0);
+    print_or_append( "  $opening_mark_tag $na_color'>Bingo Nine or Above$closing_mark_tag\n\n", $html, 0);
+    print_or_append( "  $opening_mark_tag $im_color'>Improbable$closing_mark_tag\n\n", $html, 0);
+    print_or_append( "  $opening_mark_tag $tt_na_color'>Triple Triple and Bingo Nine or Above$closing_mark_tag\n\n", $html, 0);
+    print_or_append( "  $opening_mark_tag $im_na_color'>Improbable and Bingo Nine or Above$closing_mark_tag\n\n", $html, 0);
+    print_or_append( "  $opening_mark_tag $im_tt_color'>Triple Triple and Improbable$closing_mark_tag\n\n", $html, 0);
+    print_or_append( "  $opening_mark_tag $at_color'>Triple Triple and Bingo Nine or Above and Improbable$closing_mark_tag\n\n", $html, 0);
     
-    __print_or_append( "\n\n", $html, 0);
+    print_or_append( "\n\n", $html, 0);
 
-    __print_or_append("<div id='" . Constants::ERROR_DIV_ID . "' style='display: none;'>", $html, 0);
+    print_or_append("<div id='" . Constants::ERROR_DIV_ID . "' style='display: none;'>", $html, 0);
 
   }
 
   my $all_stats = Stats->new();
-  my $single_game_stats = Stats->new();
+
   my %tourney_game_hash;
   my $at_least_one = 0;
 
   my $num_errors   = 0;
   my $num_warnings = 0;
 
-  my $player_indexes_filename = "$names_dir/$player_name.txt";
-  if (-e $player_indexes_filename && $player_name ne $opponent_name)
+  my $games_table   = Constants::GAMES_TABLE_NAME;
+  my $players_table = Constants::PLAYERS_TABLE_NAME;
+
+  my $games_query =
+  "
+  SELECT *
+  FROM $games_table AS g, $players_table AS p, $players_table AS opp
+  WHERE
+        p.sanitized_name = $player_name AND
+        (g.player1_cross_tables_id = p.cross_tables_id OR g.player1_cross_tables_id = p.cross_tables_id)
+  ";
+
+  if ($single_game_id && $single_game_id ne $id)
   {
-    open(PLAYER_INDEXES, '<', $player_indexes_filename);
-    while (<PLAYER_INDEXES>)
+    $games_query .= " AND g.cross_tables_id = '$single_game_id'";
+  }
+  if ($tourney_id)
+  {
+    $games_query .= " AND g.cross_tables_tournament_id = '$tourney_id'";
+  }
+  if ($opponent_name)
+  {
+    $games_query .=
+    "
+      AND opp.sanitized_name = '$opponent_name'
+      AND
+         (
+          opp.cross_tables_id = g.player1_cross_tables_id OR
+          opp.cross_tables_id = g.player2_cross_tables_id
+         )
+    ";
+  }
+  if ($startdate)
+  {
+    $games_query .= " AND g.date > '$startdate'";
+  }
+  if ($enddate)
+  {
+    $games_query .= " AND g.date < '$enddate'";
+  }
+  if ($lexicon && $this_lexicon ne $lexicon)
+  {
+    $games_query .= " AND g.lexicon = 'lexicon'";
+  }
+  if ($cort eq 'T')
+  {
+    $games_query .= " AND g.cross_tables_tournament_id > 0";
+  }
+  elsif ($cort eq 'C')
+  {
+    $games_query .= " AND g.cross_tables_tournament_id = 0";
+  }
+
+  my @game_results = @{$dbh->selectall_arrayref($query, {Slice => {}, "RaiseError" => 1})};
+
+  while (@game_results)
+  {
+    my $game = shift @game_results;
+
+    my $error   = $game->{'error'};
+    my $warning = $game->{'warning'};
+
+    my $game_opp_name = $game->{'player1_name'};
+    my $player_is_first = sanitize($game->{'player1_name'}) eq $player_name
+    
+    if ($player_is_first)
     {
-      chomp $_;
-      my $game_file_name = $_;
-      if (!$game_file_name){next;}
-
-      my @meta_data = split /\./, $game_file_name;
-      my $date            = $meta_data[0];
-      my $date_sanitized  = $date;
-      $date_sanitized =~ s/[^\d]//g;
-      my $game_tourney_id = $meta_data[1];
-      my $round_number    = $meta_data[2];
-      my $tourney_name    = $meta_data[3];
-      my $this_lexicon    = $meta_data[4];
-      my $id              = $meta_data[5];
-      my $player_one_name = $meta_data[6];
-      my $player_two_name = $meta_data[7];
-      my $ext             = $meta_data[8];
-
-      my $player_is_first = 0;
-
-      my $full_game_file_name = $dir_name . '/' . $game_file_name;
-
-      if ($player_one_name ne $player_name)
-      {
-        $player_is_first = 1;
-        if ($player_two_name ne $player_name)
-        {
-          __print_or_append( "\nERROR:  Matching player name not found\nFILE:   $full_game_file_name\n", $html, 1, $player_name);
-          return;
-        }
-      }
-
-      if ($single_game_id && $single_game_id ne $id)
-      {
-        if ($verbose) {__print_or_append( "Game $full_game_file_name is not the specified game\n", $html, 0, $player_name);}
-        next;
-      }
-      if ($tourney_id && $game_tourney_id ne $tourney_id)
-      {
-        if ($verbose) {__print_or_append( "Game $full_game_file_name is not in the specified tournament\n", $html, 0, $player_name);}
-        next;
-      }
-      if ($opponent_name && $opponent_name ne $player_one_name && $opponent_name ne $player_two_name)
-      {
-        if ($verbose) {__print_or_append( "Game $full_game_file_name is not against the specified opponent\n", $html, 0, $player_name);}
-        next;
-      }
-      if (($startdate && $date_sanitized < $startdate) || ($enddate && $date_sanitized > $enddate))
-      {
-        if ($verbose) {__print_or_append( "Game $full_game_file_name is not in the specified timeframe\n", $html, 0, $player_name);}
-        next;  
-      }
-      if ($lexicon && $this_lexicon ne $lexicon)
-      {
-        if ($verbose) {__print_or_append( "Game $full_game_file_name is not in the specified lexicon\n", $html, 0, $player_name);}
-        next;  
-      }
-      if ($blacklisted_tournaments->{$game_tourney_id})
-      {
-        __print_or_append( "Game $full_game_file_name is from a blacklisted tournament\n", $html, 0, $player_name);
-        next;
-      }
-
-      my $is_tourney_game = $tourney_name;
-
-      # Check for casual/club or only tournament games
-      if ( (uc $cort eq 'T' && !$is_tourney_game) || (uc $cort eq 'C' && $is_tourney_game))
-      {
-        if ($verbose) {__print_or_append( "Game $full_game_file_name is not the specified type\n", $html, 0, $player_name);}
-        next;
-      }
-
-      # Check for repeat tournament games
-      if ($game_tourney_id && $round_number && $is_tourney_game)
-      {
-        my $key = $game_tourney_id.'+'.$round_number;
-        if($tourney_game_hash{$key})
-        {
-          __print_or_append( "\nWARNING: duplicate game detected\nFILE:    $full_game_file_name\n", $html, 0, $player_name);
-          $num_warnings++;
-          next;
-        }
-        $tourney_game_hash{$key} = 1;
-      }
-
-      if ($player_one_name eq $player_two_name)
-      {
-        __print_or_append( "\nERROR:  both players have the same name\nFILE:   $full_game_file_name\n", $html, 1, $player_name);
-        $num_errors++;
-        next;
-      }
-
-      if (!$ext || $ext ne "gcg")
-      {
-        __print_or_append( "\nERROR:  invalid file extension\nFILE:   $full_game_file_name\n", $html, 1, $player_name);
-        $num_errors++;
-        next;
-      }
-
-      if (!(-e $full_game_file_name))
-      {
-        __print_or_append( "\nERROR: no GCG found for index $full_game_file_name\n", $html, 1, $player_name);
-        $num_errors++;
-        next;
-      }
-
-      my $lexicon_ref;
-
-      if ($this_lexicon eq 'TWL98')
-      {
-        $lexicon_ref = TWL98::TWL98_LEXICON;
-      }
-      elsif ($this_lexicon eq 'TWL06')
-      {
-        $lexicon_ref = TWL06::TWL06_LEXICON;
-      }
-      elsif ($this_lexicon eq 'TWL15')
-      {
-        $lexicon_ref = American::AMERICAN_LEXICON;
-      }
-      elsif ($this_lexicon eq 'NSW18')
-      {
-        $lexicon_ref = NSW18::NSW18_LEXICON;
-      }
-      elsif ($this_lexicon eq 'CSW07')
-      {
-        $lexicon_ref = CSW07::CSW07_LEXICON;
-      }
-      elsif ($this_lexicon eq 'CSW12')
-      {
-        $lexicon_ref = CSW12::CSW12_LEXICON;
-      }
-      elsif ($this_lexicon eq 'CSW15')
-      {
-        $lexicon_ref = CSW15::CSW15_LEXICON;
-      }
-      elsif ($this_lexicon eq 'CSW19')
-      {
-        $lexicon_ref = CSW19::CSW19_LEXICON;
-      }
-      else
-      {
-        __print_or_append( "\nERROR:  no valid lexicon found\nFILE:   $full_game_file_name\n", $html, 1, $player_name);
-        $num_errors++;
-        next;
-      }
-
-      my $game = Game->new($full_game_file_name, $player_is_first, $lexicon_ref, $player_one_name, $player_two_name, $html, $missingracks);
-      
-      if (ref($game) ne "Game")
-      {
-        __print_or_append( "\nERROR:  $game", $html, 1, $player_name);
-        $num_errors++;
-        next;
-      }
-      elsif ($game->{'warnings'})
-      {
-        __print_or_append( "\n" . $game->{'warnings'}, $html, 0, $player_name);
-        $num_warnings++;
-      }
-
-      # if ($verbose)
-      # {
-      #  __print_or_append( "\nData structures for $full_game_file_name\n\n", $html, 0);
-      #  __print_or_append( $game->toString(), $html, 0);
-      #  $single_game_stats->addGame($game);
-      #  __print_or_append( $single_game_stats->toString(), $html, 0);
-      #  $single_game_stats->resetStats();
-      # }
-      
-      my $possible_warnings = $all_stats->addGame($game);
-      if ($possible_warnings)
-      {
-        __print_or_append($possible_warnings, $html, 0, $player_name);
-        $num_warnings++;
-      }
-      $at_least_one = 1;
+      $game_opp_name = $game->{'player2_name'};
     }
+    
+    my $game_id = $game->{'cross_table_id'};
+
+    if ($error)
+    {
+      print_or_append( "\nERROR:  $error", $html, 1, $game_opp_name, $game_id);
+      $num_errors++;
+      next;
+    }
+    elsif ($warning)
+    {
+      print_or_append( "\n$warning", $html, 0, $game_opp_name, $game_id);
+      $num_warnings++;
+    }
+
+    my $game_stat = Stat->new($player_is_first, $game->{'stats'});
+
+    $all_stats->addStat($game_stat);
+
+    $at_least_one = 1;
+  }
+
   }
 
   if ($html)
   {
-      __print_or_append("</div>\n", $html, 0);
-      __print_or_append( "\n", $html, 0);
-      __print_or_append( "Errors:   $num_errors\n", $html, 0);
-      __print_or_append( "Warnings: $num_warnings\n", $html, 0);
-      __print_or_append( "\n", $html, 0);
-      __print_or_append("<button onclick='toggle(\"" . Constants::ERROR_DIV_ID . "\")'>Toggle Error and Warning Report</button>\n", $html, 0);
+      print_or_append("</div>\n", $html, 0);
+      print_or_append( "\n", $html, 0);
+      print_or_append( "Errors:   $num_errors\n", $html, 0);
+      print_or_append( "Warnings: $num_warnings\n", $html, 0);
+      print_or_append( "\n", $html, 0);
+      print_or_append("<button onclick='toggle(\"" . Constants::ERROR_DIV_ID . "\")'>Toggle Error and Warning Report</button>\n", $html, 0);
   }
 
-  __print_or_append($stats_note, $html, 0);
+  print_or_append($stats_note, $html, 0);
 
   if ($at_least_one)
   {
@@ -386,60 +287,12 @@ sub mine
   }
   else
   {
-    __print_or_append( "\nNo valid games found\n", $html, 0);
+    print_or_append( "\nNo valid games found\n", $html, 0);
   }
-  __print_or_append( "\n", $html, 0);
-  __print_or_append( "Errors:   $num_errors\n", $html, 0);
-  __print_or_append( "Warnings: $num_warnings\n", $html, 0);
-  __print_or_append( "\n", $html, 0);
-
-  if ($statsdump && $all_stats->{'num_games'} >= Constants::LEADERBOARD_MIN_GAMES)
-  {
-    system "mkdir -p $stats_dir";
-    open(my $fh, '>', $stats_dir . "/" . $player_name . ".stats");
-    my @entries = @{$all_stats->{'entries'}};
-    foreach my $e (@entries)
-    {
-      my $type = $e->{'type'};
-      if ($type eq Constants::STAT_ITEM_GAME || $type eq Constants::STAT_ITEM_PLAYER)
-      {
-        print $fh $e->{'name'} . "," . $e->{'total'} . "\n";
-        if ($e->{'subitems'})
-        {
-          my %subitems = %{$e->{'subitems'}};
-          my @order    = @{$e->{'list'}};
-          for(my $i = 0; $i < scalar @order; $i ++)
-          {
-            my $key = $order[$i];
-            print $fh $e->{'name'} . " " . $key . "," . $subitems{$key} . "\n";
-          }
-        }
-      }
-    }
-    close $fh;
-  }
-  
-  if ($notabledump && $at_least_one)
-  {
-    system "mkdir -p $notable_dir";
-    open(my $fh, '>', $notable_dir . "/" . $player_name . ".notable");
-    my @entries = @{$all_stats->{'entries'}};
-    foreach my $e (@entries)
-    {
-      my $type = $e->{'type'};
-      if ($type eq Constants::STAT_ITEM_LIST_NOTABLE)
-      {
-        print $fh $e->{'name'} . ": ";
-        my @list = @{$e->{'list'}};
-        for (my $i = 0; $i < scalar @list; $i++)
-        {
-          print $fh $list[$i] . ",";
-        }
-        print $fh "\n";
-      }
-    }
-    close $fh;
-  }
+  print_or_append( "\n", $html, 0);
+  print_or_append( "Errors:   $num_errors\n", $html, 0);
+  print_or_append( "Warnings: $num_warnings\n", $html, 0);
+  print_or_append( "\n", $html, 0);
 
   my $start_tags = "<!DOCTYPE HTML><html><body> $javascript <pre style='white-space: pre-wrap;' >";
   my $end_tags   = "</pre></body></html>";
@@ -464,27 +317,21 @@ sub mine
   }
 }
 
-sub __print_or_append
+sub print_or_append
 {
   my $addition    = shift;
   my $html        = shift;
   my $error       = shift;
-  my $this_player = shift;
+  my $opp         = shift;
+  my $id          = shift;
 
   if ($html)
   {
-    if ($addition =~ /\.(\d+)\.(\w+)\.(\w+)\.gcg/)
+    if ($opp)
     {
-      my $id  = $1;
-      my $opp = $2;
-      if ($opp eq $this_player)
-      {
-        $opp = $3;
-      }
-      $opp =~ s/_/ /g;
       my $url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
       my $link = "<a href='$url$id' target='_blank'>against $opp</a>";
-      $addition =~ s/\.[^\.]+\.[^\.]+\.[^\.]+\.[^\.]+\.[^\.]+\.[^\.]+\.[^\.]+\.[^\.]+\.gcg/$link/g;
+      $addition =~ s/\.\/.*\/\d+\.html/$link/g;
     }
     $html_string .= $addition;
   }

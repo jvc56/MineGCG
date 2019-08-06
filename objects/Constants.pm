@@ -58,24 +58,27 @@ use constant DATABASE_TABLES =>
   Constants::PLAYERS_TABLE_NAME =>
   [
     "id SERIAL PRIMARY  KEY",
-    "cross_tables_id    INT",
+    "cross_tables_id    INT NOT NULL UNIQUE",
     "name               VARCHAR(255)",
-    "sanitized_name     VARCHAR(255)",
-    "country_trigraph   VARCHAR(255)"
+    "sanitized_name     VARCHAR(255)"
   ],
   Constants::GAMES_TABLE_NAME   =>
   [
-    "id SERIAL       PRIMARY KEY",
-    "player1_id      INT REFERENCES " . Constants::PLAYERS_TABLE_NAME . " (id)",
-    "player2_id      INT REFERENCES " . Constants::PLAYERS_TABLE_NAME . " (id)",
-    "cross_tables_id INT",
-    "gcg             TEXT",
-    "stats           JSON",
-    "tournament_id   INT",
-    "lexicon         VARCHAR(5)",
-    "round           INT",
-    "name            TEXT",
-    "date            DATE"
+    "id SERIAL                    PRIMARY KEY",
+    "player1_cross_tables_id      INT REFERENCES " . Constants::PLAYERS_TABLE_NAME . " (cross_tables_id)",
+    "player2_cross_tables_id      INT REFERENCES " . Constants::PLAYERS_TABLE_NAME . " (cross_tables_id)",
+    "player1_name                 TEXT",
+    "player2_name                 TEXT",
+    "cross_tables_id              INT NOT NULL UNIQUE",
+    "gcg                          TEXT",
+    "stats                        JSON",
+    "cross_tables_tournament_id   INT",
+    "lexicon                      VARCHAR(5)",
+    "round                        INT",
+    "name                         TEXT",
+    "date                         DATE"
+    "error                        TEXT",
+    "warning                      TEXT",
   ]
 };
 
@@ -304,11 +307,12 @@ TRIPLE_WORD . '  ' . DOUBLE_LETTER . '   ' . TRIPLE_WORD . '   ' . DOUBLE_LETTER
 use constant STATS_NOTE => "\n\nFor more information about how these statistcs were computed, check the <a href='https://github.com/jvc56/MineGCG#minegcg'>documentation</a>.\n\n";
 
 
-use constant STAT_DATATYPE_NAME    => 'datatype';
-use constant STAT_METATYPE_NAME    => 'metatype';
-use constant STAT_FUNCTION_NAME    => 'function';
-use constant STAT_ITEM_OBJECT_NAME => 'object';
-use constant STAT_NAME             => 'name';
+use constant STAT_DATATYPE_NAME         => 'datatype';
+use constant STAT_METATYPE_NAME         => 'metatype';
+use constant STAT_ADD_FUNCTION_NAME     => 'function';
+use constant STAT_COMBINE_FUNCTION_NAME => 'combine_function';
+use constant STAT_ITEM_OBJECT_NAME      => 'object';
+use constant STAT_NAME                  => 'name';
 
 use constant DATATYPE_LIST => 'list';
 use constant DATATYPE_ITEM => 'item';
@@ -316,6 +320,24 @@ use constant DATATYPE_ITEM => 'item';
 use constant METATYPE_PLAYER  => 'player';
 use constant METATYPE_GAME    => 'game';
 use constant METATYPE_NOTABLE => 'notable';
+
+use constant RESULTS_PAGE_JAVSCRIPT =>
+"
+<script>
+function toggle(id)
+{
+  var x = document.getElementById(id);
+  if (x.style.display === 'none')
+  {
+    x.style.display = 'block';
+  }
+  else
+  {
+    x.style.display = 'none';
+  }
+}
+</script>
+";
 
 1;
 

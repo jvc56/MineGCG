@@ -27,6 +27,9 @@ sub new
   my $html                 = shift;
      $missingracks         = shift;
 
+  my $lexicon              = shift;
+  my $game_id              = shift;
+
   my $player_one_name;
   my $player_two_name;
   my @moves;
@@ -214,7 +217,7 @@ sub new
         if (
             @moves &&
             $moves[-1]->{'play_type'} eq Constants::PLAY_TYPE_WORD &&
-            $filename =~ /(TWL)|(NSW)/ &&
+            $lexicon =~ /(TWL)|(NSW)/ &&
             scalar @moves < 20
            )
         {
@@ -489,6 +492,8 @@ sub new
   my %game = 
   (
     filename        => $filename,
+    lexicon_name    => $lexicon,
+    id              => $game_id,
     lexicon         => $lexicon_ref,
     tourney_game    => $is_tourney_game,
   	player_one_name => $player_one_real_name,
@@ -514,8 +519,7 @@ sub getReadableName
 {
   my $game = shift;
 
-  my @filename_items = split /\./, $game->{'filename'};
-  my $id = $filename_items[6];
+  my $id = $game->{'id'};
   my $readable_name = $game->{'readable_name'} . " (Game $id)";
 
   if ($game->{'html'})
@@ -770,7 +774,6 @@ sub getBingos
 
   my @bingos = ();
 
-  my @filename_items = split /\./, $this->{'filename'};
 
   foreach my $move (@moves)
   {
@@ -788,7 +791,7 @@ sub getBingos
         $prob = " " . $prob;
       }
 
-      push @bingos, $this->labelPlay($move, $player, $filename_items[6], $prob);
+      push @bingos, $this->labelPlay($move, $player, $this->{'id'}, $prob);
     }
   }
   return \@bingos;
@@ -803,8 +806,6 @@ sub getTripleTriples
   my @moves = @{$this->{'moves'}};
 
   my @tts = ();
-
-  my @filename_items = split /\./, $this->{'filename'};
 
   foreach my $move (@moves)
   {
@@ -821,7 +822,7 @@ sub getTripleTriples
       {
         $prob = " " . $prob;
       }
-      push @tts, $this->labelPlay($move, $player, $filename_items[6], $prob);
+      push @tts, $this->labelPlay($move, $player, $this->{'id'}, $prob);
     }
   }
   return \@tts;
@@ -836,8 +837,6 @@ sub getBingoNinesOrAbove
   my @moves = @{$this->{'moves'}};
 
   my @bnas = ();
-
-  my @filename_items = split /\./, $this->{'filename'};
 
   foreach my $move (@moves)
   {
@@ -854,7 +853,7 @@ sub getBingoNinesOrAbove
       {
         $prob = " " . $prob;
       }
-      push @bnas, $this->labelPlay($move, $player, $filename_items[6], $prob);
+      push @bnas, $this->labelPlay($move, $player, $this->{'id'}, $prob);
     }
   }
   return \@bnas;
@@ -870,7 +869,6 @@ sub getHighestScoringPlay
 
   my @highest = ("", 0);
 
-  my @filename_items = split /\./, $this->{'filename'};
 
   foreach my $move (@moves)
   {
@@ -883,7 +881,7 @@ sub getHighestScoringPlay
     if ($score > $highest[1])
     {
       my $high_cap = $this->readableMove($move);
-      @highest = ($this->labelPlay($move, $player, $filename_items[6], $high_cap) , $score);
+      @highest = ($this->labelPlay($move, $player, $this->{'id'}, $high_cap) , $score);
     }
   }
   return \@highest;
@@ -901,7 +899,6 @@ sub getPhoniesFormed
 
   my @phonies = ();
 
-  my @filename_items = split /\./, $this->{'filename'};
 
   foreach my $move (@moves)
   {
@@ -937,7 +934,7 @@ sub getPhoniesFormed
     }
     if ($move_phonies)
     {
-      push @phonies, $this->labelPlay($move, $player, $filename_items[6], $move_phonies);
+      push @phonies, $this->labelPlay($move, $player, $this->{'id'}, $move_phonies);
     }
   }
   return \@phonies;
@@ -953,7 +950,6 @@ sub getPlaysChallenged
 
   my @plays_chal = ();
 
-  my @filename_items = split /\./, $this->{'filename'};
 
   for (my $i = 0; $i < scalar @moves; $i++)
   {
@@ -975,7 +971,7 @@ sub getPlaysChallenged
       {
         $readable_play = $readable_play."*";
       }
-      push @plays_chal, $this->labelPlay($move, $player, $filename_items[6], $readable_play);
+      push @plays_chal, $this->labelPlay($move, $player, $this->{'id'}, $readable_play);
     }
   }
   return \@plays_chal;

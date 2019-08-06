@@ -9,10 +9,21 @@ use List::Util qw(sum);
 
 use lib '.';
 use Constants;
+use JSON;
 
 sub new
 {
-  my $this = shift;
+  my $this            = shift;
+  my $player_is_first = shift;
+
+  my $json = shift;
+
+  if ($json)
+  {
+    my %stats = decode_json($json);
+    my $self = bless \%stats, $this;
+    return $self;
+  }
 
   my $statlist = statsList();
 
@@ -24,7 +35,6 @@ sub new
   for (my $i = 0; $i < scalar @{$statlist}; $i++)
   {
     my $statitem = $statlist->[$i];
-    print Dumper($statitem);
     if ($statitem->{Constants::STAT_METATYPE_NAME} eq Constants::METATYPE_GAME)
     {
       push @game_stats, $statitem;
@@ -39,7 +49,14 @@ sub new
       my $newstat = {};
       foreach my $key (keys %{$statitem})
       {
-        $newstat->{$key} = $statitem->{$key};
+        if ($key != Constants::STAT_ITEM_OBJECT_NAME)
+        {
+          $newstat->{$key} = $statitem->{$key};
+        }
+        else
+        {
+          $newstat->{$key} = {};
+        }
       }
       push @player2_stats, $newstat;
     }
@@ -47,10 +64,14 @@ sub new
 
   my %stats =
   (
-    'player1' => \@player1_stats,
-    'player2' => \@player2_stats,
-    'game'    => \@game_stats,
-    'notable' => \@notable_stats,
+    'player_is_first' => $player_is_first,
+    'stats' =>
+    {
+      'player1' => \@player1_stats,
+      'player2' => \@player2_stats,
+      'game'    => \@game_stats,
+      'notable' => \@notable_stats,
+    }
   );
   my $self = bless \%stats, $this;
   return $self;
@@ -62,12 +83,14 @@ sub addGame
 
   my $game   = shift;
 
-  my $function_name = Constants::STAT_FUNCTION_NAME;
+  my $stats = $this->{'stats'};
+
+  my $function_name = Constants::STAT_ADD_FUNCTION_NAME;
   my $object_name   = Constants::STAT_ITEM_OBJECT_NAME;
 
   foreach my $key (keys %{$this})
   {
-    my $statlist = $this->{$key};
+    my $statlist = $stats->{$key};
     for (my $i = 0; $i < scalar @{$statlist}; $i++)
     {
       my $stat = $statlist->[$i];
@@ -78,6 +101,53 @@ sub addGame
         $player = 1;
       }
       $stat->{$function_name}->($stat->{$object_name}, $game, $player);
+    }
+  }
+}
+
+sub addStat
+{
+  my $this = shift;
+
+  my $other_stat_object = shift;
+
+  my $stats       = $this->{'stats'};
+  my $other_stats = $other_stat_object->{'stats'};
+
+  my $switch = $this->{'player_is_first'} != $other_stat_object->{'player_is_first'};
+
+  foreach my $key (keys %{$stats})
+  {
+    my $this_statlist = $stats->{$key};
+    my $other_key = $key;
+
+    if ($switch)
+    {
+      if ($key eq "player1_stats")
+      {
+        $other_key = "player2_stats";
+      }
+      elsif ($key eq "player2_stats")
+      {
+        $other_key = "player1_stats";
+      }
+    }
+
+    for (my $i = 0; $i < scalar @{$this_statlist}; $i++)
+    {
+      my $this_stat  = $this_statlist->[$i];
+
+      my $other_stat = $other_stats->{$other_key}->[$i];
+
+      if (
+           $this_stat->{Constants::STAT_NAME}          ne $other_stat->{Constants::STAT_NAME} || 
+           $this_stat->{Constants::STAT_DATATYPE_NAME} ne $other_stat->{Constants::STAT_DATATYPE_NAME} || 
+           $this_stat->{Constants::STAT_METATYPE_NAME} ne $other_stat->{Constants::STAT_METATYPE_NAME} ||
+         )
+      {
+        die "Stats do not match!\n" . Dumper($this_stat) . Dumper($other_stat);
+      }
+      $this_stat->{Constant::STAT_COMBINE_FUNCTION_NAME}->($other_stat);
     }
   }
 }
@@ -96,6 +166,224 @@ sub makeTitleRow
                (sprintf "%-$tow"."s", $c) . "|\n";
 }
 
+sub makeRow
+{
+  my $this = shift;
+  my $tiw = Constants::TITLE_WIDTH;
+  my $aw =  Constants::AVERAGE_WIDTH;
+  my $tow = Constants::TOTAL_WIDTH;
+  my $name = shift;
+  my $total = shift;
+  my $num_games = shift;
+
+  $name =~ /^(\s*)/;
+
+  my $average = sprintf "%.2f", $total/$num_games;
+
+  if ($this->{'single'})
+  {
+    $average = $total;
+    $total = '-';
+  }
+
+  if ($this->{'link'})
+  {
+    my @items = split /\./, $this->{'link'};
+    my $id = $items[6];
+    my $link = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX . $id;
+    $tiw -= length $name;
+    $name = "<a href='$link' target='_blank'>$name</a>";
+    $tiw += length $name;
+  }
+
+  my $spaces = $1;
+  $tow = $tow - (length $spaces);
+
+  my $s = "";
+
+  $s .= "|" .  (sprintf "%-$tiw"."s", "  ".$name) . 
+               (sprintf $spaces."%-$aw"."s", $average) . 
+               (sprintf "%-$tow"."s", $total) . "|\n";
+  return $s;
+}
+sub makeItem
+{
+  my $this = shift;
+
+  my $name = shift;
+  my $total = shift;
+  my $num_games = shift;
+
+  my $r = $this->makeRow($name, $total, $num_games);
+
+  if ($this->{'subitems'})
+  {
+    my %subs  = %{$this->{'subitems'}};
+    my @order = @{$this->{'list'}};
+    for (my $i = 0; $i < scalar @order; $i++)
+    {
+      my $key = $order[$i];
+      $r .= $this->makeRow("  " . $key, $subs{$key}, $num_games);
+    }
+  }
+  return $r;
+}
+
+sub makeMistakeItem
+{
+  my $this         = shift;
+  my $mistake_item = shift;
+  my $is_title_row = shift;
+  my $num_mistakes = shift;
+
+  my $html         = $this->{'html'};
+
+  my $s = "";
+
+  if ($is_title_row)
+  {
+    if ($html)
+    {
+      $s .= "<tr>\n";
+      $s .= "<td colspan='$is_title_row' align='center'><b>$mistake_item Mistakes ($num_mistakes)</b></td>\n";
+      $s .= "</tr>\n";
+    }
+    else
+    {
+      $s .= "\n$mistake_item Mistakes\n";
+    }
+    return $s;
+  }
+
+  my @mistake_array = @{$mistake_item};
+  my $mm = $mistake_array[1];
+  if ($html)
+  {
+    my $color_hash = Constants::MISTAKE_COLORS;
+    my $color = $color_hash->{$mistake_array[0]};
+
+    $s .= "<tr style='background-color: $color'>\n";
+    $s .= "<td>$mistake_array[0]</td>\n";
+    $s .= "<td>$mm</td>\n";
+    $s .= "<td>$mistake_array[2]</td>\n";
+    $s .= "<td>$mistake_array[3]</td>\n";
+    $s .= "<td>$mistake_array[4]</td>\n";
+    $s .= "</tr>\n";
+  }
+  else
+  {
+    $s .= "Mistake:   $mistake_array[0]\n";
+    $s .= "Magnitude: $mm              \n";
+    $s .= "Game:      $mistake_array[2]\n";
+    $s .= "Play:      $mistake_array[3]\n";
+    $s .= "Comment:   $mistake_array[4]\n";
+  }
+  return $s;
+}
+
+sub statItemToString
+{
+  my $this = shift;
+
+  my $total_games = shift;
+  my $tiw = Constants::TITLE_WIDTH;
+  my $aw =  Constants::AVERAGE_WIDTH;
+  my $tow = Constants::TOTAL_WIDTH;
+  my $tot = $tiw + $aw + $tow;
+
+  my $s = "";
+  if ($this->{'type'} eq Constants::STAT_ITEM_LIST_PLAYER || $this->{'type'} eq Constants::STAT_ITEM_LIST_OPP  || $this->{'type'} eq Constants::STAT_ITEM_LIST_NOTABLE)
+  {
+    $s .= "\n".$this->{'name'} . ": ";
+    my @list = @{$this->{'list'}};
+    for (my $i = 0; $i < scalar @list; $i++)
+    {
+      my $commaspace = ", ";
+      if ($i == (scalar @list) - 1)
+      {
+        $commaspace = "\n";
+      }
+      $s .= $list[$i] . $commaspace;
+    }
+    $s .= "\n";
+  }
+  elsif ($this->{'type'} eq Constants::MISTAKE_ITEM_LIST_PLAYER || $this->{'type'} eq Constants::MISTAKE_ITEM_LIST_OPP)
+  {
+    $s .= "\n";
+    my $html = $this->{'html'};
+    my @list = @{$this->{'list'}};
+
+    if ($html && scalar @list > 0)
+    {
+      $s .= "<table>\n<tbody>\n";
+    }
+
+    my @mistakes_magnitude = Constants::MISTAKES_ORDER;
+
+    my %magnitude_strings = ();
+
+    my %mistakes_magnitude_count = ();
+
+    foreach my $mag (@mistakes_magnitude)
+    {
+      $magnitude_strings{$mag} = "";
+      $mistakes_magnitude_count{$mag} = 0;
+    }
+
+    my $mistake_elements_length;
+
+    for (my $i = 0; $i < scalar @list; $i++)
+    {
+      my @mistake_elements = @{$list[$i]};
+      $mistake_elements_length = scalar @mistake_elements;
+      $magnitude_strings{$mistake_elements[1]} .= $this->makeMistakeItem($list[$i], 0);
+      $mistakes_magnitude_count{$mistake_elements[1]}++;
+    }
+
+    for (my $i = 0; $i < scalar @mistakes_magnitude; $i++)
+    {
+      my $mag = $mistakes_magnitude[$i];
+      if ($magnitude_strings{$mag})
+      {
+        if ($html)
+        {
+          $s .= "<tr><td style='height: 50px'></td></tr>\n";
+        }
+        $s .= $this->makeMistakeItem($mag, $mistake_elements_length, $mistakes_magnitude_count{$mag});
+        if ($html)
+        {
+          $s .= "<tr>\n";
+          $s .= "<th>Mistake</th>\n";
+          $s .= "<th>Magnitude</th>\n";
+          $s .= "<th>Game</th>\n";
+          $s .= "<th>Play</th>\n";
+          $s .= "<th>Comment</th>\n";
+          $s .= "</tr>\n";
+        }
+        else
+        {
+          $s .= "\n\n\n";
+        }
+        $s .= $magnitude_strings{$mag};
+      }
+    }
+
+    if ($html && scalar @list > 0)
+    {
+      $s .= "</tbody>\n</table>\n";
+    }
+
+    $s .= "\n";
+  }
+  else
+  {
+    $s .= $this->makeItem($this->{'name'}, $this->{'total'}, $total_games);
+  }
+
+  return $s;  
+}
+
+
 sub toString
 {
   my $this = shift;
@@ -105,37 +393,90 @@ sub toString
   my $aw         = Constants::AVERAGE_WIDTH;
   my $tow        = Constants::TOTAL_WIDTH;
   my $tot        = $tiw + $aw + $tow;
-  my $num        = $this->{'num_games'};
+  my $num;
 
-  my $s = "\n";
-  $s .= "\n".Constants::STAT_ITEM_LIST_PLAYER . "\n";
-  for (my $i = 0; $i < scalar @{$this->{'entries'}}; $i++)
+  my $player1_ref = $this->{'stats'}->{'player1'};
+  my $player2_ref = $this->{'stats'}->{'player2'};
+  my $game_ref    = $this->{'stats'}->{'game'};
+  my $notable_ref = $this->{'stats'}->{'notable'};
+
+  foreach my $statob (@{$game_ref})
   {
-    my $stat_item = ${$this->{'entries'}}[$i];
-    if ($stat_item->{'type'} eq Constants::STAT_ITEM_LIST_PLAYER)
+    if ($statob->{Constants::STAT_NAME} eq 'Games')
     {
-      $s .= $stat_item->toString($num);
+      $num = $statob->{Constants::STAT_ITEM_OBJECT_NAME}->{'total'};
+      last;
     }
   }
 
-  $s .= "\n".Constants::STAT_ITEM_LIST_OPP . "\n";
-  for (my $i = 0; $i < scalar @{$this->{'entries'}}; $i++)
+  if (!$this->{'player_is_first'})
   {
-    my $stat_item = ${$this->{'entries'}}[$i];
-    if ($stat_item->{'type'} eq Constants::STAT_ITEM_LIST_OPP)
+    my $tmp = $player1_ref;
+    $player1_ref = $player2_ref;
+    $player2_ref = $tmp;
+  }
+
+  my @notable_stats      = map {$_->{Constants::STAT_ITEM_OBJECT_NAME}} @{$notable_ref};
+  my @game_stats         = map {$_->{Constants::STAT_ITEM_OBJECT_NAME}} @{$game_ref};
+
+  my @player_list_stats  = ();
+  my @opp_list_stats     = ();
+
+  my @player_item_stats  = ();
+  my @opp_item_stats     = ();
+
+  my $player_mistake_list;
+  my $opp_mistake_list;
+
+  for (my $i = 0; $i < scalar @{$player1_ref}; $i++)
+  {
+    my $stat   = $player1_ref->[$i];
+    my $object = $stat->{Constants::STAT_ITEM_OBJECT_NAME};
+    if ($stat->{Constants::STAT_NAME} eq "Mistakes List")
     {
-      $s .= $stat_item->toString($num);
+      $player_mistake_list = $object;
+    }
+    elsif ($stat->{Constants::STAT_DATATYPE_NAME} eq Constants::DATATYPE_LIST)
+    {
+      @player_list_stats, $object;
+    }
+    elsif ($stat->{Constants::STAT_DATATYPE_NAME} eq Constants::DATATYPE_ITEM)
+    {
+      @player_item_stats, $object;
     }
   }
 
-  $s .= "\n".Constants::STAT_ITEM_LIST_NOTABLE . "\n";
-  for (my $i = 0; $i < scalar @{$this->{'entries'}}; $i++)
+  for (my $i = 0; $i < scalar @{$player2_ref}; $i++)
   {
-    my $stat_item = ${$this->{'entries'}}[$i];
-    if ($stat_item->{'type'} eq Constants::STAT_ITEM_LIST_NOTABLE)
+    my $stat   = $player2_ref->[$i];
+    my $object = $stat->{Constants::STAT_ITEM_OBJECT_NAME};
+    if ($stat->{Constants::STAT_NAME} eq "Mistakes List")
     {
-      $s .= $stat_item->toString($num);
+      $opp_mistake_list = $object;
     }
+    elsif ($stat->{Constants::STAT_DATATYPE_NAME} eq Constants::DATATYPE_LIST)
+    {
+      @opp_list_stats, $object;
+    }
+    elsif ($stat->{Constants::STAT_DATATYPE_NAME} eq Constants::DATATYPE_ITEM)
+    {
+      @opp_item_stats, $object;
+    }
+  }
+
+  my $s = "";
+
+  for (my $i = 0; $i < scalar @player_list_stats; $i++)
+  {
+    $s .= statItemToString($player_list_stats[$i], $num);
+  }
+  for (my $i = 0; $i < scalar @opp_list_stats; $i++)
+  {
+    $s .= statItemToString($opp_list_stats[$i], $num);
+  }
+  for (my $i = 0; $i < scalar @notable_stats; $i++)
+  {
+    $s .= statItemToString($notable_stats[$i], $num);
   }
 
   my $title_divider = ("_" x ($tot+2)) . "\n";
@@ -146,38 +487,30 @@ sub toString
   $s .= makeTitleRow($tiw, $aw, $tow, "", "AVERAGE", "TOTAL");
 
   $s .= makeTitleRow($tiw, $aw, $tow, Constants::STAT_ITEM_GAME, "", "");
-  for (my $i = 0; $i < scalar @{$this->{'entries'}}; $i++)
+  
+  for (my $i = 0; $i < scalar @game_stats; $i++)
   {
-    my $stat_item = ${$this->{'entries'}}[$i];
-    if ($stat_item->{'type'} eq Constants::STAT_ITEM_GAME)
-    {
-      $s .= $stat_item->toString($num);
-    }
+    $s .= statItemToString($game_stats[$i], $num);
   }
 
   $s .= makeTitleRow($tiw, $aw, $tow, "", "", "");
 
   $s .= makeTitleRow($tiw, $aw, $tow, Constants::STAT_ITEM_PLAYER, "", "");
-  for (my $i = 0; $i < scalar @{$this->{'entries'}}; $i++)
+  
+  for (my $i = 0; $i < scalar @player_item_stats; $i++)
   {
-    my $stat_item = ${$this->{'entries'}}[$i];
-    if ($stat_item->{'type'} eq Constants::STAT_ITEM_PLAYER)
-    {
-      $s .= $stat_item->toString($num);
-    }
+    $s .= statItemToString($player_item_stats[$i], $num);
   }
 
   $s .= makeTitleRow($tiw, $aw, $tow, "", "", "");
 
   $s .= makeTitleRow($tiw, $aw, $tow, Constants::STAT_ITEM_OPP, "", "");
-  for (my $i = 0; $i < scalar @{$this->{'entries'}}; $i++)
+  
+  for (my $i = 0; $i < scalar @opp_item_stats; $i++)
   {
-    my $stat_item = ${$this->{'entries'}}[$i];
-    if ($stat_item->{'type'} eq Constants::STAT_ITEM_OPP)
-    {
-      $s .= $stat_item->toString($num);
-    }
+    $s .= statItemToString($opp_item_stats[$i], $num);
   }
+  
   $s .= ("_" x ($tot+2)) . "\n\n";
 
   if ($html)
@@ -186,24 +519,13 @@ sub toString
   }
 
   $s .= "\n".Constants::MISTAKE_ITEM_LIST_PLAYER . "\n";
-  for (my $i = 0; $i < scalar @{$this->{'entries'}}; $i++)
-  {
-    my $stat_item = ${$this->{'entries'}}[$i];
-    if ($stat_item->{'type'} eq Constants::MISTAKE_ITEM_LIST_PLAYER)
-    {
-      $s .= $stat_item->toString($num);
-    }
-  }
+
+  $s .= statItemToString($player_mistake_list, $num);
 
   $s .= "\n\n\n".Constants::MISTAKE_ITEM_LIST_OPP . "\n";
-  for (my $i = 0; $i < scalar @{$this->{'entries'}}; $i++)
-  {
-    my $stat_item = ${$this->{'entries'}}[$i];
-    if ($stat_item->{'type'} eq Constants::MISTAKE_ITEM_LIST_OPP)
-    {
-      $s .= $stat_item->toString($num);
-    }
-  }
+  
+  $s .= statItemToString($opp_mistake_list, $num);
+
 
   if ($html)
   {
@@ -223,7 +545,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        push @{$this->{'list'}}, @{$other->{'list'}};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -244,7 +573,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        push @{$this->{'list'}}, @{$other->{'list'}};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -265,7 +601,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        push @{$this->{'list'}}, @{$other->{'list'}};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -286,7 +629,19 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+
+        if ($other->{'score'} > $this->{'score'})
+        {
+          $this->{'score'} = $other->{'score'};
+          $this->{'list'}  = $other->{'list'};
+        }
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -316,7 +671,19 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        
+        if ($other->{'total'} > $this->{'total'})
+        {
+          $this->{'total'} = $other->{'total'};
+          $this->{'link'}  = $other->{'link'};
+        }
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -351,7 +718,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        push @{$this->{'list'}}, @{$other->{'list'}};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this        = shift;
@@ -372,7 +746,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        push @{$this->{'list'}}, @{$other->{'list'}};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this        = shift;
@@ -393,7 +774,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        push @{$this->{'list'}}, @{$other->{'list'}};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -414,7 +802,15 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_GAME,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+
+        $this->{'total'} += $other->{'total'};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -433,7 +829,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_GAME,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        $this->{'total'} += $other->{'total'};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this   = shift;
@@ -450,7 +853,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        $this->{'total'} += $other->{'total'};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -470,7 +880,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        $this->{'total'} += $other->{'total'};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -490,7 +907,16 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        $this->{'total_score'} += $other->{'total_score'};
+        $this->{'total_turns'} += $other->{'total_turns'};
+        $this->{'total'} = sprintf "%.4f", $this->{'total_score'} / $this->{'total_turns'};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -513,7 +939,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        $this->{'total'} += $other->{'total'};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -533,7 +966,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        $this->{'total'} += $other->{'total'};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -553,7 +993,16 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        $this->{'total_full_racks'} += $other->{'total_full_racks'};
+        $this->{'total_turns'}      += $other->{'total_turns'};
+        $this->{'total'} = sprintf "%.4f", $this->{'total_full_racks'} / $this->{'total_turns'};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -576,7 +1025,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        $this->{'total'} += $other->{'total'};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -596,7 +1052,19 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+
+        if ($other->{'total'} > $this->{'total'})
+        {
+          $this->{'total'} = $other->{'total'};
+          $this->{'link'}  = $other->{'link'};
+        }
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -631,7 +1099,19 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+
+        if ($other->{'total'} < $this->{'total'})
+        {
+          $this->{'total'} = $other->{'total'};
+          $this->{'link'}  = $other->{'link'};
+        }
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -666,7 +1146,19 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+
+        $this->{'total'} += $other->{'total'};
+        foreach my $key (keys %{$this->{'subitems'}})
+        {
+          $this->{'subitems'}->{$key} += $other->{'subitems'}->{$key};
+        }
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -722,7 +1214,58 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+
+        $this->{'prob_total'} += $other->{'prob_total'};
+        $this->{'bingo_total'} += $other->{'bingo_total'};
+        my @top_keys = ('prob_totals', 'bingo_totals');
+        foreach my $top_key (@top_keys)
+        {
+          foreach my $key (keys %{$this->{$top_key}})
+          {
+            $this->{$top_key}->{$key} += $other->{$top_key}->{$key};
+          }
+        }
+
+        my $dem_total = $this->{'bingo_total'};
+        if (!$dem_total){$dem_total = 1;}
+        my @dems = (0, 0, 0, 0, 0, 0, 0, 0, 0);
+        $dems[0] = $this->{'bingo_totals'}->{Constants::SEVENS_TITLE};
+        if (!$dems[0]){$dems[0] = 1;}
+        $dems[1] = $this->{'bingo_totals'}->{Constants::EIGHTS_TITLE};
+        if (!$dems[1]){$dems[1] = 1;}
+        $dems[2] = $this->{'bingo_totals'}->{Constants::NINES_TITLE};
+        if (!$dems[2]){$dems[2] = 1;}
+        $dems[3] = $this->{'bingo_totals'}->{Constants::TENS_TITLE};
+        if (!$dems[3]){$dems[3] = 1;}
+        $dems[4] = $this->{'bingo_totals'}->{Constants::ELEVENS_TITLE};
+        if (!$dems[4]){$dems[4] = 1;}
+        $dems[5] = $this->{'bingo_totals'}->{Constants::TWELVES_TITLE};
+        if (!$dems[5]){$dems[5] = 1;}
+        $dems[6] = $this->{'bingo_totals'}->{Constants::THIRTEENS_TITLE};
+        if (!$dems[6]){$dems[6] = 1;}
+        $dems[7] = $this->{'bingo_totals'}->{Constants::FOURTEENS_TITLE};
+        if (!$dems[7]){$dems[7] = 1;}
+        $dems[8] = $this->{'bingo_totals'}->{Constants::FIFTEENS_TITLE};
+        if (!$dems[8]){$dems[8] = 1;}
+
+        $this->{'total'}                                  = sprintf "%.2f", ($this->{'prob_total'} / $dem_total);
+        $this->{'subitems'}->{Constants::SEVENS_TITLE}    = sprintf "%.2f", ($this->{'prob_totals'}->{Constants::SEVENS_TITLE}    / $dems[0]);
+        $this->{'subitems'}->{Constants::EIGHTS_TITLE}    = sprintf "%.2f", ($this->{'prob_totals'}->{Constants::EIGHTS_TITLE}    / $dems[1]);
+        $this->{'subitems'}->{Constants::NINES_TITLE}     = sprintf "%.2f", ($this->{'prob_totals'}->{Constants::NINES_TITLE}     / $dems[2]);
+        $this->{'subitems'}->{Constants::TENS_TITLE}      = sprintf "%.2f", ($this->{'prob_totals'}->{Constants::TENS_TITLE}      / $dems[3]);
+        $this->{'subitems'}->{Constants::ELEVENS_TITLE}   = sprintf "%.2f", ($this->{'prob_totals'}->{Constants::ELEVENS_TITLE}   / $dems[4]);
+        $this->{'subitems'}->{Constants::TWELVES_TITLE}   = sprintf "%.2f", ($this->{'prob_totals'}->{Constants::TWELVES_TITLE}   / $dems[5]);
+        $this->{'subitems'}->{Constants::THIRTEENS_TITLE} = sprintf "%.2f", ($this->{'prob_totals'}->{Constants::THIRTEENS_TITLE} / $dems[6]);
+        $this->{'subitems'}->{Constants::FOURTEENS_TITLE} = sprintf "%.2f", ($this->{'prob_totals'}->{Constants::FOURTEENS_TITLE} / $dems[7]);
+        $this->{'subitems'}->{Constants::FIFTEENS_TITLE}  = sprintf "%.2f", ($this->{'prob_totals'}->{Constants::FIFTEENS_TITLE}  / $dems[8]);
+
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -835,7 +1378,7 @@ sub statsList
         $dems[8] = $this->{'bingo_totals'}->{Constants::FIFTEENS_TITLE};
         if (!$dems[8]){$dems[8] = 1;}
 
-        $this->{'total'} = sprintf "%.2f", ($this->{'prob_total'} / $dem_total);
+        $this->{'total'}                                  = sprintf "%.2f", ($this->{'prob_total'} / $dem_total);
         $this->{'subitems'}->{Constants::SEVENS_TITLE}    = sprintf "%.2f", ($this->{'prob_totals'}->{Constants::SEVENS_TITLE}    / $dems[0]);
         $this->{'subitems'}->{Constants::EIGHTS_TITLE}    = sprintf "%.2f", ($this->{'prob_totals'}->{Constants::EIGHTS_TITLE}    / $dems[1]);
         $this->{'subitems'}->{Constants::NINES_TITLE}     = sprintf "%.2f", ($this->{'prob_totals'}->{Constants::NINES_TITLE}     / $dems[2]);
@@ -852,7 +1395,18 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        $this->{'total'} += $other->{'total'};
+        foreach my $key (keys %{$this->{'subitems'}})
+        {
+          $this->{'subitems'}->{$key} += $other->{'subitems'}->{$key};
+        }
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -942,7 +1496,19 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+
+        $this->{'total'} += $other->{'total'};
+        foreach my $key (keys %{$this->{'subitems'}})
+        {
+          $this->{'subitems'}->{$key} += $other->{'subitems'}->{$key};
+        }
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -994,7 +1560,19 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+
+        $this->{'total'} += $other->{'total'};
+        foreach my $key (keys %{$this->{'subitems'}})
+        {
+          $this->{'subitems'}->{$key} += $other->{'subitems'}->{$key};
+        }
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -1046,7 +1624,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        $this->{'total'} += $other->{'total'};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -1066,7 +1651,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        $this->{'total'} += $other->{'total'};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -1086,7 +1678,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        $this->{'total'} += $other->{'total'};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -1106,7 +1705,18 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        $this->{'total'} += $other->{'total'};
+        foreach my $key (keys %{$this->{'subitems'}})
+        {
+          $this->{'subitems'}->{$key} += $other->{'subitems'}->{$key};
+        }
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -1152,7 +1762,18 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        $this->{'total'} += $other->{'total'};
+        foreach my $key (keys %{$this->{'subitems'}})
+        {
+          $this->{'subitems'}->{$key} += $other->{'subitems'}->{$key};
+        }
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -1192,7 +1813,16 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        $this->{'challenges'}            += $other->{'challenges'} ;
+        $this->{'successful_challenges'} += $other->{'successful_challenges'};
+        $this->{'total'}                  = sprintf "%.4f", $this->{'successful_challenges'} / $this->{'challenges'};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this   = shift;
@@ -1225,7 +1855,16 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        $this->{'challenges'}            += $other->{'challenges'} ;
+        $this->{'successful_challenges'} += $other->{'successful_challenges'};
+        $this->{'total'}                  = sprintf "%.4f", $this->{'successful_challenges'} / $this->{'challenges'};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this   = shift;
@@ -1258,7 +1897,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        $this->{'total'} += $other->{'total'};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this   = shift;
@@ -1278,7 +1924,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        $this->{'total'} += $other->{'total'};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this   = shift;
@@ -1298,7 +1951,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        push @{$this->{'list'}}, @{$other->{'list'}};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -1321,7 +1981,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        push @{$this->{'list'}}, @{$other->{'list'}};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -1354,7 +2021,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        push @{$this->{'list'}}, @{$other->{'list'}};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -1377,7 +2051,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        push @{$this->{'list'}}, @{$other->{'list'}};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -1400,7 +2081,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        push @{$this->{'list'}}, @{$other->{'list'}};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -1423,7 +2111,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        push @{$this->{'list'}}, @{$other->{'list'}};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -1446,7 +2141,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        push @{$this->{'list'}}, @{$other->{'list'}};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -1469,7 +2171,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        push @{$this->{'list'}}, @{$other->{'list'}};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -1492,7 +2201,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        push @{$this->{'list'}}, @{$other->{'list'}};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -1528,7 +2244,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        push @{$this->{'list'}}, @{$other->{'list'}};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -1556,7 +2279,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        push @{$this->{'list'}}, @{$other->{'list'}};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this = shift;
@@ -1586,7 +2316,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        $this->{'total'} += $other->{'total'};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this   = shift;
@@ -1606,7 +2343,18 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        $this->{'total'} += $other->{'total'};
+        foreach my $key (keys %{$this->{'subitems'}})
+        {
+          $this->{'subitems'}->{$key} += $other->{'subitems'}->{$key};
+        }
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this   = shift;
@@ -1644,7 +2392,14 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME => {},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_FUNCTION_NAME =>
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        push @{$this->{'list'}}, push @{$other->{'list'}};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
         my $this   = shift;
