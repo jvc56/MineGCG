@@ -17,8 +17,7 @@ sub new
 {
   my $this = shift;
 
-  my $filename             = shift;
-  my $player_is_first      = shift;
+  my $gcgtext              = shift;
   my $lexicon_ref          = shift;
 
   my $player_one_real_name = shift;
@@ -29,6 +28,8 @@ sub new
 
   my $lexicon              = shift;
   my $game_id              = shift;
+
+  my $filename = $game_id;
 
   my $player_one_name;
   my $player_two_name;
@@ -53,9 +54,10 @@ sub new
 
   my $line = "";
 
-  open(GCG, '<', $filename);
-  while(<GCG>)
+  my @filelines = split /\n/, $gcgtext;
+  while(@filelines)
   {
+    $_ = shift @filelines;
     $line_number++;
     $line = $_;
     chomp $_;

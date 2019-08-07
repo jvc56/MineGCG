@@ -30,6 +30,7 @@ use constant SINGLE_ANNOTATED_GAME_URL_PREFIX => 'http://www.cross-tables.com/an
 use constant CROSS_TABLES_COUNTRY_PREFIX      => 'http://www.cross-tables.com/bycountry.php?country=';
 use constant ANNOTATED_GAMES_PAGE_NAME        => 'anno_page.html';
 use constant QUERY_RESULTS_PAGE_NAME          => 'query_results.html';
+use constant HTML_GAME_NAME                   => 'annotated_game.html';
 use constant DOWNLOADS_DIRECTORY_NAME         => './downloads';
 use constant STATS_DIRECTORY_NAME             => './stats';
 use constant NOTABLE_DIRECTORY_NAME           => './notable';
@@ -76,7 +77,7 @@ use constant DATABASE_TABLES =>
     "lexicon                      VARCHAR(5)",
     "round                        INT",
     "name                         TEXT",
-    "date                         DATE"
+    "date                         DATE",
     "error                        TEXT",
     "warning                      TEXT",
   ]
@@ -155,6 +156,9 @@ use constant MISTAKE_ITEM_LIST_PLAYER  => 'YOUR MISTAKES';
 use constant MISTAKE_ITEM_LIST_OPP     => 'OPPONENT MISTAKES';
 use constant STAT_ITEM_LIST_OPP        => 'OPPONENT LISTS';
 use constant STAT_ITEM_LIST_NOTABLE    => 'NOTABLE GAMES';
+
+use constant MISTAKE_ITEM_LIST         => 'MISTAKE LIST';
+use constant STAT_ITEM_LIST            => 'STATS LIST';
 
 
 use constant ERROR_DIV_ID              => 'error';
@@ -321,7 +325,7 @@ use constant METATYPE_PLAYER  => 'player';
 use constant METATYPE_GAME    => 'game';
 use constant METATYPE_NOTABLE => 'notable';
 
-use constant RESULTS_PAGE_JAVSCRIPT =>
+use constant RESULTS_PAGE_JAVASCRIPT =>
 "
 <script>
 function toggle(id)

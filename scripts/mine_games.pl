@@ -26,8 +26,6 @@ my $html_string = "";
 
 sub mine
 {
-  my $dir_name                = Constants::GAME_DIRECTORY_NAME;
-  my $names_dir               = Constants::NAMES_DIRECTORY_NAME;
   my $stats_dir               = Constants::STATS_DIRECTORY_NAME;
   my $notable_dir             = Constants::NOTABLE_DIRECTORY_NAME;
   my $blacklisted_tournaments = Constants::BLACKLISTED_TOURNAMENTS;
@@ -161,7 +159,7 @@ sub mine
 
   }
 
-  my $all_stats = Stats->new();
+  my $all_stats = Stats->new(1);
 
   my %tourney_game_hash;
   my $at_least_one = 0;
@@ -177,11 +175,11 @@ sub mine
   SELECT *
   FROM $games_table AS g, $players_table AS p, $players_table AS opp
   WHERE
-        p.sanitized_name = $player_name AND
-        (g.player1_cross_tables_id = p.cross_tables_id OR g.player1_cross_tables_id = p.cross_tables_id)
+        p.sanitized_name = '$player_name' AND
+        (g.player1_cross_tables_id = p.cross_tables_id OR g.player2_cross_tables_id = p.cross_tables_id)
   ";
 
-  if ($single_game_id && $single_game_id ne $id)
+  if ($single_game_id)
   {
     $games_query .= " AND g.cross_tables_id = '$single_game_id'";
   }
@@ -209,7 +207,7 @@ sub mine
   {
     $games_query .= " AND g.date < '$enddate'";
   }
-  if ($lexicon && $this_lexicon ne $lexicon)
+  if ($lexicon)
   {
     $games_query .= " AND g.lexicon = 'lexicon'";
   }
@@ -222,7 +220,7 @@ sub mine
     $games_query .= " AND g.cross_tables_tournament_id = 0";
   }
 
-  my @game_results = @{$dbh->selectall_arrayref($query, {Slice => {}, "RaiseError" => 1})};
+  my @game_results = @{$dbh->selectall_arrayref($games_query, {Slice => {}, "RaiseError" => 1})};
 
   while (@game_results)
   {
@@ -232,10 +230,11 @@ sub mine
     my $warning = $game->{'warning'};
 
     my $game_opp_name = $game->{'player1_name'};
-    my $player_is_first = sanitize($game->{'player1_name'}) eq $player_name
+    my $player_is_first = 0;
     
-    if ($player_is_first)
+    if (sanitize($game->{'player1_name'}) eq $player_name)
     {
+      $player_is_first = 1;
       $game_opp_name = $game->{'player2_name'};
     }
     
@@ -253,13 +252,11 @@ sub mine
       $num_warnings++;
     }
 
-    my $game_stat = Stat->new($player_is_first, $game->{'stats'});
+    my $game_stat = Stats->new($player_is_first, $game->{'stats'});
 
     $all_stats->addStat($game_stat);
 
     $at_least_one = 1;
-  }
-
   }
 
   if ($html)
