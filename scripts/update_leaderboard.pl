@@ -6,101 +6,70 @@ use Data::Dumper;
 use lib './objects';
 use Constants;
 
+require './scripts/utils.pl';
+
 sub update_leaderboard
 {
-  my $stats_dir      = Constants::STATS_DIRECTORY_NAME;
   my $cutoff         = Constants::LEADERBOARD_CUTOFF;
   my $min_games      = Constants::LEADERBOARD_MIN_GAMES;
   my $column_spacing = Constants::LEADERBOARD_COLUMN_SPACING;
   my $query_prefix   = Constants::CACHE_URL_PREFIX;
   my $stats_note     = Constants::STATS_NOTE;
-  
-  my $rr_host             = Constants::RR_HOSTNAME;
-  my $rr_username         = Constants::RR_USERNAME;
-  my $rr_leaderboard_dest = Constants::RR_LEADERBOARD_DEST;
-  my $ssh_args            = Constants::SSH_ARGS;
 
-  opendir my $stats, $stats_dir or die "Cannot open directory: $!";
-  my @stat_files = readdir $stats;
-  closedir $stats;
-
-  my %leaderboards = ();
-  my $init = 0;
-  my @name_order = ();
-  my $total_players = 0;
+  my %leaderboards  = ();
+  my @name_order    = ();
 
   my $leaderboard_string = "";
   my $table_of_contents  = "<h1><a id='leaderboards'></a>LEADERBOARDS</h1>";
 
-  foreach my $stat_file (@stat_files)
+  my $dbh = connect_to_database();
+
+  my $playerstable = Constants::PLAYERS_TABLE_NAME;
+  my $gamestable   = Constants::GAMES_TABLE_NAME;
+
+  my @player_data = @{$dbh->selectall_arrayref("SELECT * FROM $playerstable WHERE total_games >= $min_games", {Slice => {}, "RaiseError" => 1})};
+
+  my $total_players = scalar @player_data;
+
+  foreach my $player_item (@player_data)
   {
-    if ($stat_file eq '.' || $stat_file eq '..')
+    my $name         = $player_item->{'name'};
+    my $total_games  = $player_item->{'total_games'};
+    my $player_stats = Stats->new(1, $player_item->{'stats'});
+
+    my @stat_keys = ('game', 'player1');
+    
+    foreach my $key (@stat_keys)
     {
-      next;
-    }
+      my $statitem = $player_stats->{$key}->{Constants::STAT_ITEM_OBJECT_NAME};
+      my $statname = $player_stats->{$key}->{Constants::STAT_NAME};
 
-    $stat_file =~ /([^\.]+)\.stats/;
-    my $player_name = $1;
-    $player_name =~ s/_/ /g;
-    my $total_games = 0;
+      my $statval   = $statitem->{'total'};
+      my $is_single = $statitem->{'single'};
+      my $is_int    = $statitem->{'int'};
 
-    open(PLAYER_STATS, '<', $stats_dir . "/" . $stat_file);
-    while(<PLAYER_STATS>)
-    {
-      my ($name, $total) = split /,/, $_;
-      chomp $name;
-      chomp $total;
-      $name = uc $name;
+      add_stat(\%leaderboards, $name, $statname, $statval, $total_games, $is_single, $is_int, \@name_order);
 
-      # Games should always be the first stat
-      my $stat;
-      if ($name eq "GAMES")
+      my $subitems = $statitem->{'subitems'};
+      if ($subitems)
       {
-        $total_games = $total;
-        $stat = $total;
-      }
-      elsif (
-              $name eq "SCORE PER TURN" ||
-              $name eq "FULL RACK PER TURN" ||
-              $name eq "HIGH GAME" ||
-              $name eq "LOW GAME" || 
-              $name eq "HIGHEST SCORING TURN" || 
-              $name =~ /PERCENTAGE/ || 
-              $name =~ /BINGO PROBABILITIES/
-             )
-      {
-        $stat = $total;
-      }
-      else
-      {
-        $stat = $total / $total_games;
-      }
+        my $order = $statitem->{'list'};
+        for (my $i = 0; $i < scalar @{$order}; $i++)
+        {
+          my $subitemname = $order->[$i];
 
-      $stat = sprintf "%.4f", $stat;
+          my $substatname = "$statname $subitemname";
 
-      if ($name eq "GAMES" || $name eq "HIGH GAME" || $name eq "LOW GAME" || $name eq "HIGHEST SCORING TURN")
-      {
-        $stat = int($stat);
-      }
+          my $substatval  = $subitems->{$subitemname};
 
-      if (!$init)
-      {
-        $leaderboards{$name} = [[$stat, $player_name]];
-        push @name_order, $name;
-      }
-      else
-      {
-        push @{$leaderboards{$name}}, [$stat, $player_name];
+          add_stat(\%leaderboards, $name, $substatname, $substatval, $total_games, $is_single, $is_int, \@name_order);
+        }
       }
     }
-    $total_players++;
-    $init = 1;
   }
-
 
   for (my $i = 0; $i < scalar @name_order; $i++)
   {
-
     my $name = $name_order[$i];
     my @array = @{$leaderboards{$name}};
 
@@ -185,35 +154,7 @@ sub update_leaderboard
 
   $leaderboard_string = "<pre style='white-space: pre-wrap;' > $leaderboard_string </pre>\n";
 
-  my $javascript = "";
-  $javascript .= "";
-
-  $javascript .= "<script>\n";
-
-  $javascript .= "function toggle(id) {\n";
-  $javascript .= "var x = document.getElementById(id);\n";
-  $javascript .= "if (x.style.display === 'none') {\n";
-  $javascript .= "x.style.display = 'block';\n";
-  $javascript .= "} else {\n";
-  $javascript .= "x.style.display = 'none';\n";
-  $javascript .= "}\n";
-  $javascript .= "}\n";
-
-  $javascript .= "function toggle_all() {\n";
-  $javascript .= "var list = document.getElementsByTagName('DIV');\n";
-  $javascript .= "for (i = 0; i < list.length; i++)\n";
-  $javascript .= "{ \n";
-  $javascript .= "var x = list[i];\n";
-  $javascript .= "if (x.style.display === 'none') {\n";
-  $javascript .= "x.style.display = 'block';\n";
-  $javascript .= "} else {\n";
-  $javascript .= "x.style.display = 'none';\n";
-  $javascript .= "}\n";
-  $javascript .= "}\n";
-  $javascript .= "}\n";
-
-
-  $javascript .= "</script>\n";
+  my $javascript = Constants::LEADERBOARD_JAVASCRIPT;
 
   $leaderboard_string = $javascript . $leaderboard_string;
 
@@ -222,11 +163,37 @@ sub update_leaderboard
   open(my $new_leaderboard, '>', $leaderboard_name);
   print $new_leaderboard $leaderboard_string;
   close $new_leaderboard;
+}
 
-  system "rm -r $stats_dir";
-
-  system "scp $ssh_args $leaderboard_name $rr_username\@$rr_host:$rr_leaderboard_dest"
-
+sub add_stat
+{
+  my $leaderboards = shift;
+  my $playername   = shift;
+  my $statname     = shift;
+  my $statvalue    = shift;
+  my $total_games  = shift;
+  my $is_single    = shift;
+  my $is_int       = shift;
+  my $name_order   = shift;
+  
+  if (!$is_single)
+  {
+    $statvalue /= $total_games
+  }
+  $statvalue = sprintf "%.4f", $statvalue;
+  if ($is_int)
+  {
+    $statvalue = int($statvalue);
+  }
+  if ($leaderboards->{$statname})
+  {
+    push @{$leaderboards->{$statname}}, [$statvalue, $playername];
+  }
+  else
+  {
+    push @{$name_order}, $statname;
+    $leaderboards->{$statname} = [[$statvalue, $playername]];
+  }
 }
 
 1;

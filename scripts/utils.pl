@@ -148,21 +148,60 @@ sub update_player_record
   my $player_cross_tables_id = shift;
   my $raw_name               = shift;
   my $player_name            = shift;
+  my $stats                  = shift;
+  my $total_games            = shift;
 
-  my @player_query = @{query_table($dbh, Constants::PLAYERS_TABLE_NAME, 'cross_tables_id', $player_cross_tables_id)};
+  my $search_col;
+  my $search_val;
+
+  if ($player_cross_tables_id)
+  {
+    $search_col = Constants::PLAYER_CROSS_TABLES_ID_COLUMN_NAME;
+    $search_val = $player_cross_tables_id;
+  }
+  else
+  {
+    $search_col = Constants::PLAYER_SANITIZED_NAME_COLUMN_NAME;
+    $search_val = $player_name;
+  }
+  
+  my @player_query = @{query_table($dbh, Constants::PLAYERS_TABLE_NAME, $search_col, $search_val)};
   
   my $player_record_id;
   
   if (@player_query)
   {
-    $player_record_id = $player_query[0]->{'id'};
+    $player_record_id = $player_query[0]->{Constants::PLAYER_ID_COLUMN_NAME};
+  }
+
+  if (!$player_cross_tables_id)
+  {
+    $player_cross_tables_id = $player_query[0]->{Constants::PLAYER_CROSS_TABLES_ID_COLUMN_NAME};
+  }
+  if (!$raw_name)
+  {
+    $raw_name = $player_query[0]->{Constants::PLAYER_NAME_COLUMN_NAME};
+  }
+  if (!$player_name)
+  {
+    $player_name = $player_query[0]->{Constants::PLAYER_SANITIZED_NAME_COLUMN_NAME};
+  }
+  if (!$stats)
+  {
+    $stats = $player_query[0]->{Constants::PLAYER_STATS_COLUMN_NAME};
+  }
+  if (!$total_games)
+  {
+    $total_games = $player_query[0]->{Constants::PLAYER_TOTAL_GAMES_COLUMN_NAME};
   }
 
   my $player_record =
   {
-    "cross_tables_id" => $player_cross_tables_id,
-    "name"            => $raw_name,
-    "sanitized_name"  => $player_name
+    Constants::PLAYER_CROSS_TABLES_ID_COLUMN_NAME => $player_cross_tables_id,
+    Constants::PLAYER_NAME_COLUMN_NAME            => $raw_name,
+    Constants::PLAYER_SANITIZED_NAME_COLUMN_NAME  => $player_name,
+    Constants::PLAYER_STATS_COLUMN_NAME           => $stats,
+    Constants::PLAYER_TOTAL_GAMES_COLUMN_NAME     => $total_games
   };
 
   $player_record_id = insert_or_set_hash_into_table($dbh, Constants::PLAYERS_TABLE_NAME, $player_record, $player_record_id);
@@ -228,6 +267,13 @@ sub insert_or_set_hash_into_table
     return $record_id;
   }
 
+  my $row_id_column_name = Constants::PLAYER_ID_COLUMN_NAME;
+
+  if ($table eq Constants::GAMES_TABLE_NAME)
+  {
+    $row_id_column_name = Constants::GAME_ID_COLUMN_NAME;
+  }
+
   my $stmt;
 
   if (!$record_id)
@@ -268,11 +314,8 @@ sub insert_or_set_hash_into_table
     my $set_stmt   = ""; 
     foreach my $key (keys %{$hashref})
     {
-      if ($key eq 'stats')
-      {
-      }
-      my $value;
-      if (defined $hashref->{$key})
+      my $value = $hashref->{$key};
+      if (defined $value)
       {    
         $value = "'$hashref->{$key}'";
       }
@@ -283,7 +326,7 @@ sub insert_or_set_hash_into_table
       $set_stmt .= "$key = $value,";
     }
     chop($set_stmt);
-    $stmt = "UPDATE $table SET $set_stmt WHERE id = '$record_id'";
+    $stmt = "UPDATE $table SET $set_stmt WHERE $row_id_column_name = '$record_id'";
     $dbh->do($stmt) or die DBI::errstr;
     return $record_id;
   }
@@ -323,12 +366,12 @@ sub is_valid_game
     if ($verbose) {print "$num_str Game with ID $id is not the specified game\n";}
     return;
   }
-  if (!$tourney_id && uc $tourney_or_casual eq 'T')
+  if (!$game_tournament_id && uc $tourney_or_casual eq 'T')
   {
     if ($verbose) {print "$num_str Game with ID $id is not a tournament game\n";}
     return;
   }
-  if ($tourney_id && uc $tourney_or_casual eq 'C')
+  if ($game_tournament_id && uc $tourney_or_casual eq 'C')
   {
     if ($verbose) {print "$num_str Game with ID $id is a tournament game\n";}
     return;
@@ -353,7 +396,16 @@ sub is_valid_game
     if ($verbose) {print "$num_str Game with ID $id is from a blacklisted tournament\n";}
     return;
   }
-  return 1;
+
+  my $lexicon_ref = get_lexicon_ref($game_lexicon);
+  
+  if (!$lexicon_ref)
+  {
+    if ($verbose) {print "$num_str Game with ID $id does not have a recognized lexicon\n";}
+    return;
+  }
+
+  return $lexicon_ref;
 }
 
 sub update_stats_or_create_record
@@ -382,11 +434,11 @@ sub update_stats_or_create_record
   my $player1_cross_tables_id = undef;
   my $player2_cross_tables_id = undef;
 
-  my $readable_name;
-  my $error = "";
-  my $warning = "";
-
+  my $game_name        = "";
+  my $error            = "";
+  my $warning          = "";
   my $game_record_id;
+  my $player_is_first;
 
   if (!$gcgtext)
   {
@@ -399,10 +451,10 @@ sub update_stats_or_create_record
 
   if ($game_result)
   {
-    $game_record_id = $game_result->{'id'};
+    $game_record_id = $game_result->{Constants::GAME_ID_COLUMN_NAME};
 
-    $player1_cross_tables_id = $game_result->{'player1_cross_tables_id'};
-    $player2_cross_tables_id = $game_result->{'player2_cross_tables_id'};
+    $player1_cross_tables_id = $game_result->{Constants::GAME_PLAYER_ONE_CROSS_TABLES_ID_COLUMN_NAME};
+    $player2_cross_tables_id = $game_result->{Constants::GAME_PLAYER_TWO_CROSS_TABLES_ID_COLUMN_NAME};
     
     if (!$player1_cross_tables_id && !$player2_cross_tables_id)
     {
@@ -441,6 +493,15 @@ sub update_stats_or_create_record
     }  
   }
 
+  my $pretty_name = $player_one_name;
+  if ($player2_cross_tables_id && $player2_cross_tables_id == $player_cross_tables_id)
+  {
+    $pretty_name = $player_two_name;
+  }
+  
+  update_player_record($dbh, $player_cross_tables_id, $pretty_name);
+
+
   my $game = Game->new(
                         $gcgtext,
                         $lexicon_ref,
@@ -456,56 +517,64 @@ sub update_stats_or_create_record
   {
     $error = $game;
   }
-  elsif ($game->{'warnings'})
+  elsif ($game->{Constants::GAME_WARNING_COLUMN_NAME})
   {
-    $warning = $game->{'warnings'};
+    $warning = $game->{Constants::GAME_WARNING_COLUMN_NAME};
   }
 
-  my $stats = Stats->new(1);
 
-  my $stat_warnings = $stats->addGame($game);
-
-  if ($stat_warnings)
-  {
-    $warning .= $stat_warnings;
-  }
 
   my $unblessed_stat = {};
 
   if (!$error)
   {
-    $unblessed_stat =
-    {
-      'stats' =>
-      {
-        'player1' => delete_function_from_statslist($stats->{'stats'}->{'player1'}),
-        'player2' => delete_function_from_statslist($stats->{'stats'}->{'player2'}),
-        'game'    => delete_function_from_statslist($stats->{'stats'}->{'game'}),
-        'notable' => delete_function_from_statslist($stats->{'stats'}->{'notable'}),
-      }
-    };
+    $game_name = $game->{'readable_name'};
+    
+    my $stats = Stats->new(1);
 
+    my $stat_warnings = $stats->addGame($game);
+
+    if ($stat_warnings)
+    {
+      $warning .= $stat_warnings;
+    }
+    $unblessed_stat = prepare_stats($stats);
   }
 
   my $game_record =
   {
-    'player1_cross_tables_id'      => $player1_cross_tables_id,
-    'player2_cross_tables_id'      => $player2_cross_tables_id,
-    'player1_name'                 => $player_one_name,
-    'player2_name'                 => $player_two_name,
-    'cross_tables_id'              => $game_cross_tables_id,
-    'gcg'                          => database_sanitize($gcgtext),
-    'stats'                        => database_sanitize(encode_json($unblessed_stat)),
-    'cross_tables_tournament_id'   => $game_tournament_id,
-    'date'                         => $game_date,
-    'lexicon'                      => $game_lexicon,
-    'round'                        => $game_round_number,
-    'name'                         => database_sanitize($game->{'readable_name'}),
-    'error'                        => $error,
-    'warning'                      => $warning
+    Constants::GAME_PLAYER_ONE_CROSS_TABLES_ID_COLUMN_NAME  => $player1_cross_tables_id,
+    Constants::GAME_PLAYER_TWO_CROSS_TABLES_ID_COLUMN_NAME  => $player2_cross_tables_id,
+    Constants::GAME_PLAYER_ONE_NAME_COLUMN_NAME             => database_sanitize($player_one_name),
+    Constants::GAME_PLAYER_TWO_NAME_COLUMN_NAME             => database_sanitize($player_two_name),
+    Constants::GAME_CROSS_TABLES_ID_COLUMN_NAME             => $game_cross_tables_id,
+    Constants::GAME_GCG_COLUMN_NAME                         => database_sanitize($gcgtext),
+    Constants::GAME_STATS_COLUMN_NAME                       => database_sanitize(encode_json($unblessed_stat)),
+    Constants::GAME_CROSS_TABLES_TOURNAMENT_ID_COLUMN_NAME  => $game_tournament_id,
+    Constants::GAME_DATE_COLUMN_NAME                        => $game_date,
+    Constants::GAME_LEXICON_COLUMN_NAME                     => $game_lexicon,
+    Constants::GAME_ROUND_COLUMN_NAME                       => $game_round_number,
+    Constants::GAME_NAME_COLUMN_NAME                        => database_sanitize($game_name),
+    Constants::GAME_ERROR_COLUMN_NAME                       => $error,
+    Constants::GAME_WARNING_COLUMN_NAME                     => $warning
   };
 
   insert_or_set_hash_into_table($dbh, Constants::GAMES_TABLE_NAME, $game_record, $game_record_id);
+}
+
+sub prepare_stats
+{
+  my $stats = shift;
+  return
+  {
+     Constants::STATS_DATA_KEY_NAME =>
+    {
+       Constants::STATS_DATA_PLAYER_ONE_KEY_NAME => delete_function_from_statslist($stats->{Constants::STATS_DATA_KEY_NAME}->{ Constants::STATS_DATA_PLAYER_ONE_KEY_NAME}),
+       Constants::STATS_DATA_PLAYER_TWO_KEY_NAME => delete_function_from_statslist($stats->{Constants::STATS_DATA_KEY_NAME}->{ Constants::STATS_DATA_PLAYER_TWO_KEY_NAME}),
+       Constants::STATS_DATA_GAME_KEY_NAME       => delete_function_from_statslist($stats->{Constants::STATS_DATA_KEY_NAME}->{ Constants::STATS_DATA_GAME_KEY_NAME      }),
+       Constants::STATS_DATA_NOTABLE_KEY_NAME    => delete_function_from_statslist($stats->{Constants::STATS_DATA_KEY_NAME}->{ Constants::STATS_DATA_NOTABLE_KEY_NAME   }),
+    }
+  };
 }
 
 sub sanitize_game_data
@@ -528,7 +597,7 @@ sub sanitize_game_data
 
   if (!$game_date)
   {
-    $annotated_game_data->[4] = '0000-00-00';
+    $annotated_game_data->[4] = undef;
   }
   if (!$game_round_number || !($game_round_number =~ /^\d+$/))
   {
@@ -547,29 +616,32 @@ sub update_foreign_keys
   my $player_cross_tables_id = shift;
 
   my $table = Constants::GAMES_TABLE_NAME;
+  my $p1ctid = Constants::GAME_PLAYER_ONE_CROSS_TABLES_ID_COLUMN_NAME;
+  my $p2ctid = Constants::GAME_PLAYER_TWO_CROSS_TABLES_ID_COLUMN_NAME;
+  my $gctid  = Constants::GAME_CROSS_TABLES_ID_COLUMN_NAME;
 
   my $set_stmt =
   "
   UPDATE $table
   SET
-    player1_cross_tables_id = 
+    $p1ctid = 
     CASE
       WHEN
-              player1_cross_tables_id is NULL AND player2_cross_tables_id != $player_cross_tables_id THEN
+              $p1ctid is NULL AND $p2ctid != $player_cross_tables_id THEN
                 $player_cross_tables_id
               ELSE
-                player1_cross_tables_id
+                $p1ctid
       END
     ,
-    player2_cross_tables_id = 
+    $p2ctid = 
     CASE
       WHEN
-              player2_cross_tables_id is NULL  AND player1_cross_tables_id != $player_cross_tables_id THEN
+              $p2ctid is NULL  AND $p1ctid != $player_cross_tables_id THEN
                 $player_cross_tables_id
               ELSE
-                player2_cross_tables_id
+                $p2ctid
       END
-  WHERE cross_tables_id = '$game_cross_tables_id'
+  WHERE $gctid = '$game_cross_tables_id'
   ";
 
   $dbh->do($set_stmt) or die DBI::errstr;
@@ -631,6 +703,11 @@ sub sanitize
 {
   my $string = shift;
 
+  if (!$string)
+  {
+    return $string;
+  }
+
   # Remove trailing and leading whitespace
   $string =~ s/^\s+|\s+$//g;
 
@@ -655,5 +732,26 @@ sub database_sanitize
 
   return $s;
 }
+
+sub format_error
+{
+  my $description = shift;
+
+  my $error = (sprintf "%-20s", "ERROR:") . "$description\n";
+  while (@_)
+  {
+    my $object = shift;
+    if (ref($object) eq "Stats")
+    {
+      $error .= Dumper($object);
+    }
+    else
+    {
+      $error .= Dumper($object);
+    }
+  }
+  return $error;
+}
+
 
 1;

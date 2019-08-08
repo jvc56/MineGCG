@@ -12,6 +12,8 @@ use lib '.';
 use Constants;
 use JSON;
 
+require './scripts/utils.pl';
+
 sub new
 {
   my $this            = shift;
@@ -55,13 +57,13 @@ sub new
 
   my %stats =
   (
-    'player_is_first' => $player_is_first,
-    'stats' =>
+    Constants::STATS_PLAYER_IS_FIRST_KEY_NAME => $player_is_first,
+    Constants::STATS_DATA_KEY_NAME =>
     {
-      'player1' => \@player1_stats,
-      'player2' => \@player2_stats,
-      'game'    => \@game_stats,
-      'notable' => \@notable_stats,
+      Constants::STATS_DATA_PLAYER_ONE_KEY_NAME => \@player1_stats,
+      Constants::STATS_DATA_PLAYER_TWO_KEY_NAME => \@player2_stats,
+      Constants::STATS_DATA_GAME_KEY_NAME       => \@game_stats,
+      Constants::STATS_DATA_NOTABLE_KEY_NAME    => \@notable_stats,
     }
   );
   my $self = bless \%stats, $this;
@@ -74,7 +76,7 @@ sub addGame
 
   my $game   = shift;
 
-  my $stats = $this->{'stats'};
+  my $stats = $this->{Constants::STATS_DATA_KEY_NAME};
 
   my $function_name = Constants::STAT_ADD_FUNCTION_NAME;
   my $object_name   = Constants::STAT_ITEM_OBJECT_NAME;
@@ -100,10 +102,10 @@ sub addStat
 
   my $other_stat_object = shift;
 
-  my $stats       = $this->{'stats'};
-  my $other_stats = $other_stat_object->{'stats'};
+  my $stats       = $this->{Constants::STATS_DATA_KEY_NAME};
+  my $other_stats = $other_stat_object->{Constants::STATS_DATA_KEY_NAME};
 
-  my $switch = $other_stat_object->{'player_is_first'};
+  my $switch = $other_stat_object->{Constants::STATS_PLAYER_IS_FIRST_KEY_NAME};
 
   foreach my $key (keys %{$stats})
   {
@@ -112,13 +114,13 @@ sub addStat
 
     if ($switch)
     {
-      if ($key eq "player1")
+      if ($key eq Constants::STATS_DATA_PLAYER_ONE_KEY_NAME)
       {
-        $other_key = "player2";
+        $other_key = Constants::STATS_DATA_PLAYER_TWO_KEY_NAME;
       }
-      elsif ($key eq "player2")
+      elsif ($key eq Constants::STATS_DATA_PLAYER_TWO_KEY_NAME)
       {
-        $other_key = "player1";
+        $other_key = Constants::STATS_DATA_PLAYER_ONE_KEY_NAME;
       }
     }
     for (my $i = 0; $i < scalar @{$this_statlist}; $i++)
@@ -133,7 +135,8 @@ sub addStat
            $this_stat->{Constants::STAT_METATYPE_NAME} ne $other_stat->{Constants::STAT_METATYPE_NAME}
          )
       {
-        die "Stats do not match!\n" . Dumper($this_stat) . Dumper($other_stat);
+        my $die_statement  = format_error("Stats do not match!", $this_stat, $other_stat);
+        die $die_statement;
       }
       my $this_object  = $this_stat->{Constants::STAT_ITEM_OBJECT_NAME};
       my $other_object = $other_stat->{Constants::STAT_ITEM_OBJECT_NAME};
@@ -179,9 +182,7 @@ sub makeRow
 
   if ($this->{'link'})
   {
-    my @items = split /\./, $this->{'link'};
-    my $id = $items[6];
-    my $link = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX . $id;
+    my $link = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX . $this->{'link'};
     $tiw -= length $name;
     $name = "<a href='$link' target='_blank'>$name</a>";
     $tiw += length $name;
@@ -222,11 +223,10 @@ sub makeItem
 sub makeMistakeItem
 {
   my $this         = shift;
+  my $html         = shift;
   my $mistake_item = shift;
   my $is_title_row = shift;
   my $num_mistakes = shift;
-
-  my $html         = $this->{'html'};
 
   my $s = "";
 
@@ -276,7 +276,7 @@ sub statItemToString
   my $this        = shift;
   my $total_games = shift;
   my $type        = shift;
-
+  my $html        = shift;
 
   my $tiw = Constants::TITLE_WIDTH;
   my $aw =  Constants::AVERAGE_WIDTH;
@@ -302,8 +302,8 @@ sub statItemToString
   elsif ($type && $type eq Constants::MISTAKE_ITEM_LIST)
   {
     $s .= "\n";
-    my $html = $this->{'html'};
     my @list = @{$this->{'list'}};
+
 
     if ($html && scalar @list > 0)
     {
@@ -328,7 +328,7 @@ sub statItemToString
     {
       my @mistake_elements = @{$list[$i]};
       $mistake_elements_length = scalar @mistake_elements;
-      $magnitude_strings{$mistake_elements[1]} .= makeMistakeItem($this, $list[$i], 0);
+      $magnitude_strings{$mistake_elements[1]} .= makeMistakeItem($this, $html, $list[$i], 0);
       $mistakes_magnitude_count{$mistake_elements[1]}++;
     }
 
@@ -341,7 +341,7 @@ sub statItemToString
         {
           $s .= "<tr><td style='height: 50px'></td></tr>\n";
         }
-        $s .= makeMistakeItem($this, $mag, $mistake_elements_length, $mistakes_magnitude_count{$mag});
+        $s .= makeMistakeItem($this, $html, $mag, $mistake_elements_length, $mistakes_magnitude_count{$mag});
         if ($html)
         {
           $s .= "<tr>\n";
@@ -387,10 +387,10 @@ sub toString
   my $tot        = $tiw + $aw + $tow;
   my $num;
 
-  my $player1_ref = $this->{'stats'}->{'player1'};
-  my $player2_ref = $this->{'stats'}->{'player2'};
-  my $game_ref    = $this->{'stats'}->{'game'};
-  my $notable_ref = $this->{'stats'}->{'notable'};
+  my $player1_ref = $this->{Constants::STATS_DATA_KEY_NAME}->{Constants::STATS_DATA_PLAYER_ONE_KEY_NAME};
+  my $player2_ref = $this->{Constants::STATS_DATA_KEY_NAME}->{Constants::STATS_DATA_PLAYER_TWO_KEY_NAME};
+  my $game_ref    = $this->{Constants::STATS_DATA_KEY_NAME}->{Constants::STATS_DATA_GAME_KEY_NAME      };
+  my $notable_ref = $this->{Constants::STATS_DATA_KEY_NAME}->{Constants::STATS_DATA_NOTABLE_KEY_NAME   };
 
   foreach my $statob (@{$game_ref})
   {
@@ -467,17 +467,20 @@ sub toString
 
   my $s = "";
 
+  $s .= "\n" . Constants::STAT_ITEM_LIST_PLAYER . "\n\n";
   for (my $i = 0; $i < scalar @player_list_stats; $i++)
   {
-    $s .= statItemToString($player_list_stats[$i], $num, Constants::STAT_ITEM_LIST);
+    $s .= statItemToString($player_list_stats[$i], $num, Constants::STAT_ITEM_LIST, $html);
   }
+  $s .= "\n" . Constants::STAT_ITEM_LIST_OPP . "\n\n";
   for (my $i = 0; $i < scalar @opp_list_stats; $i++)
   {
-    $s .= statItemToString($opp_list_stats[$i], $num, Constants::STAT_ITEM_LIST);
+    $s .= statItemToString($opp_list_stats[$i], $num, Constants::STAT_ITEM_LIST, $html);
   }
+  $s .= "\n" . Constants::STAT_ITEM_LIST_NOTABLE . "\n\n";
   for (my $i = 0; $i < scalar @notable_stats; $i++)
   {
-    $s .= statItemToString($notable_stats[$i], $num, Constants::STAT_ITEM_LIST);
+    $s .= statItemToString($notable_stats[$i], $num, Constants::STAT_ITEM_LIST, $html);
   }
 
   my $title_divider = ("_" x ($tot+2)) . "\n";
@@ -491,7 +494,7 @@ sub toString
   
   for (my $i = 0; $i < scalar @game_stats; $i++)
   {
-    $s .= statItemToString($game_stats[$i], $num);
+    $s .= statItemToString($game_stats[$i], $num, $html);
   }
 
   $s .= makeTitleRow($tiw, $aw, $tow, "", "", "");
@@ -500,7 +503,7 @@ sub toString
   
   for (my $i = 0; $i < scalar @player_item_stats; $i++)
   {
-    $s .= statItemToString($player_item_stats[$i], $num);
+    $s .= statItemToString($player_item_stats[$i], $num, $html);
   }
 
   $s .= makeTitleRow($tiw, $aw, $tow, "", "", "");
@@ -509,7 +512,7 @@ sub toString
   
   for (my $i = 0; $i < scalar @opp_item_stats; $i++)
   {
-    $s .= statItemToString($opp_item_stats[$i], $num);
+    $s .= statItemToString($opp_item_stats[$i], $num, $html);
   }
   
   $s .= ("_" x ($tot+2)) . "\n\n";
@@ -521,11 +524,11 @@ sub toString
 
   $s .= "\n".Constants::MISTAKE_ITEM_LIST_PLAYER . "\n";
 
-  $s .= statItemToString($player_mistake_list, $num, Constants::MISTAKE_ITEM_LIST);
+  $s .= statItemToString($player_mistake_list, $num, Constants::MISTAKE_ITEM_LIST, $html);
 
   $s .= "\n\n\n".Constants::MISTAKE_ITEM_LIST_OPP . "\n";
   
-  $s .= statItemToString($opp_mistake_list, $num, Constants::MISTAKE_ITEM_LIST);
+  $s .= statItemToString($opp_mistake_list, $num, Constants::MISTAKE_ITEM_LIST, $html);
 
   if ($html)
   {
@@ -1811,7 +1814,7 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Many Double Letters Covered',
-      Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
+      Constants::STAT_ITEM_OBJECT_NAME => {'list' => [], 'ids' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
       Constants::STAT_COMBINE_FUNCTION_NAME =>
@@ -1819,6 +1822,7 @@ sub statsList
       {
         my $this  = shift;
         my $other = shift;
+        push @{$this->{'ids'}}, @{$other->{'ids'}};
         push @{$this->{'list'}}, @{$other->{'list'}};
       },
       Constants::STAT_ADD_FUNCTION_NAME =>
@@ -1830,13 +1834,14 @@ sub statsList
         # All is 24
         if (20 <= $game->getNumBonusSquaresCovered(0)->{Constants::DOUBLE_LETTER} + $game->getNumBonusSquaresCovered(1)->{Constants::DOUBLE_LETTER})
         {
+          push @{$this->{'ids'}},  $game->{'id'};
           push @{$this->{'list'}}, $game->getReadableName();
         }
       }
     },
     {
       Constants::STAT_NAME => 'Many Double Words Covered',
-      Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
+      Constants::STAT_ITEM_OBJECT_NAME => {'list' => [], 'ids' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
       Constants::STAT_COMBINE_FUNCTION_NAME =>
@@ -1844,6 +1849,7 @@ sub statsList
       {
         my $this  = shift;
         my $other = shift;
+        push @{$this->{'ids'}}, @{$other->{'ids'}};
         push @{$this->{'list'}}, @{$other->{'list'}};
       },
       Constants::STAT_ADD_FUNCTION_NAME =>
@@ -1859,10 +1865,12 @@ sub statsList
         {
           if ($sum == 15)
           {
+            push @{$this->{'ids'}},  $game->{'id'};
             push @{$this->{'list'}}, $game->getReadableName();
           }
           else
           {
+            unshift @{$this->{'ids'}},  $game->{'id'};
             unshift @{$this->{'list'}}, $game->getReadableName();
           }
         }
@@ -1870,7 +1878,7 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'All Triple Letters Covered',
-      Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
+      Constants::STAT_ITEM_OBJECT_NAME => {'list' => [], 'ids' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
       Constants::STAT_COMBINE_FUNCTION_NAME =>
@@ -1878,6 +1886,7 @@ sub statsList
       {
         my $this  = shift;
         my $other = shift;
+        push @{$this->{'ids'}}, @{$other->{'ids'}};
         push @{$this->{'list'}}, @{$other->{'list'}};
       },
       Constants::STAT_ADD_FUNCTION_NAME =>
@@ -1888,13 +1897,14 @@ sub statsList
 
         if (12 == $game->getNumBonusSquaresCovered(0)->{Constants::TRIPLE_LETTER} + $game->getNumBonusSquaresCovered(1)->{Constants::TRIPLE_LETTER})
         {
+          push @{$this->{'ids'}},  $game->{'id'};
           push @{$this->{'list'}}, $game->getReadableName();
         }
       }
     },
     {
       Constants::STAT_NAME => 'All Triple Words Covered',
-      Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
+      Constants::STAT_ITEM_OBJECT_NAME => {'list' => [], 'ids' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
       Constants::STAT_COMBINE_FUNCTION_NAME =>
@@ -1902,6 +1912,7 @@ sub statsList
       {
         my $this  = shift;
         my $other = shift;
+        push @{$this->{'ids'}}, @{$other->{'ids'}};
         push @{$this->{'list'}}, @{$other->{'list'}};
       },
       Constants::STAT_ADD_FUNCTION_NAME =>
@@ -1912,13 +1923,14 @@ sub statsList
         my $this_player = shift;
         if (8 == $game->getNumBonusSquaresCovered(0)->{Constants::TRIPLE_WORD} + $game->getNumBonusSquaresCovered(1)->{Constants::TRIPLE_WORD})
         {
+          push @{$this->{'ids'}},  $game->{'id'};
           push @{$this->{'list'}}, $game->getReadableName();
         }
       }
     },
     {
       Constants::STAT_NAME => 'High Scoring',
-      Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
+      Constants::STAT_ITEM_OBJECT_NAME => {'list' => [], 'ids' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
       Constants::STAT_COMBINE_FUNCTION_NAME =>
@@ -1926,6 +1938,7 @@ sub statsList
       {
         my $this  = shift;
         my $other = shift;
+        push @{$this->{'ids'}}, @{$other->{'ids'}};
         push @{$this->{'list'}}, @{$other->{'list'}};
       },
       Constants::STAT_ADD_FUNCTION_NAME =>
@@ -1936,13 +1949,14 @@ sub statsList
 
         if (700 <= $game->{'board'}->{"player_one_total"} || 700 <= $game->{'board'}->{"player_two_total"})
         {
+          push @{$this->{'ids'}},  $game->{'id'};
           push @{$this->{'list'}}, $game->getReadableName();
         }
       }
     },
     {
-      Constants::STAT_NAME => 'High Combined Score',
-      Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
+      Constants::STAT_NAME => 'Combined High Scoring',
+      Constants::STAT_ITEM_OBJECT_NAME => {'list' => [], 'ids' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
       Constants::STAT_COMBINE_FUNCTION_NAME =>
@@ -1950,6 +1964,7 @@ sub statsList
       {
         my $this  = shift;
         my $other = shift;
+        push @{$this->{'ids'}}, @{$other->{'ids'}};
         push @{$this->{'list'}}, @{$other->{'list'}};
       },
       Constants::STAT_ADD_FUNCTION_NAME =>
@@ -1960,13 +1975,14 @@ sub statsList
 
         if (1100 <= $game->{'board'}->{"player_one_total"} + $game->{'board'}->{"player_two_total"})
         {
+          push @{$this->{'ids'}},  $game->{'id'};
           push @{$this->{'list'}}, $game->getReadableName();
         }
       }
     },
     {
-      Constants::STAT_NAME => 'Low Combined Score',
-      Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
+      Constants::STAT_NAME => 'Combined Low Scoring',
+      Constants::STAT_ITEM_OBJECT_NAME => {'list' => [], 'ids' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
       Constants::STAT_COMBINE_FUNCTION_NAME =>
@@ -1974,6 +1990,7 @@ sub statsList
       {
         my $this  = shift;
         my $other = shift;
+        push @{$this->{'ids'}}, @{$other->{'ids'}};
         push @{$this->{'list'}}, @{$other->{'list'}};
       },
       Constants::STAT_ADD_FUNCTION_NAME =>
@@ -1984,13 +2001,14 @@ sub statsList
 
         if (200 >= $game->{'board'}->{"player_one_total"} + $game->{'board'}->{"player_two_total"})
         {
+          push @{$this->{'ids'}},  $game->{'id'};
           push @{$this->{'list'}}, $game->getReadableName();
         }
       }
     },
     {
       Constants::STAT_NAME => 'Ties',
-      Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
+      Constants::STAT_ITEM_OBJECT_NAME => {'list' => [], 'ids' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
       Constants::STAT_COMBINE_FUNCTION_NAME =>
@@ -1998,6 +2016,7 @@ sub statsList
       {
         my $this  = shift;
         my $other = shift;
+        push @{$this->{'ids'}}, @{$other->{'ids'}};
         push @{$this->{'list'}}, @{$other->{'list'}};
       },
       Constants::STAT_ADD_FUNCTION_NAME =>
@@ -2008,13 +2027,14 @@ sub statsList
 
         if ($game->{'board'}->{"player_one_total"} == $game->{'board'}->{"player_two_total"})
         {
+          push @{$this->{'ids'}},  $game->{'id'};
           push @{$this->{'list'}}, $game->getReadableName();
         }
       }
     },
     {
       Constants::STAT_NAME => 'One Player Plays Every Power Tile',
-      Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
+      Constants::STAT_ITEM_OBJECT_NAME => {'list' => [], 'ids' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
       Constants::STAT_COMBINE_FUNCTION_NAME =>
@@ -2022,6 +2042,7 @@ sub statsList
       {
         my $this  = shift;
         my $other = shift;
+        push @{$this->{'ids'}}, @{$other->{'ids'}};
         push @{$this->{'list'}}, @{$other->{'list'}};
       },
       Constants::STAT_ADD_FUNCTION_NAME =>
@@ -2046,13 +2067,14 @@ sub statsList
 
         if ($sum1 == 10 || $sum2 == 10)
         {
+          push @{$this->{'ids'}},  $game->{'id'};
           push @{$this->{'list'}}, $game->getReadableName();
         }
       }
     },
     {
       Constants::STAT_NAME => 'One Player Plays Every E',
-      Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
+      Constants::STAT_ITEM_OBJECT_NAME => {'list' => [], 'ids' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
       Constants::STAT_COMBINE_FUNCTION_NAME =>
@@ -2060,6 +2082,7 @@ sub statsList
       {
         my $this  = shift;
         my $other = shift;
+        push @{$this->{'ids'}}, @{$other->{'ids'}};
         push @{$this->{'list'}}, @{$other->{'list'}};
       },
       Constants::STAT_ADD_FUNCTION_NAME =>
@@ -2075,13 +2098,14 @@ sub statsList
 
         if ($sum1 == 12 || $sum2 == 12)
         {
+          push @{$this->{'ids'}},  $game->{'id'};
           push @{$this->{'list'}}, $game->getReadableName();
         }
       }
     },
     {
       Constants::STAT_NAME => 'Many Challenges',
-      Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
+      Constants::STAT_ITEM_OBJECT_NAME => {'list' => [], 'ids' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
       Constants::STAT_COMBINE_FUNCTION_NAME =>
@@ -2089,6 +2113,7 @@ sub statsList
       {
         my $this  = shift;
         my $other = shift;
+        push @{$this->{'ids'}}, @{$other->{'ids'}};
         push @{$this->{'list'}}, @{$other->{'list'}};
       },
       Constants::STAT_ADD_FUNCTION_NAME =>
@@ -2106,6 +2131,7 @@ sub statsList
 
         if (5 <= $pcw + $pcl + $ocw + $ocl)
         {
+          push @{$this->{'ids'}},  $game->{'id'};
           push @{$this->{'list'}}, $game->getReadableName();
         }
       }
@@ -2190,7 +2216,6 @@ sub statsList
         my $game   = shift;
         my $player = shift;
 
-        $this->{'html'} = $game->{'html'};
         push @{$this->{'list'}}, @{$game->getMistakes($player)};
       }
     }

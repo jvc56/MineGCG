@@ -16,10 +16,9 @@ sub update_notable
   my $rr_username     = Constants::RR_USERNAME;
   my $rr_notable_dest = Constants::RR_NOTABLE_DEST;
   my $ssh_args        = Constants::SSH_ARGS;
-
-  opendir my $notables, $notable_dir or die "Cannot open directory: $!";
-  my @notable_files = readdir $notables;
-  closedir $notables;
+  
+  my $dbh = connect_to_database();
+  my $playerstable = Constants::PLAYERS_TABLE_NAME;
 
   my %notable_hash;
   my %check_for_repeats_hash;
@@ -28,44 +27,38 @@ sub update_notable
   my $init = 0;
   my @ordering = ();
 
-  foreach my $notable_file (@notable_files)
+  my @player_data = @{$dbh->selectall_arrayref("SELECT * FROM $playerstable", {Slice => {}, "RaiseError" => 1})};
+
+  foreach my $player_item (@player_data)
   {
-    if ($notable_file eq '.' || $notable_file eq '..')
+    my $player_stats = Stats->new(1, $player_item->{Constants::PLAYER_STATS_COLUMN_NAME});
+
+    my @stat_keys = ('notable');
+    
+    foreach my $key (@stat_keys)
     {
-      next;
-    }
+      my $statitem = $player_stats->{$key}->{Constants::STAT_ITEM_OBJECT_NAME};
+      my $statname = $player_stats->{$key}->{Constants::STAT_NAME};
 
-    open(PLAYER_NOTABLES, '<', $notable_dir . "/" . $notable_file);
-    while(<PLAYER_NOTABLES>)
-    {
-      $_ =~ /(.*):/;
-
-      my $type = $1;
-
-      if (!$init)
+      if (!$notable_hash{$statname})
       {
-        push @ordering, $type;
-        $notable_hash{$type} = "</br>";
+        push @ordering, $statname;
+        $notable_hash{$statname} = "";
       }
-
-      $_ =~ s/(.*)://g;
-
-      my @matches = ($_ =~ /([^,]+),/g);
-
-      foreach my $m (@matches)
+      my $list = $statitem->{'list'};
+      my $ids  = $statitem->{'ids'};
+      for (my $i = 0; $i < scalar @{$list}; $i++)
       {
-        $m =~ s/^\s+|\s+$//g;
-        if ($check_for_repeats_hash{$type . $m})
+        my $unique_name = $statname . $ids->[$i];
+        if ($check_for_repeats_hash{$unique_name})
         {
           next;
         }
-        $check_for_repeats_hash{$type . $m} = 1;
-        $m =~ /\(Game (\d+)\)/;
-        my $id = $1;
-        $notable_hash{$type} .= "<a href='$url$id' target='_blank'>$m</a></br>";
+        my $notable_game = $list->[$i];
+        $notable_hash{$statname} .= $notable_game . "<br>";
+        $check_for_repeats_hash{$unique_name} = 1;
       }
     }
-    $init = 1;
   }
 
   for (my $i = 0; $i < scalar @ordering; $i++)
@@ -87,11 +80,6 @@ sub update_notable
   open(my $new_notable, '>', $notable_name);
   print $new_notable $notable_string;
   close $new_notable;
-
-  system "rm -r $notable_dir";
-
-  system "scp $ssh_args $notable_name $rr_username\@$rr_host:$rr_notable_dest"
-
 }
 
 1;

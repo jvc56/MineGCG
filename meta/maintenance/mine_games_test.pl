@@ -5,15 +5,14 @@ use strict;
 use lib './objects';
 use Constants;
 
-require "./scripts/update_leaderboard.pl";
-require "./scripts/update_notable.pl";
 require "./scripts/utils.pl";
 
-my $table = Constants::GAMES_TABLE_NAME;
+my $playerstable = Constants::PLAYERS_TABLE_NAME;
+my $sanitized_name = Constants::PLAYER_SANITIZED_NAME_COLUMN_NAME;
 
 my $dbh = connect_to_database();
 
-my @names = map {$_->{'sanitized_name'}} @{$dbh->selectall_arrayref("SELECT sanitized_name FROM $table", {Slice => {}, "RaiseError" => 1})};
+my @names = map {$_->{$sanitized_name}} @{$dbh->selectall_arrayref("SELECT $sanitized_name FROM $playerstable", {Slice => {}, "RaiseError" => 1})};
 
 my $log_name = './logs/mine_games_test.log';
 
@@ -27,11 +26,9 @@ close $log;
 
 foreach my $name (@names)
 {
-  system "./scripts/main.pl --name '$name' -ski -stats -notable >/dev/null 2>> $log_name";
-  system "./scripts/main.pl --name '$name' -ski --html >/dev/null 2>> $log_name";
+  # print $log "\n\n$name\n\n";
+  system "./scripts/main.pl --name '$name' --html --statsdump >/dev/null 2>> $log_name";
 }
 
-update_leaderboard();
-update_notable();
 
 

@@ -3,12 +3,15 @@
 use warnings;
 use strict;
 
-use constant FULLPATH => "/home/jvc/MineGCG";
+use constant FULLPATH => "/home/josh/Dropbox/MineGCG";
 
 use lib  FULLPATH . "/objects";
 use Constants;
 
 chdir(FULLPATH);
+
+require "./scripts/update_leaderboard.pl";
+require "./scripts/update_notable.pl";
 
 my $rr_host         = Constants::RR_HOSTNAME;
 my $rr_username     = Constants::RR_USERNAME;
@@ -33,17 +36,6 @@ my $mine_start_time = time;
 
 system "./meta/maintenance/mine_games_test.pl";
 
-my $cmd = "ls -ltr logs |";
-open (CMDOUT, $cmd) or die "$!\n";
-my $yesterday_log_name = "";
-while (<CMDOUT>)
-{
-  /(\d\d\d\d_\d\d_\d\d)/;
-  $yesterday_log_name = $1;
-}
-my $diff_cmd = "diff logs/$yesterday_log_name/mine_games_test.log logs/mine_games_test.log > logs/mine_games_diff.log";
-system "$diff_cmd";
-
 my $mine_end_time = time;
 
 my $access_start_time = time;
@@ -57,6 +49,10 @@ my $cache_start_time = time;
 system "scp $ssh_args -r ./cache $rr_username\@$rr_host:$rr_working_dir";
 
 my $cache_end_time = time;
+
+update_leaderboard();
+update_notable();
+
 
 my $full_end_time = "Ended:   " . localtime() . "\n";
 

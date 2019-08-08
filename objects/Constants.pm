@@ -48,38 +48,71 @@ use constant DATABASE_PASSWORD => 'password';
 use constant PLAYERS_TABLE_NAME => 'players';
 use constant GAMES_TABLE_NAME   => 'games';
 
+use constant CACHEFILE_EXTENSION => ".html";
+
 use constant TABLE_CREATION_ORDER =>
 [
   Constants::PLAYERS_TABLE_NAME,
   Constants::GAMES_TABLE_NAME
 ];
 
+use constant PLAYER_ID_COLUMN_NAME                         => 'player_id';
+use constant PLAYER_CROSS_TABLES_ID_COLUMN_NAME            => 'player_cross_tables_id';
+use constant PLAYER_NAME_COLUMN_NAME                       => 'player_name';
+use constant PLAYER_SANITIZED_NAME_COLUMN_NAME             => 'player_sanitized_name';
+use constant PLAYER_TOTAL_GAMES_COLUMN_NAME                => 'player_total_games';
+use constant PLAYER_STATS_COLUMN_NAME                      => 'player_stats';
+use constant GAME_ID_COLUMN_NAME                           => 'game_id';
+use constant GAME_PLAYER_ONE_CROSS_TABLES_ID_COLUMN_NAME   => 'game_player1_cross_tables_id';
+use constant GAME_PLAYER_TWO_CROSS_TABLES_ID_COLUMN_NAME   => 'game_player2_cross_tables_id';
+use constant GAME_PLAYER_ONE_NAME_COLUMN_NAME              => 'game_player1_name';
+use constant GAME_PLAYER_TWO_NAME_COLUMN_NAME              => 'game_player2_name';
+use constant GAME_CROSS_TABLES_ID_COLUMN_NAME              => 'game_cross_tables_id';
+use constant GAME_GCG_COLUMN_NAME                          => 'game_gcg';
+use constant GAME_STATS_COLUMN_NAME                        => 'game_stats';
+use constant GAME_CROSS_TABLES_TOURNAMENT_ID_COLUMN_NAME   => 'game_tournament_cross_tables_id';
+use constant GAME_LEXICON_COLUMN_NAME                      => 'game_lexicon';
+use constant GAME_ROUND_COLUMN_NAME                        => 'game_round';
+use constant GAME_NAME_COLUMN_NAME                         => 'game_name';
+use constant GAME_DATE_COLUMN_NAME                         => 'game_date';
+use constant GAME_ERROR_COLUMN_NAME                        => 'game_error';
+use constant GAME_WARNING_COLUMN_NAME                      => 'game_warning';
+
+use constant STATS_PLAYER_IS_FIRST_KEY_NAME      => 'player_is_first';
+use constant STATS_DATA_KEY_NAME                 => 'data';
+use constant STATS_DATA_PLAYER_ONE_KEY_NAME      => 'player1';
+use constant STATS_DATA_PLAYER_TWO_KEY_NAME      => 'player2';
+use constant STATS_DATA_GAME_KEY_NAME            => 'game';
+use constant STATS_DATA_NOTABLE_KEY_NAME         => 'notable';
+
 use constant DATABASE_TABLES =>
 {
   Constants::PLAYERS_TABLE_NAME =>
   [
-    "id SERIAL PRIMARY  KEY",
-    "cross_tables_id    INT NOT NULL UNIQUE",
-    "name               VARCHAR(255)",
-    "sanitized_name     VARCHAR(255)"
+    Constants::PLAYER_ID_COLUMN_NAME              . " SERIAL PRIMARY  KEY",
+    Constants::PLAYER_CROSS_TABLES_ID_COLUMN_NAME . " INT NOT NULL UNIQUE",
+    Constants::PLAYER_NAME_COLUMN_NAME            . " VARCHAR(255)",
+    Constants::PLAYER_SANITIZED_NAME_COLUMN_NAME  . " VARCHAR(255)",
+    Constants::PLAYER_TOTAL_GAMES_COLUMN_NAME     . " INT",
+    Constants::PLAYER_STATS_COLUMN_NAME           . " JSON"
   ],
   Constants::GAMES_TABLE_NAME   =>
   [
-    "id SERIAL                    PRIMARY KEY",
-    "player1_cross_tables_id      INT REFERENCES " . Constants::PLAYERS_TABLE_NAME . " (cross_tables_id)",
-    "player2_cross_tables_id      INT REFERENCES " . Constants::PLAYERS_TABLE_NAME . " (cross_tables_id)",
-    "player1_name                 TEXT",
-    "player2_name                 TEXT",
-    "cross_tables_id              INT NOT NULL UNIQUE",
-    "gcg                          TEXT",
-    "stats                        JSON",
-    "cross_tables_tournament_id   INT",
-    "lexicon                      VARCHAR(5)",
-    "round                        INT",
-    "name                         TEXT",
-    "date                         DATE",
-    "error                        TEXT",
-    "warning                      TEXT",
+    Constants::GAME_ID_COLUMN_NAME                         . " SERIAL PRIMARY KEY",
+    Constants::GAME_PLAYER_ONE_CROSS_TABLES_ID_COLUMN_NAME . " INT REFERENCES " . Constants::PLAYERS_TABLE_NAME . " (" . Constants::PLAYER_CROSS_TABLES_ID_COLUMN_NAME . ")",
+    Constants::GAME_PLAYER_TWO_CROSS_TABLES_ID_COLUMN_NAME . " INT REFERENCES " . Constants::PLAYERS_TABLE_NAME . " (" . Constants::PLAYER_CROSS_TABLES_ID_COLUMN_NAME . ")",
+    Constants::GAME_PLAYER_ONE_NAME_COLUMN_NAME            . " TEXT",
+    Constants::GAME_PLAYER_TWO_NAME_COLUMN_NAME            . " TEXT",
+    Constants::GAME_CROSS_TABLES_ID_COLUMN_NAME            . " INT NOT NULL UNIQUE",
+    Constants::GAME_GCG_COLUMN_NAME                        . " TEXT",
+    Constants::GAME_STATS_COLUMN_NAME                      . " JSON",
+    Constants::GAME_CROSS_TABLES_TOURNAMENT_ID_COLUMN_NAME . " INT",
+    Constants::GAME_LEXICON_COLUMN_NAME                    . " VARCHAR(5)",
+    Constants::GAME_ROUND_COLUMN_NAME                      . " INT",
+    Constants::GAME_NAME_COLUMN_NAME                       . " TEXT",
+    Constants::GAME_DATE_COLUMN_NAME                       . " DATE",
+    Constants::GAME_ERROR_COLUMN_NAME                      . " TEXT",
+    Constants::GAME_WARNING_COLUMN_NAME                    . " TEXT",
   ]
 };
 
@@ -131,21 +164,21 @@ use constant MISTAKE_COLORS =>
 use constant PRELOAD_COUNTRIES =>
 (
   'ARE',
-  'AUS',
-  'BHR',
-  'BRB',
-  'CAN',
-  'DEU',
-  'ENG',
-  'GBR',
-  'IND',
-  'ISR',
-  'JPN',
-  'MYS',
-  'NGA',
-  'NIR',
-  'SGP',
-  'USA'
+  # 'AUS',
+  # 'BHR',
+  # 'BRB',
+  # 'CAN',
+  # 'DEU',
+  # 'ENG',
+  # 'GBR',
+  # 'IND',
+  # 'ISR',
+  # 'JPN',
+  # 'MYS',
+  # 'NGA',
+  # 'NIR',
+  # 'SGP',
+  # 'USA'
 );
 
 use constant STAT_ITEM_GAME            => 'GAME STATS';
@@ -340,6 +373,40 @@ function toggle(id)
     x.style.display = 'none';
   }
 }
+</script>
+";
+
+use constant LEADERBOARD_JAVASCRIPT =>
+"
+<script>
+  function toggle(id)
+  {
+    var x = document.getElementById(id);
+    if (x.style.display === 'none')
+    {
+      x.style.display = 'block';
+    } 
+    else
+    {
+      x.style.display = 'none';
+    }
+  }
+  function toggle_all()
+  {
+    var list = document.getElementsByTagName('DIV');
+    for (i = 0; i < list.length; i++)
+    { 
+      var x = list[i];
+      if (x.style.display === 'none')
+      {
+        x.style.display = 'block';
+      }
+      else
+      {
+        x.style.display = 'none';
+      }
+    }
+  }
 </script>
 ";
 

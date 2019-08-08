@@ -58,25 +58,39 @@ sub retrieve
     sanitize_game_data($annotated_game_data);
 
     my $game_cross_tables_id = $annotated_game_data->[0];
-
     my $game_lexicon         = $annotated_game_data->[6];
-
-    my $lexicon_ref          = get_lexicon_ref($game_lexicon);
 
     $count++;
     my $num_str = (sprintf "%-4s", $count) . " of $games_to_update:";
-    
+
+    my $lexicon_ref =
+    is_valid_game
+    (
+      $player_name         ,
+      $tourney_id          ,
+      $tourney_or_casual   ,
+      $single_game_id      ,
+      $opponent_name       ,
+      $startdate           ,
+      $enddate             ,
+      $lexicon             ,
+      $verbose             ,
+      $num_str             ,
+      $game_cross_tables_id,
+      $annotated_game_data
+    );
+
     if (!$lexicon_ref)
     {
-      if ($verbose) {print "$num_str Game with ID $game_cross_tables_id is not a tournament game\n";}
       next;
     }
 
-    my @game_query = @{query_table($dbh, Constants::GAMES_TABLE_NAME, 'cross_tables_id', $game_cross_tables_id)};
+    my @game_query = @{query_table($dbh, Constants::GAMES_TABLE_NAME, Constants::GAME_CROSS_TABLES_ID_COLUMN_NAME, $game_cross_tables_id)};
     
     if (@game_query)
     {
-      my $foreign_keys_missing = !$game_query[0]->{'player1_cross_tables_id'} || !$game_query[0]->{'player2_cross_tables_id'};
+      my $foreign_keys_missing = !$game_query[0]->{Constants::GAME_PLAYER_ONE_CROSS_TABLES_ID_COLUMN_NAME} ||
+                                 !$game_query[0]->{Constants::GAME_PLAYER_TWO_CROSS_TABLES_ID_COLUMN_NAME};
 
       if (!$update_gcg && $update_stats)
       {
@@ -88,10 +102,10 @@ sub retrieve
           $player_cross_tables_id,
           $game_query[0],
           $annotated_game_data,
-          $game_query[0]->{'gcgtext'},
+          $game_query[0]->{Constants::GAME_GCG_COLUMN_NAME},
           $lexicon_ref,
-          $game_query[0]->{'player1_name'},
-          $game_query[0]->{'player2_name'},
+          $game_query[0]->{Constants::GAME_PLAYER_ONE_NAME_COLUMN_NAME},
+          $game_query[0]->{Constants::GAME_PLAYER_TWO_NAME_COLUMN_NAME},
           $html,
           $missingracks,
           $game_lexicon,
@@ -126,7 +140,7 @@ sub retrieve
       {
         if ($foreign_keys_missing)
         {
-          if ($verbose){print "$num_str Updating foreign keys for $game_cross_tables_id\n";}
+          if ($verbose){print "$num_str Attempting to update foreign keys for $game_cross_tables_id\n";}
           update_foreign_keys
           (
             $dbh,
@@ -142,27 +156,7 @@ sub retrieve
     }
     else
     {
-      my $is_valid =
-      is_valid_game
-      (
-        $player_name         ,
-        $tourney_id          ,
-        $tourney_or_casual   ,
-        $single_game_id      ,
-        $opponent_name       ,
-        $startdate           ,
-        $enddate             ,
-        $lexicon             ,
-        $verbose             ,
-        $num_str             ,
-        $game_cross_tables_id,
-        $annotated_game_data
-      );
 
-      if (!$is_valid)
-      {
-        next;
-      }
       if ($verbose){print "$num_str Creating game $game_cross_tables_id\n";}
 
       update_stats_or_create_record

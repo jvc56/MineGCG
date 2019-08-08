@@ -7,7 +7,7 @@ use Getopt::Long;
 chdir("/home/jvc/MineGCG");
 
 require "./scripts/mine_games.pl";
-require "./scripts/sanitize.pl";
+require "./scripts/utils.pl";
 
 my $name;
 my $cort      = '';
@@ -29,5 +29,19 @@ GetOptions (
             'lexicon:s'   => \$lexicon
            );
 
-mine(sanitize($name), $cort, $game, $opponent, $startdate, $enddate, $lexicon, 0, $tid, 1, 0);
+mine
+(
+  sanitize($name),
+  $cort,
+  $game,
+  $opponent,
+  $startdate,
+  $enddate,
+  $lexicon,
+  0,
+  $tid,
+  0,
+  1,
+  0
+);
 

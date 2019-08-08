@@ -43,9 +43,8 @@ sub mine
   my $lexicon           = shift;
   my $verbose           = shift;
   my $tourney_id        = shift;
-  my $html              = shift;
   my $statsdump         = shift;
-  my $notabledump       = shift;
+  my $html              = shift;
   my $missingracks      = shift;
 
 
@@ -170,57 +169,78 @@ sub mine
   my $games_table   = Constants::GAMES_TABLE_NAME;
   my $players_table = Constants::PLAYERS_TABLE_NAME;
 
+  my $player_sanitized_name_column_name           = Constants::PLAYER_SANITIZED_NAME_COLUMN_NAME;
+  my $player_cross_tables_id_column_name          = Constants::PLAYER_CROSS_TABLES_ID_COLUMN_NAME;
+  my $game_cross_tables_id_column_name            = Constants::GAME_CROSS_TABLES_ID_COLUMN_NAME;
+  my $game_player1_cross_tables_id_column_name    = Constants::GAME_PLAYER_ONE_CROSS_TABLES_ID_COLUMN_NAME;
+  my $game_player2_cross_tables_id_column_name    = Constants::GAME_PLAYER_TWO_CROSS_TABLES_ID_COLUMN_NAME;
+  my $game_player1_name_column_name               = Constants::GAME_PLAYER_ONE_NAME_COLUMN_NAME;
+  my $game_player2_name_column_name               = Constants::GAME_PLAYER_TWO_NAME_COLUMN_NAME;
+  my $game_cross_tables_tournament_id_column_name = Constants::GAME_CROSS_TABLES_TOURNAMENT_ID_COLUMN_NAME;
+  my $game_lexicon_column_name                    = Constants::GAME_LEXICON_COLUMN_NAME;
+  my $game_round_column_name                      = Constants::GAME_ROUND_COLUMN_NAME;
+  my $game_name_column_name                       = Constants::GAME_NAME_COLUMN_NAME;
+  my $game_date_column_name                       = Constants::GAME_DATE_COLUMN_NAME;
+  my $game_stats_column_name                      = Constants::GAME_STATS_COLUMN_NAME;
+
   my $games_query =
   "
   SELECT *
   FROM $games_table AS g, $players_table AS p, $players_table AS opp
   WHERE
-        p.sanitized_name = '$player_name' AND
-        (g.player1_cross_tables_id = p.cross_tables_id OR g.player2_cross_tables_id = p.cross_tables_id)
+        p.$player_sanitized_name_column_name = '$player_name' AND
+        (
+         g.$game_player1_cross_tables_id_column_name =
+         p.$player_cross_tables_id_column_name
+         OR
+         g.$game_player2_cross_tables_id_column_name =
+         p.$player_cross_tables_id_column_name
+        )
   ";
 
   if ($single_game_id)
   {
-    $games_query .= " AND g.cross_tables_id = '$single_game_id'";
+    $games_query .= " AND g.$game_cross_tables_id_column_name = '$single_game_id'";
   }
   if ($tourney_id)
   {
-    $games_query .= " AND g.cross_tables_tournament_id = '$tourney_id'";
+    $games_query .= " AND g.$game_cross_tables_tournament_id_column_name = '$tourney_id'";
   }
   if ($opponent_name)
   {
     $games_query .=
     "
-      AND opp.sanitized_name = '$opponent_name'
+      AND opp.$player_sanitized_name_column_name = '$opponent_name'
       AND
          (
-          opp.cross_tables_id = g.player1_cross_tables_id OR
-          opp.cross_tables_id = g.player2_cross_tables_id
+          opp.$player_cross_tables_id_column_name = g.$game_player1_cross_tables_id_column_name OR
+          opp.$player_cross_tables_id_column_name = g.$game_player2_cross_tables_id_column_name
          )
     ";
   }
   if ($startdate)
   {
-    $games_query .= " AND g.date > '$startdate'";
+    $games_query .= " AND g.$game_date_column_name > '$startdate'";
   }
   if ($enddate)
   {
-    $games_query .= " AND g.date < '$enddate'";
+    $games_query .= " AND g.$game_date_column_name < '$enddate'";
   }
   if ($lexicon)
   {
-    $games_query .= " AND g.lexicon = 'lexicon'";
+    $games_query .= " AND g.$game_lexicon_column_name = 'lexicon'";
   }
   if ($cort eq 'T')
   {
-    $games_query .= " AND g.cross_tables_tournament_id > 0";
+    $games_query .= " AND g.$game_cross_tables_tournament_id_column_name > 0";
   }
   elsif ($cort eq 'C')
   {
-    $games_query .= " AND g.cross_tables_tournament_id = 0";
+    $games_query .= " AND g.$game_cross_tables_tournament_id_column_name = 0";
   }
 
   my @game_results = @{$dbh->selectall_arrayref($games_query, {Slice => {}, "RaiseError" => 1})};
+  my $num_games = 0;
 
   while (@game_results)
   {
@@ -229,16 +249,17 @@ sub mine
     my $error   = $game->{'error'};
     my $warning = $game->{'warning'};
 
-    my $game_opp_name = $game->{'player1_name'};
+    my $game_opp_name = $game->{game_player1_cross_tables_id_column_name};
     my $player_is_first = 0;
     
-    if (sanitize($game->{'player1_name'}) eq $player_name)
+    my $player1_name = $game->{game_player1_name_column_name};
+    if ($player1_name && sanitize($player1_name) eq $player_name)
     {
       $player_is_first = 1;
-      $game_opp_name = $game->{'player2_name'};
+      $game_opp_name = $game->{$game_player2_name_column_name};
     }
     
-    my $game_id = $game->{'cross_table_id'};
+    my $game_id = $game->{$game_cross_tables_id_column_name};
 
     if ($error)
     {
@@ -252,11 +273,16 @@ sub mine
       $num_warnings++;
     }
 
-    my $game_stat = Stats->new($player_is_first, $game->{'stats'});
+    my $game_stat = Stats->new($player_is_first, $game->{$game_stats_column_name});
 
     $all_stats->addStat($game_stat);
-
+    $num_games++;
     $at_least_one = 1;
+  }
+
+  if ($statsdump)
+  {
+    update_player_record($dbh, 0, 0, $player_name, prepare_stats($all_stats), $num_games);
   }
 
   if ($html)

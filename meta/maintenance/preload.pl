@@ -5,7 +5,7 @@ use strict;
 use Data::Dumper;
 
 require "./scripts/retrieve_games.pl";
-require "./scripts/sanitize.pl";
+require "./scripts/utils.pl";
 
 use lib './objects';
 use Constants;
@@ -14,7 +14,8 @@ my @countries = Constants::PRELOAD_COUNTRIES;
 
 my $wget_flags = Constants::WGET_FLAGS;
 my $players_by_country_prefix = Constants::CROSS_TABLES_COUNTRY_PREFIX;
-my $html_page_prefix = './downloads/player_by_country_';
+my $download_dir              = Constants::DOWNLOADS_DIRECTORY_NAME;
+my $html_page_prefix = "$download_dir/player_by_country_";
 
 print "Log file for retrieve on " . localtime() . "\n\n"; 
 
@@ -26,7 +27,6 @@ foreach my $country (@countries)
   system "wget $wget_flags $url -O '$html_page_name' >/dev/null 2>&1";
 
   my @player_names = ();
-
   open(PLAYERS, '<', $html_page_name);
 
   while (<PLAYERS>)
@@ -34,15 +34,26 @@ foreach my $country (@countries)
     my @matches = ($_ =~ /href=.results.php.playerid=\d+.>([^<]*)</g);
     push @player_names, @matches;
   }
-
-  my $num_names = scalar @player_names;
-
   while (@player_names)
   {
     my $raw_name = shift @player_names;
     my $name = $raw_name;
     $name = sanitize($name);
-    retrieve($name, $raw_name, "update", 0, 0, 0, 0, 0, 0, 0, 0, 1);
+    retrieve
+    (
+      $name,
+      $raw_name,
+      'stats',
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0
+    );
   }
-  system "rm '$html_page_name'";
 }
