@@ -7,11 +7,10 @@ use constant FULLPATH => "/home/josh/Dropbox/MineGCG";
 
 use lib  FULLPATH . "/objects";
 use Constants;
+use Update;
 
 chdir(FULLPATH);
 
-require "./scripts/update_leaderboard.pl";
-require "./scripts/update_notable.pl";
 
 my $rr_host         = Constants::RR_HOSTNAME;
 my $rr_username     = Constants::RR_USERNAME;
@@ -50,8 +49,8 @@ system "scp $ssh_args -r ./cache $rr_username\@$rr_host:$rr_working_dir";
 
 my $cache_end_time = time;
 
-update_leaderboard();
-update_notable();
+Update::update_leaderboard();
+Update::update_notable();
 
 
 my $full_end_time = "Ended:   " . localtime() . "\n";

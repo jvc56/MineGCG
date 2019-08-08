@@ -9,10 +9,11 @@ use List::Util qw(sum);
 use Clone qw(clone);
 
 use lib '.';
-use Constants;
-use JSON;
+use lib './modules';
 
-require './scripts/utils.pl';
+use Constants;
+use Utils;
+use JSON;
 
 sub new
 {
@@ -135,7 +136,7 @@ sub addStat
            $this_stat->{Constants::STAT_METATYPE_NAME} ne $other_stat->{Constants::STAT_METATYPE_NAME}
          )
       {
-        my $die_statement  = format_error("Stats do not match!", $this_stat, $other_stat);
+        my $die_statement  = Utils::format_error("Stats do not match!", $this_stat, $other_stat);
         die $die_statement;
       }
       my $this_object  = $this_stat->{Constants::STAT_ITEM_OBJECT_NAME};

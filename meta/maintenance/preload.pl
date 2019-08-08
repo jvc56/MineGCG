@@ -4,11 +4,12 @@ use warnings;
 use strict;
 use Data::Dumper;
 
-require "./scripts/retrieve_games.pl";
-require "./scripts/utils.pl";
-
 use lib './objects';
+use lib './modules';
+
 use Constants;
+use Retrieve;
+use Utils;
 
 my @countries = Constants::PRELOAD_COUNTRIES;
 
@@ -38,9 +39,9 @@ foreach my $country (@countries)
   {
     my $raw_name = shift @player_names;
     my $name = $raw_name;
-    $name = sanitize($name);
-    retrieve
-    (
+    $name = Utils::sanitize($name);
+    
+    Retrieve::retrieve(
       $name,
       $raw_name,
       'stats',

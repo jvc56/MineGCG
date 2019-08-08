@@ -39,6 +39,10 @@ use constant BLACKLISTED_TOURNAMENTS          => {
                                                     '9194' => 1 # Can-Am Match 08/29/15
                                                  };
 
+use constant UPDATE_OPTION_GCG                => 'gcg';
+use constant UPDATE_OPTION_STATS              => 'stats';
+use constant UPDATE_OPTION_KEYS               => 'keys';
+
 use constant DATABASE_DRIVER   => 'Pg';
 use constant DATABASE_NAME     => 'minegcg';
 use constant DATABASE_HOSTNAME => 'localhost';
@@ -164,21 +168,21 @@ use constant MISTAKE_COLORS =>
 use constant PRELOAD_COUNTRIES =>
 (
   'ARE',
-  # 'AUS',
-  # 'BHR',
-  # 'BRB',
-  # 'CAN',
-  # 'DEU',
-  # 'ENG',
-  # 'GBR',
-  # 'IND',
-  # 'ISR',
-  # 'JPN',
-  # 'MYS',
-  # 'NGA',
-  # 'NIR',
-  # 'SGP',
-  # 'USA'
+  'AUS',
+  'BHR',
+  'BRB',
+  'CAN',
+  'DEU',
+  'ENG',
+  'GBR',
+  'IND',
+  'ISR',
+  'JPN',
+  'MYS',
+  'NGA',
+  'NIR',
+  'SGP',
+  'USA'
 );
 
 use constant STAT_ITEM_GAME            => 'GAME STATS';

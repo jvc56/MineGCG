@@ -3,13 +3,14 @@
 use warnings;
 use strict;
 use Data::Dumper;
-use lib './objects';
-use Constants;
 
-require './scripts/utils.pl';
+
+use lib './objects';
+use lib './modules';
+use Constants;
+use Utils;
 
 print "Data integrity log file for check_data.pl on " . localtime() . "\n\n"; 
-
 
 my $dbh = connect_to_database();
 my $gamestable = Constants::GAMES_TABLE_NAME;

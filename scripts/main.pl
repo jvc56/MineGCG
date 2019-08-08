@@ -5,9 +5,13 @@ use strict;
 use Getopt::Long;
 use Pod::Usage qw(pod2usage);
 
-require "./scripts/retrieve_games.pl";
-require "./scripts/mine_games.pl";
-require "./scripts/utils.pl";
+use lib './modules';
+use lib './objects';
+
+use Retrieve;
+use Mine;
+use Utils;
+
 
 my $verbose        = '';
 my $update         = '';
@@ -44,17 +48,20 @@ GetOptions (
             'help|?'           => \$help
            );
 
-pod2usage(1) if $help || !$name || ($update && ($update ne "stats" && $update ne "gcg"));
+pod2usage(1) if $help || !$name || ($update && ($update ne Constants::UPDATE_OPTION_KEYS  &&
+                                                $update ne Constants::UPDATE_OPTION_STATS &&
+                                                $update ne Constants::UPDATE_OPTION_GCG   )
+                                   );
 
 $raw_name           = $name;
-$name               = sanitize($name);
-$opponent_sanitized = sanitize($opponent);
+$name               = Utils::sanitize($name);
+$opponent_sanitized = Utils::sanitize($opponent);
 $startdate          =~ s/[^\d]//g;
 $enddate            =~ s/[^\d]//g;
 $lexicon            = uc $lexicon;
 
-retrieve($name, $raw_name, $update, $tid, $cort, $game, $opponent_sanitized, $startdate, $enddate, $lexicon, $verbose, $html, $missingracks);
-mine    ($name, $cort, $game, $opponent_sanitized, $startdate, $enddate, $lexicon, $verbose, $tid, $statsdump, $html, $missingracks);
+Retrieve::retrieve($name, $raw_name, $update, $tid, $cort, $game, $opponent_sanitized, $startdate, $enddate, $lexicon, $verbose, $html, $missingracks);
+Mine::mine    ($name, $cort, $game, $opponent_sanitized, $startdate, $enddate, $lexicon, $verbose, $tid, $statsdump, $html, $missingracks);
 
 
 __END__
@@ -62,7 +69,7 @@ __END__
 =head1 SYNOPSIS
  
 
- ./main.pl -n=<playername> [-v] [-u=(stats|gcg)] [-r] [-c=<gametype>] [-t=<tournamentid>]
+ ./main.pl -n=<playername> [-v] [-u=(keys|stats|gcg)] [-r] [-c=<gametype>] [-t=<tournamentid>]
 
  
  Options:

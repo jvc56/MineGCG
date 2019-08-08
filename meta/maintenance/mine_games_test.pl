@@ -2,15 +2,18 @@
 
 use warnings;
 use strict;
-use lib './objects';
-use Constants;
 
-require "./scripts/utils.pl";
+
+use lib './objects';
+use lib './modules';
+
+use Constants;
+use Utils;
 
 my $playerstable = Constants::PLAYERS_TABLE_NAME;
 my $sanitized_name = Constants::PLAYER_SANITIZED_NAME_COLUMN_NAME;
 
-my $dbh = connect_to_database();
+my $dbh = Utils::connect_to_database();
 
 my @names = map {$_->{$sanitized_name}} @{$dbh->selectall_arrayref("SELECT $sanitized_name FROM $playerstable", {Slice => {}, "RaiseError" => 1})};
 

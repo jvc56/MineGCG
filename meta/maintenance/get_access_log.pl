@@ -3,7 +3,8 @@
 use warnings;
 use strict;
 use DateTime;
-use lib './objects';
+
+use lib './modules';
 use Constants;
 
 my $rr_host         = Constants::RR_HOSTNAME;

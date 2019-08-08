@@ -1,14 +1,16 @@
 #!/usr/bin/perl
 
+package Retrieve;
+
 use warnings;
 use strict;
 
-require "./scripts/utils.pl";
-
 use lib './objects';
+use lib './modules';
 use Constants;
 use Game;
 use Stats;
+use Utils;
 
 use JSON;
 
@@ -17,7 +19,6 @@ sub retrieve
   # Constants
   my $downloads_dir              = Constants::DOWNLOADS_DIRECTORY_NAME;
 
-  my $dbh = connect_to_database();
 
   my $player_name       = shift;
   my $raw_name          = shift;
@@ -33,19 +34,27 @@ sub retrieve
   my $html              = shift;
   my $missingracks      = shift;
 
-  my $update_stats = $update eq "stats";
-  my $update_gcg   = $update eq "gcg";
+  if (!$update)
+  {
+    return;
+  }
 
-  my $player_cross_tables_id = get_player_cross_tables_id($player_name, $raw_name);
+  my $dbh = Utils::connect_to_database();
+
+  my $update_stats = $update eq Constants::UPDATE_OPTION_GCG;
+  my $update_gcg   = $update eq Constants::UPDATE_OPTION_STATS;
+  my $update_keys  = $update eq Constants::UPDATE_OPTION_KEYS;
+
+  my $player_cross_tables_id = Utils::get_player_cross_tables_id($player_name, $raw_name);
 
   if (!$player_cross_tables_id)
   {
     return;
   }
 
-  my @game_info = @{get_player_annotated_game_data($player_cross_tables_id)};
+  my @game_info = @{Utils::get_player_annotated_game_data($player_cross_tables_id)};
 
-  my $player_record_id = update_player_record($dbh, $player_cross_tables_id, $raw_name, $player_name);
+  my $player_record_id = Utils::update_player_record($dbh, $player_cross_tables_id, $raw_name, $player_name);
 
   my $games_to_update = scalar @game_info;
   my $count           = 0;
@@ -55,16 +64,15 @@ sub retrieve
   {
     my $annotated_game_data = shift @game_info;
 
-    sanitize_game_data($annotated_game_data);
+    Utils::sanitize_game_data($annotated_game_data);
 
     my $game_cross_tables_id = $annotated_game_data->[0];
     my $game_lexicon         = $annotated_game_data->[6];
 
     $count++;
     my $num_str = (sprintf "%-4s", $count) . " of $games_to_update:";
-
     my $lexicon_ref =
-    is_valid_game
+    Utils::is_valid_game
     (
       $player_name         ,
       $tourney_id          ,
@@ -85,17 +93,14 @@ sub retrieve
       next;
     }
 
-    my @game_query = @{query_table($dbh, Constants::GAMES_TABLE_NAME, Constants::GAME_CROSS_TABLES_ID_COLUMN_NAME, $game_cross_tables_id)};
+    my @game_query = @{Utils::query_table($dbh, Constants::GAMES_TABLE_NAME, Constants::GAME_CROSS_TABLES_ID_COLUMN_NAME, $game_cross_tables_id)};
     
     if (@game_query)
     {
-      my $foreign_keys_missing = !$game_query[0]->{Constants::GAME_PLAYER_ONE_CROSS_TABLES_ID_COLUMN_NAME} ||
-                                 !$game_query[0]->{Constants::GAME_PLAYER_TWO_CROSS_TABLES_ID_COLUMN_NAME};
-
-      if (!$update_gcg && $update_stats)
+      if ($update_stats)
       {
         if ($verbose){print "$num_str Updating stats for $game_cross_tables_id\n";}
-        update_stats_or_create_record
+        Utils::update_stats_or_create_record
         (
           $dbh,
           $player_name,
@@ -117,7 +122,7 @@ sub retrieve
       elsif ($update_gcg)
       {
         if ($verbose){print "$num_str Updating gcg for $game_cross_tables_id\n";}
-        update_stats_or_create_record
+        Utils::update_stats_or_create_record
         (
           $dbh,
           $player_name,
@@ -136,17 +141,20 @@ sub retrieve
         );
         $games_updated++;
       }
-      else
+      elsif ($update_keys)
       {
+        my $foreign_keys_missing = !$game_query[0]->{Constants::GAME_PLAYER_ONE_CROSS_TABLES_ID_COLUMN_NAME} ||
+                                 !$game_query[0]->{Constants::GAME_PLAYER_TWO_CROSS_TABLES_ID_COLUMN_NAME};
         if ($foreign_keys_missing)
         {
           if ($verbose){print "$num_str Attempting to update foreign keys for $game_cross_tables_id\n";}
-          update_foreign_keys
-          (
+          
+          Utils::update_foreign_keys(
             $dbh,
             $game_cross_tables_id,
             $player_cross_tables_id
           );
+        
         }
         else
         {
@@ -159,8 +167,7 @@ sub retrieve
 
       if ($verbose){print "$num_str Creating game $game_cross_tables_id\n";}
 
-      update_stats_or_create_record
-      (
+      Utils::update_stats_or_create_record(   
         $dbh,
         $player_name,
         $player_cross_tables_id,

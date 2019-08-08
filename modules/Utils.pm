@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+package Utils;
+
 use warnings;
 use strict;
 use Data::Dumper;
@@ -17,6 +19,7 @@ use TWL98;
 use TWL06;
 use American;
 use NSW18;
+use JSON;
 
 sub connect_to_database
 {

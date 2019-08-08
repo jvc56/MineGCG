@@ -1,16 +1,18 @@
 #!/usr/bin/perl
 
+package Mine;
+
 use warnings;
 use strict;
 use Data::Dumper;
 
 use lib "./objects"; 
 use lib "./lexicons";
-require "./scripts/utils.pl";
 
 use Game;
 use Constants;
 use Stats;
+use Utils;
 
 use CSW07;
 use CSW12;
@@ -32,7 +34,7 @@ sub mine
   my $cache_dir               = Constants::CACHE_DIRECTORY_NAME;
   my $stats_note              = Constants::STATS_NOTE;
 
-  my $dbh = connect_to_database();
+  my $dbh = Utils::connect_to_database();
 
   my $player_name       = shift;
   my $cort              = shift;
@@ -182,6 +184,8 @@ sub mine
   my $game_name_column_name                       = Constants::GAME_NAME_COLUMN_NAME;
   my $game_date_column_name                       = Constants::GAME_DATE_COLUMN_NAME;
   my $game_stats_column_name                      = Constants::GAME_STATS_COLUMN_NAME;
+  my $game_error_column_name                      = Constants::GAME_ERROR_COLUMN_NAME;
+  my $game_warning_column_name                    = Constants::GAME_WARNING_COLUMN_NAME;
 
   my $games_query =
   "
@@ -246,8 +250,8 @@ sub mine
   {
     my $game = shift @game_results;
 
-    my $error   = $game->{'error'};
-    my $warning = $game->{'warning'};
+    my $error   = $game->{$game_error_column_name};
+    my $warning = $game->{$game_warning_column_name};
 
     my $game_opp_name = $game->{game_player1_cross_tables_id_column_name};
     my $player_is_first = 0;
@@ -282,7 +286,7 @@ sub mine
 
   if ($statsdump)
   {
-    update_player_record($dbh, 0, 0, $player_name, prepare_stats($all_stats), $num_games);
+    Utils::update_player_record($dbh, 0, 0, $player_name, prepare_stats($all_stats), $num_games);
   }
 
   if ($html)
