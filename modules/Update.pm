@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+package Update;
+
 use warnings;
 use strict;
 use Data::Dumper;
@@ -7,8 +9,10 @@ use Data::Dumper;
 
 use lib './objects';
 use lib './modules';
+
 use Constants;
 use Utils;
+use Stats;
 
 sub update_leaderboard
 {
@@ -24,47 +28,56 @@ sub update_leaderboard
   my $leaderboard_string = "";
   my $table_of_contents  = "<h1><a id='leaderboards'></a>LEADERBOARDS</h1>";
 
-  my $dbh = connect_to_database();
+  my $dbh = Utils::connect_to_database();
 
   my $playerstable = Constants::PLAYERS_TABLE_NAME;
   my $gamestable   = Constants::GAMES_TABLE_NAME;
+  my $total_games_name = Constants::PLAYER_TOTAL_GAMES_COLUMN_NAME;
 
-  my @player_data = @{$dbh->selectall_arrayref("SELECT * FROM $playerstable WHERE total_games >= $min_games", {Slice => {}, "RaiseError" => 1})};
+  my @player_data = @{$dbh->selectall_arrayref("SELECT * FROM $playerstable WHERE $total_games_name >= 0", {Slice => {}, "RaiseError" => 1})};
 
   my $total_players = scalar @player_data;
 
   foreach my $player_item (@player_data)
   {
-    my $name         = $player_item->{'name'};
-    my $total_games  = $player_item->{'total_games'};
-    my $player_stats = Stats->new(1, $player_item->{'stats'});
+    my $name         = $player_item->{Constants::PLAYER_NAME_COLUMN_NAME};
+    my $total_games  = $player_item->{Constants::PLAYER_TOTAL_GAMES_COLUMN_NAME};
+    my $player_stats = Stats->new(1, $player_item->{Constants::PLAYER_STATS_COLUMN_NAME});
+    my $player_stats_data = $player_stats->{Constants::STATS_DATA_KEY_NAME};
 
-    my @stat_keys = ('game', 'player1');
+    my @stat_keys = (Constants::STATS_DATA_GAME_KEY_NAME, Constants::STATS_DATA_PLAYER_ONE_KEY_NAME);
     
     foreach my $key (@stat_keys)
     {
-      my $statitem = $player_stats->{$key}->{Constants::STAT_ITEM_OBJECT_NAME};
-      my $statname = $player_stats->{$key}->{Constants::STAT_NAME};
-
-      my $statval   = $statitem->{'total'};
-      my $is_single = $statitem->{'single'};
-      my $is_int    = $statitem->{'int'};
-
-      add_stat(\%leaderboards, $name, $statname, $statval, $total_games, $is_single, $is_int, \@name_order);
-
-      my $subitems = $statitem->{'subitems'};
-      if ($subitems)
+      my $statlist = $player_stats_data->{$key};
+      for (my $i = 0; $i < scalar @{$statlist}; $i++)
       {
-        my $order = $statitem->{'list'};
-        for (my $i = 0; $i < scalar @{$order}; $i++)
+        if ($statlist->[$i]->{Constants::STAT_DATATYPE_NAME} eq Constants::DATATYPE_ITEM)
         {
-          my $subitemname = $order->[$i];
+          my $statitem = $statlist->[$i]->{Constants::STAT_ITEM_OBJECT_NAME};
+          my $statname = $statlist->[$i]->{Constants::STAT_NAME};
 
-          my $substatname = "$statname $subitemname";
+          my $statval   = $statitem->{'total'};
+          my $is_single = $statitem->{'single'};
+          my $is_int    = $statitem->{'int'};
 
-          my $substatval  = $subitems->{$subitemname};
+          add_stat(\%leaderboards, $name, $statname, $statval, $total_games, $is_single, $is_int, \@name_order);
 
-          add_stat(\%leaderboards, $name, $substatname, $substatval, $total_games, $is_single, $is_int, \@name_order);
+          my $subitems = $statitem->{'subitems'};
+          if ($subitems)
+          {
+            my $order = $statitem->{'list'};
+            for (my $i = 0; $i < scalar @{$order}; $i++)
+            {
+              my $subitemname = $order->[$i];
+
+              my $substatname = "$statname $subitemname";
+
+              my $substatval  = $subitems->{$subitemname};
+
+              add_stat(\%leaderboards, $name, $substatname, $substatval, $total_games, $is_single, $is_int, \@name_order);
+            }
+          }
         }
       }
     }
@@ -105,7 +118,7 @@ sub update_leaderboard
       my $all_zeros = 1;
       for (my $k = 0; $k < $cutoff; $k++)
       {
-        if ($ranked_array[$k][0] != 0)
+        if ($ranked_array[$k] && $ranked_array[$k][0] != 0)
         {
           $all_zeros = 0;
           last;
@@ -133,7 +146,7 @@ sub update_leaderboard
           $leaderboard_string .= "<div id='$title' style='display: none;'>";
         }
 
-        my $link = "<a href='$query_prefix$name_with_underscores.cache' target='_blank'>$name</a>";
+        my $link = "<a href='$query_prefix$name_with_underscores.html' target='_blank'>$name</a>";
 
         my $spacing = $column_spacing + (length $link) - (length $name);
         my $ranked_player_name = sprintf "%-" . $spacing . "s", $link;
@@ -179,7 +192,7 @@ sub update_notable
   my $rr_notable_dest = Constants::RR_NOTABLE_DEST;
   my $ssh_args        = Constants::SSH_ARGS;
   
-  my $dbh = connect_to_database();
+  my $dbh = Utils::connect_to_database();
   my $playerstable = Constants::PLAYERS_TABLE_NAME;
 
   my %notable_hash;
@@ -194,31 +207,37 @@ sub update_notable
   foreach my $player_item (@player_data)
   {
     my $player_stats = Stats->new(1, $player_item->{Constants::PLAYER_STATS_COLUMN_NAME});
+    my $player_stats_data = $player_stats->{Constants::STATS_DATA_KEY_NAME};
 
-    my @stat_keys = ('notable');
+    my @stat_keys = (Constants::STATS_DATA_NOTABLE_KEY_NAME);
     
     foreach my $key (@stat_keys)
     {
-      my $statitem = $player_stats->{$key}->{Constants::STAT_ITEM_OBJECT_NAME};
-      my $statname = $player_stats->{$key}->{Constants::STAT_NAME};
+      my $statlist = $player_stats_data->{$key};
 
-      if (!$notable_hash{$statname})
+      for (my $i = 0; $i < scalar @{$statlist}; $i++)
       {
-        push @ordering, $statname;
-        $notable_hash{$statname} = "";
-      }
-      my $list = $statitem->{'list'};
-      my $ids  = $statitem->{'ids'};
-      for (my $i = 0; $i < scalar @{$list}; $i++)
-      {
-        my $unique_name = $statname . $ids->[$i];
-        if ($check_for_repeats_hash{$unique_name})
+        my $statitem = $statlist->[$i]->{Constants::STAT_ITEM_OBJECT_NAME};
+        my $statname = $statlist->[$i]->{Constants::STAT_NAME};
+
+        if (!$notable_hash{$statname})
         {
-          next;
+          push @ordering, $statname;
+          $notable_hash{$statname} = "";
         }
-        my $notable_game = $list->[$i];
-        $notable_hash{$statname} .= $notable_game . "<br>";
-        $check_for_repeats_hash{$unique_name} = 1;
+        my $list = $statitem->{'list'};
+        my $ids  = $statitem->{'ids'};
+        for (my $i = 0; $i < scalar @{$list}; $i++)
+        {
+          my $unique_name = $statname . $ids->[$i];
+          if ($check_for_repeats_hash{$unique_name})
+          {
+            next;
+          }
+          my $notable_game = $list->[$i];
+          $notable_hash{$statname} .= $notable_game . "<br>";
+          $check_for_repeats_hash{$unique_name} = 1;
+        }
       }
     }
   }

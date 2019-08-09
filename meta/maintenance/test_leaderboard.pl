@@ -3,7 +3,7 @@
 use warnings;
 use strict;
 
-require "./scripts/update_leaderboard.pl";
+use lib './modules';
+use Update;
 
-update_leaderboard();
-
+Update::update_leaderboard();

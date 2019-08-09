@@ -23,6 +23,9 @@ use TWL06;
 use American;
 use NSW18;
 
+
+use JSON;
+
 my $html_string = "";
 
 
@@ -60,7 +63,7 @@ sub mine
                         !$tourney_id &&
                         $html;
 
-  if ($cache_condition && -e $cache_filename)
+  if (!$statsdump && $cache_condition && -e $cache_filename)
   {
     my $game_string = "";
     open(GAME, '<', $cache_filename);
@@ -286,7 +289,8 @@ sub mine
 
   if ($statsdump)
   {
-    Utils::update_player_record($dbh, 0, 0, $player_name, prepare_stats($all_stats), $num_games);
+    my $sanitized_stats = Utils::database_sanitize(encode_json(Utils::prepare_stats($all_stats)));
+    Utils::update_player_record($dbh, 0, 0, $player_name, $sanitized_stats, $num_games);
   }
 
   if ($html)

@@ -41,7 +41,7 @@ GetOptions (
             'startdate:s'      => \$startdate,
             'enddate:s'        => \$enddate,
             'lexicon:s'        => \$lexicon,
-            'statsdump:s'      => \$statsdump,
+            'statsdump'        => \$statsdump,
             'html'             => \$html,
             'missingracks'     => \$missingracks,
             'name=s'           => \$name,

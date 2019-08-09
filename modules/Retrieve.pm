@@ -41,8 +41,8 @@ sub retrieve
 
   my $dbh = Utils::connect_to_database();
 
-  my $update_stats = $update eq Constants::UPDATE_OPTION_GCG;
-  my $update_gcg   = $update eq Constants::UPDATE_OPTION_STATS;
+  my $update_gcg   = $update eq Constants::UPDATE_OPTION_GCG;
+  my $update_stats = $update eq Constants::UPDATE_OPTION_STATS;
   my $update_keys  = $update eq Constants::UPDATE_OPTION_KEYS;
 
   my $player_cross_tables_id = Utils::get_player_cross_tables_id($player_name, $raw_name);
@@ -188,7 +188,8 @@ sub retrieve
   }
   if ($games_updated)
   {
-    print ((sprintf "%-30s", $player_name . ":") . "$games_updated games updated or created\n");
+    my $num = sprintf "%-4s", $games_updated;
+    print ((sprintf "%-30s", $player_name . ":") . "$num games updated or created\n");
   }
 }
 

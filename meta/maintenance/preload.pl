@@ -44,7 +44,7 @@ foreach my $country (@countries)
     Retrieve::retrieve(
       $name,
       $raw_name,
-      'stats',
+      Constants::UPDATE_OPTION_STATS,
       0,
       0,
       0,

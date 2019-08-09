@@ -5,7 +5,7 @@ package Constants;
 use warnings;
 use strict;
 
-use constant RR_HOSTNAME                      => '3.13.229.56';
+use constant RR_HOSTNAME                      => 'randomracer.com';
 use constant RR_USERNAME                      => 'ubuntu';
 
 use constant SSH_ARGS                         => ' -i /home/jvc/randomracer-keypair1.pem ';

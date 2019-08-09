@@ -3,7 +3,8 @@
 use warnings;
 use strict;
 
-require "./scripts/update_notable.pl";
+use lib './modules';
+use Update;
 
-update_notable();
+Update::update_notable();
 

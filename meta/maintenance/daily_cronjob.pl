@@ -5,7 +5,9 @@ use strict;
 
 use constant FULLPATH => "/home/josh/Dropbox/MineGCG";
 
-use lib  FULLPATH . "/objects";
+use lib FULLPATH . "/objects";
+use lib FULLPATH . "/modules";
+
 use Constants;
 use Update;
 

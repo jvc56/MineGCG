@@ -201,7 +201,7 @@ sub update_player_record
   my $player_record =
   {
     Constants::PLAYER_CROSS_TABLES_ID_COLUMN_NAME => $player_cross_tables_id,
-    Constants::PLAYER_NAME_COLUMN_NAME            => $raw_name,
+    Constants::PLAYER_NAME_COLUMN_NAME            => database_sanitize($raw_name),
     Constants::PLAYER_SANITIZED_NAME_COLUMN_NAME  => $player_name,
     Constants::PLAYER_STATS_COLUMN_NAME           => $stats,
     Constants::PLAYER_TOTAL_GAMES_COLUMN_NAME     => $total_games
