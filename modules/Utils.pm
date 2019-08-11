@@ -6,6 +6,8 @@ use warnings;
 use strict;
 use Data::Dumper;
 use DBI;
+use utf8;
+use Encode;
 
 use lib "./objects"; 
 use lib "./lexicons";
@@ -732,6 +734,8 @@ sub database_sanitize
   my $s = shift;
 
   $s =~ s/'/''/g;
+
+  $s = encode( "UTF-8", $s );
 
   return $s;
 }
