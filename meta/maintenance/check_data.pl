@@ -12,7 +12,7 @@ use Utils;
 
 print "Data integrity log file for check_data.pl on " . localtime() . "\n\n"; 
 
-my $dbh = connect_to_database();
+my $dbh = Utils::connect_to_database();
 my $gamestable = Constants::GAMES_TABLE_NAME;
 my $game_player1_cross_tables_id_column_name    = Constants::GAME_PLAYER_ONE_CROSS_TABLES_ID_COLUMN_NAME;
 my $game_player2_cross_tables_id_column_name    = Constants::GAME_PLAYER_TWO_CROSS_TABLES_ID_COLUMN_NAME;

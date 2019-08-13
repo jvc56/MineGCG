@@ -11,6 +11,7 @@ use Encode;
 
 use lib "./objects"; 
 use lib "./lexicons";
+use lib "./modules";
 
 use Constants;
 use CSW07;
@@ -80,7 +81,8 @@ sub get_player_cross_tables_id
 
   # Run a query using the name to get the player ID
   my $query_url = $query_url_prefix . $query_name;
-  open (CMDOUT, "wget $wget_flags $query_url -O ./$downloads_dir/$query_results_page_name 2>&1 |");
+  my $cmd = "wget $wget_flags $query_url -O ./$downloads_dir/$query_results_page_name 2>&1 |";
+  open (CMDOUT, $cmd);
   my $player_cross_tables_id;
   while (<CMDOUT>)
   {
@@ -493,7 +495,7 @@ sub update_stats_or_create_record
       $player2_cross_tables_id = $player_cross_tables_id;
       if (sanitize($player_two_name) ne $player_name)
       {
-        die "matching player name not found\n";
+        die "matching player name not found: $player_one_name, $player_two_name, $player_name, $game_cross_tables_id\n";
       }
     }  
   }

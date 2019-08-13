@@ -190,10 +190,28 @@ sub mine
   my $game_error_column_name                      = Constants::GAME_ERROR_COLUMN_NAME;
   my $game_warning_column_name                    = Constants::GAME_WARNING_COLUMN_NAME;
 
+  my $opp_table_statement = "";
+  my $opp_query           = "";
+
+  if ($opponent_name)
+  {
+    $opp_query =
+    "
+      AND opp.$player_sanitized_name_column_name = '$opponent_name'
+      AND
+         (
+          opp.$player_cross_tables_id_column_name = g.$game_player1_cross_tables_id_column_name OR
+          opp.$player_cross_tables_id_column_name = g.$game_player2_cross_tables_id_column_name
+         )
+    ";
+
+    $opp_table_statement = " , $players_table AS opp ";
+  } 
+
   my $games_query =
   "
   SELECT *
-  FROM $games_table AS g, $players_table AS p, $players_table AS opp
+  FROM $games_table AS g, $players_table AS p $opp_table_statement
   WHERE
         p.$player_sanitized_name_column_name = '$player_name' AND
         (
@@ -203,6 +221,7 @@ sub mine
          g.$game_player2_cross_tables_id_column_name =
          p.$player_cross_tables_id_column_name
         )
+  $opp_query
   ";
 
   if ($single_game_id)
@@ -212,18 +231,6 @@ sub mine
   if ($tourney_id)
   {
     $games_query .= " AND g.$game_cross_tables_tournament_id_column_name = '$tourney_id'";
-  }
-  if ($opponent_name)
-  {
-    $games_query .=
-    "
-      AND opp.$player_sanitized_name_column_name = '$opponent_name'
-      AND
-         (
-          opp.$player_cross_tables_id_column_name = g.$game_player1_cross_tables_id_column_name OR
-          opp.$player_cross_tables_id_column_name = g.$game_player2_cross_tables_id_column_name
-         )
-    ";
   }
   if ($startdate)
   {
@@ -287,7 +294,7 @@ sub mine
     $at_least_one = 1;
   }
 
-  if ($statsdump)
+  if ($statsdump && $at_least_one)
   {
     my $sanitized_stats = Utils::database_sanitize(encode_json(Utils::prepare_stats($all_stats)));
     Utils::update_player_record($dbh, 0, 0, $player_name, $sanitized_stats, $num_games);

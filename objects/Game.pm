@@ -170,9 +170,13 @@ sub new
     {
       $player_turn = 1;
     }
-    else
+    elsif ($name eq $player_two_name)
     {
       $player_turn = 0;
+    }
+    else
+    {
+      return "move made by unknown player\nFILE:   $filename\nLINE $line_number: $line\n";
     }
 
     # An outplay

@@ -25,7 +25,9 @@ foreach my $country (@countries)
   my $url = $players_by_country_prefix . $country;
   my $html_page_name = $html_page_prefix . $country . '.html';
 
-  system "wget $wget_flags $url -O '$html_page_name' >/dev/null 2>&1";
+  my $wget_cmd = "wget $wget_flags $url -O '$html_page_name' >/dev/null 2>&1";
+
+  system $wget_cmd;
 
   my @player_names = ();
   open(PLAYERS, '<', $html_page_name);
@@ -58,3 +60,7 @@ foreach my $country (@countries)
     );
   }
 }
+
+print "\n\n\nFinished on " . localtime() . "\n\n"; 
+
+
