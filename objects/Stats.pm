@@ -2173,7 +2173,7 @@ sub statsList
       {
         my $this  = shift;
         my $other = shift;
-        $this->{'total'} += $other->{'total'};
+	print Dumper($this) . Dumper($other);
         foreach my $key (keys %{$this->{'subitems'}})
         {
           $this->{'subitems'}->{$key} += $other->{'subitems'}->{$key};

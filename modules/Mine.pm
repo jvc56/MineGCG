@@ -296,8 +296,8 @@ sub mine
 
   if ($statsdump && $at_least_one)
   {
-    my $sanitized_stats = Utils::database_sanitize(encode_json(Utils::prepare_stats($all_stats)));
-    Utils::update_player_record($dbh, 0, 0, $player_name, $sanitized_stats, $num_games);
+    my $dump = encode_json(Utils::prepare_stats($all_stats));
+    Utils::update_player_record($dbh, 0, 0, $player_name, $dump, $num_games);
   }
 
   if ($html)

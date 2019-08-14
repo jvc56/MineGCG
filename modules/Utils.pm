@@ -8,6 +8,7 @@ use Data::Dumper;
 use DBI;
 use utf8;
 use Encode;
+use Cwd;
 
 use lib "./objects"; 
 use lib "./lexicons";
@@ -27,7 +28,7 @@ use JSON;
 sub connect_to_database
 {
   my $driver        = Constants::DATABASE_DRIVER;
-  my $database_name = Constants::DATABASE_NAME;
+  my $database_name = get_environment_name(Constants::DATABASE_NAME);
   my $hostname      = Constants::DATABASE_HOSTNAME;
   my $username      = Constants::DATABASE_USERNAME;
   my $password      = Constants::DATABASE_PASSWORD;
@@ -205,7 +206,7 @@ sub update_player_record
   my $player_record =
   {
     Constants::PLAYER_CROSS_TABLES_ID_COLUMN_NAME => $player_cross_tables_id,
-    Constants::PLAYER_NAME_COLUMN_NAME            => database_sanitize($raw_name),
+    Constants::PLAYER_NAME_COLUMN_NAME            => $raw_name,
     Constants::PLAYER_SANITIZED_NAME_COLUMN_NAME  => $player_name,
     Constants::PLAYER_STATS_COLUMN_NAME           => $stats,
     Constants::PLAYER_TOTAL_GAMES_COLUMN_NAME     => $total_games
@@ -291,9 +292,11 @@ sub insert_or_set_hash_into_table
     foreach my $key (keys %{$hashref})
     {
       $keys_string   .= "$key,";
-      if (defined $hashref->{$key})
-      {    
-        $values_string .= "'$hashref->{$key}',";
+      my $value = $hashref->{$key};
+      if (defined $value)
+      {
+	$value = database_sanitize($value);
+        $values_string .= "'$value',";
       }
       else
       {
@@ -324,6 +327,7 @@ sub insert_or_set_hash_into_table
       my $value = $hashref->{$key};
       if (defined $value)
       {    
+	$value = database_sanitize($value);
         $value = "'$hashref->{$key}'";
       }
       else
@@ -552,16 +556,16 @@ sub update_stats_or_create_record
   {
     Constants::GAME_PLAYER_ONE_CROSS_TABLES_ID_COLUMN_NAME  => $player1_cross_tables_id,
     Constants::GAME_PLAYER_TWO_CROSS_TABLES_ID_COLUMN_NAME  => $player2_cross_tables_id,
-    Constants::GAME_PLAYER_ONE_NAME_COLUMN_NAME             => database_sanitize($player_one_name),
-    Constants::GAME_PLAYER_TWO_NAME_COLUMN_NAME             => database_sanitize($player_two_name),
+    Constants::GAME_PLAYER_ONE_NAME_COLUMN_NAME             => $player_one_name,
+    Constants::GAME_PLAYER_TWO_NAME_COLUMN_NAME             => $player_two_name,
     Constants::GAME_CROSS_TABLES_ID_COLUMN_NAME             => $game_cross_tables_id,
-    Constants::GAME_GCG_COLUMN_NAME                         => database_sanitize($gcgtext),
-    Constants::GAME_STATS_COLUMN_NAME                       => database_sanitize(encode_json($unblessed_stat)),
+    Constants::GAME_GCG_COLUMN_NAME                         => $gcgtext,
+    Constants::GAME_STATS_COLUMN_NAME                       => encode_json($unblessed_stat),
     Constants::GAME_CROSS_TABLES_TOURNAMENT_ID_COLUMN_NAME  => $game_tournament_id,
     Constants::GAME_DATE_COLUMN_NAME                        => $game_date,
     Constants::GAME_LEXICON_COLUMN_NAME                     => $game_lexicon,
     Constants::GAME_ROUND_COLUMN_NAME                       => $game_round_number,
-    Constants::GAME_NAME_COLUMN_NAME                        => database_sanitize($game_name),
+    Constants::GAME_NAME_COLUMN_NAME                        => $game_name,
     Constants::GAME_ERROR_COLUMN_NAME                       => $error,
     Constants::GAME_WARNING_COLUMN_NAME                     => $warning
   };
@@ -762,5 +766,16 @@ sub format_error
   return $error;
 }
 
+sub get_environment_name
+{
+  my $name = shift;
+  my $keyword = Constants::DEV_ENV_KEYWORD;
+  my $dir = cwd();
+  if ($dir =~ /$keyword/i)
+  {
+    return $name . $keyword;
+  }
+  return $name;
+}
 
 1;

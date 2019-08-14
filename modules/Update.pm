@@ -36,12 +36,17 @@ sub update_leaderboard
 
   my @player_data = @{$dbh->selectall_arrayref("SELECT * FROM $playerstable WHERE $total_games_name >= 0", {Slice => {}, "RaiseError" => 1})};
 
-  my $total_players = scalar @player_data;
+  my $total_players = 0;
 
   foreach my $player_item (@player_data)
   {
-    my $name         = $player_item->{Constants::PLAYER_NAME_COLUMN_NAME};
     my $total_games  = $player_item->{Constants::PLAYER_TOTAL_GAMES_COLUMN_NAME};
+    if (!$total_games || $total_games < $min_games)
+    {
+      next;
+    }
+    $total_players++;
+    my $name         = $player_item->{Constants::PLAYER_NAME_COLUMN_NAME};
     my $player_stats = Stats->new(1, $player_item->{Constants::PLAYER_STATS_COLUMN_NAME});
     my $player_stats_data = $player_stats->{Constants::STATS_DATA_KEY_NAME};
 
@@ -138,8 +143,7 @@ sub update_leaderboard
       for (my $k = 0; $k < $total_players; $k++)
       {
         my $name = $ranked_array[$k][1];
-        my $name_with_underscores = $name;
-        $name_with_underscores =~ s/ /_/g;
+        my $name_with_underscores = Utils::sanitize($name);
 
         if ($k == $cutoff)
         { 
@@ -174,10 +178,15 @@ sub update_leaderboard
   $leaderboard_string = $javascript . $leaderboard_string;
 
   my $leaderboard_name = "./logs/" . Constants::LEADERBOARD_NAME . ".log";
+  my $leaderboard_html = Constants::HTML_DIRECTORY_NAME . '/' . Constants::RR_LEADERBOARD_NAME;
 
-  open(my $new_leaderboard, '>', $leaderboard_name);
-  print $new_leaderboard $leaderboard_string;
-  close $new_leaderboard;
+  open(my $log_leaderboard, '>', $leaderboard_name);
+  print $log_leaderboard $leaderboard_string;
+  close $log_leaderboard;
+
+  open(my $rr_leaderboard, '>', $leaderboard_html);
+  print $rr_leaderboard $leaderboard_string;
+  close $rr_leaderboard;
 }
 
 
@@ -186,11 +195,6 @@ sub update_notable
   my $notable_dir    = Constants::NOTABLE_DIRECTORY_NAME;
   my $url            = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
   my $stats_note     = Constants::STATS_NOTE;
-  
-  my $rr_host         = Constants::RR_HOSTNAME;
-  my $rr_username     = Constants::RR_USERNAME;
-  my $rr_notable_dest = Constants::RR_NOTABLE_DEST;
-  my $ssh_args        = Constants::SSH_ARGS;
   
   my $dbh = Utils::connect_to_database();
   my $playerstable = Constants::PLAYERS_TABLE_NAME;
@@ -223,7 +227,7 @@ sub update_notable
         if (!$notable_hash{$statname})
         {
           push @ordering, $statname;
-          $notable_hash{$statname} = "";
+          $notable_hash{$statname} = "<br>";
         }
         my $list = $statitem->{'list'};
         my $ids  = $statitem->{'ids'};
@@ -257,10 +261,15 @@ sub update_notable
   $notable_string = "<pre style='white-space: pre-wrap;' > $notable_string </pre>\n";
 
   my $notable_name = "./logs/" . Constants::NOTABLE_NAME . ".log";
+  my $notable_html = Constants::HTML_DIRECTORY_NAME . '/' . Constants::RR_NOTABLE_NAME;
 
   open(my $new_notable, '>', $notable_name);
   print $new_notable $notable_string;
   close $new_notable;
+
+  open(my $rr_notable, '>', $notable_html);
+  print $rr_notable $notable_string;
+  close $rr_notable;
 }
 
 

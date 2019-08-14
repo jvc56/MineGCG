@@ -5,6 +5,7 @@ package Constants;
 use warnings;
 use strict;
 
+use constant RR_IP_ADDRESS                    => '3.13.229.56';
 use constant RR_HOSTNAME                      => 'randomracer.com';
 use constant RR_USERNAME                      => 'ubuntu';
 
@@ -16,6 +17,7 @@ use constant RR_LEADERBOARD_NAME              => 'leaderboard.html';
 use constant RR_LOGS_SOURCE                   => '/var/log/apache2/';
 use constant RR_WORKING_DIR                   => '/home/ubuntu/';
 use constant RR_REAL_DIR                      => '/var/www/html/';
+use constant SEND_TO_REMOTE_DIR               => './remote';
 
 use constant RR_NOTABLE_DEST                  => RR_WORKING_DIR . RR_NOTABLE_NAME;
 use constant RR_LEADERBOARD_DEST              => RR_WORKING_DIR . RR_LEADERBOARD_NAME;
@@ -35,10 +37,14 @@ use constant DOWNLOADS_DIRECTORY_NAME         => './downloads';
 use constant STATS_DIRECTORY_NAME             => './stats';
 use constant NOTABLE_DIRECTORY_NAME           => './notable';
 use constant CACHE_DIRECTORY_NAME             => './cache';
+use constant HTML_DIRECTORY_NAME              => './html';
+use constant CGIBIN_DIRECTORY_NAME            => './cgi-bin';
 use constant BLACKLISTED_TOURNAMENTS          => {
                                                     '9194' => 1 # Can-Am Match 08/29/15
                                                  };
 
+						 
+use constant DEV_ENV_KEYWORD                  => 'dev';
 use constant UPDATE_OPTION_GCG                => 'gcg';
 use constant UPDATE_OPTION_STATS              => 'stats';
 use constant UPDATE_OPTION_KEYS               => 'keys';
@@ -130,7 +136,8 @@ use constant MISTAKES =>
   'Tactics',
   'Strategy',
   'Endgame',
-  'Time'
+  'Time',
+  'Focus'
 );
 
 use constant MISTAKES_MAGNITUDE =>
@@ -161,6 +168,7 @@ use constant MISTAKE_COLORS =>
   'Strategy'  => 'green',
   'Endgame'   => 'purple',
   'Time'      => 'magenta',
+  'Focus'     => 'blue'
 };
 
 
