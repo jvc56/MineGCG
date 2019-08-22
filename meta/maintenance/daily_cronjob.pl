@@ -27,6 +27,8 @@ my @jobs =
   "Access",      "./meta/maintenance/get_access_log.pl  > /dev/null 2>&1            "  ,
   "Notable",     "",
   "Leaderboard", "",
+  "CGI",        "",
+  "HTML",       "",
   "Copy",        "./meta/maintenance/copy_to_remote.pl                              " 
 );
 
@@ -52,7 +54,15 @@ while (@jobs)
     {
       Update::update_leaderboard();
     }
-  }
+    elsif ($name eq "CGI")
+    {
+      Update::update_remote_cgi();
+    }
+    elsif ($name eq "HTML")
+    {
+      Update::update_html();
+    }
+  } 
   else
   {
     system $cmd;

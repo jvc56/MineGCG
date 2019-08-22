@@ -4,8 +4,6 @@ use warnings;
 use strict;
 use Getopt::Long;
 
-chdir("/home/jvc/MineGCG");
-
 use lib './modules';
 
 use Mine;

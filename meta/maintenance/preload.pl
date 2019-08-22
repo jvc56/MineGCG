@@ -17,6 +17,7 @@ my $wget_flags = Constants::WGET_FLAGS;
 my $players_by_country_prefix = Constants::CROSS_TABLES_COUNTRY_PREFIX;
 my $download_dir              = Constants::DOWNLOADS_DIRECTORY_NAME;
 my $html_page_prefix = "$download_dir/player_by_country_";
+my @inactive_players = Constants::INACTIVE_PLAYERS;
 
 print "Log file for retrieve on " . localtime() . "\n\n"; 
 
@@ -40,27 +41,38 @@ foreach my $country (@countries)
   while (@player_names)
   {
     my $raw_name = shift @player_names;
-    my $name = $raw_name;
-    $name = Utils::sanitize($name);
-    
-    Retrieve::retrieve(
-      $name,
-      $raw_name,
-      Constants::UPDATE_OPTION_STATS,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      1,
-      0
-    );
+    preload_player($raw_name);
   }
+}
+
+foreach my $player (@inactive_players)
+{
+  preload_player($player);
 }
 
 print "\n\n\nFinished on " . localtime() . "\n\n"; 
 
+sub preload_player
+{
+  my $raw_name = shift;
+  my $name = $raw_name;
+  $name = Utils::sanitize($name);
+    
+  Retrieve::retrieve(
+    $name,
+    $raw_name,
+    Constants::UPDATE_OPTION_STATS,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0
+  );
+}
 
+1;

@@ -5,7 +5,7 @@ package Square;
 use warnings;
 use strict;
 use Data::Dumper;
-use lib '.';
+use lib './modules';
 use Constants;
 
 sub new

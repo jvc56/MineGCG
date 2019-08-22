@@ -5,6 +5,9 @@ package Tile;
 use warnings;
 use strict;
 
+use lib './modules';
+use Constants;
+
 sub new
 {
   my $this = shift;

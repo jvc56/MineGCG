@@ -88,6 +88,11 @@ sub mine
     $javascript .= Constants::RESULTS_PAGE_JAVASCRIPT;
   }
 
+  if (Utils::get_environment_name(""))
+  {
+    print_or_append( "\nDevelopment Version of RandomRacer\n\n\n", $html, 0);
+  }
+
   print_or_append( "\nStatistics for $player_name_no_underscore\n\n\n", $html, 0);
   
   print_or_append( "\nSEARCH PARAMETERS: \n", $html, 0);
@@ -242,7 +247,7 @@ sub mine
   }
   if ($lexicon)
   {
-    $games_query .= " AND g.$game_lexicon_column_name = 'lexicon'";
+    $games_query .= " AND g.$game_lexicon_column_name = '$lexicon'";
   }
   if ($cort eq 'T')
   {
@@ -263,11 +268,11 @@ sub mine
     my $error   = $game->{$game_error_column_name};
     my $warning = $game->{$game_warning_column_name};
 
-    my $game_opp_name = $game->{game_player1_cross_tables_id_column_name};
+    my $game_opp_name = $game->{$game_player1_cross_tables_id_column_name};
     my $player_is_first = 0;
     
-    my $player1_name = $game->{game_player1_name_column_name};
-    if ($player1_name && sanitize($player1_name) eq $player_name)
+    my $player1_name = $game->{$game_player1_name_column_name};
+    if ($player1_name && Utils::sanitize($player1_name) eq $player_name)
     {
       $player_is_first = 1;
       $game_opp_name = $game->{$game_player2_name_column_name};

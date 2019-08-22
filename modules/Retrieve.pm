@@ -18,7 +18,7 @@ sub retrieve
 {
   # Constants
   my $downloads_dir              = Constants::DOWNLOADS_DIRECTORY_NAME;
-
+  my $cache_dir                  = Constants::CACHE_DIRECTORY_NAME;
 
   my $player_name       = shift;
   my $raw_name          = shift;
@@ -54,7 +54,12 @@ sub retrieve
 
   my @game_info = @{Utils::get_player_annotated_game_data($player_cross_tables_id)};
 
-  my $player_record_id = Utils::update_player_record($dbh, $player_cross_tables_id, $raw_name, $player_name);
+  my ($player_record_id, $name_changed) = Utils::update_player_record($dbh, $player_cross_tables_id, $raw_name, $player_name);
+
+  if ($name_changed)
+  {
+    $update = Constants::UPDATE_OPTION_GCG;
+  }
 
   my $games_to_update = scalar @game_info;
   my $count           = 0;
@@ -188,6 +193,12 @@ sub retrieve
   }
   if ($games_updated)
   {
+    my $name = Utils::sanitize($player_name);
+    my $cache_filename = "$cache_dir/$name.html";
+    if (-e $cache_filename)
+    {
+      system "rm $cache_filename";
+    }
     my $num = sprintf "%-4s", $games_updated;
     print ((sprintf "%-30s", $player_name . ":") . "$num games updated or created\n");
   }

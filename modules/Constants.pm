@@ -11,12 +11,16 @@ use constant RR_USERNAME                      => 'ubuntu';
 
 use constant SSH_ARGS                         => ' -i /home/jvc/randomracer-keypair1.pem ';
 
+use constant VM_SSH_ARGS                      => ' -i /home/ubuntu/vm.pem -p 2222 ';
+use constant VM_IP_ADDRESS                    => 'ocs.wgvc.com';
+use constant VM_USERNAME                      => 'jvc';
+
 use constant RR_NOTABLE_NAME                  => 'notable.html';
 use constant RR_LEADERBOARD_NAME              => 'leaderboard.html';
 
 use constant RR_LOGS_SOURCE                   => '/var/log/apache2/';
 use constant RR_WORKING_DIR                   => '/home/ubuntu/';
-use constant RR_REAL_DIR                      => '/var/www/html/';
+use constant RR_REAL_DIR                      => '/var/www/';
 use constant SEND_TO_REMOTE_DIR               => './remote';
 
 use constant RR_NOTABLE_DEST                  => RR_WORKING_DIR . RR_NOTABLE_NAME;
@@ -43,7 +47,14 @@ use constant BLACKLISTED_TOURNAMENTS          => {
                                                     '9194' => 1 # Can-Am Match 08/29/15
                                                  };
 
-						 
+use constant CGI_SCRIPT_FILENAME              => 'mine_webapp.pl';
+use constant INDEX_HTML_FILENAME              => 'index.html';
+
+use constant INACTIVE_PLAYERS =>
+(
+  "Avery Mojica"
+);
+
 use constant DEV_ENV_KEYWORD                  => 'dev';
 use constant UPDATE_OPTION_GCG                => 'gcg';
 use constant UPDATE_OPTION_STATS              => 'stats';

@@ -176,7 +176,12 @@ sub update_player_record
   my @player_query = @{query_table($dbh, Constants::PLAYERS_TABLE_NAME, $search_col, $search_val)};
   
   my $player_record_id;
-  
+
+  my $update_gcg = 0;
+
+  my $queried_name     = $player_query[0]->{Constants::PLAYER_SANITIZED_NAME_COLUMN_NAME};
+  my $queried_raw_name = $player_query[0]->{Constants::PLAYER_NAME_COLUMN_NAME};
+
   if (@player_query)
   {
     $player_record_id = $player_query[0]->{Constants::PLAYER_ID_COLUMN_NAME};
@@ -188,11 +193,19 @@ sub update_player_record
   }
   if (!$raw_name)
   {
-    $raw_name = $player_query[0]->{Constants::PLAYER_NAME_COLUMN_NAME};
+    $raw_name = $queried_raw_name;
   }
   if (!$player_name)
   {
-    $player_name = $player_query[0]->{Constants::PLAYER_SANITIZED_NAME_COLUMN_NAME};
+    $player_name = $queried_name;
+  }
+  elsif ($player_name ne $queried_name)
+  {
+    # Player name has changed
+    print "Player name changed from $player_name to $queried_name\n";
+    $update_gcg = 1;
+    $raw_name = $queried_raw_name;
+    $player_name = $queried_name;
   }
   if (!$stats)
   {
@@ -213,6 +226,7 @@ sub update_player_record
   };
 
   $player_record_id = insert_or_set_hash_into_table($dbh, Constants::PLAYERS_TABLE_NAME, $player_record, $player_record_id);
+  return ($player_record_id, $update_gcg);
 }
 
 sub download_gcg
@@ -328,7 +342,7 @@ sub insert_or_set_hash_into_table
       if (defined $value)
       {    
 	$value = database_sanitize($value);
-        $value = "'$hashref->{$key}'";
+        $value = "'$value'";
       }
       else
       {
@@ -493,6 +507,7 @@ sub update_stats_or_create_record
   {
     $player1_cross_tables_id = $player_cross_tables_id;
     $player2_cross_tables_id = undef;
+    $player_is_first         = 1;
     if (sanitize($player_one_name) ne $player_name)
     {
       $player1_cross_tables_id = undef;
@@ -505,9 +520,11 @@ sub update_stats_or_create_record
   }
 
   my $pretty_name = $player_one_name;
+  $player_is_first = 1;
   if ($player2_cross_tables_id && $player2_cross_tables_id == $player_cross_tables_id)
   {
     $pretty_name = $player_two_name;
+    $player_is_first = 0;
   }
   
   update_player_record($dbh, $player_cross_tables_id, $pretty_name);
@@ -540,7 +557,7 @@ sub update_stats_or_create_record
   if (!$error)
   {
     $game_name = $game->{'readable_name'};
-    
+
     my $stats = Stats->new(1);
 
     my $stat_warnings = $stats->addGame($game);

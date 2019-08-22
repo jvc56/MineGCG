@@ -5,7 +5,9 @@ package Board;
 use warnings;
 use strict;
 use Data::Dumper;
-use lib '.';
+use lib './modules';
+use lib './objects';
+
 use Square;
 use Tile;
 use Constants;

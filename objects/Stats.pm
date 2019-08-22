@@ -87,12 +87,12 @@ sub addGame
     for (my $i = 0; $i < scalar @{$statlist}; $i++)
     {
       my $stat = $statlist->[$i];
-      my $player;
+      my $player_is_first;
       if ($key =~ /player(\d)/)
       {
-        $player = $1 - 1;
+        $player_is_first = ($1 - 2) * (-1);
       }
-      $stat->{$function_name}->($stat->{$object_name}, $game, $player);
+      $stat->{$function_name}->($stat->{$object_name}, $game, $player_is_first);
     }
   }
 }
@@ -106,7 +106,7 @@ sub addStat
   my $stats       = $this->{Constants::STATS_DATA_KEY_NAME};
   my $other_stats = $other_stat_object->{Constants::STATS_DATA_KEY_NAME};
 
-  my $switch = $other_stat_object->{Constants::STATS_PLAYER_IS_FIRST_KEY_NAME};
+  my $switch = 1 - $other_stat_object->{Constants::STATS_PLAYER_IS_FIRST_KEY_NAME};
 
   foreach my $key (keys %{$stats})
   {
@@ -713,7 +713,7 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Games',
-      Constants::STAT_ITEM_OBJECT_NAME =>  {'total' => 0},
+      Constants::STAT_ITEM_OBJECT_NAME =>  {'total' => 0, 'single' => 1, 'int' => 1},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_GAME,
       Constants::STAT_COMBINE_FUNCTION_NAME =>
@@ -917,7 +917,7 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'High Game',
-      Constants::STAT_ITEM_OBJECT_NAME =>  {'total' => -10000, 'single' => 1},
+      Constants::STAT_ITEM_OBJECT_NAME =>  {'total' => -10000, 'single' => 1, 'int' => 1},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
       Constants::STAT_COMBINE_FUNCTION_NAME =>
@@ -952,7 +952,7 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Low Game',
-      Constants::STAT_ITEM_OBJECT_NAME => {'total' => 100000, 'single' => 1},
+      Constants::STAT_ITEM_OBJECT_NAME => {'total' => 100000, 'single' => 1, 'int' => 1},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
       Constants::STAT_COMBINE_FUNCTION_NAME =>
@@ -987,7 +987,7 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Highest Scoring Turn',
-      Constants::STAT_ITEM_OBJECT_NAME =>  {'total' => -1, 'single' => 1},
+      Constants::STAT_ITEM_OBJECT_NAME =>  {'total' => -1, 'single' => 1, 'int' => 1},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
       Constants::STAT_COMBINE_FUNCTION_NAME =>
@@ -2173,7 +2173,6 @@ sub statsList
       {
         my $this  = shift;
         my $other = shift;
-	print Dumper($this) . Dumper($other);
         foreach my $key (keys %{$this->{'subitems'}})
         {
           $this->{'subitems'}->{$key} += $other->{'subitems'}->{$key};

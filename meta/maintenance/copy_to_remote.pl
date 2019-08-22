@@ -21,19 +21,18 @@ my $dest_cgi  =Utils::get_environment_name($source_cgi);
 $dest_html = Constants::RR_WORKING_DIR . $dest_html;
 $dest_cgi  = Constants::RR_WORKING_DIR . $dest_cgi;
 
-my $final_dest_html = Utils::get_environment_name($source_html);
-my $final_dest_cgi  = Utils::get_environment_name($source_cgi);
-
-$final_dest_html = Constants::RR_REAL_DIR . $final_dest_html;
-$final_dest_cgi  = Constants::RR_REAL_DIR . $final_dest_cgi;
+my $final_dest_html = Constants::RR_REAL_DIR;
+my $final_dest_cgi  = Constants::RR_REAL_DIR;
 
 
 my @commands =
 (
+  "ssh $scp_args $rr_username\@$rr_host 'sudo rm -rf  $dest_html'",
+  "ssh $scp_args $rr_username\@$rr_host 'sudo rm -rf  $dest_cgi '",
   "scp -r $scp_args $source_html $rr_username\@$rr_host:$dest_html",
   "scp -r $scp_args $source_cgi  $rr_username\@$rr_host:$dest_cgi ",
-  "ssh $scp_args 'sudo cp -r  $dest_html $final_dest_html'",
-  "ssh $scp_args 'sudo cp -r  $dest_cgi  $final_dest_cgi '",
+  "ssh $scp_args $rr_username\@$rr_host 'sudo cp -r  $dest_html $final_dest_html'",
+  "ssh $scp_args $rr_username\@$rr_host 'sudo cp -r  $dest_cgi  $final_dest_cgi '",
 );
 
 my $log_name = "./logs/copy_to_remote.log";
@@ -44,7 +43,7 @@ while (@commands)
 {
   my $cmd = shift @commands;
   print $log "$cmd\n";
-  #system $cmd;
+  system $cmd;
 }
 
 close $log;

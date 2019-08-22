@@ -1,0 +1,173 @@
+
+<script>
+
+function nocacheresult()
+{
+
+  // var debug = document.getElementById("debug");
+
+  var inputs = document.getElementsByTagName("input");
+  for (i = 0; i < inputs.length; i++)
+  {
+    if (inputs[i].value != "Submit" && inputs[i].name != "name" && inputs[i].value != "")
+    {
+      // debug.innerHTML = inputs[i].name + " -  "  + inputs[i].value;
+      return true;
+    }
+  }
+  var selects = document.getElementsByTagName("select");
+  for (i = 0; i < selects.length; i++)
+  {
+    if (selects[i].value != "")
+    {
+      // debug.innerHTML = selects[i].name + " -s-  "  + selects[i].value;
+      return true;
+    }
+  }
+
+  var name = document.getElementsByName("name")[0].value;
+
+  // Sanitize exactly as MineGCG does
+
+  name = name.trim();
+
+  name = name.replace(/ /g, "_");
+
+  name = name.replace(/[^\w\-]/g, "");
+
+  name = name.toUpperCase();
+
+  window.open("/cache/" + name + ".html", "_blank");
+
+  return false;
+}
+
+</script>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<title>RandomRacer</title>
+<link rel="stylesheet" href="style.css" />
+<link rel=icon href=/favicon.png>
+<link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+<link href="https://fonts.googleapis.com/css?family=Francois+One|Iceland|Monofett|Orbitron|Press+Start+2P|Source+Code+Pro|VT323" rel="stylesheet">
+</head>
+<body id="body">
+
+
+<div class="typingdiv">
+ <table class="typingdivtable">
+  <tbody>
+   <tr>
+    <td class="webtitletd">
+     <a href="/" class="webtitle">RandomRacer</a>
+    </td>
+    <td class="externallinks">
+      <table>
+  <tbody>
+   <tr>
+
+   <td class="alink">
+      <a href="/leaderboard.html" title="Leaderboards">Leaderboards</a>
+   </td>
+
+
+   <td class="alink">
+      <a href="/notable.html" title="That's Notable!">Notable Games</a>
+   </td>
+
+        <td class="alink"  >
+      <a href="http://cross-tables.com/results.php?playerid=20411" title="Get to know me">About Me</a>
+   </td>
+  </tr>
+  </tbody>
+    </table>
+    </td>
+   </tr>
+  </tbody>
+ </table>
+</div>
+<div id="container" class="container">
+<div class="minegcgform">
+<form action="cgi-bindev/mine_webapp.pl" target="_blank" method="get" onsubmit="return nocacheresult()">
+
+  <table class="minegcgforminput">
+  <tbody>
+
+  <tr>
+    <td>Player Name (required):</td>
+    <td><input type="text" name="name" class="minegcgforminput" required></td>
+  </tr>
+
+  <tr>
+   <td>Game Type (optional):</td>
+   <td>
+
+
+      <select name="cort" class="minegcgforminput">
+      <option value=""></option>
+      <option value="t">Tournament</option>
+      <option value="c">Casual</option>
+      </select>
+
+   </td>
+  </tr>
+
+  <tr>
+          <td>Tournament ID (optional):</td>
+          <td><input type="number" name="tid" class="minegcgforminput"></td>
+  </tr>
+
+  <tr>
+    <td>Lexicon (optional):</td>
+    <td>
+      <select name="lexicon" class="minegcgforminput">
+      <option value=""></option>
+      <option value="CSW19">CSW19</option>
+      <option value="CSW15">CSW15</option>
+      <option value="CSW15">NSW18</option>
+      <option value="TWL15">TWL15</option>
+      <option value="CSW12">CSW12</option>
+      <option value="TWL06">TWL06</option>
+      <option value="CSW07">CSW07</option>
+      <option value="TWL98">TWL98</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td>Game ID (optional):</td>
+    <td><input type="number" name="gid" class="minegcgforminput"></td>
+  </tr>
+
+
+  <tr>
+    <td>Opponent (optional):</td>
+    <td><input type="text" name="opp" class="minegcgforminput"></td>
+  </tr>
+
+
+  <tr>
+    <td>Start Date (optional YYYY-MM-DD):</td>
+    <td><input type="text" name="start" class="minegcgforminput"></td>
+  </tr>
+
+
+  <tr>
+    <td>End Date (optional YYYY-MM-DD):</td>
+    <td><input type="text" name="end" class="minegcgforminput"></td>
+  </tr>
+
+
+  </tbody>
+  </table>
+
+  <div class="minegcgform"><input type="submit" value="Submit" class="minegcgforminput"></div>
+
+
+</form>
+</div>
+
+</div>
+</body>
+</html>
+

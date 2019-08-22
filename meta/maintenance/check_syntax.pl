@@ -5,7 +5,7 @@ use strict;
 
 chdir("/home/jvc/MineGCG");
 
-my $cmd = "find . -name \"*.pl\" | ";
+my $cmd = "find lexicons scripts objects modules meta -name \"*.p[lm]\" | ";
 
 open (CMDOUT, $cmd) or die "$!\n";
 while (<CMDOUT>)

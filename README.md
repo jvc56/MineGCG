@@ -2,17 +2,6 @@
 
 MineGCG is a tool that computes statistics for annotated cross-tables.com games. Matthew O'Connor thought of the original idea in the summer of 2018 while we were on vacation in Cloyne. It has since accumulated many new statistics and features and continues to be updated regularly. The web version can be found at <a href='http://randomracer.com'>randomracer.com</a> or you can install it from the command line. If you find any bugs or want to suggest improvements, email them to joshuacastellano7@gmail.com and I'll add your name to the contributions list!
 
-# Installation
-
-For the command line version, you must have a UNIX-based operating system (this includes MacOS and Linux). To use, navigate to a desired empty directory and run the following commands:
-
-git clone https://github.com/jvc56/MineGCG<br/>
-cd MineGCG<br/>
-chmod +x ./scripts/*.pl<br/>
-./scripts/main.pl<br/>
-
-A usage message telling you how to use the command should appear. 
-
 # Usage
 
 This section describes the usage of the web version. For questions about the command line version, message me directly for now. To search for someone's statistics, go to <a href='http://randomracer.com'>randomracer.com</a> and enter their name into the 'Player Name' field. The name must exactly match their name as it appears on <a href='https://cross-tables.com'>cross-tables.com</a> except for capitalization and punctuation. There are other parameters you can use to narrow your search which are described below:<br/><br/>
@@ -69,7 +58,7 @@ If you tag the mistake like this the mistake will appear under the 'Unspecified'
 
 \#findingmedium blah blah blah \#tacticslarge
 
-The tags are case insensitive and can appear anywhere in any order in the comment.
+The tags are case insensitive and can appear anywhere in any order in the comment. Keep in mind that mistakes are associated with moves, and moves are associated with players, so be sure to tag your mistakes on your moves only. For example, if you don't challenge a phony play, you can write the commentary on your opponent's move, but include the tags on your succeeding move to make sure they appear as your mistakes and not your opponents'.
 
 # Leaderboards
 

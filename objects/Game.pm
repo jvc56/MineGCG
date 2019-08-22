@@ -6,7 +6,7 @@ use warnings;
 use strict;
 use Data::Dumper;
 use List::Util qw(sum min max);
-use lib '.';
+use lib './objects';
 use Board;
 use Move;
 use Tile;

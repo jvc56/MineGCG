@@ -5,7 +5,7 @@ package Update;
 use warnings;
 use strict;
 use Data::Dumper;
-
+use Cwd;
 
 use lib './objects';
 use lib './modules';
@@ -19,8 +19,10 @@ sub update_leaderboard
   my $cutoff         = Constants::LEADERBOARD_CUTOFF;
   my $min_games      = Constants::LEADERBOARD_MIN_GAMES;
   my $column_spacing = Constants::LEADERBOARD_COLUMN_SPACING;
-  my $query_prefix   = Constants::CACHE_URL_PREFIX;
+  my $cache_dir      = Constants::CACHE_DIRECTORY_NAME;
   my $stats_note     = Constants::STATS_NOTE;
+
+  $cache_dir = substr $cache_dir, 2;
 
   my %leaderboards  = ();
   my @name_order    = ();
@@ -34,7 +36,7 @@ sub update_leaderboard
   my $gamestable   = Constants::GAMES_TABLE_NAME;
   my $total_games_name = Constants::PLAYER_TOTAL_GAMES_COLUMN_NAME;
 
-  my @player_data = @{$dbh->selectall_arrayref("SELECT * FROM $playerstable WHERE $total_games_name >= 0", {Slice => {}, "RaiseError" => 1})};
+  my @player_data = @{$dbh->selectall_arrayref("SELECT * FROM $playerstable WHERE $total_games_name >= $min_games", {Slice => {}, "RaiseError" => 1})};
 
   my $total_players = 0;
 
@@ -62,11 +64,11 @@ sub update_leaderboard
           my $statitem = $statlist->[$i]->{Constants::STAT_ITEM_OBJECT_NAME};
           my $statname = $statlist->[$i]->{Constants::STAT_NAME};
 
-          my $statval   = $statitem->{'total'};
-          my $is_single = $statitem->{'single'};
-          my $is_int    = $statitem->{'int'};
+          my $statval      = $statitem->{'total'};
+          my $is_single    = $statitem->{'single'};
+          my $is_int       = $statitem->{'int'};
 
-          add_stat(\%leaderboards, $name, $statname, $statval, $total_games, $is_single, $is_int, \@name_order);
+          add_stat(\%leaderboards, $name, $statname, $statval, $total_games, $is_single, $is_int,\@name_order);
 
           my $subitems = $statitem->{'subitems'};
           if ($subitems)
@@ -80,7 +82,7 @@ sub update_leaderboard
 
               my $substatval  = $subitems->{$subitemname};
 
-              add_stat(\%leaderboards, $name, $substatname, $substatval, $total_games, $is_single, $is_int, \@name_order);
+              add_stat(\%leaderboards, $name, $substatname, $substatval, $total_games, $is_single, $is_int,  \@name_order);
             }
           }
         }
@@ -150,7 +152,7 @@ sub update_leaderboard
           $leaderboard_string .= "<div id='$title' style='display: none;'>";
         }
 
-        my $link = "<a href='$query_prefix$name_with_underscores.html' target='_blank'>$name</a>";
+        my $link = "<a href='/$cache_dir/$name_with_underscores.html' target='_blank'>$name</a>";
 
         my $spacing = $column_spacing + (length $link) - (length $name);
         my $ranked_player_name = sprintf "%-" . $spacing . "s", $link;
@@ -272,6 +274,327 @@ sub update_notable
   close $rr_notable;
 }
 
+sub update_remote_cgi
+{
+  my $vm_ip_address = Constants::VM_IP_ADDRESS;
+  my $vm_username   = Constants::VM_USERNAME;
+  my $vm_ssh_args   = Constants::VM_SSH_ARGS;
+  my $dirname       = cwd();
+
+  $dirname =~ s/.*\///g;
+
+  my $target = $vm_username . "\\@" . $vm_ip_address;
+
+  my $cgi_script = <<SCRIPT
+#!/usr/bin/perl
+ 
+  use warnings;
+  use strict;
+  use CGI;
+  
+  sub sanitize_name
+  {
+    my \$string = shift;
+  
+    \$string = substr( \$string, 0, 256);
+  
+    # Remove trailing and leading whitespace
+    \$string =~ s/^\\s+|\\s+\$//g;
+  
+    # Replace spaces with underscores
+    \$string =~ s/ /_/g;
+  
+    # Remove anything that is not an
+    # underscore, dash, letter, or number
+    \$string =~ s/[^\\w\-]//g;
+  
+    # Capitalize
+    \$string = uc \$string;
+  
+    return \$string;
+  }
+  
+  sub sanitize_number
+  {
+    my \$string = shift;
+  
+    \$string = substr( \$string, 0, 256);
+  
+    # Remove trailing and leading whitespace
+    \$string =~ s/^\\s+|\\s+\$//g;
+  
+    # Remove anything that is not a number
+    \$string =~ s/[^\\d]//g;
+  
+    return \$string;
+  }
+  
+  my \$query = new CGI;
+  
+  my \$name = \$query->param('name');
+  my \$cort = \$query->param('cort');
+  my \$tid  = \$query->param('tid');
+  my \$gid  = \$query->param('gid');
+  my \$opp  = \$query->param('opp');
+  my \$start = \$query->param('start');
+  my \$end  = \$query->param('end');
+  my \$lexicon  = \$query->param('lexicon');
+  
+  my \$name_arg = '--name "' . sanitize_name(\$name) . '"';
+  my \$cort_arg = "";
+  my \$tid_arg = "";
+  my \$gid_arg = "";
+  my \$opp_arg = "";
+  my \$start_arg = "";
+  my \$end_arg = "";
+  my \$lexicon_arg = "";
+  
+  if (\$cort)
+  {
+    \$cort_arg = "--cort ". sanitize_name(\$cort);
+  }
+  
+  if (\$tid)
+  {
+    \$tid_arg = "--tid " . sanitize_number(\$tid);
+  }
+  
+  if (\$gid)
+  {
+    \$gid_arg = "--game ". sanitize_number(\$gid);
+  }
+  
+  if (\$opp)
+  {
+    \$opp_arg = "--opponent " . sanitize_name(\$opp);
+  }
+  
+  if (\$start)
+  {
+    \$start_arg = "--startdate " . sanitize_number(\$start);
+  }
+  
+  if (\$end)
+  {
+    \$end_arg = "--enddate " . sanitize_number(\$end);
+  }
+  
+  if (\$lexicon)
+  {
+    \$lexicon_arg = "--lexicon " . sanitize_name(\$lexicon);
+  }
+  
+  my \$dir_arg = " --directory $dirname ";
+
+  my \$output = "";
+  my \$cmd = "LANG=C ssh $vm_ssh_args -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $target /home/jvc/minegcg_wrapper.pl \$name_arg \$cort_arg \$tid_arg \$gid_arg \$opp_arg \$start_arg \$end_arg \$lexicon_arg \$dir_arg |";
+  open(SSH, \$cmd) or die "\$!\n";
+  while (<SSH>)
+  {
+    \$output .= \$_;
+  }
+  close SSH;
+  print "Content-type: text/html\n\n";
+  #print \$cmd;
+  #print CGI::header();
+  print \$output;
+  
+  
+SCRIPT
+;
+   
+  open(my $fh, '>', Constants::CGIBIN_DIRECTORY_NAME . '/' . Constants::CGI_SCRIPT_FILENAME);
+  print $fh $cgi_script;
+  close $fh;
+}
+
+sub update_html
+{
+
+  my $cgibin_name = Constants::CGIBIN_DIRECTORY_NAME;
+  $cgibin_name = substr $cgibin_name, 2;
+  $cgibin_name = Utils::get_environment_name($cgibin_name);
+
+  my $index_html = <<HTML
+
+<script>
+
+function nocacheresult()
+{
+
+  // var debug = document.getElementById("debug");
+
+  var inputs = document.getElementsByTagName("input");
+  for (i = 0; i < inputs.length; i++)
+  {
+    if (inputs[i].value != "Submit" && inputs[i].name != "name" && inputs[i].value != "")
+    {
+      // debug.innerHTML = inputs[i].name + " -  "  + inputs[i].value;
+      return true;
+    }
+  }
+  var selects = document.getElementsByTagName("select");
+  for (i = 0; i < selects.length; i++)
+  {
+    if (selects[i].value != "")
+    {
+      // debug.innerHTML = selects[i].name + " -s-  "  + selects[i].value;
+      return true;
+    }
+  }
+
+  var name = document.getElementsByName("name")[0].value;
+
+  // Sanitize exactly as MineGCG does
+
+  name = name.trim();
+
+  name = name.replace(/ /g, "_");
+
+  name = name.replace(/[^\\w\\-]/g, "");
+
+  name = name.toUpperCase();
+
+  window.open("/cache/" + name + ".html", "_blank");
+
+  return false;
+}
+
+</script>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<title>RandomRacer</title>
+<link rel="stylesheet" href="style.css" />
+<link rel=icon href=/favicon.png>
+<link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+<link href="https://fonts.googleapis.com/css?family=Francois+One|Iceland|Monofett|Orbitron|Press+Start+2P|Source+Code+Pro|VT323" rel="stylesheet">
+</head>
+<body id="body">
+
+
+<div class="typingdiv">
+ <table class="typingdivtable">
+  <tbody>
+   <tr>
+    <td class="webtitletd">
+     <a href="/" class="webtitle">RandomRacer</a>
+    </td>
+    <td class="externallinks">
+      <table>
+  <tbody>
+   <tr>
+
+   <td class="alink">
+      <a href="/leaderboard.html" title="Leaderboards">Leaderboards</a>
+   </td>
+
+
+   <td class="alink">
+      <a href="/notable.html" title="That's Notable!">Notable Games</a>
+   </td>
+
+        <td class="alink"  >
+      <a href="http://cross-tables.com/results.php?playerid=20411" title="Get to know me">About Me</a>
+   </td>
+  </tr>
+  </tbody>
+    </table>
+    </td>
+   </tr>
+  </tbody>
+ </table>
+</div>
+<div id="container" class="container">
+<div class="minegcgform">
+<form action="$cgibin_name/mine_webapp.pl" target="_blank" method="get" onsubmit="return nocacheresult()">
+
+  <table class="minegcgforminput">
+  <tbody>
+
+  <tr>
+    <td>Player Name (required):</td>
+    <td><input type="text" name="name" class="minegcgforminput" required></td>
+  </tr>
+
+  <tr>
+   <td>Game Type (optional):</td>
+   <td>
+
+
+      <select name="cort" class="minegcgforminput">
+      <option value=""></option>
+      <option value="t">Tournament</option>
+      <option value="c">Casual</option>
+      </select>
+
+   </td>
+  </tr>
+
+  <tr>
+          <td>Tournament ID (optional):</td>
+          <td><input type="number" name="tid" class="minegcgforminput"></td>
+  </tr>
+
+  <tr>
+    <td>Lexicon (optional):</td>
+    <td>
+      <select name="lexicon" class="minegcgforminput">
+      <option value=""></option>
+      <option value="CSW19">CSW19</option>
+      <option value="CSW15">CSW15</option>
+      <option value="CSW15">NSW18</option>
+      <option value="TWL15">TWL15</option>
+      <option value="CSW12">CSW12</option>
+      <option value="TWL06">TWL06</option>
+      <option value="CSW07">CSW07</option>
+      <option value="TWL98">TWL98</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td>Game ID (optional):</td>
+    <td><input type="number" name="gid" class="minegcgforminput"></td>
+  </tr>
+
+
+  <tr>
+    <td>Opponent (optional):</td>
+    <td><input type="text" name="opp" class="minegcgforminput"></td>
+  </tr>
+
+
+  <tr>
+    <td>Start Date (optional YYYY-MM-DD):</td>
+    <td><input type="text" name="start" class="minegcgforminput"></td>
+  </tr>
+
+
+  <tr>
+    <td>End Date (optional YYYY-MM-DD):</td>
+    <td><input type="text" name="end" class="minegcgforminput"></td>
+  </tr>
+
+
+  </tbody>
+  </table>
+
+  <div class="minegcgform"><input type="submit" value="Submit" class="minegcgforminput"></div>
+
+
+</form>
+</div>
+
+</div>
+</body>
+</html>
+
+HTML
+;
+  open(my $fh, '>', Constants::HTML_DIRECTORY_NAME . '/' . Constants::INDEX_HTML_FILENAME);
+  print $fh $index_html;
+  close $fh;
+}
 
 sub add_stat
 {
