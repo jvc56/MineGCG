@@ -11,8 +11,14 @@ use Constants;
 use Game;
 use Stats;
 use Utils;
+use Update;
 
 use JSON;
+
+unless (caller)
+{
+  retrieve(Constants::UPDATE_OPTION_STATS);
+}
 
 sub retrieve
 {
@@ -20,188 +26,72 @@ sub retrieve
   my $downloads_dir              = Constants::DOWNLOADS_DIRECTORY_NAME;
   my $cache_dir                  = Constants::CACHE_DIRECTORY_NAME;
 
-  my $player_name       = shift;
-  my $raw_name          = shift;
   my $update            = shift;
-  my $tourney_id        = shift;
-  my $tourney_or_casual = shift;
-  my $single_game_id    = shift;
-  my $opponent_name     = shift;
-  my $startdate         = shift;
-  my $enddate           = shift;
-  my $lexicon           = shift;
-  my $verbose           = shift;
-  my $html              = shift;
-  my $missingracks      = shift;
-
-  if (!$update)
-  {
-    return;
-  }
 
   my $dbh = Utils::connect_to_database();
 
-  my $update_gcg   = $update eq Constants::UPDATE_OPTION_GCG;
-  my $update_stats = $update eq Constants::UPDATE_OPTION_STATS;
-  my $update_keys  = $update eq Constants::UPDATE_OPTION_KEYS;
-
-  my $player_cross_tables_id = Utils::get_player_cross_tables_id($player_name, $raw_name);
-
-  if (!$player_cross_tables_id)
-  {
-    return;
-  }
-
-  my @game_info = @{Utils::get_player_annotated_game_data($player_cross_tables_id)};
-
-  my ($player_record_id, $name_changed) = Utils::update_player_record($dbh, $player_cross_tables_id, $raw_name, $player_name);
-
-  if ($name_changed)
-  {
-    $update = Constants::UPDATE_OPTION_GCG;
-  }
-
-  my $games_to_update = scalar @game_info;
-  my $count           = 0;
+  my @every_annotated_game_info = Utils::get_all_annotated_game_info();
+  my %updated_players = ();
+  my %name_id_hash    = ();
+  my %id_name_hash    = ();
+  my $games_to_update = scalar @every_annotated_game_info;
   my $games_updated   = 0;
 
-  while (@game_info)
+  while (@every_annotated_game_info)
   {
-    my $annotated_game_data = shift @game_info;
+    my $annotated_game_data = shift @every_annotated_game_info;
+    
+    Utils::prepare_anno_data($annotated_game_data, \%id_name_hash);
 
-    Utils::sanitize_game_data($annotated_game_data);
+    my $game_xt_id       = $annotated_game_data->[0];
+    my $player_one_xt_id = $annotated_game_data->[1];
+    my $player_two_xt_id = $annotated_game_data->[2];
+    my $player_one_name  = $annotated_game_data->[3];
+    my $player_two_name  = $annotated_game_data->[4];
+    my $tournament_xt_id = $annotated_game_data->[5];
+    my $round            = $annotated_game_data->[6];
+    my $lexicon          = $annotated_game_data->[7];
+    my $upload_date      = $annotated_game_data->[8];
 
-    my $game_cross_tables_id = $annotated_game_data->[0];
-    my $game_lexicon         = $annotated_game_data->[6];
-
-    $count++;
-    my $num_str = (sprintf "%-4s", $count) . " of $games_to_update:";
-    my $lexicon_ref =
-    Utils::is_valid_game
-    (
-      $player_name         ,
-      $tourney_id          ,
-      $tourney_or_casual   ,
-      $single_game_id      ,
-      $opponent_name       ,
-      $startdate           ,
-      $enddate             ,
-      $lexicon             ,
-      $verbose             ,
-      $num_str             ,
-      $game_cross_tables_id,
-      $annotated_game_data
-    );
+    if (!$lexicon)
+    {
+      next;
+    }
+    my $lexicon_ref = Utils::get_lexicon_ref(uc($lexicon));
 
     if (!$lexicon_ref)
     {
       next;
     }
 
-    my @game_query = @{Utils::query_table($dbh, Constants::GAMES_TABLE_NAME, Constants::GAME_CROSS_TABLES_ID_COLUMN_NAME, $game_cross_tables_id)};
-    
-    if (@game_query)
+    $name_id_hash{Utils::sanitize($player_one_name)} = $player_one_xt_id;
+    $name_id_hash{Utils::sanitize($player_two_name)} = $player_two_xt_id;
+
+    $annotated_game_data->[9] = $lexicon_ref;
+
+    my @players_to_update = ([$player_one_xt_id, $player_one_name], [$player_two_xt_id, $player_two_name]);
+
+    foreach my $item (@players_to_update)
     {
-      if ($update_stats)
+      my $id   = $item->[0];
+      my $name = $item->[1];
+      if ($id && !$updated_players{$id})
       {
-        if ($verbose){print "$num_str Updating stats for $game_cross_tables_id\n";}
-        Utils::update_stats_or_create_record
-        (
-          $dbh,
-          $player_name,
-          $player_cross_tables_id,
-          $game_query[0],
-          $annotated_game_data,
-          $game_query[0]->{Constants::GAME_GCG_COLUMN_NAME},
-          $lexicon_ref,
-          $game_query[0]->{Constants::GAME_PLAYER_ONE_NAME_COLUMN_NAME},
-          $game_query[0]->{Constants::GAME_PLAYER_TWO_NAME_COLUMN_NAME},
-          $html,
-          $missingracks,
-          $game_lexicon,
-          $game_cross_tables_id,
-          $annotated_game_data
-        );
-        $games_updated++;
-      }
-      elsif ($update_gcg)
-      {
-        if ($verbose){print "$num_str Updating gcg for $game_cross_tables_id\n";}
-        Utils::update_stats_or_create_record
-        (
-          $dbh,
-          $player_name,
-          $player_cross_tables_id,
-          $game_query[0],
-          $annotated_game_data,
-          0,
-          $lexicon_ref,
-          0,
-          0,
-          $html,
-          $missingracks,
-          $game_lexicon,
-          $game_cross_tables_id,
-          $annotated_game_data
-        );
-        $games_updated++;
-      }
-      elsif ($update_keys)
-      {
-        my $foreign_keys_missing = !$game_query[0]->{Constants::GAME_PLAYER_ONE_CROSS_TABLES_ID_COLUMN_NAME} ||
-                                 !$game_query[0]->{Constants::GAME_PLAYER_TWO_CROSS_TABLES_ID_COLUMN_NAME};
-        if ($foreign_keys_missing)
-        {
-          if ($verbose){print "$num_str Attempting to update foreign keys for $game_cross_tables_id\n";}
-          
-          Utils::update_foreign_keys(
-            $dbh,
-            $game_cross_tables_id,
-            $player_cross_tables_id
-          );
-        
-        }
-        else
-        {
-          if ($verbose){print "$num_str Game $game_cross_tables_id is up to date\n";}
-        }
+        $updated_players{$id} = 1;
+	Utils::update_player_record($dbh, $id, $name, Utils::sanitize($name));
       }
     }
-    else
+
+    my @game_query = @{Utils::query_table($dbh, Constants::GAMES_TABLE_NAME, Constants::GAME_CROSS_TABLES_ID_COLUMN_NAME, $game_xt_id)};
+    if (!@game_query)
     {
-
-      if ($verbose){print "$num_str Creating game $game_cross_tables_id\n";}
-
-      Utils::update_stats_or_create_record(   
-        $dbh,
-        $player_name,
-        $player_cross_tables_id,
-        0,
-        $annotated_game_data,
-        0,
-        $lexicon_ref,
-        0,
-        0,
-        $html,
-        $missingracks,
-        $game_lexicon,
-        $game_cross_tables_id,
-        $annotated_game_data
-      );
       $games_updated++;
     }
+    Utils::update_stats($dbh, $game_query[0], $annotated_game_data, $update);
   }
-  if ($games_updated)
-  {
-    my $name = Utils::sanitize($player_name);
-    my $cache_filename = "$cache_dir/$name.html";
-    if (-e $cache_filename)
-    {
-      system "rm $cache_filename";
-    }
-    my $num = sprintf "%-4s", $games_updated;
-    print ((sprintf "%-30s", $player_name . ":") . "$num games updated or created\n");
-  }
+  print "\n\n$games_to_update games detected in API call\n";
+  print "$games_updated new games retrieved\n";
+  Update::update_name_id_hash(\%name_id_hash);
 }
 
 1;

@@ -8,11 +8,13 @@ use Data::Dumper;
 
 use lib "./objects"; 
 use lib "./lexicons";
+use lib "./data";
 
 use Game;
 use Constants;
 use Stats;
 use Utils;
+use NameConversion;
 
 use CSW07;
 use CSW12;
@@ -36,6 +38,7 @@ sub mine
   my $blacklisted_tournaments = Constants::BLACKLISTED_TOURNAMENTS;
   my $cache_dir               = Constants::CACHE_DIRECTORY_NAME;
   my $stats_note              = Constants::STATS_NOTE;
+  my $names_to_ids_hashref    = NameConversion::NAMES_TO_IDS;
 
   my $dbh = Utils::connect_to_database();
 
@@ -72,6 +75,14 @@ sub mine
       $game_string .= $_;
     }
     print $game_string;
+    return;
+  }
+
+  my $player_id = $names_to_ids_hashref->{$player_name};
+
+  if (!$player_id)
+  {
+    print STDERR "Player ID not found for $player_name\n";
     return;
   }
 
@@ -168,6 +179,8 @@ sub mine
 
   }
 
+  # my $player_cross_tables_id = Utils::get_player_cross_tables_id($player_name);
+
   my $all_stats = Stats->new(1);
 
   my %tourney_game_hash;
@@ -200,9 +213,10 @@ sub mine
 
   if ($opponent_name)
   {
+    my $opp_id = $names_to_ids_hashref->{$opponent_name};
     $opp_query =
     "
-      AND opp.$player_sanitized_name_column_name = '$opponent_name'
+      AND opp.$player_cross_tables_id_column_name = $opp_id
       AND
          (
           opp.$player_cross_tables_id_column_name = g.$game_player1_cross_tables_id_column_name OR
@@ -218,7 +232,7 @@ sub mine
   SELECT *
   FROM $games_table AS g, $players_table AS p $opp_table_statement
   WHERE
-        p.$player_sanitized_name_column_name = '$player_name' AND
+        p.$player_cross_tables_id_column_name = $player_id AND
         (
          g.$game_player1_cross_tables_id_column_name =
          p.$player_cross_tables_id_column_name
@@ -231,11 +245,11 @@ sub mine
 
   if ($single_game_id)
   {
-    $games_query .= " AND g.$game_cross_tables_id_column_name = '$single_game_id'";
+    $games_query .= " AND g.$game_cross_tables_id_column_name = $single_game_id";
   }
   if ($tourney_id)
   {
-    $games_query .= " AND g.$game_cross_tables_tournament_id_column_name = '$tourney_id'";
+    $games_query .= " AND g.$game_cross_tables_tournament_id_column_name = $tourney_id";
   }
   if ($startdate)
   {
@@ -268,14 +282,13 @@ sub mine
     my $error   = $game->{$game_error_column_name};
     my $warning = $game->{$game_warning_column_name};
 
-    my $game_opp_name = $game->{$game_player1_cross_tables_id_column_name};
-    my $player_is_first = 0;
+    my $game_opp_name = $game->{$game_player2_name_column_name};
+    my $player_is_first = 1;
     
-    my $player1_name = $game->{$game_player1_name_column_name};
-    if ($player1_name && Utils::sanitize($player1_name) eq $player_name)
+    if ($player_id == $game->{$game_player2_cross_tables_id_column_name})
     {
-      $player_is_first = 1;
-      $game_opp_name = $game->{$game_player2_name_column_name};
+      $player_is_first = 0;
+      $game_opp_name = $game->{$game_player1_name_column_name};
     }
     
     my $game_id = $game->{$game_cross_tables_id_column_name};
@@ -344,14 +357,11 @@ sub mine
 
   if ($cache_condition && $at_least_one)
   {
-    if (!(-e $cache_filename))
-    {
-      my $lt = localtime();
-      system "mkdir -p $cache_dir";
-      open(my $fh, '>', $cache_filename);
-      print $fh "$start_tags $html_string \n\nThis report was produced from a file cached on $lt\n$end_tags\n";
-      close $fh;
-    }
+    my $lt = localtime();
+    system "mkdir -p $cache_dir";
+    open(my $fh, '>', $cache_filename);
+    print $fh "$start_tags $html_string \n\nThis report was produced from a file cached on $lt\n$end_tags\n";
+    close $fh;
   }
 
   if ($html)

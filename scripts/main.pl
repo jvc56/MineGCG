@@ -14,7 +14,6 @@ use Utils;
 
 
 my $verbose        = '';
-my $update         = '';
 my $cort           = '';
 my $tid            = '';
 my $html           = '';
@@ -33,7 +32,6 @@ my $man  = 0;
 my $help = 0;
 GetOptions (
             'verbose'          => \$verbose,
-            'update=s'         => \$update,
             'game:s'           => \$game,
             'cort:s'           => \$cort,
             'tournamentid:s'   => \$tid,
@@ -48,10 +46,7 @@ GetOptions (
             'help|?'           => \$help
            );
 
-pod2usage(1) if $help || !$name || ($update && ($update ne Constants::UPDATE_OPTION_KEYS  &&
-                                                $update ne Constants::UPDATE_OPTION_STATS &&
-                                                $update ne Constants::UPDATE_OPTION_GCG   )
-                                   );
+pod2usage(1) if $help || !$name;
 
 $raw_name           = $name;
 $name               = Utils::sanitize($name);
@@ -60,8 +55,7 @@ $startdate          =~ s/[^\d]//g;
 $enddate            =~ s/[^\d]//g;
 $lexicon            = uc $lexicon;
 
-Retrieve::retrieve($name, $raw_name, $update, $tid, $cort, $game, $opponent_sanitized, $startdate, $enddate, $lexicon, $verbose, $html, $missingracks);
-Mine::mine    ($name, $cort, $game, $opponent_sanitized, $startdate, $enddate, $lexicon, $verbose, $tid, $statsdump, $html, $missingracks);
+Mine::mine($name, $cort, $game, $opponent_sanitized, $startdate, $enddate, $lexicon, $verbose, $tid, $statsdump, $html, $missingracks);
 
 
 __END__

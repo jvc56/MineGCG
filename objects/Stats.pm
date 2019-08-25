@@ -175,7 +175,7 @@ sub makeRow
 
   my $average = sprintf "%.2f", $total/$num_games;
 
-  if ($this->{'single'})
+  if ($this->{Constants::STAT_OBJECT_DISPLAY_NAME} && $this->{Constants::STAT_OBJECT_DISPLAY_NAME} eq Constants::STAT_OBJECT_DISPLAY_PCAVG)
   {
     $average = $total;
     $total = '-';
@@ -713,7 +713,7 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Games',
-      Constants::STAT_ITEM_OBJECT_NAME =>  {'total' => 0, 'single' => 1, 'int' => 1},
+      Constants::STAT_ITEM_OBJECT_NAME =>  {'total' => 0, Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_TOTAL, 'int' => 1},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_GAME,
       Constants::STAT_COMBINE_FUNCTION_NAME =>
@@ -799,7 +799,7 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Score per Turn',
-      Constants::STAT_ITEM_OBJECT_NAME =>  {'single' => 1, 'total' => 0, 'total_score' => 0, 'total_turns' => 0},
+      Constants::STAT_ITEM_OBJECT_NAME =>  {Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG, 'total' => 0, 'total_score' => 0, 'total_turns' => 0},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
       Constants::STAT_COMBINE_FUNCTION_NAME =>
@@ -869,7 +869,7 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Full Rack per Turn',
-      Constants::STAT_ITEM_OBJECT_NAME => {'single' => 1, 'total' => 0, 'total_full_racks' => 0, 'total_turns' => 0},
+      Constants::STAT_ITEM_OBJECT_NAME => {Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG, 'total' => 0, 'total_full_racks' => 0, 'total_turns' => 0},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
       Constants::STAT_COMBINE_FUNCTION_NAME =>
@@ -917,7 +917,7 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'High Game',
-      Constants::STAT_ITEM_OBJECT_NAME =>  {'total' => -10000, 'single' => 1, 'int' => 1},
+      Constants::STAT_ITEM_OBJECT_NAME =>  {'total' => -10000, Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG, 'int' => 1},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
       Constants::STAT_COMBINE_FUNCTION_NAME =>
@@ -952,7 +952,7 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Low Game',
-      Constants::STAT_ITEM_OBJECT_NAME => {'total' => 100000, 'single' => 1, 'int' => 1},
+      Constants::STAT_ITEM_OBJECT_NAME => {'total' => 100000, Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG, 'int' => 1},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
       Constants::STAT_COMBINE_FUNCTION_NAME =>
@@ -987,7 +987,7 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Highest Scoring Turn',
-      Constants::STAT_ITEM_OBJECT_NAME =>  {'total' => -1, 'single' => 1, 'int' => 1},
+      Constants::STAT_ITEM_OBJECT_NAME =>  {'total' => -1, Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG, 'int' => 1},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
       Constants::STAT_COMBINE_FUNCTION_NAME =>
@@ -1088,7 +1088,7 @@ sub statsList
       Constants::STAT_NAME => 'Bingo Probabilities',
       Constants::STAT_ITEM_OBJECT_NAME =>
       {
-          'single' => 1,
+          Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG,
           'subitems' =>
           {
             Constants::SEVENS_TITLE    => 0,
@@ -1643,7 +1643,7 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Challenge Percentage',
-      Constants::STAT_ITEM_OBJECT_NAME => {'single' => 1, 'total' => 0, 'challenges' => 0, 'successful_challenges' => 0},
+      Constants::STAT_ITEM_OBJECT_NAME => {Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG, 'total' => 0, 'challenges' => 0, 'successful_challenges' => 0},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
       Constants::STAT_COMBINE_FUNCTION_NAME =>
@@ -1686,7 +1686,7 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Defending Challenge Percentage',
-      Constants::STAT_ITEM_OBJECT_NAME => {'single' => 1, 'total' => 0, 'challenges' => 0, 'successful_challenges' => 0},
+      Constants::STAT_ITEM_OBJECT_NAME => {Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG, 'total' => 0, 'challenges' => 0, 'successful_challenges' => 0},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
       Constants::STAT_COMBINE_FUNCTION_NAME =>
@@ -1729,7 +1729,7 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Percentage Phonies Unchallenged',
-      Constants::STAT_ITEM_OBJECT_NAME => {'single' => 1, 'total' => 0, 'num_phonies' => 0, 'num_phonies_unchal' => 0},
+      Constants::STAT_ITEM_OBJECT_NAME => {Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG, 'total' => 0, 'num_phonies' => 0, 'num_phonies_unchal' => 0},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
       Constants::STAT_COMBINE_FUNCTION_NAME =>

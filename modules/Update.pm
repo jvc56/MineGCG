@@ -65,10 +65,10 @@ sub update_leaderboard
           my $statname = $statlist->[$i]->{Constants::STAT_NAME};
 
           my $statval      = $statitem->{'total'};
-          my $is_single    = $statitem->{'single'};
+	  my $display_type = $statitem->{Constants::STAT_OBJECT_DISPLAY_NAME};
           my $is_int       = $statitem->{'int'};
 
-          add_stat(\%leaderboards, $name, $statname, $statval, $total_games, $is_single, $is_int,\@name_order);
+          add_stat(\%leaderboards, $name, $statname, $statval, $total_games, $display_type, $is_int,\@name_order);
 
           my $subitems = $statitem->{'subitems'};
           if ($subitems)
@@ -82,7 +82,7 @@ sub update_leaderboard
 
               my $substatval  = $subitems->{$subitemname};
 
-              add_stat(\%leaderboards, $name, $substatname, $substatval, $total_games, $is_single, $is_int,  \@name_order);
+              add_stat(\%leaderboards, $name, $substatname, $substatval, $total_games, $display_type, $is_int,  \@name_order);
             }
           }
         }
@@ -596,6 +596,47 @@ HTML
   close $fh;
 }
 
+sub update_name_id_hash
+{
+  my $hashref = shift;
+
+  my $datadir               = Constants::DATA_DIRECTORY_NAME;
+  my $name_id_data_filename = Constants::NAME_ID_DATA_FILENAME;
+  my $var_name              = Constants::NAME_ID_VARIABLE_NAME;
+
+  my $data = "{";
+
+  foreach my $key (keys %{$hashref})
+  {
+    my $value = $hashref->{$key};
+    $data .= "\n  '$key' => '$value',";
+  }
+
+  chop($data);
+
+  $data .= "\n}";
+  
+  my $file_string =
+"
+#!/usr/bin/perl
+ 
+package NameConversion;
+
+use strict;
+use warnings;
+
+use constant $var_name => 
+$data
+;
+
+1;
+";
+
+  open (my $fh, '>', "$datadir/$name_id_data_filename");
+  print $fh $file_string;
+  close $fh;
+}
+
 sub add_stat
 {
   my $leaderboards = shift;
@@ -603,11 +644,11 @@ sub add_stat
   my $statname     = shift;
   my $statvalue    = shift;
   my $total_games  = shift;
-  my $is_single    = shift;
+  my $display_name = shift;
   my $is_int       = shift;
   my $name_order   = shift;
   
-  if (!$is_single)
+  if ($display_name ne Constants::STAT_OBJECT_DISPLAY_TOTAL && $display_name ne Constants::STAT_OBJECT_DISPLAY_PCAVG)
   {
     $statvalue /= $total_games
   }

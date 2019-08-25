@@ -63,6 +63,27 @@ sub query_table
   return $arrayref;
 }
 
+sub get_all_annotated_game_info
+{
+  my $wget_flags   = Constants::WGET_FLAGS;
+  my $query_url    = Constants::ANNOTATED_GAMES_API_CALL;
+  my $download_dir = Constants::DOWNLOADS_DIRECTORY_NAME;
+  my $filename     = "$download_dir/allanno.php";
+
+  system "wget $query_url -O $filename";
+
+  open (ANNOS, '<', $filename);
+  my $header = <ANNOS>;
+  my @annos = ();
+  while (<ANNOS>)
+  {
+    chomp $_;
+    my @info = split /,/, $_;
+    push @annos, \@info;
+  }
+  return @annos;
+}
+
 sub get_player_cross_tables_id
 {
   my $query_url_prefix           = Constants::QUERY_URL_PREFIX;
@@ -199,7 +220,7 @@ sub update_player_record
   {
     $player_name = $queried_name;
   }
-  elsif ($player_name ne $queried_name)
+  elsif ($queried_name && $player_name ne $queried_name)
   {
     # Player name has changed
     print "Player name changed from $player_name to $queried_name\n";
@@ -225,46 +246,22 @@ sub update_player_record
     Constants::PLAYER_TOTAL_GAMES_COLUMN_NAME     => $total_games
   };
 
-  $player_record_id = insert_or_set_hash_into_table($dbh, Constants::PLAYERS_TABLE_NAME, $player_record, $player_record_id);
-  return ($player_record_id, $update_gcg);
+  insert_or_set_hash_into_table($dbh, Constants::PLAYERS_TABLE_NAME, $player_record, $player_record_id);
+  return $update_gcg;
 }
 
 sub download_gcg
 {
-  my $game_cross_tables_id = shift;
+  my $game_xt_id = shift;
   
-  my $wget_flags     = Constants::WGET_FLAGS;
-  my $html_game_name = Constants::HTML_GAME_NAME;
-  my $html_game_url  = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX . $game_cross_tables_id;
-  my $downloads_dir  = Constants::DOWNLOADS_DIRECTORY_NAME;
-  my $cross_tables_url           = Constants::CROSS_TABLES_URL;
-
-  # All this just to see who goes first
-  system "wget $wget_flags $html_game_url -O '$downloads_dir/$html_game_name' >/dev/null 2>&1";
-  my $gcg_url_suffix  = '';
-  my $player_one_name = '';
-  my $player_two_name = '';
-  open(ANNOHTML, '<', "$downloads_dir/$html_game_name");
-  while(<ANNOHTML>)
-  {
-    if (/href=.(annotated.selfgcg.\d+.anno\d+.gcg)./)
-    {
-      $gcg_url_suffix = $1;
-    }
-    if (/^([^<]*)(?:<a.*a>)?\s+vs\.\s+([^<]*)/) # How bout ^([^<]*)<a.*a>\s+vs.([^<]*)<a
-    {
-      $player_one_name = $1;
-      $player_two_name = $2;
-    }
-  }
-
-  $player_one_name =~ s/^\s+|\s+$//g;
-  $player_two_name =~ s/^\s+|\s+$//g;
+  my $wget_flags       = Constants::WGET_FLAGS;
+  my $downloads_dir    = Constants::DOWNLOADS_DIRECTORY_NAME;
+  my $cross_tables_url = Constants::CROSS_TABLES_URL;
 
   my $gcg_name = "annotated_game.gcg";
   my $gcg_fullname = "$downloads_dir/$gcg_name";
 
-  my $gcg_url = $cross_tables_url . $gcg_url_suffix;
+  my $gcg_url = $cross_tables_url . get_gcg_url_suffix($game_xt_id);
   system "wget $wget_flags $gcg_url -O '$gcg_fullname' >/dev/null 2>&1";
 
   my $gcgtext = "";
@@ -274,7 +271,14 @@ sub download_gcg
   {
     $gcgtext .= $_;
   }
-  return [$player_one_name, $player_two_name, $gcgtext];
+  return $gcgtext;
+}
+
+sub get_gcg_url_suffix
+{
+  my $id = shift;
+  my $group = int($id / 100);
+  return "annotated/selfgcg/$group/anno$id.gcg";
 }
 
 sub insert_or_set_hash_into_table
@@ -433,112 +437,58 @@ sub is_valid_game
   return $lexicon_ref;
 }
 
-sub update_stats_or_create_record
+sub update_stats
 {
   my $dbh                    = shift;
-  my $player_name            = shift;
-  my $player_cross_tables_id = shift;
   my $game_result            = shift;
-  my $game_data              = shift;
-  my $gcgtext                = shift;
-  my $lexicon_ref            = shift;
-  my $player_one_name        = shift;
-  my $player_two_name        = shift;
-  my $html                   = shift;
-  my $missingracks           = shift;
-  my $lexicon                = shift;
-  my $game_cross_tables_id   = shift;
   my $annotated_game_data    = shift;
+  my $update                 = shift;
 
-  my $game_opponent          = $annotated_game_data->[1];
-  my $game_tournament_id     = $annotated_game_data->[2];
-  my $game_date              = $annotated_game_data->[4];
-  my $game_round_number      = $annotated_game_data->[5];
-  my $game_lexicon           = $annotated_game_data->[6];
-
-  my $player1_cross_tables_id = undef;
-  my $player2_cross_tables_id = undef;
+  my $game_xt_id       = $annotated_game_data->[0];
+  my $player_one_xt_id = $annotated_game_data->[1];
+  my $player_two_xt_id = $annotated_game_data->[2];
+  my $player_one_name  = $annotated_game_data->[3];
+  my $player_two_name  = $annotated_game_data->[4];
+  my $tournament_xt_id = $annotated_game_data->[5];
+  my $round            = $annotated_game_data->[6];
+  my $lexicon          = $annotated_game_data->[7];
+  my $upload_date      = $annotated_game_data->[8];
+  my $lexicon_ref      = $annotated_game_data->[9];
+  my $date             = "2000-01-01";
 
   my $game_name        = "";
   my $error            = "";
   my $warning          = "";
-  my $game_record_id;
-  my $player_is_first;
 
-  if (!$gcgtext)
+  if (!$game_result)
   {
-    my $players_and_gcg = download_gcg($game_cross_tables_id);
-
-    $player_one_name = $players_and_gcg->[0]; 
-    $player_two_name = $players_and_gcg->[1]; 
-    $gcgtext         = $players_and_gcg->[2];
+    $game_result = {};
   }
 
-  if ($game_result)
-  {
-    $game_record_id = $game_result->{Constants::GAME_ID_COLUMN_NAME};
+  my $game_record_id = $game_result->{Constants::GAME_ID_COLUMN_NAME};
 
-    $player1_cross_tables_id = $game_result->{Constants::GAME_PLAYER_ONE_CROSS_TABLES_ID_COLUMN_NAME};
-    $player2_cross_tables_id = $game_result->{Constants::GAME_PLAYER_TWO_CROSS_TABLES_ID_COLUMN_NAME};
-    
-    if (!$player1_cross_tables_id && !$player2_cross_tables_id)
-    {
-      my $game_record_dump = Dumper($game_result);
-      die "Game with ID $game_record_id has no associated players: $game_record_dump\n"; 
-    }
-    if (
-         $player1_cross_tables_id && $player2_cross_tables_id &&
-         $player1_cross_tables_id == $player2_cross_tables_id
-        )
-    {
-      my $game_record_dump = Dumper($game_result);
-      die "Game with ID $game_record_id has a player playing themselves: $game_record_dump\n"; 
-    }
-    if (!$player1_cross_tables_id && $player2_cross_tables_id != $player_cross_tables_id)
-    {
-      $player1_cross_tables_id = $player_cross_tables_id;
-    }
-    elsif (!$player2_cross_tables_id && $player1_cross_tables_id != $player_cross_tables_id)
-    {
-      $player2_cross_tables_id = $player_cross_tables_id;
-    }
-  }
-  else
+  if (!$game_result->{Constants::GAME_GCG_COLUMN_NAME} || $update eq Constants::UPDATE_OPTION_GCG)
   {
-    $player1_cross_tables_id = $player_cross_tables_id;
-    $player2_cross_tables_id = undef;
-    $player_is_first         = 1;
-    if (sanitize($player_one_name) ne $player_name)
-    {
-      $player1_cross_tables_id = undef;
-      $player2_cross_tables_id = $player_cross_tables_id;
-      if (sanitize($player_two_name) ne $player_name)
-      {
-        die "matching player name not found: $player_one_name, $player_two_name, $player_name, $game_cross_tables_id\n";
-      }
-    }  
+     $game_result->{Constants::GAME_GCG_COLUMN_NAME} = download_gcg($game_xt_id);
   }
 
-  my $pretty_name = $player_one_name;
-  $player_is_first = 1;
-  if ($player2_cross_tables_id && $player2_cross_tables_id == $player_cross_tables_id)
+  if (!$player_one_xt_id)
   {
-    $pretty_name = $player_two_name;
-    $player_is_first = 0;
+    $player_one_xt_id = undef;
   }
-  
-  update_player_record($dbh, $player_cross_tables_id, $pretty_name);
+  if (!$player_two_xt_id)
+  {
+    $player_two_xt_id = undef;
+  }
 
 
   my $game = Game->new(
-                        $gcgtext,
+                        $game_result->{Constants::GAME_GCG_COLUMN_NAME},
                         $lexicon_ref,
                         $player_one_name,
                         $player_two_name,
-                        $html,
-                        $missingracks,
                         $lexicon,
-                        $game_cross_tables_id
+                        $game_xt_id
                       );
 
   if (ref($game) ne "Game")
@@ -571,17 +521,17 @@ sub update_stats_or_create_record
 
   my $game_record =
   {
-    Constants::GAME_PLAYER_ONE_CROSS_TABLES_ID_COLUMN_NAME  => $player1_cross_tables_id,
-    Constants::GAME_PLAYER_TWO_CROSS_TABLES_ID_COLUMN_NAME  => $player2_cross_tables_id,
+    Constants::GAME_PLAYER_ONE_CROSS_TABLES_ID_COLUMN_NAME  => $player_one_xt_id,
+    Constants::GAME_PLAYER_TWO_CROSS_TABLES_ID_COLUMN_NAME  => $player_two_xt_id,
     Constants::GAME_PLAYER_ONE_NAME_COLUMN_NAME             => $player_one_name,
     Constants::GAME_PLAYER_TWO_NAME_COLUMN_NAME             => $player_two_name,
-    Constants::GAME_CROSS_TABLES_ID_COLUMN_NAME             => $game_cross_tables_id,
-    Constants::GAME_GCG_COLUMN_NAME                         => $gcgtext,
+    Constants::GAME_CROSS_TABLES_ID_COLUMN_NAME             => $game_xt_id,
+    Constants::GAME_GCG_COLUMN_NAME                         => $game_result->{Constants::GAME_GCG_COLUMN_NAME},
     Constants::GAME_STATS_COLUMN_NAME                       => encode_json($unblessed_stat),
-    Constants::GAME_CROSS_TABLES_TOURNAMENT_ID_COLUMN_NAME  => $game_tournament_id,
-    Constants::GAME_DATE_COLUMN_NAME                        => $game_date,
-    Constants::GAME_LEXICON_COLUMN_NAME                     => $game_lexicon,
-    Constants::GAME_ROUND_COLUMN_NAME                       => $game_round_number,
+    Constants::GAME_CROSS_TABLES_TOURNAMENT_ID_COLUMN_NAME  => $tournament_xt_id,
+    Constants::GAME_DATE_COLUMN_NAME                        => $date,
+    Constants::GAME_LEXICON_COLUMN_NAME                     => $lexicon,
+    Constants::GAME_ROUND_COLUMN_NAME                       => $round,
     Constants::GAME_NAME_COLUMN_NAME                        => $game_name,
     Constants::GAME_ERROR_COLUMN_NAME                       => $error,
     Constants::GAME_WARNING_COLUMN_NAME                     => $warning
@@ -605,74 +555,59 @@ sub prepare_stats
   };
 }
 
-sub sanitize_game_data
+sub prepare_anno_data
 {
-  my $annotated_game_data = shift;
+  my $data            = shift;
+  my $id_name_hashref = shift;
 
-  my $game_cross_tables_id = $annotated_game_data->[0];
-  my $game_opponent        = $annotated_game_data->[1];
-  my $game_tournament_id   = $annotated_game_data->[2];
-  my $is_tournament_game   = $annotated_game_data->[3];
-  my $game_date            = $annotated_game_data->[4];
-  my $game_round_number    = $annotated_game_data->[5];
-  my $game_lexicon         = $annotated_game_data->[6];
-
-  my $game_date_sanitized  = $game_date;
-
-  $annotated_game_data->[1] = sanitize($game_opponent);
-  $annotated_game_data->[4] =~ s/[^\d]//g;
-  $annotated_game_data->[6] = uc $game_lexicon;
-
-  if (!$game_date)
+  for (my $i = 0; $i < scalar @{$data}; $i++)
   {
-    $annotated_game_data->[4] = undef;
+    my $item = $data->[$i];
+    if (!$item || $item =~ /\-\d*/)
+    {
+      $data->[$i] = undef;
+    }
   }
-  if (!$game_round_number || !($game_round_number =~ /^\d+$/))
+
+  my @id_indexes = (1, 2);
+
+  foreach my $index (@id_indexes)
   {
-    $annotated_game_data->[5] = 0;
-  }
-  if (!$game_tournament_id || !($game_tournament_id =~ /^\d+$/))
-  {
-    $annotated_game_data->[2] = 0;
+    my $xt_id = $data->[$index];
+    if ($xt_id)
+    {
+      my $real_name = $id_name_hashref->{$xt_id};
+      if (!$real_name)
+      {
+        $real_name = get_real_player_name($xt_id);
+        $id_name_hashref->{$xt_id} = $real_name;
+      }
+      $data->[$index + 2] = $real_name; # Name index of the player xt index
+    }
   }
 }
 
-sub update_foreign_keys
+sub get_real_player_name
 {
-  my $dbh                    = shift;
-  my $game_cross_tables_id   = shift;
-  my $player_cross_tables_id = shift;
+  my $xt_id = shift;
+ 
+  my $wget_flags = Constants::WGET_FLAGS; 
+  my $query_url = Constants::PLAYER_INFO_API_CALL . $xt_id;
+  my $filename  = Constants::DOWNLOADS_DIRECTORY_NAME . "/player_info_$xt_id.txt";
 
-  my $table = Constants::GAMES_TABLE_NAME;
-  my $p1ctid = Constants::GAME_PLAYER_ONE_CROSS_TABLES_ID_COLUMN_NAME;
-  my $p2ctid = Constants::GAME_PLAYER_TWO_CROSS_TABLES_ID_COLUMN_NAME;
-  my $gctid  = Constants::GAME_CROSS_TABLES_ID_COLUMN_NAME;
+  system "wget $wget_flags $query_url -O $filename  >/dev/null 2>&1";
+  # Capture 
+  # 		"name": "Seth Lipkin",
 
-  my $set_stmt =
-  "
-  UPDATE $table
-  SET
-    $p1ctid = 
-    CASE
-      WHEN
-              $p1ctid is NULL AND $p2ctid != $player_cross_tables_id THEN
-                $player_cross_tables_id
-              ELSE
-                $p1ctid
-      END
-    ,
-    $p2ctid = 
-    CASE
-      WHEN
-              $p2ctid is NULL  AND $p1ctid != $player_cross_tables_id THEN
-                $player_cross_tables_id
-              ELSE
-                $p2ctid
-      END
-  WHERE $gctid = '$game_cross_tables_id'
-  ";
-
-  $dbh->do($set_stmt) or die DBI::errstr;
+  open(INFO, "<", $filename);
+  while (<INFO>)
+  {
+    if (/"name":\s*"([^"]*)"/)
+    {
+      return $1;
+    }
+  }
+  die "Name not found in $filename\n";
 }
 
 sub delete_function_from_statslist

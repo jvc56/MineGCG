@@ -25,7 +25,6 @@ print $log "Error log file for mine_games_test on " . localtime() . "\n\n";
 
 my $count = scalar @names;
 print $log "\n\n$count names tested\n\n";
-close $log;
 
 foreach my $name (@names)
 {
@@ -34,4 +33,6 @@ foreach my $name (@names)
 }
 
 
+print $log "Finished at " . localtime() . "\n\n"; 
 
+close $log;

@@ -43,10 +43,15 @@ use constant NOTABLE_DIRECTORY_NAME           => './notable';
 use constant CACHE_DIRECTORY_NAME             => './cache';
 use constant HTML_DIRECTORY_NAME              => './html';
 use constant CGIBIN_DIRECTORY_NAME            => './cgi-bin';
+use constant DATA_DIRECTORY_NAME              => './data';
+use constant NAME_ID_DATA_FILENAME            => 'NameConversion.pm';
+use constant NAME_ID_VARIABLE_NAME            => 'NAMES_TO_IDS';
 use constant BLACKLISTED_TOURNAMENTS          => {
                                                     '9194' => 1 # Can-Am Match 08/29/15
                                                  };
 
+use constant ANNOTATED_GAMES_API_CALL         => 'http://cross-tables.com/rest/allanno.php';
+use constant PLAYER_INFO_API_CALL             => 'http://cross-tables.com/rest/player.php?player=';
 use constant CGI_SCRIPT_FILENAME              => 'mine_webapp.pl';
 use constant INDEX_HTML_FILENAME              => 'index.html';
 
@@ -373,6 +378,10 @@ use constant STAT_ADD_FUNCTION_NAME     => 'function';
 use constant STAT_COMBINE_FUNCTION_NAME => 'combine_function';
 use constant STAT_ITEM_OBJECT_NAME      => 'object';
 use constant STAT_NAME                  => 'name';
+
+use constant STAT_OBJECT_DISPLAY_NAME   => 'display';
+use constant STAT_OBJECT_DISPLAY_TOTAL  => 'total';
+use constant STAT_OBJECT_DISPLAY_PCAVG  => 'pcavg';
 
 use constant DATATYPE_LIST => 'list';
 use constant DATATYPE_ITEM => 'item';

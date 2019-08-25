@@ -11,21 +11,14 @@ use Board;
 use Move;
 use Tile;
 
-my $missingracks;
-
 sub new
 {
   my $this = shift;
 
   my $gcgtext              = shift;
   my $lexicon_ref          = shift;
-
   my $player_one_real_name = shift;
   my $player_two_real_name = shift;
-
-  my $html                 = shift;
-     $missingracks         = shift;
-
   my $lexicon              = shift;
   my $game_id              = shift;
 
@@ -507,7 +500,7 @@ sub new
     board           => $board,
     moves           => \@moves,
     warnings        => $warning,
-    html            => $html,
+    html            => 1, #Hard code to 1 for now
     tiles_played    => $tiles_played,
     readable_name   => "$player_one_real_name_readable vs. $player_two_real_name_readable"
   );
@@ -681,12 +674,6 @@ sub getNumFullRacks
   {
     my $is_full = $move->isFullRack($player);
     my $turn = $move->{'turn'};
-    if ($missingracks && !$is_full && $turn == $player)
-    {
-      my $play = $move->{'play'};
-      my $rack = $move->{'rack'};
-      print "Incomplete Rack Found:\nPlay: $play\nRack: $rack\n";
-    }
     $sum += $is_full;
   }
   return $sum;

@@ -3,8 +3,6 @@
 use warnings;
 use strict;
 
-chdir("/home/jvc/MineGCG");
-
 my $cmd = "find lexicons scripts objects modules meta -name \"*.p[lm]\" | ";
 
 open (CMDOUT, $cmd) or die "$!\n";
