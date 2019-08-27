@@ -733,6 +733,60 @@ sub statsList
       }
     },
     {
+      Constants::STAT_NAME => 'Challenges',
+      Constants::STAT_ITEM_OBJECT_NAME =>
+      {
+        'total' => 0,
+        'subitmes' =>
+        {
+           Constants::PLAYER_CHALLENGE_WON  => 0,
+           Constants::PLAYER_CHALLENGE_LOST => 0,
+           Constants::OPP_CHALLENGE_WON     => 0,
+           Constants::OPP_CHALLENGE_LOST    => 0    
+        },
+        'list' =>
+        [
+           Constants::PLAYER_CHALLENGE_WON,
+           Constants::OPP_CHALLENGE_LOST,   
+           Constants::PLAYER_CHALLENGE_LOST,
+           Constants::OPP_CHALLENGE_WON
+        ];        
+      },
+      Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
+      Constants::STAT_METATYPE_NAME => Constants::METATYPE_GAME,
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+
+        $this->{'total'} += $other->{'total'};
+        foreach my $key (keys %{$this->{'subitems'}})
+        {
+          $this->{'subitems'}->{$key} += $other->{'subitems'}->{$key};
+        }
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
+      sub
+      {
+        my $this = shift;
+        my $game = shift;
+
+        my $chal = $game->getNumChallenges($this_player);
+
+        my $pcw = $chal->{Constants::PLAYER_CHALLENGE_WON};
+        my $pcl = $chal->{Constants::PLAYER_CHALLENGE_LOST};
+        my $ocw = $chal->{Constants::OPP_CHALLENGE_WON};
+        my $ocl = $chal->{Constants::OPP_CHALLENGE_LOST};
+
+        $this->{'total'} += $pcw + $pcl + $ocw + $ocl;
+        $this->{'subitems'}->{Constants::PLAYER_CHALLENGE_WON}  += $pcw;
+        $this->{'subitems'}->{Constants::PLAYER_CHALLENGE_LOST} += $pcl;
+        $this->{'subitems'}->{Constants::OPP_CHALLENGE_WON}     += $ocw;
+        $this->{'subitems'}->{Constants::OPP_CHALLENGE_LOST}    += $ocl;
+      }
+    },
+    {
       Constants::STAT_NAME => 'Total Turns',
       Constants::STAT_ITEM_OBJECT_NAME =>  {'total' => 0},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
