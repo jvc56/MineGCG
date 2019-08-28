@@ -101,12 +101,14 @@ sub get_all_annotated_game_info
   while (<ANNOS>)
   {
     chomp $_;
-    my @info = split /,/, $_;
-    if (scalar @info != 9)
+    if (/([^,]*),([^,]*),([^,]*),"([^"]*)","([^"]*)",([^,]*),([^,]*),([^,]*),([^,]*)/)
     {
-      print "Unexpected pattern: $_\n";
+      push @annos, [$1, $2, $3, $4, $5, $6, $7, $8, $9];
     }
-    push @annos, \@info;
+    else
+    {
+      die "Uncaptured Line: $_\n";
+    }
   }
   return @annos;
 }
