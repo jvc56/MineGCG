@@ -179,8 +179,6 @@ sub mine
 
   }
 
-  # my $player_cross_tables_id = Utils::get_player_cross_tables_id($player_name);
-
   my $all_stats = Stats->new(1);
 
   my %tourney_game_hash;
