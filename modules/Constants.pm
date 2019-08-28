@@ -52,8 +52,25 @@ use constant BLACKLISTED_TOURNAMENTS          => {
 
 use constant ANNOTATED_GAMES_API_CALL         => 'http://cross-tables.com/rest/allanno.php';
 use constant PLAYER_INFO_API_CALL             => 'http://cross-tables.com/rest/player.php?player=';
+use constant TOURNAMENT_INFO_API_CALL         => 'http://cross-tables.com/rest/tourney.php?tourney=';
+
 use constant CGI_SCRIPT_FILENAME              => 'mine_webapp.pl';
 use constant INDEX_HTML_FILENAME              => 'index.html';
+
+use constant GAME_TYPE_CASUAL                 => 'Casual';
+use constant GAME_TYPE_TOURNAMENT             => 'Tournament';
+
+use constant PLAYER_FIELD_NAME                => 'name';
+use constant CORT_FIELD_NAME                  => 'cort';
+use constant GAME_ID_FIELD_NAME               => 'game-id';
+use constant TOURNAMENT_ID_FIELD_NAME         => 'tournament-id';
+use constant OPPONENT_FIELD_NAME              => 'opponent';
+use constant START_DATE_FIELD_NAME            => 'start-date';
+use constant END_DATE_FIELD_NAME              => 'end-date';
+use constant LEXICON_FIELD_NAME               => 'lexicon';
+use constant DIRECTORY_FIELD_NAME             => 'directory';
+
+use constant SEARCH_DATA_FILENAME             => 'search_data.html';
 
 use constant INACTIVE_PLAYERS =>
 (
@@ -208,6 +225,22 @@ use constant PRELOAD_COUNTRIES =>
   'SGP',
   'USA'
 );
+
+use constant MONTH_TO_NUMBER_HASHREF =>
+{
+  Jan => 1,
+  Feb => 2,
+  Mar => 3,
+  Apr => 4,
+  May => 5,
+  Jun => 6,
+  Jul => 7,
+  Aug => 8,
+  Sep => 9,
+  Oct => 10,
+  Nov => 11,
+  Dec => 12
+};
 
 use constant STAT_ITEM_GAME            => 'GAME STATS';
 use constant STAT_ITEM_PLAYER          => 'YOUR STATS';

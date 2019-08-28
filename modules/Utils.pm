@@ -25,6 +25,29 @@ use American;
 use NSW18;
 use JSON;
 
+sub write_string_to_file
+{
+  my $string   = shift;
+  my $filename = shift;
+
+  open(my $fh, '>', $filename);
+  print $fh $string;
+  close $fh;
+}
+
+sub get_all_unique_values
+{
+  my $dbh   = shift;
+  my $table = shift;
+  my $field = shift; 
+
+  my @unique_fields = @{$dbh->select_arrayref("SELECT DISTINCT $field FROM $table", {"RaiseError" => 1})};
+
+  @unique_fields = map {$_->[0]} @unique_fields;
+
+  return \@unique_fields;
+}
+
 sub connect_to_database
 {
   my $driver        = Constants::DATABASE_DRIVER;
@@ -79,6 +102,10 @@ sub get_all_annotated_game_info
   {
     chomp $_;
     my @info = split /,/, $_;
+    if (scalar @info != 9)
+    {
+      print "Unexpected pattern: $_\n";
+    }
     push @annos, \@info;
   }
   return @annos;
@@ -454,7 +481,7 @@ sub update_stats
   my $lexicon          = $annotated_game_data->[7];
   my $upload_date      = $annotated_game_data->[8];
   my $lexicon_ref      = $annotated_game_data->[9];
-  my $date             = "2000-01-01";
+  my $date             = $annotated_game_data->[10];
 
   my $game_name        = "";
   my $error            = "";
@@ -557,13 +584,14 @@ sub prepare_stats
 
 sub prepare_anno_data
 {
-  my $data            = shift;
-  my $id_name_hashref = shift;
+  my $data                       = shift;
+  my $id_name_hashref            = shift;
+  my $tournament_id_date_hashref = shift;
 
   for (my $i = 0; $i < scalar @{$data}; $i++)
   {
     my $item = $data->[$i];
-    if (!$item || $item =~ /\-\d*/)
+    if (!$item || $item =~ /^\-\d*$/)
     {
       $data->[$i] = undef;
     }
@@ -585,6 +613,46 @@ sub prepare_anno_data
       $data->[$index + 2] = $real_name; # Name index of the player xt index
     }
   }
+
+  my $tournament_id = $data->[5];
+  my $date;
+  if ($tournament_id)
+  {
+    $date = $tournament_id_date_hashref->{$tournament_id};
+    if (!$date)
+    {
+      $date = get_tournament_date($tournament_id);
+      $tournament_id_date_hashref->{$tournament_id} = $date;
+    }
+  }
+  $data->[10] = $date;
+}
+
+sub get_tournament_date
+{
+  my $id = shift;
+
+  my $wget_flags = Constants::WGET_FLAGS; 
+  my $query_url = Constants::TOURNAMENT_INFO_API_CALL . $id;
+  my $filename  = Constants::DOWNLOADS_DIRECTORY_NAME . "/tournament_info_$id.txt";
+  my $month_to_num_hashref = Constants::MONTH_TO_NUMBER_HASHREF;
+
+  system "wget $wget_flags $query_url -O $filename  >/dev/null 2>&1";
+  # Capture 
+  # 		"date": "Feb 23, 2004",
+
+  open(INFO, "<", $filename);
+  while (<INFO>)
+  {
+    if (/"date":\s*"(\w+)\s+(\d+),\s*(\d+)"/)
+    {
+      # print $_;
+      my $date = join "-", ($3, $month_to_num_hashref->{$1}, (sprintf "%02s", $2));
+      # print "$date\n";
+      return $date;
+    }
+  }
+  die "Date not found in $filename\n";
 }
 
 sub get_real_player_name

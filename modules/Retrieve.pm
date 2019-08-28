@@ -4,6 +4,7 @@ package Retrieve;
 
 use warnings;
 use strict;
+use Data::Dumper;
 
 use lib './objects';
 use lib './modules';
@@ -34,6 +35,8 @@ sub retrieve
   my %updated_players = ();
   my %name_id_hash    = ();
   my %id_name_hash    = ();
+  my %tournament_id_date_hash = ();
+
   my $games_to_update = scalar @every_annotated_game_info;
   my $games_updated   = 0;
 
@@ -41,7 +44,7 @@ sub retrieve
   {
     my $annotated_game_data = shift @every_annotated_game_info;
     
-    Utils::prepare_anno_data($annotated_game_data, \%id_name_hash);
+    Utils::prepare_anno_data($annotated_game_data, \%id_name_hash, \%tournament_id_date_hash);
 
     my $game_xt_id       = $annotated_game_data->[0];
     my $player_one_xt_id = $annotated_game_data->[1];
@@ -52,6 +55,7 @@ sub retrieve
     my $round            = $annotated_game_data->[6];
     my $lexicon          = $annotated_game_data->[7];
     my $upload_date      = $annotated_game_data->[8];
+    my $date             = $annotated_game_data->[10];
 
     if (!$lexicon)
     {
@@ -64,9 +68,6 @@ sub retrieve
       next;
     }
 
-    $name_id_hash{Utils::sanitize($player_one_name)} = $player_one_xt_id;
-    $name_id_hash{Utils::sanitize($player_two_name)} = $player_two_xt_id;
-
     $annotated_game_data->[9] = $lexicon_ref;
 
     my @players_to_update = ([$player_one_xt_id, $player_one_name], [$player_two_xt_id, $player_two_name]);
@@ -75,9 +76,14 @@ sub retrieve
     {
       my $id   = $item->[0];
       my $name = $item->[1];
+      if (!$name)
+      {
+	print "Name undefined: " . $annotated_game_data->[0] . "\n";
+      }
       if ($id && !$updated_players{$id})
       {
         $updated_players{$id} = 1;
+        $name_id_hash{Utils::sanitize($name)} = $id;
 	Utils::update_player_record($dbh, $id, $name, Utils::sanitize($name));
       }
     }

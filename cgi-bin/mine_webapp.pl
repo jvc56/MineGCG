@@ -45,11 +45,11 @@
   
   my $name = $query->param('name');
   my $cort = $query->param('cort');
-  my $tid  = $query->param('tid');
-  my $gid  = $query->param('gid');
-  my $opp  = $query->param('opp');
-  my $start = $query->param('start');
-  my $end  = $query->param('end');
+  my $tid  = $query->param('tournament-id');
+  my $gid  = $query->param('game-id');
+  my $opp  = $query->param('opponent');
+  my $start = $query->param('start-date');
+  my $end  = $query->param('end-date');
   my $lexicon  = $query->param('lexicon');
   
   my $name_arg = '--name "' . sanitize_name($name) . '"';
@@ -68,12 +68,12 @@
   
   if ($tid)
   {
-    $tid_arg = "--tid " . sanitize_number($tid);
+    $tid_arg = "--tournament-id " . sanitize_number($tid);
   }
   
   if ($gid)
   {
-    $gid_arg = "--game ". sanitize_number($gid);
+    $gid_arg = "--game-id ". sanitize_number($gid);
   }
   
   if ($opp)
@@ -83,12 +83,12 @@
   
   if ($start)
   {
-    $start_arg = "--startdate " . sanitize_number($start);
+    $start_arg = "--start-date " . sanitize_number($start);
   }
   
   if ($end)
   {
-    $end_arg = "--enddate " . sanitize_number($end);
+    $end_arg = "--end-date " . sanitize_number($end);
   }
   
   if ($lexicon)

@@ -14,6 +14,163 @@ use Constants;
 use Utils;
 use Stats;
 
+sub update_search_data
+{
+  my $dbh = Utils::connect_to_database();
+
+  my $button_id = 'query_form';
+  my $players_table = Constants::PLAYERS_TABLE_NAME;
+  my $games_table   = Constants::GAMES_TABLE_NAME;
+
+  my @inputs =
+  (
+    ['Player Name',   Constants::PLAYER_FIELD_NAME,        'required', Constants::PLAYER_NAME_COLUMN_NAME, $players_table],
+    ['Game Type',     Constants::CORT_FIELD_NAME,          '', ['', Constants::GAME_TYPE_TOURNAMENT, Constants::GAME_TYPE_CASUAL]],
+    ['Tournament ID', Constants::TOURNAMENT_ID_FIELD_NAME, '', Constants::GAME_CROSS_TABLES_TOURNAMENT_ID_COLUMN_NAME, $games_table],
+    ['Lexicon',       Constants::LEXICON_FIELD_NAME,       '', ['CSW19', 'NSW18', 'CSW15', 'TWL15', 'CSW12', 'CSW07', 'TWL06', 'TWL98']],
+    ['Game ID',       Constants::GAME_ID_FIELD_NAME,       '', Constants::GAME_CROSS_TABLES_ID_COLUMN_NAME, $games_table],
+    ['Opponent',      Constants::OPPONENT_FIELD_NAME,      '', Constants::PLAYER_NAME_COLUMN_NAME, $players_table],
+    ['Start Date',    Constants::START_DATE_FIELD_NAME,    '', Constants::GAME_DATE_COLUMN_NAME, $games_table],
+    ['End Date',      Constants::END_DATE_FIELD_NAME,      '', Constants::GAME_DATE_COLUMN_NAME, $games_table],
+  );
+
+  my $html = "";
+  foreach my $inp (@inputs)
+  {
+    my $title    = $inp->[0];
+    my $name     = $inp->[1];
+    my $required = $inp->[2];
+    my $field    = $inp->[3];
+    my $table    = $inp->[4];
+    
+    if ($table)
+    {
+      my $data = Utils::get_all_unique_values($dbh, $table, $field);
+    
+
+      $html .= make_datalist_input
+      (
+	$title,
+	$name,
+	$required,
+        $field,
+        $data,
+        $button_id
+      );
+    }
+    else
+    {
+      my $data = $field;
+      $html .= make_select_input($title, $name, $required, $data);
+    }
+  }
+
+  $html .= "<input type='submit' value='Submit' id='$button_id'>";
+  write_string_to_file($html, Constants::HTML_DIRECTORY_NAME . '/' . Constants::SEARCH_DATA_FILENAME);
+}
+
+sub make_select_input
+{
+  my $title    = shift;
+  my $name     = shift;
+  my $required = shift;
+  my $data     = shift;
+
+  my $options = "";
+
+  for (my $i = 0; $i < scalar @{$data}; $i++)
+  {
+    my $val = $data->[$i];
+    $options .= "<option value='$val'>$val</option>\n";
+  }
+  return "<tr><td>$title</td><td><select name='$name'>$options</select></td></tr>";
+}
+sub make_datalist_input
+{
+  my $title = shift;
+  my $name  = shift;
+  my $required = shift;
+  my $field = shift;
+  my $data  = shift;
+  my $button_id = shift;
+
+  my $input_id = $field . '_input';
+  my $html_id = $field . '_datalist';
+
+  my $escaped_char = "&quot;";
+
+  my $function = <<FUNCTION
+
+          var input = document.getElementById('$input_id');
+          var options = Array.from(document.getElementById('$html_id').options).map(function(el)
+          {
+            return el.value;
+          }); 
+          var relevantOptions = options.filter
+          (
+            function(option)
+            {
+              return option.toLowerCase().includes(input.value.toLowerCase());
+            }
+          );
+
+          if (relevantOptions.length == 1 && relevantOptions[0] === input.value)
+          {
+            var pname = document.getElementById('$input_id').value;
+            var pid   = document.querySelector('#$html_id option[value=$escaped_char'+pname+'$escaped_char]').dataset.value;
+
+            if (pid)
+            {
+              document.getElementById('$button_id').click();
+            }
+          }
+          else if (relevantOptions.length > 0)
+          {
+            input.value = relevantOptions.shift();
+          }
+          else
+          {
+            alert('Choose an option by typing in the box and selecting an option from the pop-up menu.');
+          }
+FUNCTION
+;
+
+  my $input_function = <<FUNCTION
+
+    onkeypress=
+    "
+      (function (event)
+      {
+        if (event.keyCode == 13)
+        {
+          $function
+        }
+      })(event)
+    "
+FUNCTION
+;
+
+  my $html =
+  "
+
+  <tr>
+  <td>$title</td>
+  <td>
+  <input $required  list='$html_id' id='$input_id' $input_function>
+    <datalist id='$html_id'>
+  ";
+
+  my @data_array = @{$data};
+
+  foreach my $item (@data_array)
+  {
+    $html .= "<option  value=\"$item\"></option>\n";
+  }
+
+  $html .= "    </datalist></td></tr>\n";
+  return $html
+}
+
 sub update_leaderboard
 {
   my $cutoff         = Constants::LEADERBOARD_CUTOFF;
@@ -283,7 +440,18 @@ sub update_remote_cgi
 
   $dirname =~ s/.*\///g;
 
-  my $target = $vm_username . "\\@" . $vm_ip_address;
+  my $target = $vm_username . '\@' . $vm_ip_address;
+
+
+  my $name  = Constants::PLAYER_FIELD_NAME         ;
+  my $cort  = Constants::CORT_FIELD_NAME           ;
+  my $gid   = Constants::GAME_ID_FIELD_NAME        ;
+  my $tid   = Constants::TOURNAMENT_ID_FIELD_NAME  ;
+  my $opp   = Constants::OPPONENT_FIELD_NAME       ;
+  my $start = Constants::START_DATE_FIELD_NAME     ;
+  my $end   = Constants::END_DATE_FIELD_NAME       ;
+  my $lex   = Constants::LEXICON_FIELD_NAME        ;
+  my $dir   = Constants::DIRECTORY_FIELD_NAME      ;
 
   my $cgi_script = <<SCRIPT
 #!/usr/bin/perl
@@ -331,16 +499,16 @@ sub update_remote_cgi
   
   my \$query = new CGI;
   
-  my \$name = \$query->param('name');
-  my \$cort = \$query->param('cort');
-  my \$tid  = \$query->param('tid');
-  my \$gid  = \$query->param('gid');
-  my \$opp  = \$query->param('opp');
-  my \$start = \$query->param('start');
-  my \$end  = \$query->param('end');
-  my \$lexicon  = \$query->param('lexicon');
+  my \$name = \$query->param('$name');
+  my \$cort = \$query->param('$cort');
+  my \$tid  = \$query->param('$tid');
+  my \$gid  = \$query->param('$gid');
+  my \$opp  = \$query->param('$opp');
+  my \$start = \$query->param('$start');
+  my \$end  = \$query->param('$end');
+  my \$lexicon  = \$query->param('$lex');
   
-  my \$name_arg = '--name "' . sanitize_name(\$name) . '"';
+  my \$name_arg = '--$name "' . sanitize_name(\$name) . '"';
   my \$cort_arg = "";
   my \$tid_arg = "";
   my \$gid_arg = "";
@@ -351,40 +519,40 @@ sub update_remote_cgi
   
   if (\$cort)
   {
-    \$cort_arg = "--cort ". sanitize_name(\$cort);
+    \$cort_arg = "--$cort ". sanitize_name(\$cort);
   }
   
   if (\$tid)
   {
-    \$tid_arg = "--tid " . sanitize_number(\$tid);
+    \$tid_arg = "--$tid " . sanitize_number(\$tid);
   }
   
   if (\$gid)
   {
-    \$gid_arg = "--game ". sanitize_number(\$gid);
+    \$gid_arg = "--$gid ". sanitize_number(\$gid);
   }
   
   if (\$opp)
   {
-    \$opp_arg = "--opponent " . sanitize_name(\$opp);
+    \$opp_arg = "--$opp " . sanitize_name(\$opp);
   }
   
   if (\$start)
   {
-    \$start_arg = "--startdate " . sanitize_number(\$start);
+    \$start_arg = "--$start " . sanitize_number(\$start);
   }
   
   if (\$end)
   {
-    \$end_arg = "--enddate " . sanitize_number(\$end);
+    \$end_arg = "--$end " . sanitize_number(\$end);
   }
   
   if (\$lexicon)
   {
-    \$lexicon_arg = "--lexicon " . sanitize_name(\$lexicon);
+    \$lexicon_arg = "--$lex " . sanitize_name(\$lexicon);
   }
   
-  my \$dir_arg = " --directory $dirname ";
+  my \$dir_arg = " --$dir $dirname ";
 
   my \$output = "";
   my \$cmd = "LANG=C ssh $vm_ssh_args -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $target /home/jvc/minegcg_wrapper.pl \$name_arg \$cort_arg \$tid_arg \$gid_arg \$opp_arg \$start_arg \$end_arg \$lexicon_arg \$dir_arg |";
