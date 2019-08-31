@@ -113,9 +113,8 @@ sub mine
 
   print_or_append( "\n  Game type:     ", $html, 0);
 
-  if (uc $cort eq 'C') {print_or_append( "CLUB OR CASUAL", $html, 0);}
-  elsif (uc $cort eq 'T') {print_or_append( "TOURNAMENT", $html, 0);}
-  else {print_or_append( "-", $html, 0);}
+  if (!$cort) {print_or_append( "-", $html, 0);}
+  else {print_or_append($cort, $html, 0);}
 
   print_or_append( "\n  Lexicon:       ", $html, 0);
 
@@ -261,11 +260,11 @@ sub mine
   {
     $games_query .= " AND g.$game_lexicon_column_name = '$lexicon'";
   }
-  if ($cort eq 'T')
+  if ($cort eq Constants::TOURNAMENT_OPTION)
   {
     $games_query .= " AND g.$game_cross_tables_tournament_id_column_name > 0";
   }
-  elsif ($cort eq 'C')
+  elsif ($cort eq Constants::CASUAL_OPTION)
   {
     $games_query .= " AND g.$game_cross_tables_tournament_id_column_name = 0";
   }
@@ -293,13 +292,13 @@ sub mine
 
     if ($error)
     {
-      print_or_append( "\nERROR:  $error", $html, 1, $game_opp_name, $game_id);
+      print_or_append( "\n$error", $html, 1);
       $num_errors++;
       next;
     }
     elsif ($warning)
     {
-      print_or_append( "\n$warning", $html, 0, $game_opp_name, $game_id);
+      print_or_append( "\n$warning", $html, 0);
       $num_warnings++;
     }
 
@@ -373,17 +372,9 @@ sub print_or_append
   my $addition    = shift;
   my $html        = shift;
   my $error       = shift;
-  my $opp         = shift;
-  my $id          = shift;
 
   if ($html)
   {
-    if ($opp)
-    {
-      my $url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
-      my $link = "<a href='$url$id' target='_blank'>against $opp</a>";
-      $addition =~ s/\.\/.*\/\d+\.html/$link/g;
-    }
     $html_string .= $addition;
   }
   else

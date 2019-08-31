@@ -28,7 +28,6 @@ print $log "\n\n$count names tested\n\n";
 
 foreach my $name (@names)
 {
-  print $log "\n\n$name\n\n";
   system "./scripts/main.pl --name '$name' --html --statsdump >/dev/null 2>> $log_name";
 }
 

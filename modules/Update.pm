@@ -14,6 +14,15 @@ use Constants;
 use Utils;
 use Stats;
 
+unless (caller)
+{
+  my $validation = update_search_data();
+  update_leaderboard();
+  update_notable();
+  update_remote_cgi();
+  update_html($validation);
+}
+
 sub update_search_data
 {
   my $dbh = Utils::connect_to_database();
@@ -27,7 +36,7 @@ sub update_search_data
     ['Player Name',   Constants::PLAYER_FIELD_NAME,        'required', Constants::PLAYER_NAME_COLUMN_NAME, $players_table],
     ['Game Type',     Constants::CORT_FIELD_NAME,          '', ['', Constants::GAME_TYPE_TOURNAMENT, Constants::GAME_TYPE_CASUAL]],
     ['Tournament ID', Constants::TOURNAMENT_ID_FIELD_NAME, '', Constants::GAME_CROSS_TABLES_TOURNAMENT_ID_COLUMN_NAME, $games_table],
-    ['Lexicon',       Constants::LEXICON_FIELD_NAME,       '', ['CSW19', 'NSW18', 'CSW15', 'TWL15', 'CSW12', 'CSW07', 'TWL06', 'TWL98']],
+    ['Lexicon',       Constants::LEXICON_FIELD_NAME,       '', ['', 'CSW19', 'NSW18', 'CSW15', 'TWL15', 'CSW12', 'CSW07', 'TWL06', 'TWL98']],
     ['Game ID',       Constants::GAME_ID_FIELD_NAME,       '', Constants::GAME_CROSS_TABLES_ID_COLUMN_NAME, $games_table],
     ['Opponent',      Constants::OPPONENT_FIELD_NAME,      '', Constants::PLAYER_NAME_COLUMN_NAME, $players_table],
     ['Start Date',    Constants::START_DATE_FIELD_NAME,    '', Constants::GAME_DATE_COLUMN_NAME, $games_table],
@@ -35,6 +44,7 @@ sub update_search_data
   );
 
   my $html = "";
+  my $validate = "var input; var options; var relevantOptions;\n";
   foreach my $inp (@inputs)
   {
     my $title    = $inp->[0];
@@ -42,12 +52,13 @@ sub update_search_data
     my $required = $inp->[2];
     my $field    = $inp->[3];
     my $table    = $inp->[4];
-    
+   
+    my $input_id = $name . '_input';
+    my $html_id  = $name . '_html';
+
     if ($table)
     {
       my $data = Utils::get_all_unique_values($dbh, $table, $field);
-    
-
       $html .= make_datalist_input
       (
 	$title,
@@ -55,7 +66,16 @@ sub update_search_data
 	$required,
         $field,
         $data,
-        $button_id
+        $button_id,
+	$input_id,
+	$html_id
+      );
+      $validate .= add_input_validation
+      (
+        $title,
+        $field,
+	$input_id,
+	$html_id
       );
     }
     else
@@ -66,7 +86,8 @@ sub update_search_data
   }
 
   $html .= "<input type='submit' value='Submit' id='$button_id'>";
-  write_string_to_file($html, Constants::HTML_DIRECTORY_NAME . '/' . Constants::SEARCH_DATA_FILENAME);
+  Utils::write_string_to_file($html, Constants::HTML_DIRECTORY_NAME . '/' . Constants::SEARCH_DATA_FILENAME);
+  return $validate;
 }
 
 sub make_select_input
@@ -83,19 +104,53 @@ sub make_select_input
     my $val = $data->[$i];
     $options .= "<option value='$val'>$val</option>\n";
   }
-  return "<tr><td>$title</td><td><select name='$name'>$options</select></td></tr>";
+  return "<tr><td>$title</td><td><select name='$name' class='minegcgforminput'>$options</select></td></tr>";
 }
+
+sub add_input_validation
+{
+  my $title    = shift;
+  my $field    = shift;
+  my $input_id = shift;
+  my $html_id  = shift;
+
+
+  my $function = <<FUNCTION
+
+          input = document.getElementById('$input_id');
+          options = Array.from(document.getElementById('$html_id').options).map(function(el)
+          {
+            return el.value;
+          }); 
+          relevantOptions = options.filter
+          (
+            function(option)
+            {
+              return option.toLowerCase().includes(input.value.toLowerCase());
+            }
+          );
+          if (input.value != "" && input.value != relevantOptions[0])
+          {
+            alert('Invalid value for $title. Choose an option by typing in the box and selecting an option from the dropdown menu.');
+	    return false;
+          }
+
+FUNCTION
+;
+  return $function;
+
+}
+
 sub make_datalist_input
 {
-  my $title = shift;
-  my $name  = shift;
-  my $required = shift;
-  my $field = shift;
-  my $data  = shift;
+  my $title     = shift;
+  my $name      = shift;
+  my $required  = shift;
+  my $field     = shift;
+  my $data      = shift;
   my $button_id = shift;
-
-  my $input_id = $field . '_input';
-  my $html_id = $field . '_datalist';
+  my $input_id  = shift;
+  my $html_id   = shift;
 
   my $escaped_char = "&quot;";
 
@@ -113,24 +168,15 @@ sub make_datalist_input
               return option.toLowerCase().includes(input.value.toLowerCase());
             }
           );
-
-          if (relevantOptions.length == 1 && relevantOptions[0] === input.value)
-          {
-            var pname = document.getElementById('$input_id').value;
-            var pid   = document.querySelector('#$html_id option[value=$escaped_char'+pname+'$escaped_char]').dataset.value;
-
-            if (pid)
-            {
-              document.getElementById('$button_id').click();
-            }
-          }
-          else if (relevantOptions.length > 0)
+          if (relevantOptions.length > 0 && input.value != relevantOptions[0])
           {
             input.value = relevantOptions.shift();
+	    event.preventDefault();
           }
-          else
+          else if (relevantOptions.length == 0)
           {
-            alert('Choose an option by typing in the box and selecting an option from the pop-up menu.');
+            alert('Choose an option by typing in the box and selecting an option from the dropdown menu.');
+	    event.preventDefault();
           }
 FUNCTION
 ;
@@ -156,7 +202,7 @@ FUNCTION
   <tr>
   <td>$title</td>
   <td>
-  <input $required  list='$html_id' id='$input_id' $input_function>
+  <input $required name='$name'  class='minegcgforminput' list='$html_id' id='$input_id' $input_function>
     <datalist id='$html_id'>
   ";
 
@@ -195,8 +241,6 @@ sub update_leaderboard
 
   my @player_data = @{$dbh->selectall_arrayref("SELECT * FROM $playerstable WHERE $total_games_name >= $min_games", {Slice => {}, "RaiseError" => 1})};
 
-  my $total_players = 0;
-
   foreach my $player_item (@player_data)
   {
     my $total_games  = $player_item->{Constants::PLAYER_TOTAL_GAMES_COLUMN_NAME};
@@ -204,7 +248,7 @@ sub update_leaderboard
     {
       next;
     }
-    $total_players++;
+
     my $name         = $player_item->{Constants::PLAYER_NAME_COLUMN_NAME};
     my $player_stats = Stats->new(1, $player_item->{Constants::PLAYER_STATS_COLUMN_NAME});
     my $player_stats_data = $player_stats->{Constants::STATS_DATA_KEY_NAME};
@@ -251,19 +295,19 @@ sub update_leaderboard
   {
     my $name = $name_order[$i];
     my @array = @{$leaderboards{$name}};
-
+    my $array_length = scalar @array;
     my $sum = 0;
 
-    for (my $j = 0; $j < $total_players; $j++)
+    for (my $j = 0; $j < $array_length; $j++)
     {
       $sum += $array[$j][0];
     }
 
-    $sum = sprintf "%.4f", $sum / $total_players;
+    $sum = sprintf "%.4f", $sum / $array_length;
 
     $table_of_contents .= "<a href='#$name'>$name</a>\n";
 
-    $leaderboard_string .= "<h2><a id='$name'></a>AVERAGE $name: $sum</h2>";
+    $leaderboard_string .= "<h2><a id='$name'></a>Average $name: $sum</h2>";
 
     for (my $j = 0; $j < 2; $j++)
     {
@@ -272,12 +316,12 @@ sub update_leaderboard
       if ($j == 0)
       {
         @ranked_array = sort { $b->[0] <=> $a->[0] } @array;
-        $title = "<h3>MOST $name</h3>";
+        $title = "<h3>Most $name</h3>";
       }
       else
       {
         @ranked_array = sort { $a->[0] <=> $b->[0] } @array;
-        $title = "\n\n<h3>LEAST $name</h3>";
+        $title = "\n\n<h3>Least $name</h3>";
       }
       my $all_zeros = 1;
       for (my $k = 0; $k < $cutoff; $k++)
@@ -299,7 +343,7 @@ sub update_leaderboard
 
       $title = $1;
 
-      for (my $k = 0; $k < $total_players; $k++)
+      for (my $k = 0; $k < $array_length; $k++)
       {
         my $name = $ranked_array[$k][1];
         my $name_with_underscores = Utils::sanitize($name);
@@ -578,19 +622,32 @@ SCRIPT
 
 sub update_html
 {
+  my $validation = shift;
 
   my $cgibin_name = Constants::CGIBIN_DIRECTORY_NAME;
   $cgibin_name = substr $cgibin_name, 2;
   $cgibin_name = Utils::get_environment_name($cgibin_name);
 
+  my $name_option = Constants::PLAYER_FIELD_NAME         ;
+  my $cort_option = Constants::CORT_FIELD_NAME           ;
+  my $gid_option = Constants::GAME_ID_FIELD_NAME        ;
+  my $tid_option = Constants::TOURNAMENT_ID_FIELD_NAME  ;
+  my $opp_option = Constants::OPPONENT_FIELD_NAME       ;
+  my $start_option = Constants::START_DATE_FIELD_NAME     ;
+  my $end_option = Constants::END_DATE_FIELD_NAME       ;
+  my $lex_option = Constants::LEXICON_FIELD_NAME        ;
+
+  my $search_data_id = Constants::SEARCH_DATA_FILENAME;
+  my $search_data_html = $search_data_id;
+
+  $search_data_id =~ s/\..*//g;
   my $index_html = <<HTML
 
 <script>
 
 function nocacheresult()
 {
-
-  // var debug = document.getElementById("debug");
+  $validation
 
   var inputs = document.getElementsByTagName("input");
   for (i = 0; i < inputs.length; i++)
@@ -637,6 +694,16 @@ function nocacheresult()
 <link rel=icon href=/favicon.png>
 <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
 <link href="https://fonts.googleapis.com/css?family=Francois+One|Iceland|Monofett|Orbitron|Press+Start+2P|Source+Code+Pro|VT323" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+
+<script>
+\$(function(){
+  \$("#$search_data_id").load("$search_data_html");
+});
+</script>
+
+
+
 </head>
 <body id="body">
 
@@ -678,71 +745,7 @@ function nocacheresult()
 <form action="$cgibin_name/mine_webapp.pl" target="_blank" method="get" onsubmit="return nocacheresult()">
 
   <table class="minegcgforminput">
-  <tbody>
-
-  <tr>
-    <td>Player Name (required):</td>
-    <td><input type="text" name="name" class="minegcgforminput" required></td>
-  </tr>
-
-  <tr>
-   <td>Game Type (optional):</td>
-   <td>
-
-
-      <select name="cort" class="minegcgforminput">
-      <option value=""></option>
-      <option value="t">Tournament</option>
-      <option value="c">Casual</option>
-      </select>
-
-   </td>
-  </tr>
-
-  <tr>
-          <td>Tournament ID (optional):</td>
-          <td><input type="number" name="tid" class="minegcgforminput"></td>
-  </tr>
-
-  <tr>
-    <td>Lexicon (optional):</td>
-    <td>
-      <select name="lexicon" class="minegcgforminput">
-      <option value=""></option>
-      <option value="CSW19">CSW19</option>
-      <option value="CSW15">CSW15</option>
-      <option value="CSW15">NSW18</option>
-      <option value="TWL15">TWL15</option>
-      <option value="CSW12">CSW12</option>
-      <option value="TWL06">TWL06</option>
-      <option value="CSW07">CSW07</option>
-      <option value="TWL98">TWL98</option>
-      </select>
-    </td>
-  </tr>
-  <tr>
-    <td>Game ID (optional):</td>
-    <td><input type="number" name="gid" class="minegcgforminput"></td>
-  </tr>
-
-
-  <tr>
-    <td>Opponent (optional):</td>
-    <td><input type="text" name="opp" class="minegcgforminput"></td>
-  </tr>
-
-
-  <tr>
-    <td>Start Date (optional YYYY-MM-DD):</td>
-    <td><input type="text" name="start" class="minegcgforminput"></td>
-  </tr>
-
-
-  <tr>
-    <td>End Date (optional YYYY-MM-DD):</td>
-    <td><input type="text" name="end" class="minegcgforminput"></td>
-  </tr>
-
+  <tbody id="$search_data_id">
 
   </tbody>
   </table>
@@ -816,7 +819,7 @@ sub add_stat
   my $is_int       = shift;
   my $name_order   = shift;
   
-  if ($display_name ne Constants::STAT_OBJECT_DISPLAY_TOTAL && $display_name ne Constants::STAT_OBJECT_DISPLAY_PCAVG)
+  if (!$display_name)
   {
     $statvalue /= $total_games
   }

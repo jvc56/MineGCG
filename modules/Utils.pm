@@ -25,6 +25,27 @@ use American;
 use NSW18;
 use JSON;
 
+sub format_game_error
+{
+  my $msg         = shift;
+  my $id          = shift;
+  my $line_number = shift;
+  my $line        = shift;
+
+  my $url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX . $id;
+
+  my $link = "<a href='$url'>$id</a>";
+
+  my $spacing   = 12;
+  my $error_msg = "";
+
+  $error_msg .= (sprintf "%-$spacing".'s' , "ERROR:")             . $msg   . "\n";
+  $error_msg .= (sprintf "%-$spacing".'s' , "GAME:")              . $link  . "\n";
+  $error_msg .= (sprintf "%-$spacing".'s' , "LINE $line_number:") . $line  . "\n";
+
+  return $error_msg;
+}
+
 sub write_string_to_file
 {
   my $string   = shift;
@@ -41,7 +62,7 @@ sub get_all_unique_values
   my $table = shift;
   my $field = shift; 
 
-  my @unique_fields = @{$dbh->select_arrayref("SELECT DISTINCT $field FROM $table", {"RaiseError" => 1})};
+  my @unique_fields = @{$dbh->selectall_arrayref("SELECT DISTINCT $field FROM $table WHERE $field IS NOT NULL", {"RaiseError" => 1})};
 
   @unique_fields = map {$_->[0]} @unique_fields;
 
@@ -101,14 +122,38 @@ sub get_all_annotated_game_info
   while (<ANNOS>)
   {
     chomp $_;
-    if (/([^,]*),([^,]*),([^,]*),"([^"]*)","([^"]*)",([^,]*),([^,]*),([^,]*),([^,]*)/)
+    my @data = split /,/, $_;
+    if (scalar @data > 9)
     {
-      push @annos, [$1, $2, $3, $4, $5, $6, $7, $8, $9];
+      my $crap_data = $_;
+      @data = ();
+      my $item;
+      while ($crap_data)
+      {
+        if (substr($crap_data, 0, 1) eq '"')
+	{
+	  $crap_data =~ /^"(.*?)",?/;
+	  $item = $1;
+          $crap_data =~ s/^"(.*?)",?//;
+        }
+	else
+	{
+	  $crap_data =~ /^([^,]*),?/;
+	  $item = $1;
+	  $crap_data =~ s/^([^,]*),?//;
+	}
+	if (! defined $item)
+	{
+	  die "Uncaptured crap: $_\nRemaining:'$crap_data'\n";
+	}
+	push @data, $item;
+      }
+      if (scalar @data != 9)
+      {
+        die "Too many elements: $_\n" . Dumper(\@data);
+      }
     }
-    else
-    {
-      die "Uncaptured Line: $_\n";
-    }
+    push @annos, \@data;
   }
   return @annos;
 }
@@ -654,7 +699,7 @@ sub get_tournament_date
       return $date;
     }
   }
-  die "Date not found in $filename\n";
+  die "Date not found in $filename for id : $id\n";
 }
 
 sub get_real_player_name

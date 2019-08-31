@@ -3,16 +3,11 @@
 use warnings;
 use strict;
 
-use constant FULLPATH => "/home/jvc/MineGCGDEV";
-
-use lib FULLPATH . "/objects";
-use lib FULLPATH . "/modules";
-use lib FULLPATH . "/lexicons";
+use lib './objects';
+use lib './modules';
 
 use Constants;
 use Update;
-
-chdir(FULLPATH);
 
 my $rr_host         = Constants::RR_IP_ADDRESS;
 my $rr_username     = Constants::RR_USERNAME;
@@ -25,10 +20,7 @@ my @jobs =
   "Check",       "./meta/maintenance/check_data.pl      > ./logs/check_data.log 2>&1"  ,
   "Test",        "./meta/maintenance/mine_games_test.pl                             "  ,
   "Access",      "./meta/maintenance/get_access_log.pl  > /dev/null 2>&1            "  ,
-  "Notable",     "",
-  "Leaderboard", "",
-  "CGI",        "",
-  "HTML",       "",
+  "Update",      "./modules/Update.pm > /dev/null 2>&1",
   "Copy",        "./meta/maintenance/copy_to_remote.pl                              " 
 );
 
@@ -44,29 +36,7 @@ while (@jobs)
   my $cmd  = shift @jobs;
   printf "%s %s\n", $name, $cmd;
   my $start_time = time;
-  if (!$cmd)
-  {
-    if ($name eq "Notable")
-    {
-      Update::update_notable();
-    }
-    elsif ($name eq "Leaderboard")
-    {
-      Update::update_leaderboard();
-    }
-    elsif ($name eq "CGI")
-    {
-      Update::update_remote_cgi();
-    }
-    elsif ($name eq "HTML")
-    {
-      Update::update_html();
-    }
-  } 
-  else
-  {
-    system $cmd;
-  }
+  system $cmd;
   my $end_time = time;
   print $full_test_log sprintf "%-15s  %s", $name . ":",  format_time($start_time, $end_time);
 }

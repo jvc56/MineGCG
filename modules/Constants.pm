@@ -50,6 +50,9 @@ use constant BLACKLISTED_TOURNAMENTS          => {
                                                     '9194' => 1 # Can-Am Match 08/29/15
                                                  };
 
+use constant TOURNAMENT_OPTION                => 'Tournament';
+use constant CASUAL_OPTION                    => 'Casual';
+
 use constant ANNOTATED_GAMES_API_CALL         => 'http://cross-tables.com/rest/allanno.php';
 use constant PLAYER_INFO_API_CALL             => 'http://cross-tables.com/rest/player.php?player=';
 use constant TOURNAMENT_INFO_API_CALL         => 'http://cross-tables.com/rest/tourney.php?tourney=';
