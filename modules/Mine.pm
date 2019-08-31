@@ -15,18 +15,7 @@ use Constants;
 use Stats;
 use Utils;
 use NameConversion;
-
-use CSW07;
-use CSW12;
-use CSW15;
-use CSW19;
-use TWL98;
-use TWL06;
-use American;
-use NSW18;
-
-
-use JSON;
+use JSON::XS;
 
 my $html_string = "";
 

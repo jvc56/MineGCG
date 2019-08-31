@@ -13,7 +13,7 @@ use lib './modules';
 
 use Constants;
 use Utils;
-use JSON;
+use JSON::XS;
 
 sub new
 {

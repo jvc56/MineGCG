@@ -21,9 +21,9 @@ use CSW15;
 use CSW19;
 use TWL98;
 use TWL06;
-use American;
+use TWL15;
 use NSW18;
-use JSON;
+use JSON::XS;
 
 sub format_game_error
 {
@@ -752,7 +752,7 @@ sub get_lexicon_ref
   }
   elsif ($lexicon eq 'TWL15')
   {
-    $lexicon_ref = American::AMERICAN_LEXICON;
+    $lexicon_ref = TWL15::TWL15_LEXICON;
   }
   elsif ($lexicon eq 'NSW18')
   {

@@ -1,11 +1,11 @@
 #!/usr/bin/perl
 
-package American;
+package TWL15;
 
 use warnings;
 use strict;
 
-use constant AMERICAN_LEXICON =>
+use constant TWL15_LEXICON =>
 {
 'AA' => 41,
 'AAH' => 642,

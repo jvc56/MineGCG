@@ -6,15 +6,10 @@ use warnings;
 use strict;
 use Data::Dumper;
 
-use lib './objects';
 use lib './modules';
 use Constants;
-use Game;
-use Stats;
 use Utils;
 use Update;
-
-use JSON;
 
 unless (caller)
 {
@@ -78,13 +73,13 @@ sub retrieve
       my $name = $item->[1];
       if (!$name)
       {
-	print "Name undefined: " . $annotated_game_data->[0] . "\n";
+        print "Name undefined: " . $annotated_game_data->[0] . "\n";
       }
       if ($id && !$updated_players{$id})
       {
         $updated_players{$id} = 1;
         $name_id_hash{Utils::sanitize($name)} = $id;
-	Utils::update_player_record($dbh, $id, $name, Utils::sanitize($name));
+        Utils::update_player_record($dbh, $id, $name, Utils::sanitize($name));
       }
     }
 
