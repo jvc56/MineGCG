@@ -244,11 +244,6 @@ sub update_leaderboard
   foreach my $player_item (@player_data)
   {
     my $total_games  = $player_item->{Constants::PLAYER_TOTAL_GAMES_COLUMN_NAME};
-    if (!$total_games || $total_games < $min_games)
-    {
-      next;
-    }
-
     my $name         = $player_item->{Constants::PLAYER_NAME_COLUMN_NAME};
     my $player_stats = Stats->new(1, $player_item->{Constants::PLAYER_STATS_COLUMN_NAME});
     my $player_stats_data = $player_stats->{Constants::STATS_DATA_KEY_NAME};

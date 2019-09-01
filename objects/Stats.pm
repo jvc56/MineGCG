@@ -24,7 +24,7 @@ sub new
 
   if ($json)
   {
-    my $stats = decode_json($json);
+    my $stats = JSON::XS::decode_json($json);
     $stats->{'player_is_first'} = $player_is_first;
     my $self = bless $stats, $this;
     return $self;
@@ -136,7 +136,7 @@ sub addStat
            $this_stat->{Constants::STAT_METATYPE_NAME} ne $other_stat->{Constants::STAT_METATYPE_NAME}
          )
       {
-        my $die_statement  = Utils::format_error("Stats do not match!", $this_stat, $other_stat);
+        my $die_statement  = Utils::format_error("Stats do not match!", $this, $other_stat_object);
         die $die_statement;
       }
       my $this_object  = $this_stat->{Constants::STAT_ITEM_OBJECT_NAME};

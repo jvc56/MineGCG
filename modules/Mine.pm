@@ -300,7 +300,7 @@ sub mine
 
   if ($statsdump && $at_least_one)
   {
-    my $dump = encode_json(Utils::prepare_stats($all_stats));
+    my $dump = JSON::XS::encode_json(Utils::prepare_stats($all_stats));
     Utils::update_player_record($dbh, 0, 0, $player_name, $dump, $num_games);
   }
 

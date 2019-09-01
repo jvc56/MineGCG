@@ -15,6 +15,7 @@ use lib "./lexicons";
 use lib "./modules";
 
 use Constants;
+use Game;
 use CSW07;
 use CSW12;
 use CSW15;
@@ -601,7 +602,7 @@ sub update_stats
     Constants::GAME_PLAYER_TWO_NAME_COLUMN_NAME             => $player_two_name,
     Constants::GAME_CROSS_TABLES_ID_COLUMN_NAME             => $game_xt_id,
     Constants::GAME_GCG_COLUMN_NAME                         => $game_result->{Constants::GAME_GCG_COLUMN_NAME},
-    Constants::GAME_STATS_COLUMN_NAME                       => encode_json($unblessed_stat),
+    Constants::GAME_STATS_COLUMN_NAME                       => JSON::XS::encode_json($unblessed_stat),
     Constants::GAME_CROSS_TABLES_TOURNAMENT_ID_COLUMN_NAME  => $tournament_xt_id,
     Constants::GAME_DATE_COLUMN_NAME                        => $date,
     Constants::GAME_LEXICON_COLUMN_NAME                     => $lexicon,
