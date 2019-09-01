@@ -11,6 +11,15 @@ use Constants;
 use Utils;
 use Update;
 
+use CSW07;
+use CSW12;
+use CSW15;
+use CSW19;
+use TWL98;
+use TWL06;
+use TWL15;
+use NSW18;
+
 unless (caller)
 {
   retrieve(Constants::UPDATE_OPTION_STATS);
@@ -21,6 +30,8 @@ sub retrieve
   # Constants
   my $downloads_dir              = Constants::DOWNLOADS_DIRECTORY_NAME;
   my $cache_dir                  = Constants::CACHE_DIRECTORY_NAME;
+
+  system "mkdir -p $downloads_dir";
 
   my $update            = shift;
 
@@ -56,7 +67,7 @@ sub retrieve
     {
       next;
     }
-    my $lexicon_ref = Utils::get_lexicon_ref(uc($lexicon));
+    my $lexicon_ref = get_lexicon_ref(uc($lexicon));
 
     if (!$lexicon_ref)
     {
@@ -93,6 +104,46 @@ sub retrieve
   print "\n\n$games_to_update games detected in API call\n";
   print "$games_updated new games retrieved\n";
   Update::update_name_id_hash(\%name_id_hash);
+}
+
+sub get_lexicon_ref
+{
+  my $lexicon = shift;
+  my $lexicon_ref = undef;
+
+  if ($lexicon eq 'TWL98')
+  {
+    $lexicon_ref = TWL98::TWL98_LEXICON;
+  }
+  elsif ($lexicon eq 'TWL06')
+  {
+    $lexicon_ref = TWL06::TWL06_LEXICON;
+  }
+  elsif ($lexicon eq 'TWL15')
+  {
+    $lexicon_ref = TWL15::TWL15_LEXICON;
+  }
+  elsif ($lexicon eq 'NSW18')
+  {
+    $lexicon_ref = NSW18::NSW18_LEXICON;
+  }
+  elsif ($lexicon eq 'CSW07')
+  {
+    $lexicon_ref = CSW07::CSW07_LEXICON;
+  }
+  elsif ($lexicon eq 'CSW12')
+  {
+    $lexicon_ref = CSW12::CSW12_LEXICON;
+  }
+  elsif ($lexicon eq 'CSW15')
+  {
+    $lexicon_ref = CSW15::CSW15_LEXICON;
+  }
+  elsif ($lexicon eq 'CSW19')
+  {
+    $lexicon_ref = CSW19::CSW19_LEXICON;
+  }
+  return $lexicon_ref;
 }
 
 1;

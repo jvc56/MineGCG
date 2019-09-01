@@ -7,8 +7,6 @@ use strict;
 use Data::Dumper;
 use List::Util qw(sum min max);
 use lib './objects';
-use lib './modules';
-use Utils;
 use Board;
 use Move;
 use Tile;
@@ -75,7 +73,7 @@ sub new
 
       if ($player_one_name eq $player_two_name)
       {
-	return Utils::format_game_error("both players have the same name",$filename, $line_number, $line);
+	return format_game_error("both players have the same name",$filename, $line_number, $line);
       }
 
       next;
@@ -171,7 +169,7 @@ sub new
     }
     else
     {
-      return Utils::format_game_error("move made by unknown player",$filename, $line_number, $line);
+      return format_game_error("move made by unknown player",$filename, $line_number, $line);
     }
 
     # An outplay
@@ -184,7 +182,7 @@ sub new
 
       if (!(@moves))
       {
-        return Utils::format_game_error("outplay detected as the first move", $filename, $line_number, $line);
+        return format_game_error("outplay detected as the first move", $filename, $line_number, $line);
       }
       if ($player_turn)
       {
@@ -260,7 +258,7 @@ sub new
       {
         if (scalar @moves < 6)
         {
-          return Utils::format_game_error("six pass detected with less than six moves", $filename, $line_number, $line);
+          return format_game_error("six pass detected with less than six moves", $filename, $line_number, $line);
         }
         my $rack_value = 0;
         my @rack_array = split //, $moves[-2]->{'rack'};
@@ -292,7 +290,7 @@ sub new
         }
         if (!(@moves))
         {
-          return Utils::format_game_error("outplay detected as the first move", $filename, $line_number, $line);
+          return format_game_error("outplay detected as the first move", $filename, $line_number, $line);
         }
         if ($player_turn)
         {
@@ -317,7 +315,7 @@ sub new
       }
       else
       {
-        return Utils::format_game_error("no valid 5 item sequence found", $filename, $line_number, $line)
+        return format_game_error("no valid 5 item sequence found", $filename, $line_number, $line)
       }
     }
     # A play
@@ -342,7 +340,7 @@ sub new
       my $row_number;
       if (!$loc)
       {
-        return Utils::format_game_error("play location undefined", $filename, $line_number, $line)
+        return format_game_error("play location undefined", $filename, $line_number, $line)
       }
       my @loc_array = split //, $loc;
       $play_type = Constants::PLAY_TYPE_WORD;
@@ -360,7 +358,7 @@ sub new
       }
       if (!($row_number =~ /^\d+$/))
       {
-        return Utils::format_game_error("invalid row number: $row_number", $filename, $line_number, $line);
+        return format_game_error("invalid row number: $row_number", $filename, $line_number, $line);
       }
       my $column_index_mapping_ref = Constants::COLUMN_INDEX_MAPPING;
       $zero_index_row = $row_number - 1;
@@ -368,7 +366,7 @@ sub new
     }
     else
     {
-      return Utils::format_game_error("invalid number of items detected: $num_items", $filename, $line_number, $line);
+      return format_game_error("invalid number of items detected: $num_items", $filename, $line_number, $line);
     }
 
     # Update total score
@@ -406,7 +404,7 @@ sub new
   
   if ($line =~ /^#rack/)
   {
-    return Utils::format_game_error("game is incomplete", $filename, $line_number, $line);
+    return format_game_error("game is incomplete", $filename, $line_number, $line);
   }
 
   my $board = Board->new();
@@ -416,12 +414,12 @@ sub new
     my $board_error = $board->addMoves(\@moves);
     if ($board_error)
     {
-      return Utils::format_game_error("board error: $board_error", $filename, $line_number, $line);
+      return format_game_error("board error: $board_error", $filename, $line_number, $line);
     }
   }
   else
   {
-    return Utils::format_game_error("no moves found", $filename, 0, "");
+    return format_game_error("no moves found", $filename, 0, "");
   }
 
   my $tiles_played =
@@ -1682,6 +1680,27 @@ sub toString
   $s .=  "\n\n".$this->{'board'}->toString();
   $s .= "\n";
   return $s;
+}
+
+sub format_game_error
+{
+  my $msg         = shift;
+  my $id          = shift;
+  my $line_number = shift;
+  my $line        = shift;
+
+  my $url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX . $id;
+
+  my $link = "<a href='$url'>$id</a>";
+
+  my $spacing   = 12;
+  my $error_msg = "";
+
+  $error_msg .= (sprintf "%-$spacing".'s' , "ERROR:")             . $msg   . "\n";
+  $error_msg .= (sprintf "%-$spacing".'s' , "GAME:")              . $link  . "\n";
+  $error_msg .= (sprintf "%-$spacing".'s' , "LINE $line_number:") . $line  . "\n";
+
+  return $error_msg;
 }
 
 1;

@@ -16,36 +16,7 @@ use lib "./modules";
 
 use Constants;
 use Game;
-use CSW07;
-use CSW12;
-use CSW15;
-use CSW19;
-use TWL98;
-use TWL06;
-use TWL15;
-use NSW18;
 use JSON::XS;
-
-sub format_game_error
-{
-  my $msg         = shift;
-  my $id          = shift;
-  my $line_number = shift;
-  my $line        = shift;
-
-  my $url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX . $id;
-
-  my $link = "<a href='$url'>$id</a>";
-
-  my $spacing   = 12;
-  my $error_msg = "";
-
-  $error_msg .= (sprintf "%-$spacing".'s' , "ERROR:")             . $msg   . "\n";
-  $error_msg .= (sprintf "%-$spacing".'s' , "GAME:")              . $link  . "\n";
-  $error_msg .= (sprintf "%-$spacing".'s' , "LINE $line_number:") . $line  . "\n";
-
-  return $error_msg;
-}
 
 sub write_string_to_file
 {
@@ -437,81 +408,6 @@ sub insert_or_set_hash_into_table
 
 }
 
-sub is_valid_game
-{
-  my $blacklisted_tournaments = Constants::BLACKLISTED_TOURNAMENTS;
-
-  my $player_name       = shift;
-  my $tourney_id        = shift;
-  my $tourney_or_casual = shift;
-  my $single_game_id    = shift;
-  my $opponent_name     = shift;
-  my $startdate         = shift;
-  my $enddate           = shift;
-  my $lexicon           = shift;
-  my $verbose           = shift;
-  my $num_str           = shift;
-  my $id                = shift;
-  my $annotated_game_data = shift;
-
-  my $game_opponent          = $annotated_game_data->[1];
-  my $game_tournament_id     = $annotated_game_data->[2];
-  my $game_date              = $annotated_game_data->[4];
-  my $game_round_number      = $annotated_game_data->[5];
-  my $game_lexicon           = $annotated_game_data->[6];
-
-  if ($tourney_id && $tourney_id ne $game_tournament_id)
-  {
-    if ($verbose) {print "$num_str Game with ID $id was not played in the specified tournament\n";}
-    return;
-  }
-  if ($single_game_id && $single_game_id ne $id)
-  {
-    if ($verbose) {print "$num_str Game with ID $id is not the specified game\n";}
-    return;
-  }
-  if (!$game_tournament_id && uc $tourney_or_casual eq 'T')
-  {
-    if ($verbose) {print "$num_str Game with ID $id is not a tournament game\n";}
-    return;
-  }
-  if ($game_tournament_id && uc $tourney_or_casual eq 'C')
-  {
-    if ($verbose) {print "$num_str Game with ID $id is a tournament game\n";}
-    return;
-  }
-  if ($opponent_name && $game_opponent ne $opponent_name)
-  {
-    if ($verbose) {print "$num_str Game with ID $id is not against the specified opponent\n";}
-    return;
-  }
-  if (($startdate && $game_date < $startdate) || ($enddate && $game_date > $enddate))
-  {
-    if ($verbose) {print "$num_str Game with ID $id is not in the specified timeframe\n";}
-    return;  
-  }
-  if ($lexicon && $game_lexicon ne $lexicon)
-  {
-    if ($verbose) {print "$num_str Game with ID $id is not in the specified lexicon\n";}
-    return;  
-  }
-  if ($blacklisted_tournaments->{$game_tournament_id})
-  {
-    if ($verbose) {print "$num_str Game with ID $id is from a blacklisted tournament\n";}
-    return;
-  }
-
-  my $lexicon_ref = get_lexicon_ref($game_lexicon);
-  
-  if (!$lexicon_ref)
-  {
-    if ($verbose) {print "$num_str Game with ID $id does not have a recognized lexicon\n";}
-    return;
-  }
-
-  return $lexicon_ref;
-}
-
 sub update_stats
 {
   my $dbh                    = shift;
@@ -736,46 +632,6 @@ sub delete_function_from_statslist
     delete $stat->{Constants::STAT_COMBINE_FUNCTION_NAME};
   }
   return $stats;
-}
-
-sub get_lexicon_ref
-{
-  my $lexicon = shift;
-  my $lexicon_ref = undef;
-
-  if ($lexicon eq 'TWL98')
-  {
-    $lexicon_ref = TWL98::TWL98_LEXICON;
-  }
-  elsif ($lexicon eq 'TWL06')
-  {
-    $lexicon_ref = TWL06::TWL06_LEXICON;
-  }
-  elsif ($lexicon eq 'TWL15')
-  {
-    $lexicon_ref = TWL15::TWL15_LEXICON;
-  }
-  elsif ($lexicon eq 'NSW18')
-  {
-    $lexicon_ref = NSW18::NSW18_LEXICON;
-  }
-  elsif ($lexicon eq 'CSW07')
-  {
-    $lexicon_ref = CSW07::CSW07_LEXICON;
-  }
-  elsif ($lexicon eq 'CSW12')
-  {
-    $lexicon_ref = CSW12::CSW12_LEXICON;
-  }
-  elsif ($lexicon eq 'CSW15')
-  {
-    $lexicon_ref = CSW15::CSW15_LEXICON;
-  }
-  elsif ($lexicon eq 'CSW19')
-  {
-    $lexicon_ref = CSW19::CSW19_LEXICON;
-  }
-  return $lexicon_ref;
 }
 
 sub sanitize

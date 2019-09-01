@@ -44,6 +44,7 @@ use constant CACHE_DIRECTORY_NAME             => './cache';
 use constant HTML_DIRECTORY_NAME              => './html';
 use constant CGIBIN_DIRECTORY_NAME            => './cgi-bin';
 use constant DATA_DIRECTORY_NAME              => './data';
+use constant LOGS_DIRECTORY_NAME              => './logs';
 use constant NAME_ID_DATA_FILENAME            => 'NameConversion.pm';
 use constant NAME_ID_VARIABLE_NAME            => 'NAMES_TO_IDS';
 use constant BLACKLISTED_TOURNAMENTS          => {

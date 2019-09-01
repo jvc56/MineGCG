@@ -13,20 +13,23 @@ my $rr_host         = Constants::RR_IP_ADDRESS;
 my $rr_username     = Constants::RR_USERNAME;
 my $rr_working_dir  = Constants::RR_WORKING_DIR;
 my $ssh_args        = Constants::SSH_ARGS;
+my $logs            = Constants::LOGS_DIRECTORY_NAME;
+
+system "mkdir -p $logs";
 
 my @jobs =
 (
-  "Preload",     "./meta/maintenance/preload.pl         > ./logs/preload.log 2>&1   ",
-  "Check",       "./meta/maintenance/check_data.pl      > ./logs/check_data.log 2>&1"  ,
+  "Preload",     "./meta/maintenance/preload.pl         > $logs/preload.log 2>&1   ",
+  "Check",       "./meta/maintenance/check_data.pl      > $logs/check_data.log 2>&1"  ,
   "Test",        "./meta/maintenance/mine_games_test.pl                             "  ,
   "Access",      "./meta/maintenance/get_access_log.pl  > /dev/null 2>&1            "  ,
-  "Update",      "./modules/Update.pm > /dev/null 2>&1",
+  "Update",      "./modules/Update.pm                   > /dev/null 2>&1",
   "Copy",        "./meta/maintenance/copy_to_remote.pl                              " 
 );
 
 my $full_start_time = time;
 
-open(my $full_test_log, ">", "./logs/full_test.log");
+open(my $full_test_log, ">", "$logs/full_test.log");
 
 print $full_test_log "Full Test Report\n\n";
 
@@ -54,8 +57,8 @@ $t[4]++;
 my $log_name = sprintf "%04d_%02d_%02d", @t[5,4,3];
 
 system "mkdir $log_name";
-system "mv logs/*.log $log_name/";
-system "mv $log_name logs/";
+system "mv $logs/*.log $log_name/";
+system "mv $log_name $logs";
 
 sub format_time
 {

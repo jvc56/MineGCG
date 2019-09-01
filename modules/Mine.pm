@@ -7,10 +7,9 @@ use strict;
 use Data::Dumper;
 
 use lib "./objects"; 
-use lib "./lexicons";
+use lib "./modules";
 use lib "./data";
 
-use Game;
 use Constants;
 use Stats;
 use Utils;
@@ -270,8 +269,10 @@ sub mine
 
     my $game_opp_name = $game->{$game_player2_name_column_name};
     my $player_is_first = 1;
-    
-    if ($player_id == $game->{$game_player2_cross_tables_id_column_name})
+   
+    my $player2_id = $game->{$game_player2_cross_tables_id_column_name};
+
+    if ($player2_id && $player_id == $player2_id)
     {
       $player_is_first = 0;
       $game_opp_name = $game->{$game_player1_name_column_name};

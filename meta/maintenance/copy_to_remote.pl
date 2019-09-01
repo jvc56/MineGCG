@@ -9,6 +9,7 @@ use Utils;
 use Constants;
 
 my $cache_dir       = Constants::CACHE_DIRECTORY_NAME;
+my $logs            = Constants::LOGS_DIRECTORY_NAME;
 
 my $rr_host         = Constants::RR_IP_ADDRESS;
 my $rr_username     = Constants::RR_USERNAME;
@@ -38,7 +39,7 @@ my @commands =
   "ssh $scp_args $rr_username\@$rr_host 'sudo cp -r  $dest_cgi  $final_dest_cgi '",
 );
 
-my $log_name = "./logs/copy_to_remote.log";
+my $log_name = "$logs/copy_to_remote.log";
 open(my $log, '>', $log_name);
 print $log "Copy to Remote log file on " . localtime() . "\n\n";
 

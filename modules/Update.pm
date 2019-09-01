@@ -375,7 +375,9 @@ sub update_leaderboard
 
   $leaderboard_string = $javascript . $leaderboard_string;
 
-  my $leaderboard_name = "./logs/" . Constants::LEADERBOARD_NAME . ".log";
+  my $logs = Constants::LOGS_DIRECTORY_NAME;
+
+  my $leaderboard_name = "$logs/" . Constants::LEADERBOARD_NAME . ".log";
   my $leaderboard_html = Constants::HTML_DIRECTORY_NAME . '/' . Constants::RR_LEADERBOARD_NAME;
 
   open(my $log_leaderboard, '>', $leaderboard_name);
@@ -458,7 +460,9 @@ sub update_notable
 
   $notable_string = "<pre style='white-space: pre-wrap;' > $notable_string </pre>\n";
 
-  my $notable_name = "./logs/" . Constants::NOTABLE_NAME . ".log";
+  my $logs = Constants::LOGS_DIRECTORY_NAME;
+
+  my $notable_name = "$logs/" . Constants::NOTABLE_NAME . ".log";
   my $notable_html = Constants::HTML_DIRECTORY_NAME . '/' . Constants::RR_NOTABLE_NAME;
 
   open(my $new_notable, '>', $notable_name);

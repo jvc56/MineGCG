@@ -29,6 +29,7 @@ if ($dev_database eq $database)
 
 my $dbh = Utils::connect_to_database;
 
+$dbh->do("DROP DATABASE IF EXISTS $database");
 $dbh->do("CREATE DATABASE $database WITH TEMPLATE $dev_database");
 
 chdir($target);

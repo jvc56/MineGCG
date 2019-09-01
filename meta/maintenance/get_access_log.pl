@@ -11,6 +11,7 @@ my $rr_host         = Constants::RR_IP_ADDRESS;
 my $rr_username     = Constants::RR_USERNAME;
 my $rr_logs_source  = Constants::RR_LOGS_SOURCE;
 my $ssh_args        = Constants::SSH_ARGS;
+my $logs            = Constants::LOGS_DIRECTORY_NAME;
 
 my %known_users = 
 (
@@ -132,7 +133,7 @@ for (my $i = 0; $i < scalar @log_names; $i++)
   }
 }
 
-my $final_access_log_name = "./logs/access.log";
+my $final_access_log_name = "$logs/access.log";
 open(my $log, '>', $final_access_log_name);
 print $log "Access log file for mine_games_test on " . localtime() . "\n\n"; 
 print $log "$num_accesses requests logged\n\n"; 
