@@ -34,7 +34,7 @@ $dbh->do("CREATE DATABASE $database WITH TEMPLATE $dev_database");
 
 chdir($target);
 
-system "git pull";
+system "git pull origin master";
 
 
 
