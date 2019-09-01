@@ -239,11 +239,11 @@ sub mine
   }
   if ($startdate)
   {
-    $games_query .= " AND g.$game_date_column_name > '$startdate'";
+    $games_query .= " AND g.$game_date_column_name >= '$startdate'";
   }
   if ($enddate)
   {
-    $games_query .= " AND g.$game_date_column_name < '$enddate'";
+    $games_query .= " AND g.$game_date_column_name <= '$enddate'";
   }
   if ($lexicon)
   {
