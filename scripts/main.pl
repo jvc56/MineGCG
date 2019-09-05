@@ -8,7 +8,6 @@ use Pod::Usage qw(pod2usage);
 use lib './modules';
 use lib './objects';
 
-use Retrieve;
 use Mine;
 use Utils;
 use Constants;

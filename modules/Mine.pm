@@ -214,7 +214,14 @@ sub mine
 
   my $games_query =
   "
-  SELECT *
+  SELECT 
+       $game_player1_name_column_name,
+       $game_player2_name_column_name,
+       $game_error_column_name,
+       $game_warning_column_name,
+       $game_player1_cross_tables_id_column_name,
+       $game_player2_cross_tables_id_column_name,
+       $game_stats_column_name
   FROM $games_table AS g, $players_table AS p $opp_table_statement
   WHERE
         p.$player_cross_tables_id_column_name = $player_id AND
@@ -342,7 +349,7 @@ sub mine
 
   my $final_output = "$start_tags $html_string $end_tags\n";
 
-  if ($cache_condition && $at_least_one)
+  if ($cache_condition && $at_least_one && $statsdump)
   {
     my $lt = localtime();
     system "mkdir -p $cache_dir";
