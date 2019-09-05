@@ -237,7 +237,7 @@ sub update_player_record
   else
   {
     $search_col = Constants::PLAYER_SANITIZED_NAME_COLUMN_NAME;
-    $search_val = sanit$player_name;
+    $search_val = sanitize($player_name);
   }
   
   my @player_query = @{query_table($dbh, Constants::PLAYERS_TABLE_NAME, $search_col, $search_val)};
