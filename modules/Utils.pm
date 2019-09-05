@@ -237,7 +237,7 @@ sub update_player_record
   else
   {
     $search_col = Constants::PLAYER_SANITIZED_NAME_COLUMN_NAME;
-    $search_val = $player_name;
+    $search_val = sanit$player_name;
   }
   
   my @player_query = @{query_table($dbh, Constants::PLAYERS_TABLE_NAME, $search_col, $search_val)};
@@ -268,8 +268,6 @@ sub update_player_record
   }
   elsif ($queried_name && $player_name ne $queried_name)
   {
-    # Player name has changed
-    print "Player name changed from $player_name to $queried_name\n";
     $update_gcg = 1;
     $raw_name = $queried_raw_name;
     $player_name = $queried_name;

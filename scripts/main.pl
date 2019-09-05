@@ -9,7 +9,6 @@ use lib './modules';
 use lib './objects';
 
 use Mine;
-use Utils;
 use Constants;
 
 
@@ -58,13 +57,6 @@ GetOptions (
            );
 
 pod2usage(1) if $help || !$name;
-
-$raw_name           = $name;
-$name               = Utils::sanitize($name);
-$opponent_sanitized = Utils::sanitize($opponent);
-$startdate          =~ s/[^\d]//g;
-$enddate            =~ s/[^\d]//g;
-$lexicon            = uc $lexicon;
 
 Mine::mine($name, $cort, $game, $opponent_sanitized, $startdate, $enddate, $lexicon, $verbose, $tid, $statsdump, $html, $missingracks);
 

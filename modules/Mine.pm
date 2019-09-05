@@ -43,8 +43,9 @@ sub mine
   my $html              = shift;
   my $missingracks      = shift;
 
+  my $sanitized_player_name = Utils::sanitize($player_name);
 
-  my $cache_filename = "$cache_dir/$player_name.html";
+  my $cache_filename = "$cache_dir/$sanitized_player_name.html";
   my $cache_condition = !$cort &&
                         !$single_game_id &&
                         !$opponent_name &&
@@ -66,19 +67,13 @@ sub mine
     return;
   }
 
-  my $player_id = $names_to_ids_hashref->{$player_name};
+  my $player_id = $names_to_ids_hashref->{$sanitized_player_name};
 
   if (!$player_id)
   {
     print STDERR "Player ID not found for $player_name\n";
     return;
   }
-
-  my $player_name_no_underscore = $player_name;
-  $player_name_no_underscore =~ s/_/ /g;
-
-  my $opponent_name_no_underscore = $opponent_name;
-  $opponent_name_no_underscore =~ s/_/ /g;
 
   my $javascript = "";
 
@@ -92,11 +87,11 @@ sub mine
     print_or_append( "\nDevelopment Version of RandomRacer\n\n\n", $html, 0);
   }
 
-  print_or_append( "\nStatistics for $player_name_no_underscore\n\n\n", $html, 0);
+  print_or_append( "\nStatistics for $player_name\n\n\n", $html, 0);
   
   print_or_append( "\nSEARCH PARAMETERS: \n", $html, 0);
   
-  print_or_append( "\n  Player:        $player_name_no_underscore", $html, 0);
+  print_or_append( "\n  Player:        $player_name", $html, 0);
 
 
   print_or_append( "\n  Game type:     ", $html, 0);
@@ -121,7 +116,7 @@ sub mine
 
   print_or_append( "\n  Opponent:      ", $html, 0);
   
-  if ($opponent_name_no_underscore) {print_or_append( $opponent_name_no_underscore, $html, 0);}
+  if ($opponent_name) {print_or_append( $opponent_name, $html, 0);}
   else {print_or_append( "-", $html, 0);}
 
   print_or_append( "\n  Start Date:    ", $html, 0);
@@ -198,7 +193,7 @@ sub mine
 
   if ($opponent_name)
   {
-    my $opp_id = $names_to_ids_hashref->{$opponent_name};
+    my $opp_id = $names_to_ids_hashref->{Utils::sanitize($opponent_name)};
     $opp_query =
     "
       AND opp.$player_cross_tables_id_column_name = $opp_id
@@ -309,7 +304,7 @@ sub mine
   if ($statsdump && $at_least_one)
   {
     my $dump = JSON::XS::encode_json(Utils::prepare_stats($all_stats));
-    Utils::update_player_record($dbh, 0, 0, $player_name, $dump, $num_games);
+    Utils::update_player_record($dbh, $player_id, 0, 0, $dump, $num_games);
   }
 
   if ($html)
