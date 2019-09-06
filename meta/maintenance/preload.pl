@@ -10,7 +10,7 @@ use Retrieve;
 
 print "Log file for retrieve on " . localtime() . "\n\n"; 
 
-Retrieve::retrieve(Constants::UPDATE_OPTION_STATS);
+Retrieve::retrieve(Constants::UPDATE_OPTION_GCG);
 
 print "\n\n\nFinished on " . localtime() . "\n\n"; 
 
