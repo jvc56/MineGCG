@@ -7,7 +7,6 @@ use Getopt::Long;
 use lib './modules';
 
 use Mine;
-use Utils;
 use Constants;
 
 my $name;
@@ -44,7 +43,7 @@ GetOptions (
 
 Mine::mine
 (
-  Utils::sanitize($name),
+  $name,
   $cort,
   $game,
   $opponent,

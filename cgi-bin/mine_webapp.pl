@@ -96,7 +96,7 @@
     $lexicon_arg = "--lexicon " . sanitize_name($lexicon);
   }
   
-  my $dir_arg = " --directory MineGCGDEV ";
+  my $dir_arg = " --directory MineGCG ";
 
   my $output = "";
   my $cmd = "LANG=C ssh  -i /home/ubuntu/vm.pem -p 2222  -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null jvc\@ocs.wgvc.com /home/jvc/minegcg_wrapper.pl $name_arg $cort_arg $tid_arg $gid_arg $opp_arg $start_arg $end_arg $lexicon_arg $dir_arg |";

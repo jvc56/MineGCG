@@ -24,7 +24,7 @@ my @jobs =
   "Test",        "./meta/maintenance/mine_games_test.pl                             "  ,
   "Access",      "./meta/maintenance/get_access_log.pl  > /dev/null 2>&1            "  ,
   "Update",      "./modules/Update.pm                   > /dev/null 2>&1",
-  "Copy",        "./meta/maintenance/copy_to_remote.pl                              " 
+#  "Copy",        "./meta/maintenance/copy_to_remote.pl                              " 
 );
 
 my $full_start_time = time;
