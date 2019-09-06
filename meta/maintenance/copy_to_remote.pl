@@ -10,6 +10,7 @@ use Constants;
 
 my $cache_dir       = Constants::CACHE_DIRECTORY_NAME;
 my $logs            = Constants::LOGS_DIRECTORY_NAME;
+my $static          = Constants::HTML_STATIC_DIRECTORY_NAME;
 
 my $rr_host         = Constants::RR_IP_ADDRESS;
 my $rr_username     = Constants::RR_USERNAME;
@@ -30,6 +31,7 @@ my $final_dest_cgi  = Constants::RR_REAL_DIR;
 
 my @commands =
 (
+  "cp -r $static/* $source_html",
   "cp -r $cache_dir $source_html",
   "ssh $scp_args $rr_username\@$rr_host 'sudo rm -rf  $dest_html'",
   "ssh $scp_args $rr_username\@$rr_host 'sudo rm -rf  $dest_cgi '",
