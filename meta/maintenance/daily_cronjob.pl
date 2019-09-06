@@ -9,6 +9,11 @@ use lib './modules';
 use Constants;
 use Update;
 
+system "mkdir -p " . Constants::DATA_DIRECTORY_NAME;
+system "mkdir -p " . Constants::CACHE_DIRECTORY_NAME;
+system "mkdir -p " . Constants::HTML_DIRECTORY_NAME;
+system "mkdir -p " . Constants::CGIBIN_DIRECTORY_NAME;
+
 my $rr_host         = Constants::RR_IP_ADDRESS;
 my $rr_username     = Constants::RR_USERNAME;
 my $rr_working_dir  = Constants::RR_WORKING_DIR;
