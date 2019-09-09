@@ -286,6 +286,7 @@ sub mine
     {
       print_or_append( "\n$error", $html, 1);
       $num_errors++;
+      $all_stats->addError($error);
       next;
     }
     elsif ($warning)

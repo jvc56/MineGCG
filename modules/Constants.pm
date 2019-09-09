@@ -416,6 +416,13 @@ use constant STAT_ADD_FUNCTION_NAME     => 'function';
 use constant STAT_COMBINE_FUNCTION_NAME => 'combine_function';
 use constant STAT_ITEM_OBJECT_NAME      => 'object';
 use constant STAT_NAME                  => 'name';
+use constant STAT_ERRORTYPE_NAME        => 'errortype';
+use constant ERRORTYPE_ERROR            => 'invalid';
+use constant ERRORTYPE_VALID            => 'valid';
+
+use constant GAMEERROR_INCOMPLETE    => 'Incomplete';
+use constant GAMEERROR_DISCONNECTED  => 'Disconnected';
+use constant GAMEERROR_OTHER         => 'Other';
 
 use constant STAT_OBJECT_DISPLAY_NAME   => 'display';
 use constant STAT_OBJECT_DISPLAY_TOTAL  => 'total';

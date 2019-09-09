@@ -86,7 +86,7 @@ This error appears when the game is not tagged with a lexicon or the game uses a
 <h5>ERROR: game is incomplete</h5>
 This error appears when the GCG file is incomplete.
 
-<br/><br/>The errors above are relatively common and well-tested. If you encounter any of these errors, it probably means that the GCG file of the game is somehow malformed or tagged incorrectly. To correct these errors, update the game on <a href='https://cross-tables.com'>cross-tables.com</a> and then message me so I can delete the outdated game that is cached in the database.<br/><br/>
+<br/><br/>The errors above are relatively common and well-tested. If you encounter any of these errors, it probably means that the GCG file of the game is somehow malformed or tagged incorrectly. To correct these errors, update the game on <a href='https://cross-tables.com'>cross-tables.com</a> and the corrected version should appear in your stats the next day.
 
 Any other errors or warnings that appear are rare and likely due to a bug. If you see an error or warning that was not described above, please message me.
 

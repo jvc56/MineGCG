@@ -146,7 +146,35 @@ sub addStat
     }
   }
 }
+sub addError
+{
+  my $this  = shift;
+  my $error = shift;
 
+  my $game_stats = $this->{Constants::STATS_DATA_KEY_NAME}->{Constants::STATS_DATA_GAME_KEY_NAME};
+
+  for (my $i = 0; $i < scalar @{$game_stats}; $i++)
+  {
+    my $stat = $game_stats->[$i];
+    if ($stat->{Constants::STAT_ERRORTYPE_NAME} eq Constants::ERRORTYPE_ERROR)
+    {
+      my $obj = $stat->{Constants::STAT_ITEM_OBJECT_NAME};
+      $obj->{'total'}++;
+      if ($error =~ /incomplete/i)
+      {
+        $obj->{'subitems'}->{Constants::GAMEERROR_INCOMPLETE}++;
+      }
+      elsif ($error =~ /disconnected/i)
+      {
+        $obj->{'subitems'}->{Constants::GAMEERROR_DISCONNECTED}++;
+      }
+      else
+      {
+        $obj->{'subitems'}->{Constants::GAMEERROR_OTHER}++;
+      }
+    }
+  }
+}
 sub makeTitleRow
 {
   my $tiw = shift;
@@ -545,6 +573,82 @@ sub statsList
   return
   [
     {
+      Constants::STAT_NAME => 'Games',
+      Constants::STAT_ITEM_OBJECT_NAME =>  {'total' => 0, Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_TOTAL, 'int' => 1},
+      Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
+      Constants::STAT_METATYPE_NAME => Constants::METATYPE_GAME,
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+
+        $this->{'total'} += $other->{'total'};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
+      sub
+      {
+        my $this = shift;
+
+        $this->{'total'}++;
+      }
+    },
+    {
+      Constants::STAT_NAME => 'Invalid Games',
+      Constants::STAT_ITEM_OBJECT_NAME =>
+      {
+        'total' => 0,
+        'subitems' =>
+        {
+          Constants::GAMEERROR_INCOMPLETE    => 0,
+          Constants::GAMEERROR_DISCONNECTED  => 0,
+          Constants::GAMEERROR_OTHER         => 0,
+        },
+        'list' =>
+        [
+          Constants::GAMEERROR_INCOMPLETE,
+          Constants::GAMEERROR_DISCONNECTED,
+          Constants::GAMEERROR_OTHER
+        ],
+        Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_TOTAL,
+        'int' => 1
+      },
+      Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
+      Constants::STAT_METATYPE_NAME => Constants::METATYPE_GAME,
+      Constants::STAT_ERRORTYPE_NAME => Constants::ERRORTYPE_ERROR,
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        die "Combined function called on a game error\n";
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
+      sub
+      {
+        die "Add function called on a game error\n";
+      }
+    },
+    {
+      Constants::STAT_NAME => 'Total Turns',
+      Constants::STAT_ITEM_OBJECT_NAME =>  {'total' => 0},
+      Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
+      Constants::STAT_METATYPE_NAME => Constants::METATYPE_GAME,
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        $this->{'total'} += $other->{'total'};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
+      sub
+      {
+        my $this   = shift;
+        my $game   = shift;
+
+        $this->{'total'} += $game->getNumTurns(-1);
+      }
+    },
+    {
       Constants::STAT_NAME => 'Bingos',
       Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
@@ -709,48 +813,6 @@ sub statsList
         my $this_player = shift;
 
         push @{$this->{'list'}}, @{$game->getPlaysChallenged($this_player)};
-      }
-    },
-    {
-      Constants::STAT_NAME => 'Games',
-      Constants::STAT_ITEM_OBJECT_NAME =>  {'total' => 0, Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_TOTAL, 'int' => 1},
-      Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
-      Constants::STAT_METATYPE_NAME => Constants::METATYPE_GAME,
-      Constants::STAT_COMBINE_FUNCTION_NAME =>
-      sub
-      {
-        my $this  = shift;
-        my $other = shift;
-
-        $this->{'total'} += $other->{'total'};
-      },
-      Constants::STAT_ADD_FUNCTION_NAME =>
-      sub
-      {
-        my $this = shift;
-
-        $this->{'total'}++;
-      }
-    },
-    {
-      Constants::STAT_NAME => 'Total Turns',
-      Constants::STAT_ITEM_OBJECT_NAME =>  {'total' => 0},
-      Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
-      Constants::STAT_METATYPE_NAME => Constants::METATYPE_GAME,
-      Constants::STAT_COMBINE_FUNCTION_NAME =>
-      sub
-      {
-        my $this  = shift;
-        my $other = shift;
-        $this->{'total'} += $other->{'total'};
-      },
-      Constants::STAT_ADD_FUNCTION_NAME =>
-      sub
-      {
-        my $this   = shift;
-        my $game   = shift;
-
-        $this->{'total'} += $game->getNumTurns(-1);
       }
     },
     {
@@ -2211,6 +2273,54 @@ sub statsList
         my $game   = shift;
         my $player = shift;
         $this->{'total'}  += $game->getNumMistakelessTurns($player);
+      }
+    },
+    {
+      Constants::STAT_NAME => 'Mistakes per Turn',
+      Constants::STAT_ITEM_OBJECT_NAME =>
+      {
+        Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG,
+        'total'          => 0,
+        'total_mistakes' => 0,
+        'total_turns'    => 0,
+      },
+      Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
+      Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        $this->{'total_mistakes'} += $other->{'total_mistakes'};
+        $this->{'total_turns'}    += $other->{'total_turns'};
+        if ($this->{'total_turns'} == 0)
+        {
+          return;
+        }
+        $this->{'total'} = sprintf "%.4f", $this->{'total_mistakes'} / $this->{'total_turns'};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
+      sub
+      {
+        my $this = shift;
+        my $game = shift;
+        my $this_player = shift;
+
+        my @categories = Constants::MISTAKES;
+
+        my $mistakes_hash_ref = $game->getNumMistakes($player);
+
+        foreach my $cat (@categories)
+        {
+          $this->{'total_mistakes'}            += $val;
+        }
+
+        $this->{'total_turns'} += $game->getNumTurns($this_player);
+        if ($this->{'total_turns'} == 0)
+        {
+          return;
+        }
+        $this->{'total'} = sprintf "%.4f", $this->{'total_mistakes'} / $this->{'total_turns'};
       }
     },
     {
