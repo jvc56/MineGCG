@@ -619,12 +619,12 @@ sub statsList
       Constants::STAT_COMBINE_FUNCTION_NAME =>
       sub
       {
-        die "Combined function called on a game error\n";
+        # Do nothing, errors are added elsewhere
       },
       Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
-        die "Add function called on a game error\n";
+        # Do nothing, errors are added elsewhere
       }
     },
     {
@@ -2308,11 +2308,11 @@ sub statsList
 
         my @categories = Constants::MISTAKES;
 
-        my $mistakes_hash_ref = $game->getNumMistakes($player);
+        my $mistakes_hash_ref = $game->getNumMistakes($this_player);
 
         foreach my $cat (@categories)
         {
-          $this->{'total_mistakes'}            += $val;
+          $this->{'total_mistakes'}            += $mistakes_hash_ref->{$cat};
         }
 
         $this->{'total_turns'} += $game->getNumTurns($this_player);
