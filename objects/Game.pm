@@ -661,6 +661,73 @@ sub getNumTurns
   return $sum;
 }
 
+sub getNumVerticalPlays
+{
+  my $this = shift;
+
+  my $player = shift;
+
+  my @moves = @{$this->{'moves'}};
+
+  my $sum = 0;
+  foreach my $move (@moves)
+  {
+    my $turn = $move->{'turn'};
+    if (
+        $turn == $player &&
+        $move->{'num_tiles_played'} > 1 &&
+        $move->{'vertical'}
+       )
+    {
+      $sum++;
+    }
+  }
+  return $sum;
+}
+
+sub getNumHorizontalPlays
+{
+  my $this = shift;
+
+  my $player = shift;
+
+  my @moves = @{$this->{'moves'}};
+
+  my $sum = 0;
+  foreach my $move (@moves)
+  {
+    my $turn = $move->{'turn'};
+    if (
+        $turn == $player &&
+        $move->{'num_tiles_played'} > 1 &&
+        !$move->{'vertical'}
+       )
+    {
+      $sum++;
+    }
+  }
+  return $sum;
+}
+
+sub getNumVerticalOpeningPlays
+{
+  my $this = shift;
+
+  my $player = shift;
+
+  my $move = $this->{'moves'}->[0];
+
+  if (
+      $move->{'turn'} == $player &&
+      $move->{'num_tiles_played'} > 1 &&
+      $move->{'vertical'}
+     )
+  {
+    return 1;
+  }
+  return 0;
+}
+
 sub getNumFullRacks
 {
   my $this = shift;

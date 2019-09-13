@@ -887,7 +887,24 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Turns',
-      Constants::STAT_ITEM_OBJECT_NAME =>  {'total' => 0},
+      Constants::STAT_ITEM_OBJECT_NAME =>
+      {
+        'total' => 0,
+        'subitems' =>
+        {
+          'Vertical Plays'   => 0,
+          'Horizontal Plays' => 0,
+          'One Tile Plays'   => 0,
+          'Other Plays'      => 0
+        },
+        'list' =>
+        [
+          'Vertical Plays'  ,
+          'Horizontal Plays',
+          'One Tile Plays'  ,
+          'Other Plays'
+        ]
+      },
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
       Constants::STAT_COMBINE_FUNCTION_NAME =>
@@ -896,6 +913,10 @@ sub statsList
         my $this  = shift;
         my $other = shift;
         $this->{'total'} += $other->{'total'};
+        foreach my $key (keys %{$this->{'subitems'}})
+        {
+          $this->{'subitems'}->{$key} += $other->{'subitems'}->{$key};
+        }
       },
       Constants::STAT_ADD_FUNCTION_NAME =>
       sub
@@ -905,6 +926,10 @@ sub statsList
         my $this_player = shift;
 
         $this->{'total'} += $game->getNumTurns($this_player);
+        $this->{'subitems'}->{'Vertical Plays'}   += $game->getNumVerticalPlays($this_player);
+        $this->{'subitems'}->{'Horizontal Plays'} += $game->getNumHorizontalPlays($this_player);
+        $this->{'subitems'}->{'One Tile Plays'}   += $game->getNumOneTilePlays($this_player);
+        $this->{'subitems'}->{'Other Plays'}      += $game->getNumOtherPlays($this_player);
       }
     },
     {
@@ -927,6 +952,36 @@ sub statsList
         my $this_player = shift;
 
         $this->{'total'} += $game->getNumFirsts($this_player);
+      }
+    },
+    {
+      Constants::STAT_NAME => 'Vertical Openings per First',
+      Constants::STAT_ITEM_OBJECT_NAME => {Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG, 'total' => 0, 'total_firsts' => 0, 'total_verticals' => 0},
+      Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
+      Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        $this->{'total_verticals'} += $other->{'total_verticals'};
+        $this->{'total_firsts'}      += $other->{'total_firsts'};
+        if ($this->{'total_firsts'} == 0)
+        {
+          return;
+        }
+        $this->{'total'} = sprintf "%.4f", $this->{'total_verticals'} / $this->{'total_firsts'};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
+      sub
+      {
+        my $this = shift;
+        my $game = shift;
+        my $this_player = shift;
+
+        $this->{'total_verticals'}   += $game->getNumVerticalOpeningPlays($this_player);
+        $this->{'total_firsts'}      += $game->getNumFirsts($this_player);
+        $this->{'total'} = sprintf "%.4f", $this->{'total_verticals'} / $this->{'total_firsts'};
       }
     },
     {
