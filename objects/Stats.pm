@@ -136,7 +136,7 @@ sub addStat
            $this_stat->{Constants::STAT_METATYPE_NAME} ne $other_stat->{Constants::STAT_METATYPE_NAME}
          )
       {
-        my $die_statement  = Utils::format_error("Stats do not match!", $this, $other_stat_object);
+        my $die_statement  = Utils::format_error("Stats do not match!", $this_stat, $other_stat);
         die $die_statement;
       }
       my $this_object  = $this_stat->{Constants::STAT_ITEM_OBJECT_NAME};
@@ -156,7 +156,7 @@ sub addError
   for (my $i = 0; $i < scalar @{$game_stats}; $i++)
   {
     my $stat = $game_stats->[$i];
-    if ($stat->{Constants::STAT_ERRORTYPE_NAME} eq Constants::ERRORTYPE_ERROR)
+    if ($stat->{Constants::STAT_ERRORTYPE_NAME} && $stat->{Constants::STAT_ERRORTYPE_NAME} eq Constants::ERRORTYPE_ERROR)
     {
       my $obj = $stat->{Constants::STAT_ITEM_OBJECT_NAME};
       $obj->{'total'}++;

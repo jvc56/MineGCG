@@ -103,6 +103,7 @@ Games with no lexicons are omitted because the lexicons are necessary for comput
 
 # Contributions
 
+Vertical Play statistics (Matthew O'Connor)<br/>
 Mistakeless Turns statistic (César Del Solar)<br/>
 Saddest/Sadder/Sad mistake magnitudes aliases (Jackson Smylie)<br/>
 Highest Scoring Play statistic (Will Anderson)<br/>
