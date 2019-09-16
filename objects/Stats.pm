@@ -981,6 +981,10 @@ sub statsList
 
         $this->{'total_verticals'}   += $game->getNumVerticalOpeningPlays($this_player);
         $this->{'total_firsts'}      += $game->getNumFirsts($this_player);
+	if ($this->{'total_firsts'} == 0)
+	{
+          return;
+	}
         $this->{'total'} = sprintf "%.4f", $this->{'total_verticals'} / $this->{'total_firsts'};
       }
     },

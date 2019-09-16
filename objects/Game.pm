@@ -672,10 +672,8 @@ sub getNumVerticalPlays
   my $sum = 0;
   foreach my $move (@moves)
   {
-    my $turn = $move->{'turn'};
     if (
-        $turn == $player &&
-        $move->{'num_tiles_played'} > 1 &&
+        $move->{'num_tiles_played'}->{$player} > 1 &&
         $move->{'vertical'}
        )
     {
@@ -696,11 +694,52 @@ sub getNumHorizontalPlays
   my $sum = 0;
   foreach my $move (@moves)
   {
-    my $turn = $move->{'turn'};
     if (
-        $turn == $player &&
-        $move->{'num_tiles_played'} > 1 &&
+        $move->{'num_tiles_played'}->{$player} > 1 &&
         !$move->{'vertical'}
+       )
+    {
+      $sum++;
+    }
+  }
+  return $sum;
+}
+
+sub getNumOneTilePlays
+{
+  my $this = shift;
+
+  my $player = shift;
+
+  my @moves = @{$this->{'moves'}};
+
+  my $sum = 0;
+  foreach my $move (@moves)
+  {
+    if (
+        $move->{'num_tiles_played'}->{$player} == 1 
+       )
+    {
+      $sum++;
+    }
+  }
+  return $sum;
+}
+
+sub getNumOtherPlays
+{
+  my $this = shift;
+
+  my $player = shift;
+
+  my @moves = @{$this->{'moves'}};
+
+  my $sum = 0;
+  foreach my $move (@moves)
+  {
+    if (
+	$move->{'turn'} == $player &&
+        $move->{'num_tiles_played'}->{$player} == 0 
        )
     {
       $sum++;
@@ -718,8 +757,8 @@ sub getNumVerticalOpeningPlays
   my $move = $this->{'moves'}->[0];
 
   if (
-      $move->{'turn'} == $player &&
-      $move->{'num_tiles_played'} > 1 &&
+      $move->{'turn'} == $player && 
+      $move->{'num_tiles_played'}->{$player} > 1 &&
       $move->{'vertical'}
      )
   {
