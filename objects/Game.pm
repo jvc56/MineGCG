@@ -823,7 +823,7 @@ sub getNumFirsts
 
   my $player = shift;
 
-  return 1 - $player;
+  return $player;
 }
 
 sub getNumExchanges
