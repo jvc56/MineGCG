@@ -689,23 +689,68 @@ function nocacheresult()
 <head>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 <title>RandomRacer</title>
+
+
+
+<link rel="stylesheet" href="carousel.css" />
+<script src="https://code.jquery.com/jquery-2.2.0.min.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+
+
 <link rel="stylesheet" href="style.css" />
 <link rel=icon href=/favicon.png>
-<link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
 <link href="https://fonts.googleapis.com/css?family=Francois+One|Iceland|Monofett|Orbitron|Press+Start+2P|Source+Code+Pro|VT323" rel="stylesheet">
+<!--
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+
+-->
 
 <script>
 \$(function(){
   \$("#$search_data_id").load("$search_data_html");
 });
+
+
+\$(document).ready(function()
+{
+  \$('.customer-logos').slick(
+  {
+    slidesToShow: 4,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 1000,
+    arrows: false,
+    dots: false,
+    pauseOnHover: false,
+    responsive: 
+    [
+      {
+        breakpoint: 768,
+        settings: 
+        {
+          slidesToShow: 3
+        }
+      }, 
+      {
+        breakpoint: 520,
+        settings: 
+        {
+          slidesToShow: 2
+        }
+      }
+    ]
+  });
+});
+
+
 </script>
 
 
 
 </head>
 <body id="body">
-
 
 <div class="typingdiv">
  <table class="typingdivtable">
@@ -739,6 +784,18 @@ function nocacheresult()
   </tbody>
  </table>
 </div>
+
+<div class="customer-logos">
+  <div class="slide">Yeet 1</div>
+  <div class="slide">Yeet 2</div>
+  <div class="slide">Yeet 3</div>
+  <div class="slide">Yeet 4</div>
+  <div class="slide">Yeet 5</div>
+  <div class="slide">Yeet 6</div>
+  <div class="slide">Yeet 7</div>
+</div>
+
+
 <div id="container" class="container">
 <div class="minegcgform">
 <form action="$cgibin_name/mine_webapp.pl" target="_blank" method="get" onsubmit="return nocacheresult()">
