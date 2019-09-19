@@ -103,11 +103,11 @@ sub update_search_data
           aria-expanded="false" aria-controls="collapseOptions" onclick='toggle_icon(this)'>
           <i class="fas fa-angle-down rotate-icon"></i>
         </a>
+        <button class="btn" type="submit">Submit</button>
       </div>
 BUTTON
 ;
 
-  $html .= '<button class="btn" type="submit">Submit</button>';
   Utils::write_string_to_file($html, Constants::HTML_DIRECTORY_NAME . '/' . Constants::SEARCH_DATA_FILENAME);
   return $validate;
 }
