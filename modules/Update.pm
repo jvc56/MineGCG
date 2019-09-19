@@ -663,7 +663,7 @@ sub update_html
   $search_data_id =~ s/\..*//g;
 
   my $quote_style = "text-align: center";
-  my $navbar_text_style = "color: blue;"
+  my $navbar_text_style = "color: blue;";
   my $index_html = <<HTML
 
 <!DOCTYPE html>
