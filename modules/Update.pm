@@ -649,7 +649,7 @@ sub update_html
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>Material Design Bootstrap</title>
+  <title>RandomRacer</title>
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
   <!-- Bootstrap core CSS -->
@@ -657,15 +657,7 @@ sub update_html
   <!-- Material Design Bootstrap -->
   <link href="css/mdb.min.css" rel="stylesheet">
   <!-- Your custom styles (optional) -->
-
-  <style>
-    .double-nav .breadcrumb-dn
-    {
-      color: #fff;
-    }
-  </style>
-
-
+  <link href="css/style.css" rel="stylesheet">
 </head>
 
 <body class="fixed-sn grey-skin">
@@ -916,13 +908,13 @@ sub update_html
   <script type="text/javascript" src="js/mdb.min.js"></script>
 
   <script>
-    console.log("In script");
+    //console.log("In script");
     // SideNav Initialization
-    \$(".button-collapse").sideNav();
+    //\$(".button-collapse").sideNav();
 
     // SideNav Scrollbar Initialization
-    var sideNavScrollbar = document.querySelector('.custom-scrollbar');
-    var ps = new PerfectScrollbar(sideNavScrollbar);
+    //var sideNavScrollbar = document.querySelector('.custom-scrollbar');
+    //var ps = new PerfectScrollbar(sideNavScrollbar);
 
   </script>
 
