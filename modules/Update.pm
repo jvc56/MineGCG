@@ -663,7 +663,7 @@ sub update_html
   $search_data_id =~ s/\..*//g;
 
   my $quote_style = "text-align: center";
-
+  my $navbar_text_style = "color: blue;"
   my $index_html = <<HTML
 
 <!DOCTYPE html>
@@ -689,10 +689,10 @@ sub update_html
 <body>
 
 <!--Navbar-->
-<nav class="navbar navbar-expand-lg navbar-dark elegant-color-dark" style="color: blue;">
+<nav class="navbar navbar-expand-lg navbar-dark elegant-color-dark">
 
   <!-- Navbar brand -->
-  <a class="navbar-brand" href="/" style="font-family: 'VT323', monospace;">RandomRacer</a>
+  <a class="navbar-brand" href="/" style="font-family: 'VT323', monospace;"  style="$navbar_text_style">RandomRacer</a>
 
   <!-- Collapse button -->
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
@@ -706,10 +706,10 @@ sub update_html
     <!-- Links -->
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
-        <a class="nav-link" href="/leaderboards.html">Leaderboards</a>
+        <a class="nav-link" href="/leaderboards.html"  style="$navbar_text_style">Leaderboards</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/notable.html">Notable</a>
+        <a class="nav-link" href="/notable.html"  style="$navbar_text_style">Notable</a>
       </li>
 
       <!-- Dropdown 
