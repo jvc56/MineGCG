@@ -674,16 +674,7 @@ sub update_html
           </div>
         </li>
         <!--/. Logo -->
-        <!--Social-->
-        <li>
-          <ul class="social">
-            <li><a href="#" class="icons-sm fb-ic"><i class="fab fa-facebook-f"> </i></a></li>
-            <li><a href="#" class="icons-sm pin-ic"><i class="fab fa-pinterest"> </i></a></li>
-            <li><a href="#" class="icons-sm gplus-ic"><i class="fab fa-google-plus-g"> </i></a></li>
-            <li><a href="#" class="icons-sm tw-ic"><i class="fab fa-twitter"> </i></a></li>
-          </ul>
-        </li>
-        <!--/Social-->
+
         <!--Search Form-->
         <li>
           <form class="search-form" role="search">
@@ -908,13 +899,12 @@ sub update_html
   <script type="text/javascript" src="js/mdb.min.js"></script>
 
   <script>
-    //console.log("In script");
+    console.log("In script");
     // SideNav Initialization
-    //\$(".button-collapse").sideNav();
+    \$(".button-collapse").sideNav();
 
-    // SideNav Scrollbar Initialization
-    //var sideNavScrollbar = document.querySelector('.custom-scrollbar');
-    //var ps = new PerfectScrollbar(sideNavScrollbar);
+    var sideNavScrollbar = document.querySelector('.custom-scrollbar');
+    var ps = new PerfectScrollbar(sideNavScrollbar);
 
   </script>
 
