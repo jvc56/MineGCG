@@ -689,7 +689,7 @@ sub update_html
 <body>
 
 <!--Navbar-->
-<nav class="navbar navbar-expand-lg navbar-dark elegant-color-dark">
+<nav class="navbar navbar-expand-lg navbar-dark elegant-color-dark" style="color: blue;">
 
   <!-- Navbar brand -->
   <a class="navbar-brand" href="/" style="font-family: 'VT323', monospace;">RandomRacer</a>
