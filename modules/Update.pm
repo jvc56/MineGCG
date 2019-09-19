@@ -98,9 +98,9 @@ sub update_search_data
 <<BUTTON
       </div>
 
-      <div style="margin: auto">
+      <div style="text-align: center">
         <a data-toggle="collapse" data-target="#collapseOptions"
-          aria-expanded="false" aria-controls="collapseOptions">
+          aria-expanded="false" aria-controls="collapseOptions" style="color: #007bff">
           Toggle More Options
         </a>
       </div>
@@ -663,7 +663,7 @@ sub update_html
   $search_data_id =~ s/\..*//g;
 
   my $quote_style = "text-align: center";
-  my $navbar_text_style = "color: blue;";
+  my $navbar_text_style = "";
   my $index_html = <<HTML
 
 <!DOCTYPE html>
@@ -686,7 +686,7 @@ sub update_html
   <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
 </head>
 
-<body>
+<body style="background-color: #343a40; color: white">
 
 <!--Navbar-->
 <nav class="navbar navbar-expand-lg navbar-dark elegant-color-dark">
