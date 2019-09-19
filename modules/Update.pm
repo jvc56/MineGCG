@@ -100,7 +100,7 @@ sub update_search_data
 
       <div style="text-align: center">
         <a data-toggle="collapse" data-target="#collapseOptions"
-          aria-expanded="false" aria-controls="collapseOptions">
+          aria-expanded="false" aria-controls="collapseOptions" onclick='toggle_icon(this)'>
           <i class="fas fa-angle-down rotate-icon"></i>
         </a>
       </div>
@@ -797,6 +797,18 @@ sub update_html
       name = name.toUpperCase();
       window.open("/cache/" + name + ".html", "_blank");
       return false;
+    }
+
+    function toggle_icon(el)
+    {
+      if (el.innerHTML.includes('down'))
+      {
+        el.innerHTML = '<i class="fas fa-angle-up rotate-icon"></i>'
+      }
+      else
+      {
+        el.innerHTML = '<i class="fas fa-angle-down rotate-icon"></i>'
+      }
     }
 
     \$(function(){
