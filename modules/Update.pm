@@ -659,8 +659,8 @@ sub update_html
   <!-- Your custom styles (optional) -->
 
   <style>
-    /* Only for snippet */
-    .double-nav .breadcrumb-dn {
+    .double-nav .breadcrumb-dn
+    {
       color: #fff;
     }
   </style>
@@ -807,37 +807,7 @@ sub update_html
 
     <div class="container-fluid text-center">
 
-      <!--Card-->
-      <div class="card card-cascade wider reverse my-4 pb-5">
 
-        <!--Card image-->
-        <div class="view view-cascade overlay wow fadeIn">
-          <img src="https://mdbootstrap.com/img/Photos/Slides/img%20(70).jpg" class="img-fluid">
-          <a href="#!">
-            <div class="mask rgba-white-slight"></div>
-          </a>
-        </div>
-        <!--/Card image-->
-
-        <!--Card content-->
-        <div class="card-body card-body-cascade text-center wow fadeIn" data-wow-delay="0.2s">
-          <!--Title-->
-          <h4 class="card-title"><strong>My adventure</strong></h4>
-          <h5 class="blue-text"><strong>Photography</strong></h5>
-
-          <p class="card-text">Sed ut perspiciatis unde omnis iste natus sit voluptatem accusantium doloremque
-            laudantium, totam rem aperiam.
-          </p>
-
-          <a class="btn btn-primary btn-lg">Primary button</a>
-          <a class="btn btn-secondary btn-lg">Secondary button</a>
-          <a class="btn btn-default btn-lg">Default button</a>
-
-        </div>
-        <!--/.Card content-->
-
-      </div>
-      <!--/.Card-->
 
     </div>
 
@@ -919,22 +889,11 @@ sub update_html
 
     <hr>
 
-    <!--Social buttons-->
-    <div class="social-section text-center">
-      <ul class="list-unstyled list-inline">
-        <li class="list-inline-item"><a class="btn-floating btn-fb"><i class="fab fa-facebook-f"> </i></a></li>
-        <li class="list-inline-item"><a class="btn-floating btn-tw"><i class="fab fa-twitter"> </i></a></li>
-        <li class="list-inline-item"><a class="btn-floating btn-gplus"><i class="fab fa-google-plus-g"> </i></a></li>
-        <li class="list-inline-item"><a class="btn-floating btn-li"><i class="fab fa-linkedin-in"> </i></a></li>
-        <li class="list-inline-item"><a class="btn-floating btn-git"><i class="fab fa-github"> </i></a></li>
-      </ul>
-    </div>
-    <!--/.Social buttons-->
 
     <!--Copyright-->
     <div class="footer-copyright py-3 text-center">
       <div class="container-fluid">
-        © 2018 Copyright: <a href="http://www.MDBootstrap.com"> MDBootstrap.com </a>
+        © 2018 Copyright: <a href="http://www.randomracer.com"> RandomRacer.com </a>
 
       </div>
     </div>
@@ -954,8 +913,10 @@ sub update_html
   <!-- Bootstrap core JavaScript -->
   <script type="text/javascript" src="js/bootstrap.min.js"></script>
   <!-- MDB core JavaScript -->
-  <script type="text/javascript" src="js/mdb.min.js">
-    console.log("In js/mdb.min.js");
+  <script type="text/javascript" src="js/mdb.min.js"></script>
+
+  <script>
+    console.log("In script");
     // SideNav Initialization
     \$(".button-collapse").sideNav();
 
@@ -964,6 +925,7 @@ sub update_html
     var ps = new PerfectScrollbar(sideNavScrollbar);
 
   </script>
+
 </body>
 
 </html>
