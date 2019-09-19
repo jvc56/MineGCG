@@ -755,7 +755,7 @@ sub update_html
 </div>
 
 
-  <div style="width: 98%">
+  <div style="width: 98%; margin: auto;">
     <form class="border border-light p-5" action="$cgibin_name/mine_webapp.pl" target="_blank" method="get" onsubmit="return nocacheresult()">
 
       <p class="h4 mb-4 text-center">Search for a Player</p>
@@ -765,7 +765,7 @@ sub update_html
 
     </form>
   </div>
-  
+
   <!-- SCRIPTS -->
   <!-- JQuery -->
   <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
