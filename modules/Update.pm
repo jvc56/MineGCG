@@ -98,11 +98,11 @@ sub update_search_data
 <<BUTTON
       </div>
 
-      <div>
-        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseOptions"
+      <div style="margin: auto">
+        <a data-toggle="collapse" data-target="#collapseOptions"
           aria-expanded="false" aria-controls="collapseOptions">
           Toggle More Options
-        </button>
+        </a>
       </div>
 BUTTON
 ;
@@ -689,7 +689,7 @@ sub update_html
 <body>
 
 <!--Navbar-->
-<nav class="navbar navbar-expand-lg navbar-dark primary-color">
+<nav class="navbar navbar-expand-lg navbar-dark elegent-color-dark blue-text">
 
   <!-- Navbar brand -->
   <a class="navbar-brand" href="/" style="font-family: 'VT323', monospace;">RandomRacer</a>
