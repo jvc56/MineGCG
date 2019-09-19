@@ -933,7 +933,7 @@ sub make_quotes_carousel
     ['SAD!', 'Tim Weiss'],
     ['WETO!', 'Tim Weiss'],
     ['Hot!', 'Tim Weiss'],
-    ['Mosey!', 'Tim Weiss']
+    ['Mosey!', 'Tim Weiss'],
     ['The sun is setting on this game.', 'Tim Weiss'],
     ['Don\'t mosey now, lest ye mosey to the grave.', 'Tim Weiss'],
     ['Are they splitsville?', 'Tim Weiss'],
