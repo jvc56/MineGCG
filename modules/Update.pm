@@ -976,9 +976,9 @@ sub make_quotes_carousel
       </div>
 QUOTE
 ;
-
+    $html_content .= $div;
   }
-
+  return $html_content;
 
 }
 
