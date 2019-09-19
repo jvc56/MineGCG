@@ -105,6 +105,9 @@ sub update_search_data
         </a>
         <button class="btn" type="submit">Submit</button>
       </div>
+      <div style="text-align: center">
+        <button class="btn" type="submit">Submit</button>
+      </div>
 BUTTON
 ;
 
