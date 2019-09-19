@@ -755,6 +755,45 @@ sub update_html
   <script type="text/javascript" src="js/bootstrap.min.js"></script>
   <!-- MDB core JavaScript -->
   <script type="text/javascript" src="js/mdb.min.js"></script>
+
+  <script>
+    function nocacheresult()
+    {
+      $validation
+      var inputs = document.getElementsByTagName("input");
+      for (i = 0; i < inputs.length; i++)
+      {
+        if (inputs[i].value != "Submit" && inputs[i].name != "name" && inputs[i].value != "")
+        {
+          // debug.innerHTML = inputs[i].name + " -  "  + inputs[i].value;
+          return true;
+        }
+      }
+      var selects = document.getElementsByTagName("select");
+      for (i = 0; i < selects.length; i++)
+      {
+        if (selects[i].value != "")
+        {
+          // debug.innerHTML = selects[i].name + " -s-  "  + selects[i].value;
+          return true;
+        }
+      }
+      var name = document.getElementsByName("name")[0].value;
+      // Sanitize exactly as MineGCG does
+      name = name.trim();
+      name = name.replace(/ /g, "_");
+      name = name.replace(/[^\\w\\-]/g, "");
+      name = name.toUpperCase();
+      window.open("/cache/" + name + ".html", "_blank");
+      return false;
+    }
+
+    \$(function(){
+      \$("#$search_data_id").load("$search_data_html");
+    });
+
+  </script>
+
 </body>
 
 </html>
