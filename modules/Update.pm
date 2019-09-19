@@ -104,7 +104,7 @@ sub make_select_input
     my $val = $data->[$i];
     $options .= "<option value='$val'>$val</option>\n";
   }
-  return "<tr><td>$title</td><td><select class='browser-default custom-select mb-4'  name='$name' class='minegcgforminput'>$options</select></td></tr>";
+  return "$title<select class='browser-default custom-select mb-4' name='$name'>$options</select>";
 }
 
 sub add_input_validation
@@ -199,9 +199,8 @@ FUNCTION
   my $html =
   "
 
-  <tr>
-  <td>$title</td>
-  <td>
+  $title
+
   <input class='form-control mb-4' $required name='$name' list='$html_id' id='$input_id' $input_function>
     <datalist id='$html_id'>
   ";
@@ -213,7 +212,7 @@ FUNCTION
     $html .= "<option  value=\"$item\"></option>\n";
   }
 
-  $html .= "    </datalist></td></tr>\n";
+  $html .= "    </datalist>\n";
   return $html
 }
 
@@ -737,11 +736,8 @@ sub update_html
 
   <p class="h4 mb-4 text-center">Search for a Player</p>
 
-  <table>
-  <tbody id="$search_data_id">
-
-  </tbody>
-  </table>
+  <div id="$search_data_id">
+  </div>
 
   <div class="minegcgform"><input type="submit" value="Submit" class="minegcgforminput"></div>
 
