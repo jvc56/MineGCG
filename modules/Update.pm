@@ -664,8 +664,10 @@ sub update_html
 
   $search_data_id =~ s/\..*//g;
 
-  my $quote_style = "text-align: center";
   my $navbar_text_style = "";
+
+  my $quotes_carousel_content = make_quotes_carousel();
+
   my $index_html = <<HTML
 
 <!DOCTYPE html>
@@ -734,16 +736,8 @@ sub update_html
 <!--/.Navbar-->
 
 <div style="padding-bottom: 5%; padding-top: 5%" id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
-  <div class="carousel-inner">
-    <div class="carousel-item active" style="$quote_style">
-      Yeet 1
-    </div>
-    <div class="carousel-item" style="$quote_style">
-      Yeet 2
-    </div>
-    <div class="carousel-item" style="$quote_style">
-      Yeet 3
-    </div>
+  <div id="quotes-carousel" class="carousel-inner">
+    $quotes_carousel_content
   </div>
 </div>
 
@@ -814,7 +808,23 @@ sub update_html
       \$('#collapseOptions').collapse('toggle');
     }
 
+
+    \$.fn.shuffleChildren = function() {
+        \$.each(this.get(), function(index, el) {
+            var $el = $(el);
+            var $find = $el.children();
+
+            $find.sort(function() {
+                return 0.5 - Math.random();
+            });
+
+            $el.empty();
+            $find.appendTo($el);
+        });
+    };
+
     \$(function(){
+      \$("#quotes-carousel").shuffleChildren();
       \$("#$search_data_id").load("$search_data_html");
     });
 
@@ -904,6 +914,73 @@ sub add_stat
   }
 }
 
+sub make_quotes_carousel
+{
+  my $cache_dir      = Constants::CACHE_DIRECTORY_NAME;
+  my $quote_style = "text-align: center";
+  my @content = 
+  (
+    ['This is waaaay cooler than my website.', 'Cesar Del Solar', ' (probably)'],
+    ['This is waaaay cooler than my website.', 'Seth Lipkin',     ' (probably)'],
+    ['This is waaaay cooler than my website.', 'Chris Lipe',      ' (probably)'],
+    ['*ERRRTTT* ... *ERRRTTT* ... *ERRRTTT* ... ', 'Vince Castellano', '\'s QR scanner'],
+    ['Turkey!', 'Robert Linn'],
+    ['You stinker!', 'Robert Linn'],
+    ['Was it something I said?', 'Robert Linn'],
+    ['God damn!', 'Marlon Hill'],
+    ['Don\'t phony me, don\'t give me an out, I\'m gonna go smoke.', 'Marlon Hill', ', when stuck with an unplayable tile'],
+    ['NO!', 'Tim Weiss'],
+    ['SAD!', 'Tim Weiss'],
+    ['WETO!', 'Tim Weiss'],
+    ['Hot!', 'Tim Weiss'],
+    ['Mosey!', 'Tim Weiss']
+    ['The sun is setting on this game.', 'Tim Weiss'],
+    ['Don\'t mosey now, lest ye mosey to the grave.', 'Tim Weiss'],
+    ['Are they splitsville?', 'Tim Weiss'],
+    ['...', 'Karl Higby'],
+    ['Whelp, can\'t complain about this start to the tournament!', 'Dan Milton'],
+    ['Whelp, I think that\'ll do it!', 'Dan Milton', ', after being stuck with over 40 points on his rack'],
+    ['The blank is an S as in Schenectady!', 'Kevin Gauthier'],
+    ['Fucking fuck!', 'Evans Clinchy'],
+    ['Let\'s play some scrabble!', 'Jason Broersma'],
+    ['#KNOWLEDGESADDEST', 'Joshua Castellano'],
+    ['Do you, like, hate everything?', 'Inae Bloom', ', shortly after meeting Tim Weiss'],
+    ['That\'s notable!', 'Judy Cole'],
+    ['It\'s not a big deal, but ...', 'Josh Greenway']
+  );
+
+  my $html_content = "";
+
+  for (my $i = 0; $i < scalar @content; $i++)
+  {
+    my $active = "";
+    if ($i == 0)
+    {
+      $active = 'active';
+    }
+    my $item = $content[$i];
+    my $quote = $item->[0];
+    my $name  = $item->[1];
+    my $context = $item->[2];
+    if (!$context)
+    {
+      $context = "";
+    }
+    my $name_with_underscores = Utils::sanitize($name);
+
+    my $link = "<a href='/$cache_dir/$name_with_underscores.html' target='_blank'>$name</a>";
+
+    my $div = <<QUOTE
+      <div class="carousel-item $active" style="$quote_style">
+        "$quote"<br>- $link$context
+      </div>
+QUOTE
+;
+
+  }
+
+
+}
 
 
 1;
