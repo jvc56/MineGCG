@@ -809,6 +809,7 @@ sub update_html
       {
         el.innerHTML = '<i class="fas fa-angle-down rotate-icon"></i>'
       }
+      el.click();
     }
 
     \$(function(){
