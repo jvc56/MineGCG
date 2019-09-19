@@ -649,7 +649,7 @@ sub update_html
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>RandomRacer</title>
+  <title>Material Design Bootstrap</title>
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
   <!-- Bootstrap core CSS -->
@@ -660,233 +660,30 @@ sub update_html
   <link href="css/style.css" rel="stylesheet">
 </head>
 
-<body class="fixed-sn grey-skin">
+<body>
 
-  <!--Double navigation-->
-  <header>
-    <!-- Sidebar navigation -->
-    <div id="slide-out" class="side-nav sn-bg-4 fixed">
-      <ul class="custom-scrollbar">
-        <!-- Logo -->
-        <li>
-          <div class="logo-wrapper waves-light">
-            <a href="#"><img src="https://mdbootstrap.com/img/logo/mdb-transparent.png" class="img-fluid flex-center"></a>
-          </div>
-        </li>
-        <!--/. Logo -->
-
-        <!--Search Form-->
-        <li>
-          <form class="search-form" role="search">
-            <div class="form-group md-form mt-0 pt-1 waves-light">
-              <input type="text" class="form-control" placeholder="Search">
-            </div>
-          </form>
-        </li>
-        <!--/.Search Form-->
-        <!-- Side navigation links -->
-        <li>
-          <ul class="collapsible collapsible-accordion">
-            <li><a class="collapsible-header waves-effect arrow-r"><i class="fas fa-chevron-right"></i> Submit blog<i
-                  class="fas fa-angle-down rotate-icon"></i></a>
-              <div class="collapsible-body">
-                <ul class="list-unstyled">
-                  <li><a href="#" class="waves-effect">Submit listing</a>
-                  </li>
-                  <li><a href="#" class="waves-effect">Registration form</a>
-                  </li>
-                </ul>
-              </div>
-            </li>
-            <li><a class="collapsible-header waves-effect arrow-r"><i class="far fa-hand-pointer"></i> Instruction<i
-                  class="fas fa-angle-down rotate-icon"></i></a>
-              <div class="collapsible-body">
-                <ul class="list-unstyled">
-                  <li><a href="#" class="waves-effect">For bloggers</a>
-                  </li>
-                  <li><a href="#" class="waves-effect">For authors</a>
-                  </li>
-                </ul>
-              </div>
-            </li>
-            <li><a class="collapsible-header waves-effect arrow-r"><i class="fas fa-eye"></i> About<i class="fas fa-angle-down rotate-icon"></i></a>
-              <div class="collapsible-body">
-                <ul class="list-unstyled">
-                  <li><a href="#" class="waves-effect">Introduction</a>
-                  </li>
-                  <li><a href="#" class="waves-effect">Monthly meetings</a>
-                  </li>
-                </ul>
-              </div>
-            </li>
-            <li><a class="collapsible-header waves-effect arrow-r"><i class="far fa-envelope"></i> Contact me<i class="fas fa-angle-down rotate-icon"></i></a>
-              <div class="collapsible-body">
-                <ul class="list-unstyled">
-                  <li><a href="#" class="waves-effect">FAQ</a>
-                  </li>
-                  <li><a href="#" class="waves-effect">Write a message</a>
-                  </li>
-                  <li><a href="#" class="waves-effect">FAQ</a>
-                  </li>
-                  <li><a href="#" class="waves-effect">Write a message</a>
-                  </li>
-                  <li><a href="#" class="waves-effect">FAQ</a>
-                  </li>
-                  <li><a href="#" class="waves-effect">Write a message</a>
-                  </li>
-                  <li><a href="#" class="waves-effect">FAQ</a>
-                  </li>
-                  <li><a href="#" class="waves-effect">Write a message</a>
-                  </li>
-                </ul>
-              </div>
-            </li>
-          </ul>
-        </li>
-        <!--/. Side navigation links -->
-      </ul>
-      <div class="sidenav-bg mask-strong"></div>
-    </div>
-    <!--/. Sidebar navigation -->
-    <!-- Navbar -->
-    <nav class="navbar fixed-top navbar-toggleable-md navbar-expand-lg scrolling-navbar double-nav">
-      <!-- SideNav slide-out button -->
-      <div class="float-left">
-        <a href="#" data-activates="slide-out" class="button-collapse"><i class="fas fa-bars"></i></a>
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <a class="nav-link active" href="#">Active</a>
+    </li>
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+        aria-expanded="false">Dropdown</a>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" href="#">Action</a>
+        <a class="dropdown-item" href="#">Another action</a>
+        <a class="dropdown-item" href="#">Something else here</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="#">Separated link</a>
       </div>
-      <!-- Breadcrumb-->
-      <div class="breadcrumb-dn mr-auto">
-        <p>Material Design for Bootstrap</p>
-      </div>
-      <ul class="nav navbar-nav nav-flex-icons ml-auto">
-        <li class="nav-item">
-          <a class="nav-link"><i class="fas fa-envelope"></i> <span class="clearfix d-none d-sm-inline-block">Contact</span></a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link"><i class="far fa-comments"></i> <span class="clearfix d-none d-sm-inline-block">Support</span></a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link"><i class="fas fa-user"></i> <span class="clearfix d-none d-sm-inline-block">Account</span></a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
-            aria-expanded="false">
-            Dropdown
-          </a>
-          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-            <a class="dropdown-item" href="#">Action</a>
-            <a class="dropdown-item" href="#">Another action</a>
-            <a class="dropdown-item" href="#">Something else here</a>
-          </div>
-        </li>
-      </ul>
-    </nav>
-    <!-- /.Navbar -->
-  </header>
-  <!--/.Double navigation-->
-
-  <!--Main layout-->
-  <main>
-
-    <div class="container-fluid text-center">
-
-
-
-    </div>
-
-  </main>
-  <!--/Main layout-->
-
-  <!--Footer-->
-  <footer class="page-footer text-center text-md-left pt-4">
-
-    <!--Footer Links-->
-    <div class="container-fluid">
-      <div class="row">
-
-        <!--First column-->
-        <div class="col-md-3">
-          <h5 class="text-uppercase font-weight-bold mb-4">Footer Content</h5>
-          <p>Here you can use rows and columns here to organize your footer content.</p>
-        </div>
-        <!--/.First column-->
-
-        <hr class="w-100 clearfix d-md-none">
-
-        <!--Second column-->
-        <div class="col-md-2 mx-auto">
-          <h5 class="text-uppercase font-weight-bold mb-4">Links</h5>
-          <ul class="list-unstyled">
-            <li><a href="#!">Link 1</a></li>
-            <li><a href="#!">Link 2</a></li>
-            <li><a href="#!">Link 3</a></li>
-            <li><a href="#!">Link 4</a></li>
-          </ul>
-        </div>
-        <!--/.Second column-->
-
-        <hr class="w-100 clearfix d-md-none">
-
-        <!--Third column-->
-        <div class="col-md-2 mx-auto">
-          <h5 class="text-uppercase font-weight-bold mb-4">Links</h5>
-          <ul class="list-unstyled">
-            <li><a href="#!">Link 1</a></li>
-            <li><a href="#!">Link 2</a></li>
-            <li><a href="#!">Link 3</a></li>
-            <li><a href="#!">Link 4</a></li>
-          </ul>
-        </div>
-        <!--/.Third column-->
-
-        <hr class="w-100 clearfix d-md-none">
-
-        <!--Fourth column-->
-        <div class="col-md-2 mx-auto">
-          <h5 class="text-uppercase font-weight-bold mb-4">Links</h5>
-          <ul class="list-unstyled">
-            <li><a href="#!">Link 1</a></li>
-            <li><a href="#!">Link 2</a></li>
-            <li><a href="#!">Link 3</a></li>
-            <li><a href="#!">Link 4</a></li>
-          </ul>
-        </div>
-        <!--/.Fourth column-->
-
-      </div>
-    </div>
-    <!--/.Footer Links-->
-
-    <hr>
-
-    <!--Call to action-->
-    <div class="call-to-action text-center my-4">
-      <ul class="list-unstyled list-inline">
-        <li class="list-inline-item">
-          <h5>Register for free</h5>
-        </li>
-        <li class="list-inline-item"><a href="" class="btn btn-primary">Sign up!</a></li>
-      </ul>
-    </div>
-    <!--/.Call to action-->
-
-    <hr>
-
-
-    <!--Copyright-->
-    <div class="footer-copyright py-3 text-center">
-      <div class="container-fluid">
-        © 2018 Copyright: <a href="http://www.randomracer.com"> RandomRacer.com </a>
-
-      </div>
-    </div>
-    <!--/.Copyright-->
-
-  </footer>
-  <!--/.Footer-->
-
-
-
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">Link</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">Disabled</a>
+    </li>
+  </ul>
 
   <!-- SCRIPTS -->
   <!-- JQuery -->
@@ -897,17 +694,6 @@ sub update_html
   <script type="text/javascript" src="js/bootstrap.min.js"></script>
   <!-- MDB core JavaScript -->
   <script type="text/javascript" src="js/mdb.min.js"></script>
-
-  <script>
-    console.log("In script");
-    // SideNav Initialization
-    \$(".button-collapse").sideNav();
-
-    var sideNavScrollbar = document.querySelector('.custom-scrollbar');
-    var ps = new PerfectScrollbar(sideNavScrollbar);
-
-  </script>
-
 </body>
 
 </html>
