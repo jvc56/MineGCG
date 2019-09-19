@@ -640,6 +640,9 @@ sub update_html
   my $search_data_html = $search_data_id;
 
   $search_data_id =~ s/\..*//g;
+
+  my $quote_style = "text-align: center";
+
   my $index_html = <<HTML
 
 <!DOCTYPE html>
@@ -718,17 +721,30 @@ sub update_html
 
 <div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
   <div class="carousel-inner">
-    <div class="carousel-item active">
+    <div class="carousel-item active" style="$quote_style">
       Yeet 1
     </div>
-    <div class="carousel-item">
+    <div class="carousel-item" style="$quote_style">
       Yeet 2
     </div>
-    <div class="carousel-item">
+    <div class="carousel-item" style="$quote_style">
       Yeet 3
     </div>
   </div>
 </div>
+
+<form action="$cgibin_name/mine_webapp.pl" target="_blank" method="get" onsubmit="return nocacheresult()">
+
+  <table class="minegcgforminput">
+  <tbody id="$search_data_id">
+
+  </tbody>
+  </table>
+
+  <div class="minegcgform"><input type="submit" value="Submit" class="minegcgforminput"></div>
+
+
+</form>
 
   <!-- SCRIPTS -->
   <!-- JQuery -->
