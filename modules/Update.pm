@@ -103,7 +103,6 @@ sub update_search_data
           aria-expanded="false" aria-controls="collapseOptions" onclick='toggle_icon(this)'>
           <i class="fas fa-angle-down rotate-icon"></i>
         </a>
-        <button class="btn" type="submit">Submit</button>
       </div>
       <div style="text-align: center">
         <button class="btn" type="submit">Submit</button>
