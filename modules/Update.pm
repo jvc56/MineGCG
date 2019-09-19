@@ -56,8 +56,6 @@ sub update_search_data
     my $input_id = $name . '_input';
     my $html_id  = $name . '_html';
 
-    my $input_class = 'class="form-control mb-4';
-
     if ($table)
     {
       my $data = Utils::get_all_unique_values($dbh, $table, $field);
@@ -83,12 +81,11 @@ sub update_search_data
     else
     {
       my $data = $field;
-      $input_class = 'class="browser-default custom-select mb-4"';
       $html .= make_select_input($title, $name, $required, $data);
     }
   }
 
-  $html .= "<input class='$input_class' type='submit' value='Submit' id='$button_id'>";
+  $html .= "<input type='submit' value='Submit' id='$button_id'>";
   Utils::write_string_to_file($html, Constants::HTML_DIRECTORY_NAME . '/' . Constants::SEARCH_DATA_FILENAME);
   return $validate;
 }
@@ -107,7 +104,7 @@ sub make_select_input
     my $val = $data->[$i];
     $options .= "<option value='$val'>$val</option>\n";
   }
-  return "<tr><td>$title</td><td><select name='$name' class='minegcgforminput'>$options</select></td></tr>";
+  return "<tr><td>$title</td><td><select class='browser-default custom-select mb-4'  name='$name' class='minegcgforminput'>$options</select></td></tr>";
 }
 
 sub add_input_validation
@@ -205,7 +202,7 @@ FUNCTION
   <tr>
   <td>$title</td>
   <td>
-  <input $required name='$name'  class='minegcgforminput' list='$html_id' id='$input_id' $input_function>
+  <input class='form-control mb-4' $required name='$name' list='$html_id' id='$input_id' $input_function>
     <datalist id='$html_id'>
   ";
 
