@@ -682,6 +682,8 @@ sub update_html
   <link href="css/mdb.min.css" rel="stylesheet">
   <!-- Your custom styles (optional) -->
   <link href="css/style.css" rel="stylesheet">
+
+  <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
 </head>
 
 <body>
@@ -690,7 +692,7 @@ sub update_html
 <nav class="navbar navbar-expand-lg navbar-dark primary-color">
 
   <!-- Navbar brand -->
-  <a class="navbar-brand" href="#">RandomRacer</a>
+  <a class="navbar-brand" href="/" style="font-family: 'VT323', monospace;">RandomRacer</a>
 
   <!-- Collapse button -->
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
@@ -704,18 +706,13 @@ sub update_html
     <!-- Links -->
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
-        <a class="nav-link" href="#">Home
-          <span class="sr-only">(current)</span>
-        </a>
+        <a class="nav-link" href="/leaderboards.html">Leaderboards</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">Leaderboards</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Notable</a>
+        <a class="nav-link" href="/notable.html">Notable</a>
       </li>
 
-      <!-- Dropdown -->
+      <!-- Dropdown 
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown"
           aria-haspopup="true" aria-expanded="false">Dropdown</a>
@@ -725,22 +722,16 @@ sub update_html
           <a class="dropdown-item" href="#">Something else here</a>
         </div>
       </li>
-
+      -->
     </ul>
     <!-- Links -->
-
-    <form class="form-inline">
-      <div class="md-form my-0">
-        <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-      </div>
-    </form>
   </div>
   <!-- Collapsible content -->
 
 </nav>
 <!--/.Navbar-->
 
-<div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
+<div style="padding-bottom: 5%; padding-top: 5%" id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
   <div class="carousel-inner">
     <div class="carousel-item active" style="$quote_style">
       Yeet 1
