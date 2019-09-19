@@ -955,11 +955,13 @@ sub update_html
   <script type="text/javascript" src="js/bootstrap.min.js"></script>
   <!-- MDB core JavaScript -->
   <script type="text/javascript" src="js/mdb.min.js">
-    
+    console.log("In js/mdb.min.js");
     // SideNav Initialization
-    $(".button-collapse").sideNav();
+    \$(".button-collapse").sideNav();
 
-    new WOW().init();
+    // SideNav Scrollbar Initialization
+    var sideNavScrollbar = document.querySelector('.custom-scrollbar');
+    var ps = new PerfectScrollbar(sideNavScrollbar);
 
   </script>
 </body>
