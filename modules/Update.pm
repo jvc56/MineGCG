@@ -100,8 +100,8 @@ sub update_search_data
 
       <div style="text-align: center">
         <a data-toggle="collapse" data-target="#collapseOptions"
-          aria-expanded="false" aria-controls="collapseOptions" style="color: #007bff">
-          Toggle More Options
+          aria-expanded="false" aria-controls="collapseOptions">
+          <i class="fas fa-angle-down rotate-icon"></i>
         </a>
       </div>
 BUTTON
@@ -706,7 +706,7 @@ sub update_html
     <!-- Links -->
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
-        <a class="nav-link" href="/leaderboards.html"  style="$navbar_text_style">Leaderboards</a>
+        <a class="nav-link" href="/leaderboard.html"  style="$navbar_text_style">Leaderboards</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="/notable.html"  style="$navbar_text_style">Notable</a>
