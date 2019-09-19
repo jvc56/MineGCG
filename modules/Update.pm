@@ -56,6 +56,8 @@ sub update_search_data
     my $input_id = $name . '_input';
     my $html_id  = $name . '_html';
 
+    my $input_class = 'class="form-control mb-4';
+
     if ($table)
     {
       my $data = Utils::get_all_unique_values($dbh, $table, $field);
@@ -81,11 +83,12 @@ sub update_search_data
     else
     {
       my $data = $field;
+      $input_class = 'class="browser-default custom-select mb-4"';
       $html .= make_select_input($title, $name, $required, $data);
     }
   }
 
-  $html .= "<input type='submit' value='Submit' id='$button_id'>";
+  $html .= "<input class='$input_class' type='submit' value='Submit' id='$button_id'>";
   Utils::write_string_to_file($html, Constants::HTML_DIRECTORY_NAME . '/' . Constants::SEARCH_DATA_FILENAME);
   return $validate;
 }
@@ -733,9 +736,11 @@ sub update_html
   </div>
 </div>
 
-<form action="$cgibin_name/mine_webapp.pl" target="_blank" method="get" onsubmit="return nocacheresult()">
+<form class="border border-light p-5" action="$cgibin_name/mine_webapp.pl" target="_blank" method="get" onsubmit="return nocacheresult()">
 
-  <table class="minegcgforminput">
+  <p class="h4 mb-4 text-center">Search for a Player</p>
+
+  <table>
   <tbody id="$search_data_id">
 
   </tbody>
