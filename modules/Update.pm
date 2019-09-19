@@ -107,7 +107,7 @@ sub update_search_data
 BUTTON
 ;
 
-  $html .= '<button class="btn btn-info btn-block my-4" type="submit">Submit</button>';
+  $html .= '<button class="btn" type="submit">Submit</button>';
   Utils::write_string_to_file($html, Constants::HTML_DIRECTORY_NAME . '/' . Constants::SEARCH_DATA_FILENAME);
   return $validate;
 }
@@ -746,10 +746,10 @@ sub update_html
 </div>
 
 
-  <div style="width: 98%; margin: auto;">
-    <form class="border border-light p-5" action="$cgibin_name/mine_webapp.pl" target="_blank" method="get" onsubmit="return nocacheresult()">
+  <div style="width: 90%; margin: auto;">
+    <form action="$cgibin_name/mine_webapp.pl" target="_blank" method="get" onsubmit="return nocacheresult()">
 
-      <p class="h4 mb-4 text-center">Search for a Player</p>
+      <!-- <p class="h4 mb-4 text-center">Search for a Player</p> -->
 
       <div id="$search_data_id">
       </div>
