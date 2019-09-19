@@ -45,8 +45,10 @@ sub update_search_data
 
   my $html = "";
   my $validate = "var input; var options; var relevantOptions;\n";
-  foreach my $inp (@inputs)
+  for (my $i = 0; $i < scalar @inputs; $i++)
   {
+    my $inp      = $inputs[$i];
+
     my $title    = $inp->[0];
     my $name     = $inp->[1];
     my $required = $inp->[2];
@@ -83,9 +85,29 @@ sub update_search_data
       my $data = $field;
       $html .= make_select_input($title, $name, $required, $data);
     }
+
+    if ($i == 0)
+    {
+
+      $html .= '<div class="collapse" id="collapseOptions">';
+    }
   }
 
-  $html .= "<input type='submit' value='Submit' id='$button_id'>";
+
+      $html .=
+<<BUTTON
+      </div>
+
+      <div>
+        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseOptions"
+          aria-expanded="false" aria-controls="collapseOptions">
+          Toggle More Options
+        </button>
+      </div>
+BUTTON
+;
+
+  $html .= '<button class="btn btn-info btn-block my-4" type="submit">Submit</button>';
   Utils::write_string_to_file($html, Constants::HTML_DIRECTORY_NAME . '/' . Constants::SEARCH_DATA_FILENAME);
   return $validate;
 }
@@ -732,18 +754,18 @@ sub update_html
   </div>
 </div>
 
-<form class="border border-light p-5" action="$cgibin_name/mine_webapp.pl" target="_blank" method="get" onsubmit="return nocacheresult()">
 
-  <p class="h4 mb-4 text-center">Search for a Player</p>
+  <div style="width: 98%">
+    <form class="border border-light p-5" action="$cgibin_name/mine_webapp.pl" target="_blank" method="get" onsubmit="return nocacheresult()">
 
-  <div id="$search_data_id">
+      <p class="h4 mb-4 text-center">Search for a Player</p>
+
+      <div id="$search_data_id">
+      </div>
+
+    </form>
   </div>
-
-  <div class="minegcgform"><input type="submit" value="Submit" class="minegcgforminput"></div>
-
-
-</form>
-
+  
   <!-- SCRIPTS -->
   <!-- JQuery -->
   <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
