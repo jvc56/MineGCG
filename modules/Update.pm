@@ -735,7 +735,7 @@ sub update_html
 </nav>
 <!--/.Navbar-->
 
-<div style="padding-bottom: 5%; padding-top: 5%" id="quotes-carousel" class="carousel slide" data-ride="carousel">
+<div style="padding-bottom: 5%; padding-top: 5%" class="carousel slide" data-ride="carousel" data-interval="10000">
   <div id="quotes-carousel-content" class="carousel-inner">
     $quotes_carousel_content
   </div>
@@ -825,7 +825,6 @@ sub update_html
 
     \$(function(){
       \$("#quotes-carousel-content").shuffleChildren();
-      \$("#quotes-carousel").carousel({interval: 10000});
       \$("#$search_data_id").load("$search_data_html");
     });
 
