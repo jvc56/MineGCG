@@ -659,7 +659,10 @@ sub update_html
   <!-- Your custom styles (optional) -->
 
   <style>
-
+    /* Only for snippet */
+    .double-nav .breadcrumb-dn {
+      color: #fff;
+    }
   </style>
 
 
@@ -951,7 +954,14 @@ sub update_html
   <!-- Bootstrap core JavaScript -->
   <script type="text/javascript" src="js/bootstrap.min.js"></script>
   <!-- MDB core JavaScript -->
-  <script type="text/javascript" src="js/mdb.min.js"></script>
+  <script type="text/javascript" src="js/mdb.min.js">
+    
+    // SideNav Initialization
+    $(".button-collapse").sideNav();
+
+    new WOW().init();
+
+  </script>
 </body>
 
 </html>
