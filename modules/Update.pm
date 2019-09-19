@@ -679,7 +679,7 @@ sub update_html
 
     <!-- Links -->
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
+      <li class="nav-item">
         <a class="nav-link" href="#">Home
           <span class="sr-only">(current)</span>
         </a>
@@ -715,6 +715,20 @@ sub update_html
 
 </nav>
 <!--/.Navbar-->
+
+<div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      Yeet 1
+    </div>
+    <div class="carousel-item">
+      Yeet 2
+    </div>
+    <div class="carousel-item">
+      Yeet 3
+    </div>
+  </div>
+</div>
 
   <!-- SCRIPTS -->
   <!-- JQuery -->
