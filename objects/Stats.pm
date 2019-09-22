@@ -131,8 +131,8 @@ sub addStat
       my $other_stat = $other_stats->{$other_key}->[$i];
 
       if (
-           $this_stat->{Constants::STAT_NAME}          ne $other_stat->{Constants::STAT_NAME} || 
-           $this_stat->{Constants::STAT_DATATYPE_NAME} ne $other_stat->{Constants::STAT_DATATYPE_NAME} || 
+           $this_stat->{Constants::STAT_NAME}          ne $other_stat->{Constants::STAT_NAME} ||
+           $this_stat->{Constants::STAT_DATATYPE_NAME} ne $other_stat->{Constants::STAT_DATATYPE_NAME} ||
            $this_stat->{Constants::STAT_METATYPE_NAME} ne $other_stat->{Constants::STAT_METATYPE_NAME}
          )
       {
@@ -222,8 +222,8 @@ sub makeRow
 
   my $s = "";
 
-  $s .= "|" .  (sprintf "%-$tiw"."s", "  ".$name) . 
-               (sprintf $spaces."%-$aw"."s", $average) . 
+  $s .= "|" .  (sprintf "%-$tiw"."s", "  ".$name) .
+               (sprintf $spaces."%-$aw"."s", $average) .
                (sprintf "%-$tow"."s", $total) . "|\n";
   return $s;
 }
@@ -401,347 +401,11 @@ sub statItemToString
     $s .= makeItem($this, $this->{Constants::STAT_NAME}, $this->{'total'}, $total_games);
   }
 
-  return $s;  
-}
-
-sub toString
-{
-  my $this = shift;
-  my $html = shift;
-
-  my $num;
-
-  my $player1_ref = $this->{Constants::STATS_DATA_KEY_NAME}->{Constants::STATS_DATA_PLAYER_ONE_KEY_NAME};
-  my $player2_ref = $this->{Constants::STATS_DATA_KEY_NAME}->{Constants::STATS_DATA_PLAYER_TWO_KEY_NAME};
-  my $game_ref    = $this->{Constants::STATS_DATA_KEY_NAME}->{Constants::STATS_DATA_GAME_KEY_NAME      };
-  my $notable_ref = $this->{Constants::STATS_DATA_KEY_NAME}->{Constants::STATS_DATA_NOTABLE_KEY_NAME   };
-
-  foreach my $statob (@{$game_ref})
-  {
-    if ($statob->{Constants::STAT_NAME} eq 'Games')
-    {
-      $num = $statob->{Constants::STAT_ITEM_OBJECT_NAME}->{'total'};
-      last;
-    }
-  }
-
-  my @notable_stats = ();    
-  my @game_stats = ();
-
-  for (my $i = 0; $i < scalar @{$notable_ref}; $i++) 
-  {
-    my $object = $notable_ref->[$i]->{Constants::STAT_ITEM_OBJECT_NAME};
-    $object->{Constants::STAT_NAME} = $notable_ref->[$i]->{Constants::STAT_NAME};
-    push @notable_stats, $object;
-  }
-  for (my $i = 0; $i < scalar @{$game_ref}; $i++) 
-  {
-    my $object = $game_ref->[$i]->{Constants::STAT_ITEM_OBJECT_NAME};
-    $object->{Constants::STAT_NAME} = $game_ref->[$i]->{Constants::STAT_NAME};
-    push @game_stats, $object;
-  }
-
-  my @player_list_stats  = ();
-  my @opp_list_stats     = ();
-
-  my @player_item_stats  = ();
-  my @opp_item_stats     = ();
-
-  my $player_mistake_list;
-  my $opp_mistake_list;
-
-  for (my $i = 0; $i < scalar @{$player1_ref}; $i++)
-  {
-    my $stat   = $player1_ref->[$i];
-    my $object = $stat->{Constants::STAT_ITEM_OBJECT_NAME};
-    $object->{Constants::STAT_NAME} = $stat->{Constants::STAT_NAME};
-    if ($stat->{Constants::STAT_NAME} eq "Mistakes List")
-    {
-      $player_mistake_list = $object;
-    }
-    elsif ($stat->{Constants::STAT_DATATYPE_NAME} eq Constants::DATATYPE_LIST)
-    {
-      push @player_list_stats, $object;
-    }
-    elsif ($stat->{Constants::STAT_DATATYPE_NAME} eq Constants::DATATYPE_ITEM)
-    {
-      push @player_item_stats, $object;
-    }
-  }
-
-  for (my $i = 0; $i < scalar @{$player2_ref}; $i++)
-  {
-    my $stat   = $player2_ref->[$i];
-    my $object = $stat->{Constants::STAT_ITEM_OBJECT_NAME};
-    $object->{Constants::STAT_NAME} = $stat->{Constants::STAT_NAME};
-    if ($stat->{Constants::STAT_NAME} eq "Mistakes List")
-    {
-      $opp_mistake_list = $object;
-    }
-    elsif ($stat->{Constants::STAT_DATATYPE_NAME} eq Constants::DATATYPE_LIST)
-    {
-      push @opp_list_stats, $object;
-    }
-    elsif ($stat->{Constants::STAT_DATATYPE_NAME} eq Constants::DATATYPE_ITEM)
-    {
-      push @opp_item_stats, $object;
-    }
-  }
-
-  my $s = "";
-
-  my $content_div_style = "style=
-                            'width: 90%;
-                             background-color: #22262a;
-                             margin: 5% auto;
-                             border-radius: 15px;
-                             padding: 2%;
-                             box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-                           '";
-
-  my $list_div = '';
-  $list_div .= statListToHTML(\@player_list_stats, 'Player Lists',   'player_list_stats_expander', $content_div_style);
-  $list_div .= statListToHTML(\@opp_list_stats,    'Opponent Lists', 'opponent_list_stats_expander', $content_div_style);
-  $list_div .= notableListToHTML(\@notable_stats,     'Notable Lists',  'notable_stats_expander', $content_div_style);
-  $s .= $list_div;
-
-  my $stat_div = '';
-  $stat_div .= statItemsToHTML(\@game_stats,        $num, 'Game Stats',     'game_stats_expander', $content_div_style);
-  $stat_div .= statItemsToHTML(\@player_item_stats, $num, 'Player Stats',   'player_stats_expander', $content_div_style);
-  $stat_div .= statItemsToHTML(\@opp_item_stats,    $num, 'Opponent Stats', 'opp_stats_expander', $content_div_style);
-  $s .= $stat_div;
-
-  my $mistake_div = '';
-  $mistake_div .= mistakesToHTML($player_mistake_list, 'Player Mistakes',     'player_mistakes_expander', $content_div_style);
-  $mistake_div  .= mistakesToHTML($opp_mistake_list,    'Opponent Mistakes',   'opponent_mistakes_expander', $content_div_style);
-  $s .= $mistake_div;
-
   return $s;
 }
 
-sub mistakesToHTML
-{
-  my $list        = shift;
-  my $title       = shift;
-  my $expander_id = shift;
-  my $div_style   = shift;
 
-  my @list = @{$list};
-
-  if (scalar @list == 0)
-  {
-    return '';
-  }
-
-  my $content = '';
-
-  foreach my $mistake (@list)
-  {
-    my $type = $mistake->[0];
-    my $size = $mistake->[1];
-    my $game = $mistake->[2];
-    my $play = $mistake->[3];
-    my $cmnt = $mistake->[4];
-    $content .= "<tr><td>$type</td><td>$size</td><td>$game</td><td>$play</td><td>$cmnt</td></tr>";
-  }
-  my $mistake_expander = make_expander($expander_id);
-  my $grouphtml = <<GROUP
-  <div $div_style>
-    $mistake_expander $title
-     <div class="collapse" id="$expander_id" style="overflow-y: auto; height: 40%">
-      <table>
-        <tbody>
-          <tr><th>Game</th><th>Type</th><th>Size</th><th>Play</th><th>Comment</th></tr>
-	  $content
-        </tbody>
-       </table>
-     </div>
-  </div>
-GROUP
-;
-  return $grouphtml;
-}
-
-sub statItemsToHTML
-{
-  my $listref      = shift;
-  my $numgames     = shift;
-  my $grouptitle   = shift;
-  my $group_expander_id  = shift;
-  my $div_style    = shift;
-
-  my $content = '';
-
-  for(my $i = 0; $i < scalar @{$listref}; $i++)
-  {
-    my $statitem = $listref->[$i];
-    my $statdata = $statitem->{Constants::STAT_ITEM_OBJECT_NAME};
-    my $title    = $statitem->{Constants::STAT_NAME};
-    my $subitems = $statdata->{'subitems'};
-    my $display_name = $statdata->{Constants::STAT_OBJECT_DISPLAY_NAME};
-    my $nototal_cond = $display_name && $display_name eq Constants::STAT_OBJECT_DISPLAY_PCAVG;
-    my $stat_expander = '';  
-    my $subtable      = '';
-
-    my $total    = $statdata->{'total'};
-    my $average = sprintf "%.2f", $total/$numgames;
-
-    if ($nototal_cond)
-    {
-      $average = $total;
-      $total   = '';
-    }
-
-    if ($statdata->{'link'})
-    {
-      my $link = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX . $statdata->{'link'};
-      $title = "<a href='$link' target='_blank'>$title</a>";
-    }
-
-    if ($subitems)
-    {
-      my $stat_expander_id = $title . '_subitems';
-      $stat_expander = make_expander($stat_expander_id);
-
-      $subtable .= "<tr><td colspan='4'><div class='collapse' id='$stat_expander_id'><table>\n<tbody>\n";
-
-      my $order = $statdata->{'list'};
-      for (my $i = 0; $i < scalar @{$order}; $i++)
-      {
-	my $subtitle = $order->[$i];
-        my $subtotal = $subitems->{$subtitle};
-        my $subaverage = sprintf "%.2f", $subtotal/$numgames; 
-	if ($nototal_cond)
-        {
-          $average = $total;
-          $total   = '';
-        }
-        $subtable .= "<tr><td>$subtitle</td><td>$subaverage</td><td>$subtotal</td></tr>\n";
-      }
-      $subtable .= "</tbody></table></div></td></tr>";
-    }
-    my $stathtml = "<tr><td>$stat_expander</td><td>$title</td><td>$average</td><td>$total</td></tr>";
-    $content .= "$stathtml\n$subtable";
-  }
-
-
-  my $group_expander = make_expander($group_expander_id);
-  my $grouphtml = <<GROUP
-  <div $div_style>
-    $group_expander $grouptitle
-     <div class="collapse" id="$group_expander_id">
-      <table>
-        <tbody>
-          <tr><th>Stat</th><th>Average</th><th>Total</th></tr>
-	  $content
-        </tbody>
-       </table>
-     </div>
-  </div>
-GROUP
-;
-  return $grouphtml;
-}
-
-sub statListToHTML
-{
-  my $listref      = shift;
-  my $grouptitle   = shift;
-  my $group_expander_id  = shift;
-  my $div_style    = shift;
-
-  my $prefix = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
-
-  my $content = '';
-  for(my $i = 0; $i < scalar @{$listref}; $i++)
-  {
-    my $statitem = $listref->[$i];
-    my $playlist = $statitem->{Constants::STAT_ITEM_OBJECT_NAME}->{'list'};
-    my $title    = $statitem->{Constants::STAT_NAME};
-    my $expander_id = $group_expander_id . '_' . $title;
-    my $list_table = <<TABLE
-    <div class="collapse" id="$expander_id" style="overflow-y: auto; height: 40%">
-      <table>
-        <tbody>
-        <tr><th>Color Code</th><th>Play</th><th>Probability</th><th>Score</th></tr>
-TABLE
-  ;
-    for (my $i = 0; $i < scalar @{$playlist}; $i++)
-    {
-      my $item  = $playlist->[$i];
-      my $code  = $item->[0];
-      my $play  = $item->[1];
-      my $prob  = $item->[2];
-      my $score = $item->[3];
-      my $id    = $item->[4];
-
-      $list_table .= "<tr><td>$code</td><td><a href='$prefix$id' target='_blank'>$play</a></td><td>$prob</td><td>$score</td><tr>\n";
-    }
-    $list_table .= "</tbody>\n</table>\n</div>";
-  
-    my $expander = make_expander($expander_id);
-  
-    $content .= "<div>$expander $title\n$list_table\n</div>";
-  }
-  my $group_expander = make_expander($group_expander_id);
-  return "<div $div_style>$group_expander $grouptitle\n$content</div>";
-}
-
-
-sub notableListToHTML
-{
-  my $listref      = shift;
-  my $grouptitle   = shift;
-  my $expander_id  = shift;
-
-  my $prefix = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
-
-  my $content = '';
-  for(my $i = 0; $i < scalar @{$listref}; $i++)
-  {
-    my $statitem = $listref->[$i];
-    my $gamelist = $statitem->{Constants::STAT_ITEM_OBJECT_NAME}->{'list'};
-    my $idslist  = $statitem->{Constants::STAT_ITEM_OBJECT_NAME}->{'ids'};
-    my $title    = $statitem->{Constants::STAT_NAME};
-    my $list_table = <<TABLE
-    <div class="collapse" id="$expander_id" style="overflow-y: auto; height: 40%">
-      <table>
-        <tbody>
-        <tr><th>Color Code</th><th>Play</th><th>Probability</th><th>Score</th></tr>
-TABLE
-  ;
-    for (my $i = 0; $i < scalar @{$gamelist}; $i++)
-    {
-      my $gamename  = $gamelist->[$i];
-      my $gameid    = $idslist->[$i];
-  
-      $list_table .= "<tr><td><a href='$prefix$gameid' target='_blank'>$gamename</a></td><tr>\n";
-    }
-    $list_table .= "</tbody>\n</table>\n</div>";
-  
-    my $expander = make_expander($expander_id);
-  
-    $content .= "<div>$expander $title\n$list_table\n</div>";
-  }
-  my $group_expander = make_expander($grouptitle . 'expander');
-  return "<div>$group_expander $grouptitle\n$content</div>";
-}
-
-
-
-
-sub make_expander
-{
-  my $id = shift;
-
-  my $button = <<BUTTON
-<button type='button' id='button_$id'  class='btn btn-info' data-toggle='collapse' data-target='#$id'>+</button>
-BUTTON
-;
-  return $button;
-}
-
-sub toStringLegacy
+sub toString
 {
   my $this = shift;
   my $html = shift;
@@ -766,16 +430,16 @@ sub toStringLegacy
     }
   }
 
-  my @notable_stats = ();    
+  my @notable_stats = ();
   my @game_stats = ();
 
-  for (my $i = 0; $i < scalar @{$notable_ref}; $i++) 
+  for (my $i = 0; $i < scalar @{$notable_ref}; $i++)
   {
     my $object = $notable_ref->[$i]->{Constants::STAT_ITEM_OBJECT_NAME};
     $object->{Constants::STAT_NAME} = $notable_ref->[$i]->{Constants::STAT_NAME};
     push @notable_stats, $object;
   }
-  for (my $i = 0; $i < scalar @{$game_ref}; $i++) 
+  for (my $i = 0; $i < scalar @{$game_ref}; $i++)
   {
     my $object = $game_ref->[$i]->{Constants::STAT_ITEM_OBJECT_NAME};
     $object->{Constants::STAT_NAME} = $game_ref->[$i]->{Constants::STAT_NAME};
@@ -856,7 +520,7 @@ sub toStringLegacy
   $s .= makeTitleRow($tiw, $aw, $tow, "", "AVERAGE", "TOTAL");
 
   $s .= makeTitleRow($tiw, $aw, $tow, Constants::STAT_ITEM_GAME, "", "");
-  
+
   for (my $i = 0; $i < scalar @game_stats; $i++)
   {
     $s .= statItemToString($game_stats[$i], $num, $html);
@@ -865,7 +529,7 @@ sub toStringLegacy
   $s .= makeTitleRow($tiw, $aw, $tow, "", "", "");
 
   $s .= makeTitleRow($tiw, $aw, $tow, Constants::STAT_ITEM_PLAYER, "", "");
-  
+
   for (my $i = 0; $i < scalar @player_item_stats; $i++)
   {
     $s .= statItemToString($player_item_stats[$i], $num, $html);
@@ -874,12 +538,12 @@ sub toStringLegacy
   $s .= makeTitleRow($tiw, $aw, $tow, "", "", "");
 
   $s .= makeTitleRow($tiw, $aw, $tow, Constants::STAT_ITEM_OPP, "", "");
-  
+
   for (my $i = 0; $i < scalar @opp_item_stats; $i++)
   {
     $s .= statItemToString($opp_item_stats[$i], $num, $html);
   }
-  
+
   $s .= ("_" x ($tot+2)) . "\n\n";
 
   if ($html)
@@ -892,7 +556,7 @@ sub toStringLegacy
   $s .= statItemToString($player_mistake_list, $num, Constants::MISTAKE_ITEM_LIST, $html);
 
   $s .= "\n\n\n".Constants::MISTAKE_ITEM_LIST_OPP . "\n";
-  
+
   $s .= statItemToString($opp_mistake_list, $num, Constants::MISTAKE_ITEM_LIST, $html);
 
   if ($html)
@@ -901,7 +565,7 @@ sub toStringLegacy
       $s .=  "<button onclick='toggle(\"" . Constants::MISTAKES_DIV_ID . "\")'>Toggle Mistakes List</button>\n";
   }
 
-  return $s; 
+  return $s;
 }
 
 sub statsList
@@ -1324,6 +988,84 @@ sub statsList
         $this->{'total'} = sprintf "%.4f", $this->{'total_verticals'} / $this->{'total_firsts'};
       }
     },
+
+
+    {
+      Constants::STAT_NAME => 'Horizontal Openings per First',
+      Constants::STAT_ITEM_OBJECT_NAME => {Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG, 'total' => 0, 'total_firsts' => 0, 'total_verticals' => 0},
+      Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
+      Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        $this->{'total_horizontals'} += $other->{'total_horizontals'};
+        $this->{'total_firsts'}      += $other->{'total_firsts'};
+        if ($this->{'total_firsts'} == 0)
+        {
+          return;
+        }
+        $this->{'total'} = sprintf "%.4f", $this->{'total_horizontals'} / $this->{'total_firsts'};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
+      sub
+      {
+        my $this = shift;
+        my $game = shift;
+        my $this_player = shift;
+
+        $this->{'total_horizontals'}   += $game->getNumHorizontalOpeningPlays($this_player);
+        $this->{'total_firsts'}      += $game->getNumFirsts($this_player);
+	if ($this->{'total_firsts'} == 0)
+	{
+          return;
+	}
+        $this->{'total'} = sprintf "%.4f", $this->{'total_horizontals'} / $this->{'total_firsts'};
+      }
+    },
+
+
+    {
+      Constants::STAT_NAME => 'Exchanges per First',
+      Constants::STAT_ITEM_OBJECT_NAME => {Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG, 'total' => 0, 'total_firsts' => 0, 'total_verticals' => 0},
+      Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
+      Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        $this->{'total_horizontals2'} += $other->{'total_horizontals2'};
+        $this->{'total_verticals2'} += $other->{'total_verticals2'};
+        $this->{'total_firsts'}      += $other->{'total_firsts'};
+        if ($this->{'total_firsts'} == 0)
+        {
+          return;
+        }
+        $this->{'total'} = sprintf "%.4f", $this->1-({'total_horizontals2'} + $this->{'total_verticals2'}) / $this->{'total_firsts'};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
+      sub
+      {
+        my $this = shift;
+        my $game = shift;
+        my $this_player = shift;
+
+        $this->{'total_horizontals2'}   += $game->getNumHorizontalOpeningPlays($this_player);
+        $this->{'total_verticals2'}   += $game->getNumVerticalOpeningPlays($this_player);
+        $this->{'total_firsts'}      += $game->getNumFirsts($this_player);
+    if ($this->{'total_firsts'} == 0)
+    {
+          return;
+    }
+        $this->{'total'} = sprintf "%.4f", $this->1-({'total_horizontals2'} + $this->{'total_verticals2'})/ $this->{'total_firsts'};
+      }
+    },
+
+
+
+
     {
       Constants::STAT_NAME => 'Full Rack per Turn',
       Constants::STAT_ITEM_OBJECT_NAME => {Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG, 'total' => 0, 'total_full_racks' => 0, 'total_turns' => 0},
@@ -1452,7 +1194,7 @@ sub statsList
       {
         my $this  = shift;
         my $other = shift;
-        
+
         if ($other->{'total'} > $this->{'total'})
         {
           $this->{'total'} = $other->{'total'};
@@ -1482,7 +1224,7 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME =>
       {
         'total' => 0,
-        'subitems' => 
+        'subitems' =>
         {
             Constants::SEVENS_TITLE    => 0,
             Constants::EIGHTS_TITLE    => 0,
@@ -1494,7 +1236,7 @@ sub statsList
             Constants::FOURTEENS_TITLE => 0,
             Constants::FIFTEENS_TITLE  => 0
         },
-        'list' => 
+        'list' =>
         [
             Constants::SEVENS_TITLE    ,
             Constants::EIGHTS_TITLE    ,
@@ -1713,13 +1455,13 @@ sub statsList
         $this->{'subitems'}->{Constants::THIRTEENS_TITLE} = sprintf "%.2f", ($this->{'prob_totals'}->{Constants::THIRTEENS_TITLE} / $dems[6]);
         $this->{'subitems'}->{Constants::FOURTEENS_TITLE} = sprintf "%.2f", ($this->{'prob_totals'}->{Constants::FOURTEENS_TITLE} / $dems[7]);
         $this->{'subitems'}->{Constants::FIFTEENS_TITLE}  = sprintf "%.2f", ($this->{'prob_totals'}->{Constants::FIFTEENS_TITLE}  / $dems[8]);
-      }  
+      }
     },
     {
       Constants::STAT_NAME => 'Tiles Played',
       Constants::STAT_ITEM_OBJECT_NAME =>
       {
-          'subitems' => 
+          'subitems' =>
           {
               'A' => 0,
               'B' => 0,
@@ -2060,12 +1802,12 @@ sub statsList
           'subitems' =>
           {
              Constants::UNCHALLENGED  => 0,
-             Constants::CHALLENGED_OFF => 0,   
+             Constants::CHALLENGED_OFF => 0,
           },
           'list' =>
           [
              Constants::UNCHALLENGED,
-             Constants::CHALLENGED_OFF, 
+             Constants::CHALLENGED_OFF,
           ],
           'total' => 0
       },
@@ -2108,15 +1850,15 @@ sub statsList
            Constants::PLAYER_CHALLENGE_WON  => 0,
            Constants::PLAYER_CHALLENGE_LOST => 0,
            Constants::OPP_CHALLENGE_WON     => 0,
-           Constants::OPP_CHALLENGE_LOST    => 0    
+           Constants::OPP_CHALLENGE_LOST    => 0
         },
         'list' =>
         [
            Constants::PLAYER_CHALLENGE_WON,
-           Constants::OPP_CHALLENGE_LOST,   
+           Constants::OPP_CHALLENGE_LOST,
            Constants::PLAYER_CHALLENGE_LOST,
            Constants::OPP_CHALLENGE_WON
-        ]        
+        ]
       },
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -2564,18 +2306,18 @@ sub statsList
         my $this = shift;
         my $game = shift;
 
-        my $sum1 =  $game->{'tiles_played'}->{0}->{'?'} + 
-                    $game->{'tiles_played'}->{0}->{'Z'} + 
-                    $game->{'tiles_played'}->{0}->{'X'} + 
-                    $game->{'tiles_played'}->{0}->{'Q'} + 
-                    $game->{'tiles_played'}->{0}->{'J'} + 
+        my $sum1 =  $game->{'tiles_played'}->{0}->{'?'} +
+                    $game->{'tiles_played'}->{0}->{'Z'} +
+                    $game->{'tiles_played'}->{0}->{'X'} +
+                    $game->{'tiles_played'}->{0}->{'Q'} +
+                    $game->{'tiles_played'}->{0}->{'J'} +
                     $game->{'tiles_played'}->{0}->{'S'};
 
-        my $sum2 =  $game->{'tiles_played'}->{1}->{'?'} + 
-                    $game->{'tiles_played'}->{1}->{'Z'} + 
-                    $game->{'tiles_played'}->{1}->{'X'} + 
-                    $game->{'tiles_played'}->{1}->{'Q'} + 
-                    $game->{'tiles_played'}->{1}->{'J'} + 
+        my $sum2 =  $game->{'tiles_played'}->{1}->{'?'} +
+                    $game->{'tiles_played'}->{1}->{'Z'} +
+                    $game->{'tiles_played'}->{1}->{'X'} +
+                    $game->{'tiles_played'}->{1}->{'Q'} +
+                    $game->{'tiles_played'}->{1}->{'J'} +
                     $game->{'tiles_played'}->{1}->{'S'};
 
         if ($sum1 == 10 || $sum2 == 10)
@@ -2745,7 +2487,7 @@ sub statsList
         my $this   = shift;
         my $game   = shift;
         my $player = shift;
-        
+
         my @categories = Constants::MISTAKES;
 
         my $mistakes_hash_ref = $game->getNumMistakes($player);
@@ -2792,7 +2534,6 @@ sub get_mistakes_hash
 {
   my @a = Constants::MISTAKES;
   my %b = map {$_ => 0} @a;
-  return \%b; 
+  return \%b;
 }
 1;
-

@@ -114,12 +114,12 @@ sub new
     # Also add a space after the : in case there was no
     # space between the : and the rack
     $line =~ s/\s*:/: /g;
-    
+
     my @items = split /\s+/, $line;
     my $num_items = scalar @items;
 
     # Possible plays:
-    
+
     # Pass                  5 -
     # +5 Collins            5 -
     # Word challenged off   5 -
@@ -178,7 +178,7 @@ sub new
       $score = $items[2];
       $total = $items[3];
 
-      $score =~ s/[\+-]//g; 
+      $score =~ s/[\+-]//g;
 
       if (!(@moves))
       {
@@ -205,7 +205,7 @@ sub new
 
       $name =~ s/_/ /g;
       $name =~ s/[>:]//g;
-      $score =~ s/[\+-]//g; 
+      $score =~ s/[\+-]//g;
 
       # A pass
       if ($items[2] eq "-")
@@ -334,7 +334,7 @@ sub new
       $loc = uc $loc;
       $name =~ s/_/ /g;
       $name =~ s/[>:]//g;
-      $score =~ s/[\+-]//g; 
+      $score =~ s/[\+-]//g;
 
       my $column_letter;
       my $row_number;
@@ -379,7 +379,7 @@ sub new
       $player_two_total_after_move = $total;
     }
 
-    my $move = Move->new(   
+    my $move = Move->new(
                           $turn_number,
                           $play,
                           $score,
@@ -401,14 +401,14 @@ sub new
     push @moves, $move;
     $turn_number++;
   }
-  
+
   if ($line =~ /^#rack/)
   {
     return format_game_error("game is incomplete", $filename, $line_number, $line);
   }
 
   my $board = Board->new();
-  
+
   if (@moves)
   {
     my $board_error = $board->addMoves(\@moves);
@@ -488,7 +488,7 @@ sub new
       }
   };
 
-  my %game = 
+  my %game =
   (
     filename        => $filename,
     lexicon_name    => $lexicon,
@@ -717,7 +717,7 @@ sub getNumOneTilePlays
   foreach my $move (@moves)
   {
     if (
-        $move->{'num_tiles_played'}->{$player} == 1 
+        $move->{'num_tiles_played'}->{$player} == 1
        )
     {
       $sum++;
@@ -739,7 +739,7 @@ sub getNumOtherPlays
   {
     if (
 	$move->{'turn'} == $player &&
-        $move->{'num_tiles_played'}->{$player} == 0 
+        $move->{'num_tiles_played'}->{$player} == 0
        )
     {
       $sum++;
@@ -757,7 +757,7 @@ sub getNumVerticalOpeningPlays
   my $move = $this->{'moves'}->[0];
 
   if (
-      $move->{'turn'} == $player && 
+      $move->{'turn'} == $player &&
       $move->{'num_tiles_played'}->{$player} > 1 &&
       $move->{'vertical'}
      )
@@ -765,6 +765,25 @@ sub getNumVerticalOpeningPlays
     return 1;
   }
   return 0;
+}
+
+sub getNumHorizontalOpeningPlays
+{
+  my $this = shift;
+
+  my $player = shift;
+
+  my $move = $this->{'moves'}->[0];
+
+  if (
+      $move->{'turn'} == $player &&
+      $move->{'num_tiles_played'}->{$player} > 1 &&
+      $move->{'vertical'}
+     )
+  {
+    return 0;
+  }
+  return 1;
 }
 
 sub getNumFullRacks
@@ -883,8 +902,13 @@ sub getBingos
       my $prob = $this->{'lexicon'}->{$bing_cap};
       if (!$prob)
       {
-        $prob = '0';
+        $prob = "* 0";
       }
+      else
+      {
+        $prob = " " . $prob;
+      }
+
       push @bingos, $this->labelPlay($move, $player, $this->{'id'}, $prob);
     }
   }
@@ -910,7 +934,11 @@ sub getTripleTriples
       my $prob = $this->{'lexicon'}->{$tt_cap};
       if (!$prob)
       {
-        $prob = '0';
+        $prob = "* 0";
+      }
+      else
+      {
+        $prob = " " . $prob;
       }
       push @tts, $this->labelPlay($move, $player, $this->{'id'}, $prob);
     }
@@ -937,7 +965,11 @@ sub getBingoNinesOrAbove
       my $prob = $this->{'lexicon'}->{$bna_cap};
       if (!$prob)
       {
-        $prob = '0';
+        $prob = "* 0";
+      }
+      else
+      {
+        $prob = " " . $prob;
       }
       push @bnas, $this->labelPlay($move, $player, $this->{'id'}, $prob);
     }
@@ -967,9 +999,7 @@ sub getHighestScoringPlay
     if ($score > $highest[1])
     {
       my $high_cap = $this->readableMove($move);
-      my $url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
-      my $id = $this->{'id'};
-      @highest = ("<a href='$url$id' target='_blank'>$high_cap</a>" , $score);
+      @highest = ($this->labelPlay($move, $player, $this->{'id'}, $high_cap) , $score);
     }
   }
   return \@highest;
@@ -1007,12 +1037,9 @@ sub getPhoniesFormed
     my $readable_play = $this->readableMove($move);
     my $caps_play = $this->readableMoveCapitalized($move);
     my $prob = $this->{'lexicon'}->{$caps_play};
-    my $url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
-    my $id  = $this->{'id'};
-
     if (!$prob)
     {
-      push @phonies, "<a href='$url$id' target='_blank'>$readable_play*</a>";
+      $move_phonies .= $readable_play."*";
     }
     my @words_made = @{$move->{'words_made'}};
     foreach my $word (@words_made)
@@ -1020,8 +1047,12 @@ sub getPhoniesFormed
       my $word_made_prob = $this->{'lexicon'}->{$word};
       if (!$word_made_prob)
       {
-        push @phonies, "<a href='$url$id' target='_blank'>$word*</a>";
+        $move_phonies .= ' '.$word."*";
       }
+    }
+    if ($move_phonies)
+    {
+      push @phonies, $this->labelPlay($move, $player, $this->{'id'}, $move_phonies);
     }
   }
   return \@phonies;
@@ -1037,8 +1068,6 @@ sub getPlaysChallenged
 
   my @plays_chal = ();
 
-  my $url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
-  my $id  = $this->{'id'};
 
   for (my $i = 0; $i < scalar @moves; $i++)
   {
@@ -1060,7 +1089,7 @@ sub getPlaysChallenged
       {
         $readable_play = $readable_play."*";
       }
-      push @plays_chal, "<a href='$url$id' target='_blank'>$readable_play</a>";
+      push @plays_chal, $this->labelPlay($move, $player, $this->{'id'}, $readable_play);
     }
   }
   return \@plays_chal;
@@ -1071,60 +1100,96 @@ sub labelPlay
 {
 
   my $this    = shift;
-  
+
   my $move    = shift;
   my $player  = shift;
   my $game_id = shift;
   my $prob    = shift;
 
-  if (!$prob)
+  my $has_prob = $prob =~ /[0-9]/;
+
+  my $labeled_play = $this->readableMove($move);
+
+  if (!$has_prob)
   {
-    $prob = 0;
+    $labeled_play = $prob;
   }
 
-  my $is_tt = $move->isTripleTriple($player);
-  my $is_na = $move->getLength($player) >= 9 && $move->isBingo($player);
-  my $is_im = $prob > 20000;
+  if ($this->{'html'} && $has_prob)
+  {
 
-  my $tt_color    = Constants::TRIPLE_TRIPLE_COLOR;
-  my $na_color    = Constants::NINE_OR_ABOVE_COLOR;
-  my $im_color    = Constants::IMPROBABLE_COLOR;
-  my $tt_na_color = Constants::TRIPLE_TRIPLE_NINE_COLOR;
-  my $im_na_color = Constants::IMPROBABLE_NINE_OR_ABOVE_COLOR;
-  my $im_tt_color = Constants::IMPROBABLE_TRIPLE_TRIPE_COLOR;
-  my $at_color    = Constants::ALL_THREE_COLOR;
+    my $numeric_prob = $prob;
+    $numeric_prob =~ s/[^\d]//g;
 
-  my $color;
+    my $is_tt = $move->isTripleTriple($player);
+    my $is_na = $move->getLength($player) >= 9 && $move->isBingo($player);
+    my $is_im = $numeric_prob > 20000;
 
-  if ($is_tt && $is_na && $is_im)
-  {
-    $color = $at_color;
+    my $opening_mark_tag = "";
+    my $closing_mark_tag = "";
+
+    my $tt_color    = Constants::TRIPLE_TRIPLE_COLOR;
+    my $na_color    = Constants::NINE_OR_ABOVE_COLOR;
+    my $im_color    = Constants::IMPROBABLE_COLOR;
+    my $tt_na_color = Constants::TRIPLE_TRIPLE_NINE_COLOR;
+    my $im_na_color = Constants::IMPROBABLE_NINE_OR_ABOVE_COLOR;
+    my $im_tt_color = Constants::IMPROBABLE_TRIPLE_TRIPE_COLOR;
+    my $at_color    = Constants::ALL_THREE_COLOR;
+
+    my $color = '';
+
+    if ($is_tt && $is_na && $is_im)
+    {
+      $color = $at_color;
+    }
+    elsif ($is_tt && $is_na)
+    {
+      $color = $tt_na_color;
+    }
+    elsif ($is_im && $is_tt)
+    {
+      $color = $im_tt_color;
+    }
+    elsif ($is_im && $is_na)
+    {
+      $color = $im_na_color;
+    }
+    elsif ($is_tt)
+    {
+      $color = $tt_color;
+    }
+    elsif ($is_na)
+    {
+      $color = $na_color;
+    }
+    elsif ($is_im)
+    {
+      $color = $im_color;
+    }
+
+    if ($color)
+    {
+      $opening_mark_tag = "<mark style='background-color: $color'>";
+      $closing_mark_tag = "</mark>";
+    }
+
+    $labeled_play = $opening_mark_tag . $labeled_play . $closing_mark_tag
   }
-  elsif ($is_tt && $is_na)
+
+  if ($has_prob)
   {
-    $color = $tt_na_color;
+    $labeled_play .= $prob;
   }
-  elsif ($is_im && $is_tt)
+
+  $labeled_play =~ s/^\s+|\s+$//g;
+
+  if ($this->{'html'})
   {
-    $color = $im_tt_color;
+    my $url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
+    $labeled_play = "<a href='$url$game_id' target='_blank'>$labeled_play</a>";
   }
-  elsif ($is_im && $is_na)
-  {
-    $color = $im_na_color;
-  }
-  elsif ($is_tt)
-  {
-    $color = $tt_color;
-  }
-  elsif ($is_na)
-  {
-    $color = $na_color;
-  }
-  elsif ($is_im)
-  {
-    $color = $im_color;
-  }
-  return [$color, $this->readableMove($move), $prob, $move->{'score'} - $move->{'challenge_points'}, $game_id];
+
+  return $labeled_play;
 }
 
 sub getNumWordsPlayed
@@ -1234,7 +1299,7 @@ sub getTurnsWithBlank
 sub getNumBonusSquaresCovered
 {
   my $this = shift;
-  
+
   my $player = shift;
   my $board = $this->{'board'};
 
@@ -1244,7 +1309,7 @@ sub getNumBonusSquaresCovered
 sub getNumChallenges
 {
   my $this = shift;
-  
+
   my $player = shift;
 
   my @moves = @{$this->{'moves'}};
@@ -1265,7 +1330,7 @@ sub getNumChallenges
 sub getNumPhonyPlays
 {
   my $this = shift;
-  
+
   my $player = shift;
   my $unchal = shift;
 
@@ -1284,7 +1349,7 @@ sub getNumPhonyPlays
 sub getWordsProbability
 {
   my $this = shift;
-  
+
   my $player = shift;
   my $bingos_only = shift;
 
@@ -1310,7 +1375,7 @@ sub getWordsProbability
 sub isBingoless
 {
   my $this = shift;
-  
+
   my $player = shift;
   # Add 0 at the end to include phonies
   return sum(@{$this->getNumWordsPlayed($player, 1, 0)}) == 0;
@@ -1454,7 +1519,7 @@ sub postConstruction
   foreach my $move (@moves)
   {
     # Determine rack fullness
-    
+
     $move->{'tiles_in_bag'} = $tiles_in_bag;
     my $turn = $move->{'turn'};
     my $tiles_played = $move->getNumTilesPlayed($turn);
@@ -1470,13 +1535,13 @@ sub postConstruction
     }
 
     $tiles_in_bag -= $tiles_played;
-    
+
     if ($move->{'play_type'} ne Constants::PLAY_TYPE_WORD)
     {
       $move->{'is_phony'} = 0;
       next;
     }
-    
+
     my $play = $move->{'play'};
     my $v = $move->{'vertical'};
     my $r = $move->{'row'};
@@ -1488,7 +1553,7 @@ sub postConstruction
     if (length $play == 1)
     {
       my $pos = $r * Constants::BOARD_WIDTH + $c;
-      
+
       my $iter_r = $pos - Constants::BOARD_WIDTH;
       my $iter_c = $pos - 1;
 
@@ -1499,7 +1564,7 @@ sub postConstruction
       my @formed_word = ($play);
 
       # Try the horizontal direction first
-      
+
       while ($iter_c >= 0 && (int ($iter_c/Constants::BOARD_WIDTH)) == $r )
       {
         my $square = $this->{'board'}->{'grid'}[$iter_c];
@@ -1764,4 +1829,3 @@ sub format_game_error
 }
 
 1;
-
