@@ -16,8 +16,23 @@ use Utils;
 use NameConversion;
 use JSON::XS;
 
-my $html_string = "";
-
+sub make_search_params_table
+{
+  my $params = shift;
+  my $table = '<table><tbody>';
+  for (my $i = 0; $i < scalar @{$params}; $i++)
+  {
+    my $item = $params->[$i];
+    my $title = $item->[0];
+    my $value = $item->[1];
+    if ($value)
+    {
+      $table .= "<tr><td>$title</td><td>$value</td></tr>\n";
+    }
+  }
+  $table .= '</tbody></table>';
+  return $table;
+}
 
 sub mine
 {
@@ -42,6 +57,31 @@ sub mine
   my $statsdump         = shift;
   my $html              = shift;
   my $missingracks      = shift;
+
+  my $search_params =
+    make_search_params_table
+    ([
+      ['Type', $cort],
+      ['Game ID', $single_game_id],
+      ['Opponent', $opponent_name],
+      ['Lexicon', $lexicon],
+      ['Tournament', $tourney_id],
+      ['Start Date', $startdate],
+      ['End Date',   $enddate]
+    ]);
+
+
+
+  if ($startdate)
+  {
+    $startdate = substr($startdate, 4, 8) . '-', substr($startdate, 0, 2) . '-' . substr($startdate, 2, 4);
+  }
+
+  if ($enddate)
+  {
+    $enddate = substr($enddate, 4, 8) . '-', substr($enddate, 0, 2) . '-' . substr($enddate, 2, 4);
+  }
+
 
   my $sanitized_player_name = Utils::sanitize($player_name);
 
@@ -81,93 +121,30 @@ sub mine
   {
     $javascript .= Constants::RESULTS_PAGE_JAVASCRIPT;
   }
-
-  if (Utils::get_environment_name(""))
-  {
-    print_or_append( "\nDevelopment Version of RandomRacer\n\n\n", $html, 0);
-  }
-
-  print_or_append( "\nStatistics for $player_name\n\n\n", $html, 0);
-  
-  print_or_append( "\nSEARCH PARAMETERS: \n", $html, 0);
-  
-  print_or_append( "\n  Player:        $player_name", $html, 0);
-
-
-  print_or_append( "\n  Game type:     ", $html, 0);
-
-  if (!$cort) {print_or_append( "-", $html, 0);}
-  else {print_or_append($cort, $html, 0);}
-
-  print_or_append( "\n  Lexicon:       ", $html, 0);
-
-  if (!$lexicon) {print_or_append( "-", $html, 0);}
-  else {print_or_append( $lexicon, $html, 0);}
-
-  print_or_append( "\n  Tournament ID: ", $html, 0);
-  
-  if ($tourney_id) {print_or_append( $tourney_id, $html, 0);}
-  else {print_or_append( "-", $html, 0);}
-
-  print_or_append( "\n  Game ID:       ", $html, 0);
-  
-  if ($single_game_id) {print_or_append( $single_game_id, $html, 0);}
-  else {print_or_append( "-", $html, 0);}
-
-  print_or_append( "\n  Opponent:      ", $html, 0);
-  
-  if ($opponent_name) {print_or_append( $opponent_name, $html, 0);}
-  else {print_or_append( "-", $html, 0);}
-
-  print_or_append( "\n  Start Date:    ", $html, 0);
-  
-  if ($startdate) {print_or_append( $startdate, $html, 0);}
-  else {print_or_append( "-", $html, 0);}
-
-  print_or_append( "\n  End Date:      ", $html, 0);
-  
-  if ($enddate) {print_or_append( $enddate, $html, 0);}
-  else {print_or_append( "-", $html, 0);}
-  
-
-  print_or_append( "\n\n\n", $html, 0);
-
-  if ($html)
-  {
-
-    my $tt_color    = Constants::TRIPLE_TRIPLE_COLOR;
-    my $na_color    = Constants::NINE_OR_ABOVE_COLOR;
-    my $im_color    = Constants::IMPROBABLE_COLOR;
-    my $tt_na_color = Constants::TRIPLE_TRIPLE_NINE_COLOR;
-    my $im_na_color = Constants::IMPROBABLE_NINE_OR_ABOVE_COLOR;
-    my $im_tt_color = Constants::IMPROBABLE_TRIPLE_TRIPE_COLOR;
-    my $at_color    = Constants::ALL_THREE_COLOR;
-
-    my $opening_mark_tag = "<mark style='background-color: ";
-    my $closing_mark_tag = "</mark>";  
-
-    print_or_append( "COLOR KEY:\n\n", $html, 0);
-    print_or_append( "  $opening_mark_tag $tt_color'>Triple Triple$closing_mark_tag\n\n", $html, 0);
-    print_or_append( "  $opening_mark_tag $na_color'>Bingo Nine or Above$closing_mark_tag\n\n", $html, 0);
-    print_or_append( "  $opening_mark_tag $im_color'>Improbable$closing_mark_tag\n\n", $html, 0);
-    print_or_append( "  $opening_mark_tag $tt_na_color'>Triple Triple and Bingo Nine or Above$closing_mark_tag\n\n", $html, 0);
-    print_or_append( "  $opening_mark_tag $im_na_color'>Improbable and Bingo Nine or Above$closing_mark_tag\n\n", $html, 0);
-    print_or_append( "  $opening_mark_tag $im_tt_color'>Triple Triple and Improbable$closing_mark_tag\n\n", $html, 0);
-    print_or_append( "  $opening_mark_tag $at_color'>Triple Triple and Bingo Nine or Above and Improbable$closing_mark_tag\n\n", $html, 0);
-    
-    print_or_append( "\n\n", $html, 0);
-
-    print_or_append("<div id='" . Constants::ERROR_DIV_ID . "' style='display: none;'>", $html, 0);
-
-  }
-
+  my $player_header_style = '';
+  my $player_inner_header_style = '';
+  # Put player stats header here, include color key
+  my $player_header = <<PLAYERHEADER
+  <div $player_header_style>
+    <div $player_inner_header_styl>
+      <table>
+        <tbody>
+	  <tr>
+	   <td>$player_name</td>
+	   <td>
+	     
+	   </td>
+	  </tr>
+	</tbody>
+      </table>
+    </div>
+  </div>
+PLAYERHEADER
+;
   my $all_stats = Stats->new(1);
 
   my %tourney_game_hash;
   my $at_least_one = 0;
-
-  my $num_errors   = 0;
-  my $num_warnings = 0;
 
   my $games_table   = Constants::GAMES_TABLE_NAME;
   my $players_table = Constants::PLAYERS_TABLE_NAME;
@@ -284,15 +261,12 @@ sub mine
 
     if ($error)
     {
-      print_or_append( "\n$error", $html, 1);
-      $num_errors++;
       $all_stats->addError($error);
       next;
     }
     elsif ($warning)
     {
-      print_or_append( "\n$warning", $html, 0);
-      $num_warnings++;
+      $all_stats->addWarning($warning);
     }
 
     my $game_stat = Stats->new($player_is_first, $game->{$game_stats_column_name});
@@ -308,79 +282,73 @@ sub mine
     Utils::update_player_record($dbh, $player_id, 0, 0, $dump, $num_games);
   }
 
-  if ($html)
-  {
-      print_or_append("</div>\n", $html, 0);
-      print_or_append( "\n", $html, 0);
-      print_or_append( "Errors:   $num_errors\n", $html, 0);
-      print_or_append( "Warnings: $num_warnings\n", $html, 0);
-      print_or_append( "\n", $html, 0);
-      print_or_append("<button onclick='toggle(\"" . Constants::ERROR_DIV_ID . "\")'>Toggle Error and Warning Report</button>\n", $html, 0);
-  }
-
-  print_or_append($stats_note, $html, 0);
-
+  # Make error stats here
+  my $html_string = '';
   if ($at_least_one)
   {
-    if ($html)
-    {
-      $html_string .= $all_stats->toString($html);
-    }
-    else
-    {
-      print $all_stats->toString($html);
-    }
+    $html_string .= $all_stats->toString($html);
   }
   else
   {
-    print_or_append( "\nNo valid games found\n", $html, 0);
+    # Print no games page or something
   }
-  print_or_append( "\n", $html, 0);
-  print_or_append( "Errors:   $num_errors\n", $html, 0);
-  print_or_append( "Warnings: $num_warnings\n", $html, 0);
-  print_or_append( "\n", $html, 0);
 
-  my $start_tags = "<!DOCTYPE HTML><html><body> $javascript <pre style='white-space: pre-wrap;' >";
-  my $end_tags   = "</pre></body></html>";
+  my $head_content = Constants::HTML_HEAD_CONTENT;
+  my $nav          = Constants::HTML_NAV;
+  my $default_scripts = Constants::HTML_SCRIPTS;
+  my $body_style        = Constants::HTML_BODY_STYLE;
 
-  my $final_output = "$start_tags $html_string $end_tags\n";
+
+  my $final_output = <<FINAL
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  $head_content
+  </head>
+  <body $body_style>
+  $nav
+  $html_string
+  $default_scripts
+
+      \$(document).ready(function () {
+      
+        \$('.collapse').on('shown.bs.collapse', function (e) {
+        
+          var id = e.target.id;
+      
+          id = id.replace('entry', 'button'); 
+          var el = document.getElementById(id);
+          el.innerHTML = '&#8722';
+        
+        });
+        
+        \$('.collapse').on('hidden.bs.collapse', function (e) {
+      
+          var id = e.target.id;
+      
+          id = id.replace('entry', 'button'); 
+          var el = document.getElementById(id);
+          el.innerHTML = '+';
+         
+        });
+      });
+
+  </body>
+</html>
+FINAL
+;
 
   if ($cache_condition && $at_least_one && $statsdump)
   {
     my $lt = localtime();
     system "mkdir -p $cache_dir";
     open(my $fh, '>', $cache_filename);
-    print $fh "$start_tags $html_string \n\nThis report was produced from a file cached on $lt\n$end_tags\n";
+    print $fh, $final_output; 
     close $fh;
   }
 
-  if ($html)
-  {
-    print $final_output;
-  }
-}
-
-sub print_or_append
-{
-  my $addition    = shift;
-  my $html        = shift;
-  my $error       = shift;
-
-  if ($html)
-  {
-    $html_string .= $addition;
-  }
-  else
-  {
-    if ($error)
-    {
-      print STDERR $addition;
-    }
-    else
-    {
-      print $addition;
-    }
-  }
+  print $final_output;
 }
 
 1;

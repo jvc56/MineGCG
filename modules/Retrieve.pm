@@ -46,8 +46,10 @@ sub retrieve
   my $games_to_update = scalar @every_annotated_game_info;
   my $games_updated   = 0;
 
+  my $count = 0;
   while (@every_annotated_game_info)
   {
+    if ($count++ == 100){last;}
     my $annotated_game_data = shift @every_annotated_game_info;
     
     Utils::prepare_anno_data($annotated_game_data, \%id_name_hash, \%tournament_id_date_hash);

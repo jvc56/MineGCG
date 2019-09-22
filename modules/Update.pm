@@ -6,6 +6,8 @@ use warnings;
 use strict;
 use Data::Dumper;
 use Cwd;
+use List::Util qw(shuffle);
+use Scalar::Util qw(looks_like_number);
 
 use lib './objects';
 use lib './modules';
@@ -16,11 +18,11 @@ use Stats;
 
 unless (caller)
 {
-  my $validation = update_search_data();
-  update_leaderboard();
-  update_notable();
+  my $validation        = update_search_data();
+  my $featured_mistakes = update_leaderboard();
+  my $featured_notable  = update_notable();
   update_remote_cgi();
-  update_html($validation);
+  update_html($validation, $featured_mistakes, $featured_notable);
 }
 
 sub update_search_data
@@ -34,13 +36,13 @@ sub update_search_data
   my @inputs =
   (
     ['Player Name',   Constants::PLAYER_FIELD_NAME,        'required', Constants::PLAYER_NAME_COLUMN_NAME, $players_table],
-    ['Game Type',     Constants::CORT_FIELD_NAME,          '', ['', Constants::GAME_TYPE_TOURNAMENT, Constants::GAME_TYPE_CASUAL]],
+    ['Game Type',     Constants::CORT_FIELD_NAME,          '', [Constants::GAME_TYPE_TOURNAMENT, Constants::GAME_TYPE_CASUAL]],
     ['Tournament ID', Constants::TOURNAMENT_ID_FIELD_NAME, '', Constants::GAME_CROSS_TABLES_TOURNAMENT_ID_COLUMN_NAME, $games_table],
-    ['Lexicon',       Constants::LEXICON_FIELD_NAME,       '', ['', 'CSW19', 'NSW18', 'CSW15', 'TWL15', 'CSW12', 'CSW07', 'TWL06', 'TWL98']],
+    ['Lexicon',       Constants::LEXICON_FIELD_NAME,       '', ['CSW19', 'NSW18', 'CSW15', 'TWL15', 'CSW12', 'CSW07', 'TWL06', 'TWL98']],
     ['Game ID',       Constants::GAME_ID_FIELD_NAME,       '', Constants::GAME_CROSS_TABLES_ID_COLUMN_NAME, $games_table],
     ['Opponent',      Constants::OPPONENT_FIELD_NAME,      '', Constants::PLAYER_NAME_COLUMN_NAME, $players_table],
-    ['Start Date',    Constants::START_DATE_FIELD_NAME,    '', Constants::GAME_DATE_COLUMN_NAME, $games_table],
-    ['End Date',      Constants::END_DATE_FIELD_NAME,      '', Constants::GAME_DATE_COLUMN_NAME, $games_table],
+    ['Start Date',    Constants::START_DATE_FIELD_NAME,    '', Constants::GAME_DATE_COLUMN_NAME, 'date'],
+    ['End Date',      Constants::END_DATE_FIELD_NAME,      '', Constants::GAME_DATE_COLUMN_NAME, 'date'],
   );
 
   my $html = "";
@@ -58,7 +60,7 @@ sub update_search_data
     my $input_id = $name . '_input';
     my $html_id  = $name . '_html';
 
-    if ($table)
+    if ($table && $table ne 'date')
     {
       my $data = Utils::get_all_unique_values($dbh, $table, $field);
       $html .= make_datalist_input
@@ -79,6 +81,17 @@ sub update_search_data
 	$input_id,
 	$html_id
       );
+    }
+    elsif ($table && $table eq 'date')
+    {
+      my $datepicker = <<DATEPICKER
+<div class="input-append date"  data-date-format="mm/dd/yyyy">
+  <input name="$name" class="form-control mb-4" type="text"   placeholder="$title" >
+  <span class="add-on"><i class="icon-th"></i></span>
+</div>
+DATEPICKER
+      ;
+      $html .= $datepicker;
     }
     else
     {
@@ -121,14 +134,14 @@ sub make_select_input
   my $required = shift;
   my $data     = shift;
 
-  my $options = "";
+  my $options = "<option value='' disabled selected>$title</option>\n";
 
   for (my $i = 0; $i < scalar @{$data}; $i++)
   {
     my $val = $data->[$i];
     $options .= "<option value='$val'>$val</option>\n";
   }
-  return "$title<select class='browser-default custom-select mb-4' name='$name'>$options</select>";
+  return "<select class='browser-default custom-select mb-4' name='$name' placeholder='$title'>$options</select>";
 }
 
 sub add_input_validation
@@ -222,14 +235,20 @@ FUNCTION
 
   my $html =
   "
-
-  $title
-
-  <input class='form-control mb-4' $required name='$name' list='$html_id' id='$input_id' $input_function>
+  <input class='form-control mb-4' $required name='$name' list='$html_id' id='$input_id' placeholder='$title' $input_function>
     <datalist id='$html_id'>
   ";
 
   my @data_array = @{$data};
+
+  if (looks_like_number($data_array[0]))
+  {
+    @data_array = sort {$a <=> $b} @data_array;
+  }
+  else
+  {
+    @data_array = sort @data_array;
+  }
 
   foreach my $item (@data_array)
   {
@@ -263,6 +282,9 @@ sub update_leaderboard
   my $total_games_name = Constants::PLAYER_TOTAL_GAMES_COLUMN_NAME;
 
   my @player_data = @{$dbh->selectall_arrayref("SELECT * FROM $playerstable WHERE $total_games_name >= $min_games", {Slice => {}, "RaiseError" => 1})};
+
+  my @all_mistakes = ();
+  my $total_mistakes = 0;
 
   foreach my $player_item (@player_data)
   {
@@ -304,6 +326,12 @@ sub update_leaderboard
               add_stat(\%leaderboards, $name, $substatname, $substatval, $total_games, $display_type, $is_int,  \@name_order);
             }
           }
+        }
+        elsif ($statlist->[$i]->{Constants::STAT_NAME} eq 'Mistakes List')
+        {
+          my $player_mistakes = $statlist->[$i]->{Constants::STAT_ITEM_OBJECT_NAME}->{'list'};  
+          push @all_mistakes, $player_mistakes;
+	  $total_mistakes += scalar @{$player_mistakes};
         }
       }
     }
@@ -410,6 +438,42 @@ sub update_leaderboard
   open(my $rr_leaderboard, '>', $leaderboard_html);
   print $rr_leaderboard $leaderboard_string;
   close $rr_leaderboard;
+
+
+  my $num_featured_mistakes = Constants::MISTAKES_REEL_LENGTH;
+
+  my %random_indexes = ();
+
+  while (scalar (keys %random_indexes) < $num_featured_mistakes)
+  {
+    my $index = int(rand($total_mistakes));
+    while ($random_indexes{$index})
+    {
+      $index = ($index + 1) % $total_mistakes;
+    }
+    $random_indexes{$index} = 1;
+  }
+  my @indexes = keys %random_indexes;
+  my $current_mistake_list_ref = shift @all_mistakes;
+  my @current_mistake_list = @{$current_mistake_list_ref}; 
+
+  my @featured_mistakes = ();
+  my $i = 0;
+  while ($i < $total_mistakes)
+  {
+    foreach my $m (@current_mistake_list)
+    {
+      if ($random_indexes{$i})
+      {
+	push @featured_mistakes, $m;
+      }
+      $i++
+    }
+    $current_mistake_list_ref = shift @all_mistakes;
+    @current_mistake_list = @{$current_mistake_list_ref}; 
+  }
+  @featured_mistakes = shuffle @featured_mistakes;
+  return \@featured_mistakes;
 }
 
 
@@ -430,6 +494,8 @@ sub update_notable
   my @ordering = ();
 
   my @player_data = @{$dbh->selectall_arrayref("SELECT * FROM $playerstable", {Slice => {}, "RaiseError" => 1})};
+  
+  my @featured_notable_games;
 
   foreach my $player_item (@player_data)
   {
@@ -463,6 +529,7 @@ sub update_notable
           }
           my $notable_game = $list->[$i];
           $notable_hash{$statname} .= $notable_game . "<br>";
+	  push @featured_notable_games, [$statname, $notable_game];
           $check_for_repeats_hash{$unique_name} = 1;
         }
       }
@@ -495,6 +562,10 @@ sub update_notable
   open(my $rr_notable, '>', $notable_html);
   print $rr_notable $notable_string;
   close $rr_notable;
+
+  @featured_notable_games = shuffle @featured_notable_games;
+
+  return \@featured_notable_games;
 }
 
 sub update_remote_cgi
@@ -644,124 +715,93 @@ SCRIPT
 
 sub update_html
 {
-  my $validation = shift;
+  my $validation        = shift;
+  my $featured_mistakes = shift;
+  my $featured_notable  = shift;
 
   my $cgibin_name = Constants::CGIBIN_DIRECTORY_NAME;
   $cgibin_name = substr $cgibin_name, 2;
   $cgibin_name = Utils::get_environment_name($cgibin_name);
-
-  my $name_option = Constants::PLAYER_FIELD_NAME         ;
-  my $cort_option = Constants::CORT_FIELD_NAME           ;
-  my $gid_option = Constants::GAME_ID_FIELD_NAME        ;
-  my $tid_option = Constants::TOURNAMENT_ID_FIELD_NAME  ;
-  my $opp_option = Constants::OPPONENT_FIELD_NAME       ;
-  my $start_option = Constants::START_DATE_FIELD_NAME     ;
-  my $end_option = Constants::END_DATE_FIELD_NAME       ;
-  my $lex_option = Constants::LEXICON_FIELD_NAME        ;
-
   my $search_data_id = Constants::SEARCH_DATA_FILENAME;
   my $search_data_html = $search_data_id;
 
   $search_data_id =~ s/\..*//g;
 
-  my $navbar_text_style = "";
+  my $quotes_carousel_content   = make_quotes_carousel();
+  my $mistakes_carousel_content = make_mistakes_carousel($featured_mistakes);
+  my $notable_carousel_content  = make_notable_carousel($featured_notable);
 
-  my $quotes_carousel_content = make_quotes_carousel();
+  my $head_content = Constants::HTML_HEAD_CONTENT;
+  my $nav          = Constants::HTML_NAV;
+  my $default_scripts = Constants::HTML_SCRIPTS;
 
+  my $content_div_style = "style=
+                            'width: 90%;
+			     background-color: #22262a;
+			     margin: 5% auto;
+			     border-radius: 15px;
+			     padding: 2%;
+			     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			   '";
+  my $inner_content_padding = '5%';
+  my $title_style       = "style='font-size: 20px;'";
+  my $body_style        = Constants::HTML_BODY_STYLE;
   my $index_html = <<HTML
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>RandomRacer</title>
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
-  <!-- Bootstrap core CSS -->
-  <link href="css/bootstrap.min.css" rel="stylesheet">
-  <!-- Material Design Bootstrap -->
-  <link href="css/mdb.min.css" rel="stylesheet">
-  <!-- Your custom styles (optional) -->
-  <link href="css/style.css" rel="stylesheet">
-
-  <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
+$head_content
 </head>
 
-<body style="background-color: #343a40; color: white">
+<body $body_style>
 
-<!--Navbar-->
-<nav class="navbar navbar-expand-lg navbar-dark elegant-color-dark">
+$nav
 
-  <!-- Navbar brand -->
-  <a class="navbar-brand" href="/" style="font-family: 'VT323', monospace;"  style="$navbar_text_style">RandomRacer</a>
+<div $content_div_style>
+  <b $title_style >Search</b>
+    <div style="padding-bottom: $inner_content_padding; padding-top: $inner_content_padding">
+      <form action="$cgibin_name/mine_webapp.pl" target="_blank" method="get" onsubmit="return nocacheresult()">
 
-  <!-- Collapse button -->
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
-    aria-controls="basicExampleNav" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+        <!-- <p class="h4 mb-4 text-center">Search for a Player</p> -->
 
-  <!-- Collapsible content -->
-  <div class="collapse navbar-collapse" id="basicExampleNav">
-
-    <!-- Links -->
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="/leaderboard.html"  style="$navbar_text_style">Leaderboards</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/notable.html"  style="$navbar_text_style">Notable</a>
-      </li>
-
-      <!-- Dropdown 
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false">Dropdown</a>
-        <div class="dropdown-menu dropdown-primary" aria-labelledby="navbarDropdownMenuLink">
-          <a class="dropdown-item" href="#">Action</a>
-          <a class="dropdown-item" href="#">Another action</a>
-          <a class="dropdown-item" href="#">Something else here</a>
+        <div id="$search_data_id">
         </div>
-      </li>
-      -->
-    </ul>
-    <!-- Links -->
-  </div>
-  <!-- Collapsible content -->
 
-</nav>
-<!--/.Navbar-->
-
-<div style="padding-bottom: 5%; padding-top: 5%" class="carousel slide" data-ride="carousel" data-interval="10000">
-  <div id="quotes-carousel-content" class="carousel-inner">
-    $quotes_carousel_content
-  </div>
+      </form>
+    </div>
 </div>
 
-
-  <div style="width: 90%; margin: auto;">
-    <form action="$cgibin_name/mine_webapp.pl" target="_blank" method="get" onsubmit="return nocacheresult()">
-
-      <!-- <p class="h4 mb-4 text-center">Search for a Player</p> -->
-
-      <div id="$search_data_id">
-      </div>
-
-    </form>
+<div $content_div_style>
+  <b $title_style >Quotes</b>
+  <div style="padding-bottom: $inner_content_padding; padding-top: $inner_content_padding" class="carousel slide" data-ride="carousel" data-interval="10000">
+    <div id="quotes-carousel-content" class="carousel-inner">
+      $quotes_carousel_content
+    </div>
   </div>
+</div>
+  
+<div $content_div_style>
+  <b $title_style >Blooper Reel</b>
+  <div style="padding-bottom: $inner_content_padding; padding-top: $inner_content_padding" class="carousel slide" data-ride="carousel" data-interval="15000">
+    <div id="mistakes-carousel-content" class="carousel-inner">
+      $mistakes_carousel_content
+    </div>
+  </div>
+</div>
+  
+<div $content_div_style>
+  <b $title_style >Notable games</b>
+  <div style="padding-bottom: $inner_content_padding; padding-top: $inner_content_padding" class="carousel slide" data-ride="carousel" data-interval="5000">
+    <div id="notable-carousel-content" class="carousel-inner">
+      $notable_carousel_content
+    </div>
+  </div>
+</div>
+  
 
-  <!-- SCRIPTS -->
-  <!-- JQuery -->
-  <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
-  <!-- Bootstrap tooltips -->
-  <script type="text/javascript" src="js/popper.min.js"></script>
-  <!-- Bootstrap core JavaScript -->
-  <script type="text/javascript" src="js/bootstrap.min.js"></script>
-  <!-- MDB core JavaScript -->
-  <script type="text/javascript" src="js/mdb.min.js"></script>
+  $default_scripts
 
   <script>
     function nocacheresult()
@@ -824,8 +864,13 @@ sub update_html
     };
 
     \$(function(){
+      \$("#$search_data_id").load("$search_data_html",
+      function()
+      {
+        \$('.input-append.date').datepicker({format: "mm/dd/yyyy"});
+      });
+
       \$("#quotes-carousel-content").shuffleChildren();
-      \$("#$search_data_id").load("$search_data_html");
     });
 
   </script>
@@ -981,6 +1026,65 @@ QUOTE
   }
   return $html_content;
 
+}
+
+sub make_mistakes_carousel
+{
+  my $mistakes_ref = shift;
+  my $mistake_style = "text-align: center";
+  my $html_content = "";
+
+  for (my $i = 0; $i < scalar @{$mistakes_ref}; $i++)
+  {
+    my $active = "";
+    if ($i == 0)
+    {
+      $active = 'active';
+    }
+    my $item = $mistakes_ref->[$i];
+    my $type    = $item->[0];
+    my $size    = $item->[1];
+    my $link    = $item->[2];
+    my $play    = $item->[3];
+    my $comment = $item->[4];
+
+    my $div = <<MISTAKE
+      <div class="carousel-item $active" style="$mistake_style">
+        $type $size<br>$play<br>$comment<br>$link
+      </div>
+MISTAKE
+;
+    $html_content .= $div;
+  }
+  return $html_content;
+}
+
+sub make_notable_carousel
+{
+  my $notable_ref = shift;
+  my $notable_style = "text-align: center";
+  my $html_content = "";
+
+  for (my $i = 0; $i < scalar @{$notable_ref}; $i++)
+  {
+    my $active = "";
+    if ($i == 0)
+    {
+      $active = 'active';
+    }
+    my $item    = $notable_ref->[$i];
+    my $name    = $item->[0];
+    my $game    = $item->[1];
+
+    my $div = <<NOTABLE
+      <div class="carousel-item $active" style="$notable_style">
+        $name<br>$game
+      </div>
+NOTABLE
+;
+    $html_content .= $div;
+  }
+  return $html_content;
 }
 
 

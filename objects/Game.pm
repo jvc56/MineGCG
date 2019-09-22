@@ -883,13 +883,8 @@ sub getBingos
       my $prob = $this->{'lexicon'}->{$bing_cap};
       if (!$prob)
       {
-        $prob = "* 0";
+        $prob = '0';
       }
-      else
-      {
-        $prob = " " . $prob;
-      }
-
       push @bingos, $this->labelPlay($move, $player, $this->{'id'}, $prob);
     }
   }
@@ -915,11 +910,7 @@ sub getTripleTriples
       my $prob = $this->{'lexicon'}->{$tt_cap};
       if (!$prob)
       {
-        $prob = "* 0";
-      }
-      else
-      {
-        $prob = " " . $prob;
+        $prob = '0';
       }
       push @tts, $this->labelPlay($move, $player, $this->{'id'}, $prob);
     }
@@ -946,11 +937,7 @@ sub getBingoNinesOrAbove
       my $prob = $this->{'lexicon'}->{$bna_cap};
       if (!$prob)
       {
-        $prob = "* 0";
-      }
-      else
-      {
-        $prob = " " . $prob;
+        $prob = '0';
       }
       push @bnas, $this->labelPlay($move, $player, $this->{'id'}, $prob);
     }
@@ -980,7 +967,9 @@ sub getHighestScoringPlay
     if ($score > $highest[1])
     {
       my $high_cap = $this->readableMove($move);
-      @highest = ($this->labelPlay($move, $player, $this->{'id'}, $high_cap) , $score);
+      my $url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
+      my $id = $this->{'id'};
+      @highest = ("<a href='$url$id' target='_blank'>$high_cap</a>" , $score);
     }
   }
   return \@highest;
@@ -1018,9 +1007,12 @@ sub getPhoniesFormed
     my $readable_play = $this->readableMove($move);
     my $caps_play = $this->readableMoveCapitalized($move);
     my $prob = $this->{'lexicon'}->{$caps_play};
+    my $url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
+    my $id  = $this->{'id'};
+
     if (!$prob)
     {
-      $move_phonies .= $readable_play."*";
+      push @phonies, "<a href='$url$id' target='_blank'>$readable_play*</a>";
     }
     my @words_made = @{$move->{'words_made'}};
     foreach my $word (@words_made)
@@ -1028,12 +1020,8 @@ sub getPhoniesFormed
       my $word_made_prob = $this->{'lexicon'}->{$word};
       if (!$word_made_prob)
       {
-        $move_phonies .= ' '.$word."*";
+        push @phonies, "<a href='$url$id' target='_blank'>$word*</a>";
       }
-    }
-    if ($move_phonies)
-    {
-      push @phonies, $this->labelPlay($move, $player, $this->{'id'}, $move_phonies);
     }
   }
   return \@phonies;
@@ -1049,6 +1037,8 @@ sub getPlaysChallenged
 
   my @plays_chal = ();
 
+  my $url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
+  my $id  = $this->{'id'};
 
   for (my $i = 0; $i < scalar @moves; $i++)
   {
@@ -1070,7 +1060,7 @@ sub getPlaysChallenged
       {
         $readable_play = $readable_play."*";
       }
-      push @plays_chal, $this->labelPlay($move, $player, $this->{'id'}, $readable_play);
+      push @plays_chal, "<a href='$url$id' target='_blank'>$readable_play</a>";
     }
   }
   return \@plays_chal;
@@ -1087,90 +1077,54 @@ sub labelPlay
   my $game_id = shift;
   my $prob    = shift;
 
-  my $has_prob = $prob =~ /[0-9]/;
-
-  my $labeled_play = $this->readableMove($move);
-
-  if (!$has_prob)
+  if (!$prob)
   {
-    $labeled_play = $prob;
+    $prob = 0;
   }
 
-  if ($this->{'html'} && $has_prob)
+  my $is_tt = $move->isTripleTriple($player);
+  my $is_na = $move->getLength($player) >= 9 && $move->isBingo($player);
+  my $is_im = $prob > 20000;
+
+  my $tt_color    = Constants::TRIPLE_TRIPLE_COLOR;
+  my $na_color    = Constants::NINE_OR_ABOVE_COLOR;
+  my $im_color    = Constants::IMPROBABLE_COLOR;
+  my $tt_na_color = Constants::TRIPLE_TRIPLE_NINE_COLOR;
+  my $im_na_color = Constants::IMPROBABLE_NINE_OR_ABOVE_COLOR;
+  my $im_tt_color = Constants::IMPROBABLE_TRIPLE_TRIPE_COLOR;
+  my $at_color    = Constants::ALL_THREE_COLOR;
+
+  my $color;
+
+  if ($is_tt && $is_na && $is_im)
   {
-
-    my $numeric_prob = $prob;
-    $numeric_prob =~ s/[^\d]//g;
-
-    my $is_tt = $move->isTripleTriple($player);
-    my $is_na = $move->getLength($player) >= 9 && $move->isBingo($player);
-    my $is_im = $numeric_prob > 20000;
-
-    my $opening_mark_tag = "";
-    my $closing_mark_tag = "";
-
-    my $tt_color    = Constants::TRIPLE_TRIPLE_COLOR;
-    my $na_color    = Constants::NINE_OR_ABOVE_COLOR;
-    my $im_color    = Constants::IMPROBABLE_COLOR;
-    my $tt_na_color = Constants::TRIPLE_TRIPLE_NINE_COLOR;
-    my $im_na_color = Constants::IMPROBABLE_NINE_OR_ABOVE_COLOR;
-    my $im_tt_color = Constants::IMPROBABLE_TRIPLE_TRIPE_COLOR;
-    my $at_color    = Constants::ALL_THREE_COLOR;
-
-    my $color = '';
-
-    if ($is_tt && $is_na && $is_im)
-    {
-      $color = $at_color;
-    }
-    elsif ($is_tt && $is_na)
-    {
-      $color = $tt_na_color;
-    }
-    elsif ($is_im && $is_tt)
-    {
-      $color = $im_tt_color;
-    }
-    elsif ($is_im && $is_na)
-    {
-      $color = $im_na_color;
-    }
-    elsif ($is_tt)
-    {
-      $color = $tt_color;
-    }
-    elsif ($is_na)
-    {
-      $color = $na_color;
-    }
-    elsif ($is_im)
-    {
-      $color = $im_color;
-    }
-
-    if ($color)
-    {
-      $opening_mark_tag = "<mark style='background-color: $color'>";
-      $closing_mark_tag = "</mark>";  
-    }
-
-    $labeled_play = $opening_mark_tag . $labeled_play . $closing_mark_tag
+    $color = $at_color;
   }
-
-  if ($has_prob)
+  elsif ($is_tt && $is_na)
   {
-    $labeled_play .= $prob;
+    $color = $tt_na_color;
   }
-
-  $labeled_play =~ s/^\s+|\s+$//g;
-
-  if ($this->{'html'})
+  elsif ($is_im && $is_tt)
   {
-    my $url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
-    $labeled_play = "<a href='$url$game_id' target='_blank'>$labeled_play</a>";
+    $color = $im_tt_color;
   }
-
-  return $labeled_play;
+  elsif ($is_im && $is_na)
+  {
+    $color = $im_na_color;
+  }
+  elsif ($is_tt)
+  {
+    $color = $tt_color;
+  }
+  elsif ($is_na)
+  {
+    $color = $na_color;
+  }
+  elsif ($is_im)
+  {
+    $color = $im_color;
+  }
+  return [$color, $this->readableMove($move), $prob, $move->{'score'} - $move->{'challenge_points'}, $game_id];
 }
 
 sub getNumWordsPlayed

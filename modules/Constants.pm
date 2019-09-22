@@ -268,6 +268,8 @@ use constant LEADERBOARD_COLUMN_SPACING => 31;
 use constant LEADERBOARD_NAME           => "leaderboard";
 use constant LEADERBOARD_MIN_GAMES      => 50;
 
+use constant MISTAKES_REEL_LENGTH       => 200;
+
 use constant NOTABLE_NAME               => "notable";
 
 
@@ -434,6 +436,91 @@ use constant DATATYPE_ITEM => 'item';
 use constant METATYPE_PLAYER  => 'player';
 use constant METATYPE_GAME    => 'game';
 use constant METATYPE_NOTABLE => 'notable';
+
+use constant HTML_BODY_STYLE => 'style="background-color: #343a40; color: white"';
+
+use constant HTML_HEAD_CONTENT => <<HEAD
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>RandomRacer</title>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+  <!-- Bootstrap core CSS -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <!-- Material Design Bootstrap -->
+  <link href="css/mdb.min.css" rel="stylesheet">
+  <!-- Your custom styles (optional) -->
+
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/datepicker.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
+HEAD
+;
+
+use constant HTML_NAV => <<NAV
+
+<!--Navbar-->
+<nav class="navbar navbar-expand-lg navbar-dark elegant-color-dark">
+
+  <!-- Navbar brand -->
+  <a class="navbar-brand" href="/" style="font-family: 'VT323', monospace;" >RandomRacer</a>
+
+  <!-- Collapse button -->
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
+    aria-controls="basicExampleNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <!-- Collapsible content -->
+  <div class="collapse navbar-collapse" id="basicExampleNav">
+
+    <!-- Links -->
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="/leaderboard.html" >Leaderboards</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/notable.html" >Notable</a>
+      </li>
+
+      <!-- Dropdown
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">Dropdown</a>
+        <div class="dropdown-menu dropdown-primary" aria-labelledby="navbarDropdownMenuLink">
+          <a class="dropdown-item" href="#">Action</a>
+          <a class="dropdown-item" href="#">Another action</a>
+          <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+      </li>
+      -->
+    </ul>
+    <!-- Links -->
+  </div>
+  <!-- Collapsible content -->
+
+</nav>
+<!--/.Navbar-->
+
+
+NAV
+;
+
+use constant HTML_SCRIPTS => <<SCRIPTS
+  <!-- SCRIPTS -->
+  <!-- JQuery -->
+  <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+  <!-- Bootstrap tooltips -->
+  <script type="text/javascript" src="js/popper.min.js"></script>
+  <!-- Bootstrap core JavaScript -->
+  <script type="text/javascript" src="js/bootstrap.min.js"></script>
+  <!-- MDB core JavaScript -->
+  <script type="text/javascript" src="js/mdb.min.js"></script>
+  <!-- Datepicker JavaScript -->
+  <script type="text/javascript" src="js/bootstrap-datepicker.js"></script>
+SCRIPTS
+;
 
 use constant RESULTS_PAGE_JAVASCRIPT =>
 "
