@@ -23,7 +23,7 @@ sub mine
   my $blacklisted_tournaments = Constants::BLACKLISTED_TOURNAMENTS;
   my $cache_dir               = Constants::CACHE_DIRECTORY_NAME;
   my $stats_note              = Constants::STATS_NOTE;
-  my $names_to_ids_hashref    = NameConversion::NAMES_TO_IDS;
+  my $names_to_info_hashref   = NameConversion::NAMES_TO_IDS;
 
   my $dbh = Utils::connect_to_database();
 
@@ -77,7 +77,9 @@ sub mine
     return;
   }
 
-  my $player_id = $names_to_ids_hashref->{$sanitized_player_name};
+  my $player_id          = $names_to_info_hashref->{$sanitized_player_name}->[0];
+  my $player_pretty_name = $names_to_info_hashref->{$sanitized_player_name}->[1];
+  my $player_photo       = $names_to_info_hashref->{$sanitized_player_name}->[2];
 
   if (!$player_id)
   {
@@ -113,7 +115,7 @@ sub mine
 
   if ($opponent_name)
   {
-    my $opp_id = $names_to_ids_hashref->{Utils::sanitize($opponent_name)};
+    my $opp_id = $names_to_ids_hashref->{Utils::sanitize($opponent_name)}->[0];
     $opp_query =
     "
       AND opp.$player_cross_tables_id_column_name = $opp_id
@@ -285,16 +287,18 @@ sub mine
 
   my $infobox_style = '';
 
+  my $cell_width = 100 / 3;
+
   # Put player stats header here, include color key
   my $player_header = <<PLAYERHEADER
   <div $player_header_style>
     <div $player_inner_header_style>
-      <table>
+      <table style='width: 100%;'>
         <tbody>
 	  <tr>
-	   <td>Photo Here</td>
-	   <td>
-	     $player_name
+	   <td style='width: $cell_width%;'><img src='$player_photo' alt='$player_pretty_name'></td>
+	   <td style='width: $cell_width%;'>
+	     $player_pretty_name
 	     <table>
 	     <tbody>
 	     <tr>
@@ -314,7 +318,7 @@ sub mine
 	     </tbody>
 	     </table>
 	   </td>
-	   <td>
+	   <td style='width: $cell_width%;'>
 	     $color_key
 	   </td>
 	  </tr>
@@ -332,6 +336,14 @@ PLAYERHEADER
 <html lang="en">
   <head>
   $head_content
+  <style>
+  .infobox
+  {
+    border-radius: 20px;
+    background-color: #33b5e5;
+    text-align: center;
+  }
+  </style>
   </head>
   <body $body_style>
   $nav
@@ -348,7 +360,10 @@ PLAYERHEADER
       
           id = 'button_' + id; 
           var el = document.getElementById(id);
-          el.innerHTML = '&#8722';
+          if (el.nodeName == "BUTTON")
+          {
+            el.innerHTML = '&#8722';
+          }
         
         });
         
@@ -358,7 +373,10 @@ PLAYERHEADER
       
           id = 'button_' + id; 
           var el = document.getElementById(id);
-          el.innerHTML = '+';
+          if (el.nodeName == "BUTTON")
+          {
+            el.innerHTML = '+';
+          }
          
         });
       });
@@ -420,8 +438,8 @@ sub make_color_key
 
     my $style = <<STYLE
 style='
-  height: 15px;
-  width: 15px;
+  height: 10px;
+  width: 10px;
   background-color: $color;
   border-radius: 50%;
   display: inline-block;
@@ -441,32 +459,28 @@ sub make_infobox
   my $title   = shift;
   my $content = shift;
 
-  my $table_style =
+  my $title_style = 
   "
   style=
   '
-    border-radius: 20px;
-    background-color: green;
-    text-align: center;
+    padding: 5px
   '
   ";
-
-
-  my $td_style = 
+  my $content_style =
   "
   style=
   '
-    background-color: red
-    border-radius: 20px;
+    padding: 5px;
+    background-color: #000000
   '
   ";
 
   my $html = <<HTML
   <div>
-  <table $table_style>
+  <table class='infobox'>
     <tbody>
-    <tr><td>$title</td></tr>
-    <tr><td $td_style>$content</td></tr>
+    <tr><td $title_style>$title</td></tr>
+    <tr><td $content_style>$content</td></tr>
     </tbody>
   </table>
   </div>

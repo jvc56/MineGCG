@@ -618,24 +618,17 @@ sub statItemsToHTML
     my $stathtml = "<tr><td>$stat_expander</td><td>$title</td><td>$average</td><td>$total</td></tr>";
     $content .= "$stathtml\n$subtable";
   }
-
-
   my $group_expander = make_expander($group_expander_id);
-  my $grouphtml = <<GROUP
-  <div $div_style>
-    $group_expander $grouptitle
-     <div class="collapse" id="$group_expander_id">
+  $content = <<CONTENT
       <table>
         <tbody>
-          <tr><th>Stat</th><th>Average</th><th>Total</th></tr>
-	  $content
+          <tr><th></th><th>Stat</th><th>Average</th><th>Total</th></tr>
+            $content
         </tbody>
        </table>
-     </div>
-  </div>
-GROUP
+CONTENT
 ;
-  return $grouphtml;
+  return make_group($group_expander, $grouptitle, $group_expander_id, $div_style, $content);
 }
 
 sub statListToHTML
@@ -652,6 +645,10 @@ sub statListToHTML
   {
     my $statitem = $listref->[$i];
     my $playlist = $statitem->{'list'};
+    if (scalar @{$playlist} == 0)
+    {
+      next;
+    }
     my $title    = $statitem->{Constants::STAT_NAME};
     my $expander_id = $group_expander_id . '_' . $title;
     $expander_id =~ s/\s//g;
@@ -679,17 +676,12 @@ TABLE
   
     $content .= "<div>$expander $title\n$list_table\n</div>";
   }
+  if (!$content)
+  {
+    return '';
+  }
   my $group_expander = make_expander($group_expander_id);
-  my $lists = <<LISTS
-  <div $div_style>
-    $group_expander $grouptitle
-     <div class="collapse" id="$group_expander_id">
-       $content
-     </div>
-  </div>
-LISTS
-;
-  return $lists;
+  return make_group($group_expander, $grouptitle, $group_expander_id, $div_style, $content);
 }
 
 sub notableListToHTML
@@ -706,6 +698,10 @@ sub notableListToHTML
   {
     my $statitem = $listref->[$i];
     my $gamelist = $statitem->{'list'};
+    if (scalar @{$gamelist} == 0)
+    {
+      next;
+    }
     my $idslist  = $statitem->{'ids'};
     my $title    = $statitem->{Constants::STAT_NAME};
     my $expander_id = $group_expander_id . '_' . $title;
@@ -730,21 +726,33 @@ TABLE
   
     $content .= "<div>$expander $title\n$list_table\n</div>";
   }
+  if (!$content)
+  {
+    return '';
+  }
   my $group_expander = make_expander($group_expander_id);
-  my $notable = <<NOTABLE
-  <div $div_style>
-    $group_expander $grouptitle
-     <div class="collapse" id="$group_expander_id">
-       $content
-     </div>
-  </div>
-NOTABLE
-;
-  return $notable;
+  return make_group($group_expander, $grouptitle, $group_expander_id, $div_style, $content);
 }
 
 
+sub make_group
+{
+  my $group_expander    = shift;
+  my $grouptitle        = shift;
+  my $group_expander_id = shift;
+  my $div_style         = shift;
+  my $content           = shift;
 
+  return
+  "
+  <div $div_style>
+    $group_expander $grouptitle
+     <div class='collapse' id='$group_expander_id'>
+       $content
+     </div>
+  </div>
+  ";
+}
 
 sub make_expander
 {

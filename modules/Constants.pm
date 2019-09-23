@@ -443,7 +443,7 @@ use constant FRONT_PAGE_DIV_STYLE => <<FRONTPAGE
 style=
       'width: 90%;
        background-color: #22262a;
-       margin: 5% auto;
+       margin: 1% auto;
        border-radius: 15px;
        padding: 2%;
        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -456,7 +456,7 @@ use constant RESULTS_PAGE_DIV_STYLE => <<RESULTSPAGE
 style=
       'width: 90%;
        background-color: #22262a;
-       margin: 5% auto;
+       margin: 1% auto;
        border-radius: 15px;
        padding: 2%;
        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);

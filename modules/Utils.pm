@@ -546,13 +546,13 @@ sub prepare_anno_data
     my $xt_id = $data->[$index];
     if ($xt_id)
     {
-      my $real_name = $id_name_hashref->{$xt_id};
-      if (!$real_name)
+      my $player_info = $id_name_hashref->{$xt_id};
+      if (!$player_info )
       {
-        $real_name = get_real_player_name($xt_id);
-        $id_name_hashref->{$xt_id} = $real_name;
+        $player_info = get_player_info($xt_id);
+        $id_name_hashref->{$xt_id} = $player_info;
       }
-      $data->[$index + 2] = $real_name; # Name index of the player xt index
+      $data->[$index + 2] = $player_info->[0]; # Name index of the player xt index
     }
   }
 
@@ -597,7 +597,7 @@ sub get_tournament_date
   die "Date not found in $filename for id : $id\n";
 }
 
-sub get_real_player_name
+sub get_player_info
 {
   my $xt_id = shift;
  
@@ -609,15 +609,22 @@ sub get_real_player_name
   # Capture 
   # 		"name": "Seth Lipkin",
 
+  my $name;
+  my $photo;
+
   open(INFO, "<", $filename);
   while (<INFO>)
   {
     if (/"name":\s*"([^"]*)"/)
     {
-      return $1;
+      $name = $1;
+    }
+    elsif (/"photourl":\s*"([^"]*)"/)
+    {
+      $photo = $2;
     }
   }
-  die "Name not found in $filename\n";
+  return [$name, $photo];
 }
 
 sub delete_function_from_statslist

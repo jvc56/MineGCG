@@ -91,7 +91,7 @@ sub retrieve
       if ($id && !$updated_players{$id})
       {
         $updated_players{$id} = 1;
-        $name_id_hash{Utils::sanitize($name)} = $id;
+        $name_id_hash{Utils::sanitize($name)} = [$id, $id_name_hash{$id}->[0],  $id_name_hash{$id}->[1]];
         Utils::update_player_record($dbh, $id, $name, Utils::sanitize($name));
       }
     }
