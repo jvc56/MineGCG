@@ -115,7 +115,7 @@ sub mine
 
   if ($opponent_name)
   {
-    my $opp_id = $names_to_ids_hashref->{Utils::sanitize($opponent_name)}->[0];
+    my $opp_id = $names_to_info_hashref->{Utils::sanitize($opponent_name)}->[0];
     $opp_query =
     "
       AND opp.$player_cross_tables_id_column_name = $opp_id

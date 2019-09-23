@@ -893,7 +893,7 @@ sub update_name_id_hash
   foreach my $key (keys %{$hashref})
   {
     my $arrayref = $hashref->{$key};
-    my $arrayref_string = '[',
+    my $arrayref_string = '[';
     for (my $i = 0; $i < scalar @{$arrayref}; $i++)
     {
       $arrayref_string .= $arrayref->[$i] . ",";
