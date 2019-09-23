@@ -16,24 +16,6 @@ use Utils;
 use NameConversion;
 use JSON::XS;
 
-sub make_search_params_table
-{
-  my $params = shift;
-  my $table = '<table><tbody>';
-  for (my $i = 0; $i < scalar @{$params}; $i++)
-  {
-    my $item = $params->[$i];
-    my $title = $item->[0];
-    my $value = $item->[1];
-    if ($value)
-    {
-      $table .= "<tr><td>$title</td><td>$value</td></tr>\n";
-    }
-  }
-  $table .= '</tbody></table>';
-  return $table;
-}
-
 sub mine
 {
   my $stats_dir               = Constants::STATS_DIRECTORY_NAME;
@@ -58,28 +40,16 @@ sub mine
   my $html              = shift;
   my $missingracks      = shift;
 
-  my $search_params =
-    make_search_params_table
-    ([
-      ['Type', $cort],
-      ['Game ID', $single_game_id],
-      ['Opponent', $opponent_name],
-      ['Lexicon', $lexicon],
-      ['Tournament', $tourney_id],
-      ['Start Date', $startdate],
-      ['End Date',   $enddate]
-    ]);
-
 
 
   if ($startdate)
   {
-    $startdate = substr($startdate, 4, 8) . '-', substr($startdate, 0, 2) . '-' . substr($startdate, 2, 4);
+    $startdate = substr($startdate, 4, 8) . '-' . substr($startdate, 0, 2) . '-' . substr($startdate, 2, 2);
   }
 
   if ($enddate)
   {
-    $enddate = substr($enddate, 4, 8) . '-', substr($enddate, 0, 2) . '-' . substr($enddate, 2, 4);
+    $enddate = substr($enddate, 4, 8) . '-' . substr($enddate, 0, 2) . '-' . substr($enddate, 2, 2);
   }
 
 
@@ -114,33 +84,6 @@ sub mine
     print STDERR "Player ID not found for $player_name\n";
     return;
   }
-
-  my $javascript = "";
-
-  if ($html)
-  {
-    $javascript .= Constants::RESULTS_PAGE_JAVASCRIPT;
-  }
-  my $player_header_style = '';
-  my $player_inner_header_style = '';
-  # Put player stats header here, include color key
-  my $player_header = <<PLAYERHEADER
-  <div $player_header_style>
-    <div $player_inner_header_styl>
-      <table>
-        <tbody>
-	  <tr>
-	   <td>$player_name</td>
-	   <td>
-	     
-	   </td>
-	  </tr>
-	</tbody>
-      </table>
-    </div>
-  </div>
-PLAYERHEADER
-;
   my $all_stats = Stats->new(1);
 
   my %tourney_game_hash;
@@ -237,7 +180,9 @@ PLAYERHEADER
   }
 
   my @game_results = @{$dbh->selectall_arrayref($games_query, {Slice => {}, "RaiseError" => 1})};
-  my $num_games = 0;
+  my $num_games    = 0;
+  my $num_errors   = 0;
+  my $num_warnings = 0;
 
   while (@game_results)
   {
@@ -262,11 +207,13 @@ PLAYERHEADER
     if ($error)
     {
       $all_stats->addError($error);
+      $num_errors++;
       next;
     }
     elsif ($warning)
     {
       $all_stats->addWarning($warning);
+      $num_warnings++;
     }
 
     my $game_stat = Stats->new($player_is_first, $game->{$game_stats_column_name});
@@ -297,6 +244,86 @@ PLAYERHEADER
   my $nav          = Constants::HTML_NAV;
   my $default_scripts = Constants::HTML_SCRIPTS;
   my $body_style        = Constants::HTML_BODY_STYLE;
+  my $javascript = Constants::RESULTS_PAGE_JAVASCRIPT;
+
+  my $search_params =
+    make_search_params_table
+    ([
+      ['Type', $cort],
+      ['Game ID', $single_game_id],
+      ['Opponent', $opponent_name],
+      ['Lexicon', $lexicon],
+      ['Tournament', $tourney_id],
+      ['Start Date', $startdate],
+      ['End Date',   $enddate]
+    ]);
+
+  $search_params     = make_infobox('Search Parameters', $search_params);
+  my $total_games    = make_infobox('Games', $num_games);
+  my $total_errors   = make_infobox('Errors', $num_errors);
+  my $total_warnings = make_infobox('Warnings', $num_warnings);
+
+  my $color_key = make_color_key();
+
+  my $player_header_style =
+  "
+  style=
+  '
+    background-color: #22262a;
+  '
+  ";
+
+  my $player_inner_header_style =
+  "
+  style=
+  '
+    width: 90%;
+    margin: auto;
+  '
+  "
+  ;
+
+  my $infobox_style = '';
+
+  # Put player stats header here, include color key
+  my $player_header = <<PLAYERHEADER
+  <div $player_header_style>
+    <div $player_inner_header_style>
+      <table>
+        <tbody>
+	  <tr>
+	   <td>Photo Here</td>
+	   <td>
+	     $player_name
+	     <table>
+	     <tbody>
+	     <tr>
+	       <td>
+                 $search_params	     
+               </td>
+	       <td>
+	         $total_games
+	       </td>
+	       <td>
+	         $total_errors
+	       </td>
+	       <td>
+	         $total_warnings
+	       </td>
+	     </tr>
+	     </tbody>
+	     </table>
+	   </td>
+	   <td>
+	     $color_key
+	   </td>
+	  </tr>
+	</tbody>
+      </table>
+    </div>
+  </div>
+PLAYERHEADER
+;
 
 
   my $final_output = <<FINAL
@@ -308,16 +335,18 @@ PLAYERHEADER
   </head>
   <body $body_style>
   $nav
+  $player_header
   $html_string
   $default_scripts
 
+  <script>
       \$(document).ready(function () {
       
         \$('.collapse').on('shown.bs.collapse', function (e) {
         
           var id = e.target.id;
       
-          id = id.replace('entry', 'button'); 
+          id = 'button_' + id; 
           var el = document.getElementById(id);
           el.innerHTML = '&#8722';
         
@@ -327,13 +356,13 @@ PLAYERHEADER
       
           var id = e.target.id;
       
-          id = id.replace('entry', 'button'); 
+          id = 'button_' + id; 
           var el = document.getElementById(id);
           el.innerHTML = '+';
          
         });
       });
-
+  </script>
   </body>
 </html>
 FINAL
@@ -351,6 +380,101 @@ FINAL
   print $final_output;
 }
 
-1;
+sub make_search_params_table
+{
+  my $params = shift;
+  my $table = '<table><tbody>';
+  for (my $i = 0; $i < scalar @{$params}; $i++)
+  {
+    my $item = $params->[$i];
+    my $title = $item->[0];
+    my $value = $item->[1];
+    if ($value)
+    {
+      $table .= "<tr><td>$title</td><td>$value</td></tr>\n";
+    }
+  }
+  $table .= '</tbody></table>';
+  return $table;
+}
 
+sub make_color_key
+{
+  my @colors_and_titles =
+  (
+    [Constants::TRIPLE_TRIPLE_COLOR, 'Triple Triple'],
+    [Constants::NINE_OR_ABOVE_COLOR, 'Bingo Nine or Above'],
+    [Constants::IMPROBABLE_COLOR,    'Improbable'],
+    [Constants::TRIPLE_TRIPLE_NINE_COLOR, 'Triple Triple and Bingo Nine or Above'],
+    [Constants::IMPROBABLE_NINE_OR_ABOVE_COLOR, 'Improbable and Bingo Nine or Above'],
+    [Constants::IMPROBABLE_TRIPLE_TRIPE_COLOR, 'Triple Triple and Improbable'],
+    [Constants::ALL_THREE_COLOR,               'Triple Triple and Bingo Nine or Above and Improbable']
+  );
+  
+  my $color_key = '<table><tbody>';
+  for (my $i = 0; $i < scalar @colors_and_titles; $i++)
+  {
+    my $item = $colors_and_titles[$i];
+    my $color = $item->[0];
+    my $title = $item->[1];
+
+    my $style = <<STYLE
+style='
+  height: 15px;
+  width: 15px;
+  background-color: $color;
+  border-radius: 50%;
+  display: inline-block;
+  vertical-align: middle;
+'
+STYLE
+;
+    my $td_style = "style='vertical-align: middle'";
+    $color_key .= "<tr><td><span $style></span></td><td $td_style>$title</td></tr>";
+  }
+  $color_key .= '</tbody></table>';
+  return $color_key;
+}
+
+sub make_infobox
+{
+  my $title   = shift;
+  my $content = shift;
+
+  my $table_style =
+  "
+  style=
+  '
+    border-radius: 20px;
+    background-color: green;
+    text-align: center;
+  '
+  ";
+
+
+  my $td_style = 
+  "
+  style=
+  '
+    background-color: red
+    border-radius: 20px;
+  '
+  ";
+
+  my $html = <<HTML
+  <div>
+  <table $table_style>
+    <tbody>
+    <tr><td>$title</td></tr>
+    <tr><td $td_style>$content</td></tr>
+    </tbody>
+  </table>
+  </div>
+HTML
+;
+  return $html;
+}
+
+
+1;
 

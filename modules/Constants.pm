@@ -439,6 +439,33 @@ use constant METATYPE_NOTABLE => 'notable';
 
 use constant HTML_BODY_STYLE => 'style="background-color: #343a40; color: white"';
 
+use constant FRONT_PAGE_DIV_STYLE => <<FRONTPAGE
+style=
+      'width: 90%;
+       background-color: #22262a;
+       margin: 5% auto;
+       border-radius: 15px;
+       padding: 2%;
+       box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      '
+
+FRONTPAGE
+;
+
+use constant RESULTS_PAGE_DIV_STYLE => <<RESULTSPAGE
+style=
+      'width: 90%;
+       background-color: #22262a;
+       margin: 5% auto;
+       border-radius: 15px;
+       padding: 2%;
+       box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      '
+
+RESULTSPAGE
+;
+
+
 use constant HTML_HEAD_CONTENT => <<HEAD
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -447,13 +474,13 @@ use constant HTML_HEAD_CONTENT => <<HEAD
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
   <!-- Bootstrap core CSS -->
-  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
   <!-- Material Design Bootstrap -->
-  <link href="css/mdb.min.css" rel="stylesheet">
+  <link href="/css/mdb.min.css" rel="stylesheet">
   <!-- Your custom styles (optional) -->
 
-  <link href="css/style.css" rel="stylesheet">
-  <link href="css/datepicker.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+  <link href="/css/datepicker.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
 HEAD
 ;
@@ -510,15 +537,15 @@ NAV
 use constant HTML_SCRIPTS => <<SCRIPTS
   <!-- SCRIPTS -->
   <!-- JQuery -->
-  <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+  <script type="text/javascript" src="/js/jquery-3.4.1.min.js"></script>
   <!-- Bootstrap tooltips -->
-  <script type="text/javascript" src="js/popper.min.js"></script>
+  <script type="text/javascript" src="/js/popper.min.js"></script>
   <!-- Bootstrap core JavaScript -->
-  <script type="text/javascript" src="js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/js/bootstrap.min.js"></script>
   <!-- MDB core JavaScript -->
-  <script type="text/javascript" src="js/mdb.min.js"></script>
+  <script type="text/javascript" src="/js/mdb.min.js"></script>
   <!-- Datepicker JavaScript -->
-  <script type="text/javascript" src="js/bootstrap-datepicker.js"></script>
+  <script type="text/javascript" src="/js/bootstrap-datepicker.js"></script>
 SCRIPTS
 ;
 

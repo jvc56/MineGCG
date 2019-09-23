@@ -735,14 +735,7 @@ sub update_html
   my $nav          = Constants::HTML_NAV;
   my $default_scripts = Constants::HTML_SCRIPTS;
 
-  my $content_div_style = "style=
-                            'width: 90%;
-			     background-color: #22262a;
-			     margin: 5% auto;
-			     border-radius: 15px;
-			     padding: 2%;
-			     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-			   '";
+  my $content_div_style = Constants::FRONT_PAGE_DIV_STYLE; 
   my $inner_content_padding = '5%';
   my $title_style       = "style='font-size: 20px;'";
   my $body_style        = Constants::HTML_BODY_STYLE;

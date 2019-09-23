@@ -881,10 +881,6 @@ sub getBingos
     {
       my $bing_cap = $this->readableMoveCapitalized($move);
       my $prob = $this->{'lexicon'}->{$bing_cap};
-      if (!$prob)
-      {
-        $prob = '0';
-      }
       push @bingos, $this->labelPlay($move, $player, $this->{'id'}, $prob);
     }
   }
@@ -908,10 +904,6 @@ sub getTripleTriples
     {
       my $tt_cap = $this->readableMoveCapitalized($move);
       my $prob = $this->{'lexicon'}->{$tt_cap};
-      if (!$prob)
-      {
-        $prob = '0';
-      }
       push @tts, $this->labelPlay($move, $player, $this->{'id'}, $prob);
     }
   }
@@ -935,10 +927,6 @@ sub getBingoNinesOrAbove
     {
       my $bna_cap = $this->readableMoveCapitalized($move);
       my $prob = $this->{'lexicon'}->{$bna_cap};
-      if (!$prob)
-      {
-        $prob = '0';
-      }
       push @bnas, $this->labelPlay($move, $player, $this->{'id'}, $prob);
     }
   }
@@ -1012,7 +1000,7 @@ sub getPhoniesFormed
 
     if (!$prob)
     {
-      push @phonies, "<a href='$url$id' target='_blank'>$readable_play*</a>";
+      push @phonies, $this->labelPlay($move, $player, $this->{'id'}, 0);
     }
     my @words_made = @{$move->{'words_made'}};
     foreach my $word (@words_made)
@@ -1020,7 +1008,7 @@ sub getPhoniesFormed
       my $word_made_prob = $this->{'lexicon'}->{$word};
       if (!$word_made_prob)
       {
-        push @phonies, "<a href='$url$id' target='_blank'>$word*</a>";
+        push @phonies, $this->labelPlay($move, $player, $this->{'id'}, 0, $word);
       }
     }
   }
@@ -1056,11 +1044,7 @@ sub getPlaysChallenged
       my $readable_play = $this->readableMove($move);
       my $caps_play = $this->readableMoveCapitalized($move);
       my $prob = $this->{'lexicon'}->{$caps_play};
-      if (!$prob)
-      {
-        $readable_play = $readable_play."*";
-      }
-      push @plays_chal, "<a href='$url$id' target='_blank'>$readable_play</a>";
+      push @plays_chal, $this->labelPlay($move, $player, $this->{'id'}, $prob);
     }
   }
   return \@plays_chal;
@@ -1076,6 +1060,7 @@ sub labelPlay
   my $player  = shift;
   my $game_id = shift;
   my $prob    = shift;
+  my $other   = shift;
 
   if (!$prob)
   {
@@ -1094,7 +1079,7 @@ sub labelPlay
   my $im_tt_color = Constants::IMPROBABLE_TRIPLE_TRIPE_COLOR;
   my $at_color    = Constants::ALL_THREE_COLOR;
 
-  my $color;
+  my $color = '';
 
   if ($is_tt && $is_na && $is_im)
   {
@@ -1124,7 +1109,20 @@ sub labelPlay
   {
     $color = $im_color;
   }
-  return [$color, $this->readableMove($move), $prob, $move->{'score'} - $move->{'challenge_points'}, $game_id];
+  my $word;
+  if (!$other)
+  {
+    $word = $this->readableMove($move);
+  }
+  else
+  {
+    $word = $other;
+  }
+  if (!$prob)
+  {
+    $word .= '*';
+  }
+  return [$color, $word, $prob, $move->{'score'} - $move->{'challenge_points'}, $game_id];
 }
 
 sub getNumWordsPlayed

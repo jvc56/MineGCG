@@ -490,14 +490,7 @@ sub toString
 
   my $s = "";
 
-  my $content_div_style = "style=
-                            'width: 90%;
-                             background-color: #22262a;
-                             margin: 5% auto;
-                             border-radius: 15px;
-                             padding: 2%;
-                             box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-                           '";
+  my $content_div_style = Constants::RESULTS_PAGE_DIV_STYLE; 
 
   my $list_div = '';
   $list_div .= statListToHTML(\@player_list_stats, 'Player Lists',   'player_list_stats_expander', $content_div_style);
@@ -513,7 +506,7 @@ sub toString
 
   my $mistake_div = '';
   $mistake_div .= mistakesToHTML($player_mistake_list, 'Player Mistakes',     'player_mistakes_expander', $content_div_style);
-  $mistake_div  .= mistakesToHTML($opp_mistake_list,    'Opponent Mistakes',   'opponent_mistakes_expander', $content_div_style);
+  $mistake_div .= mistakesToHTML($opp_mistake_list,    'Opponent Mistakes',   'opponent_mistakes_expander', $content_div_style);
   $s .= $mistake_div;
 
   return $s;
@@ -521,11 +514,13 @@ sub toString
 
 sub mistakesToHTML
 {
-  my $list        = shift;
-  my $title       = shift;
-  my $expander_id = shift;
-  my $div_style   = shift;
+  my $mistakes_list = shift;
+  my $title         = shift;
+  my $expander_id   = shift;
+  my $div_style     = shift;
 
+
+  my $list = $mistakes_list->{'list'};
   my @list = @{$list};
 
   if (scalar @list == 0)
@@ -574,16 +569,15 @@ sub statItemsToHTML
 
   for(my $i = 0; $i < scalar @{$listref}; $i++)
   {
-    my $statitem = $listref->[$i];
-    my $statdata = $statitem->{Constants::STAT_ITEM_OBJECT_NAME};
-    my $title    = $statitem->{Constants::STAT_NAME};
-    my $subitems = $statdata->{'subitems'};
-    my $display_name = $statdata->{Constants::STAT_OBJECT_DISPLAY_NAME};
+    my $statitem     = $listref->[$i];
+    my $title        = $statitem->{Constants::STAT_NAME};
+    my $subitems     = $statitem->{'subitems'};
+    my $display_name = $statitem->{Constants::STAT_OBJECT_DISPLAY_NAME};
     my $nototal_cond = $display_name && $display_name eq Constants::STAT_OBJECT_DISPLAY_PCAVG;
     my $stat_expander = '';  
     my $subtable      = '';
 
-    my $total    = $statdata->{'total'};
+    my $total    = $statitem->{'total'};
     my $average = sprintf "%.2f", $total/$numgames;
 
     if ($nototal_cond)
@@ -592,20 +586,21 @@ sub statItemsToHTML
       $total   = '';
     }
 
-    if ($statdata->{'link'})
+    if ($statitem->{'link'})
     {
-      my $link = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX . $statdata->{'link'};
+      my $link = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX . $statitem->{'link'};
       $title = "<a href='$link' target='_blank'>$title</a>";
     }
 
     if ($subitems)
     {
-      my $stat_expander_id = $title . '_subitems';
+      my $stat_expander_id = $grouptitle . $title . '_subitems';
+      $stat_expander_id =~ s/\s//g;
       $stat_expander = make_expander($stat_expander_id);
 
       $subtable .= "<tr><td colspan='4'><div class='collapse' id='$stat_expander_id'><table>\n<tbody>\n";
 
-      my $order = $statdata->{'list'};
+      my $order = $statitem->{'list'};
       for (my $i = 0; $i < scalar @{$order}; $i++)
       {
 	my $subtitle = $order->[$i];
@@ -656,9 +651,10 @@ sub statListToHTML
   for(my $i = 0; $i < scalar @{$listref}; $i++)
   {
     my $statitem = $listref->[$i];
-    my $playlist = $statitem->{Constants::STAT_ITEM_OBJECT_NAME}->{'list'};
+    my $playlist = $statitem->{'list'};
     my $title    = $statitem->{Constants::STAT_NAME};
     my $expander_id = $group_expander_id . '_' . $title;
+    $expander_id =~ s/\s//g;
     my $list_table = <<TABLE
     <div class="collapse" id="$expander_id" style="overflow-y: auto; height: 40%">
       <table>
@@ -684,15 +680,24 @@ TABLE
     $content .= "<div>$expander $title\n$list_table\n</div>";
   }
   my $group_expander = make_expander($group_expander_id);
-  return "<div $div_style>$group_expander $grouptitle\n$content</div>";
+  my $lists = <<LISTS
+  <div $div_style>
+    $group_expander $grouptitle
+     <div class="collapse" id="$group_expander_id">
+       $content
+     </div>
+  </div>
+LISTS
+;
+  return $lists;
 }
-
 
 sub notableListToHTML
 {
-  my $listref      = shift;
-  my $grouptitle   = shift;
-  my $expander_id  = shift;
+  my $listref           = shift;
+  my $grouptitle        = shift;
+  my $group_expander_id = shift;
+  my $div_style         = shift;
 
   my $prefix = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
 
@@ -700,9 +705,11 @@ sub notableListToHTML
   for(my $i = 0; $i < scalar @{$listref}; $i++)
   {
     my $statitem = $listref->[$i];
-    my $gamelist = $statitem->{Constants::STAT_ITEM_OBJECT_NAME}->{'list'};
-    my $idslist  = $statitem->{Constants::STAT_ITEM_OBJECT_NAME}->{'ids'};
+    my $gamelist = $statitem->{'list'};
+    my $idslist  = $statitem->{'ids'};
     my $title    = $statitem->{Constants::STAT_NAME};
+    my $expander_id = $group_expander_id . '_' . $title;
+    $expander_id =~ s/\s//g;
     my $list_table = <<TABLE
     <div class="collapse" id="$expander_id" style="overflow-y: auto; height: 40%">
       <table>
@@ -723,8 +730,17 @@ TABLE
   
     $content .= "<div>$expander $title\n$list_table\n</div>";
   }
-  my $group_expander = make_expander($grouptitle . 'expander');
-  return "<div>$group_expander $grouptitle\n$content</div>";
+  my $group_expander = make_expander($group_expander_id);
+  my $notable = <<NOTABLE
+  <div $div_style>
+    $group_expander $grouptitle
+     <div class="collapse" id="$group_expander_id">
+       $content
+     </div>
+  </div>
+NOTABLE
+;
+  return $notable;
 }
 
 
@@ -1048,41 +1064,6 @@ sub statsList
         my $this_player = shift;
 
         push @{$this->{'list'}}, @{$game->getBingoNinesOrAbove($this_player)};
-      }
-    },
-    {
-      Constants::STAT_NAME => 'Highest Scoring Play',
-      Constants::STAT_ITEM_OBJECT_NAME =>  {'list' => [], 'score' => -1},
-      Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
-      Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_COMBINE_FUNCTION_NAME =>
-      sub
-      {
-        my $this  = shift;
-        my $other = shift;
-
-        if ($other->{'score'} > $this->{'score'})
-        {
-          $this->{'score'} = $other->{'score'};
-          $this->{'list'}  = $other->{'list'};
-        }
-      },
-      Constants::STAT_ADD_FUNCTION_NAME =>
-      sub
-      {
-        my $this = shift;
-        my $game = shift;
-        my $this_player = shift;
-
-        my $game_highest = $game->getHighestScoringPlay($this_player);
-
-        my @current_list = @{$this->{'list'}};
-
-        if (!@current_list || $this->{'score'} < $game_highest->[1])
-        {
-          $this->{'score'} = $game_highest->[1];
-          $this->{'list'}  = [$game_highest->[0] . " ($game_highest->[1] points)"];
-        }
       }
     },
     {
