@@ -114,12 +114,12 @@ sub new
     # Also add a space after the : in case there was no
     # space between the : and the rack
     $line =~ s/\s*:/: /g;
-    
+
     my @items = split /\s+/, $line;
     my $num_items = scalar @items;
 
     # Possible plays:
-    
+
     # Pass                  5 -
     # +5 Collins            5 -
     # Word challenged off   5 -
@@ -178,7 +178,7 @@ sub new
       $score = $items[2];
       $total = $items[3];
 
-      $score =~ s/[\+-]//g; 
+      $score =~ s/[\+-]//g;
 
       if (!(@moves))
       {
@@ -205,7 +205,7 @@ sub new
 
       $name =~ s/_/ /g;
       $name =~ s/[>:]//g;
-      $score =~ s/[\+-]//g; 
+      $score =~ s/[\+-]//g;
 
       # A pass
       if ($items[2] eq "-")
@@ -334,7 +334,7 @@ sub new
       $loc = uc $loc;
       $name =~ s/_/ /g;
       $name =~ s/[>:]//g;
-      $score =~ s/[\+-]//g; 
+      $score =~ s/[\+-]//g;
 
       my $column_letter;
       my $row_number;
@@ -379,7 +379,7 @@ sub new
       $player_two_total_after_move = $total;
     }
 
-    my $move = Move->new(   
+    my $move = Move->new(
                           $turn_number,
                           $play,
                           $score,
@@ -401,14 +401,14 @@ sub new
     push @moves, $move;
     $turn_number++;
   }
-  
+
   if ($line =~ /^#rack/)
   {
     return format_game_error("game is incomplete", $filename, $line_number, $line);
   }
 
   my $board = Board->new();
-  
+
   if (@moves)
   {
     my $board_error = $board->addMoves(\@moves);
@@ -488,7 +488,7 @@ sub new
       }
   };
 
-  my %game = 
+  my %game =
   (
     filename        => $filename,
     lexicon_name    => $lexicon,
@@ -717,7 +717,7 @@ sub getNumOneTilePlays
   foreach my $move (@moves)
   {
     if (
-        $move->{'num_tiles_played'}->{$player} == 1 
+        $move->{'num_tiles_played'}->{$player} == 1
        )
     {
       $sum++;
@@ -739,7 +739,7 @@ sub getNumOtherPlays
   {
     if (
 	$move->{'turn'} == $player &&
-        $move->{'num_tiles_played'}->{$player} == 0 
+        $move->{'num_tiles_played'}->{$player} == 0
        )
     {
       $sum++;
@@ -757,7 +757,7 @@ sub getNumVerticalOpeningPlays
   my $move = $this->{'moves'}->[0];
 
   if (
-      $move->{'turn'} == $player && 
+      $move->{'turn'} == $player &&
       $move->{'num_tiles_played'}->{$player} > 1 &&
       $move->{'vertical'}
      )
@@ -765,6 +765,25 @@ sub getNumVerticalOpeningPlays
     return 1;
   }
   return 0;
+}
+
+sub getNumHorizontalOpeningPlays
+{
+  my $this = shift;
+
+  my $player = shift;
+
+  my $move = $this->{'moves'}->[0];
+
+  if (
+      $move->{'turn'} == $player &&
+      $move->{'num_tiles_played'}->{$player} > 1 &&
+      $move->{'vertical'}
+     )
+  {
+    return 0;
+  }
+  return 1;
 }
 
 sub getNumFullRacks
@@ -1055,7 +1074,7 @@ sub labelPlay
 {
 
   my $this    = shift;
-  
+
   my $move    = shift;
   my $player  = shift;
   my $game_id = shift;
@@ -1232,7 +1251,7 @@ sub getTurnsWithBlank
 sub getNumBonusSquaresCovered
 {
   my $this = shift;
-  
+
   my $player = shift;
   my $board = $this->{'board'};
 
@@ -1242,7 +1261,7 @@ sub getNumBonusSquaresCovered
 sub getNumChallenges
 {
   my $this = shift;
-  
+
   my $player = shift;
 
   my @moves = @{$this->{'moves'}};
@@ -1263,7 +1282,7 @@ sub getNumChallenges
 sub getNumPhonyPlays
 {
   my $this = shift;
-  
+
   my $player = shift;
   my $unchal = shift;
 
@@ -1282,7 +1301,7 @@ sub getNumPhonyPlays
 sub getWordsProbability
 {
   my $this = shift;
-  
+
   my $player = shift;
   my $bingos_only = shift;
 
@@ -1308,7 +1327,7 @@ sub getWordsProbability
 sub isBingoless
 {
   my $this = shift;
-  
+
   my $player = shift;
   # Add 0 at the end to include phonies
   return sum(@{$this->getNumWordsPlayed($player, 1, 0)}) == 0;
@@ -1452,7 +1471,7 @@ sub postConstruction
   foreach my $move (@moves)
   {
     # Determine rack fullness
-    
+
     $move->{'tiles_in_bag'} = $tiles_in_bag;
     my $turn = $move->{'turn'};
     my $tiles_played = $move->getNumTilesPlayed($turn);
@@ -1468,13 +1487,13 @@ sub postConstruction
     }
 
     $tiles_in_bag -= $tiles_played;
-    
+
     if ($move->{'play_type'} ne Constants::PLAY_TYPE_WORD)
     {
       $move->{'is_phony'} = 0;
       next;
     }
-    
+
     my $play = $move->{'play'};
     my $v = $move->{'vertical'};
     my $r = $move->{'row'};
@@ -1486,7 +1505,7 @@ sub postConstruction
     if (length $play == 1)
     {
       my $pos = $r * Constants::BOARD_WIDTH + $c;
-      
+
       my $iter_r = $pos - Constants::BOARD_WIDTH;
       my $iter_c = $pos - 1;
 
@@ -1497,7 +1516,7 @@ sub postConstruction
       my @formed_word = ($play);
 
       # Try the horizontal direction first
-      
+
       while ($iter_c >= 0 && (int ($iter_c/Constants::BOARD_WIDTH)) == $r )
       {
         my $square = $this->{'board'}->{'grid'}[$iter_c];
@@ -1762,4 +1781,3 @@ sub format_game_error
 }
 
 1;
-
