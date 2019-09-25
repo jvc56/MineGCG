@@ -678,7 +678,7 @@ TABLE
   
     my $expander = make_expander($expander_id);
   
-    $content .= "<div><tr><td>$expander</td><td>$title</td><tr><td></td><td>$list_table</td></tr></div>";
+    $content .= "<div><tr><td>$expander</td><td>$title</td></tr><tr><td></td><td>$list_table</td></tr></div>";
   }
   if (!$content)
   {
