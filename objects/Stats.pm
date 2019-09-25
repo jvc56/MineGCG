@@ -518,6 +518,7 @@ sub mistakesToHTML
   my $title         = shift;
   my $expander_id   = shift;
   my $div_style     = shift;
+  my $table_style  = Constants::RESULTS_PAGE_TABLE_STYLE;
 
 
   my $list = $mistakes_list->{'list'};
@@ -544,7 +545,7 @@ sub mistakesToHTML
   <div $div_style>
     $mistake_expander $title
      <div class="collapse" id="$expander_id" style="overflow-y: auto; height: 40%">
-      <table>
+      <table $table_style>
         <tbody>
           <tr><th>Game</th><th>Type</th><th>Size</th><th>Play</th><th>Comment</th></tr>
 	  $content
@@ -564,6 +565,7 @@ sub statItemsToHTML
   my $grouptitle   = shift;
   my $group_expander_id  = shift;
   my $div_style    = shift;
+  my $table_style  = Constants::RESULTS_PAGE_TABLE_STYLE;
 
   my $content = '';
 
@@ -598,7 +600,7 @@ sub statItemsToHTML
       $stat_expander_id =~ s/\s//g;
       $stat_expander = make_expander($stat_expander_id);
 
-      $subtable .= "<tr><td colspan='4'><div class='collapse' id='$stat_expander_id'><table>\n<tbody>\n";
+      $subtable .= "<tr><td colspan='4'><div class='collapse' id='$stat_expander_id'><table $table_style>\n<tbody>\n";
 
       my $order = $statitem->{'list'};
       for (my $i = 0; $i < scalar @{$order}; $i++)
@@ -637,6 +639,7 @@ sub statListToHTML
   my $grouptitle   = shift;
   my $group_expander_id  = shift;
   my $div_style    = shift;
+  my $table_style  = Constants::RESULTS_PAGE_TABLE_STYLE;
 
   my $prefix = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
 
@@ -654,7 +657,7 @@ sub statListToHTML
     $expander_id =~ s/\s//g;
     my $list_table = <<TABLE
     <div class="collapse" id="$expander_id" style="overflow-y: auto; height: 40%">
-      <table>
+      <table $table_style>
         <tbody>
         <tr><th></th><th>Play</th><th>Probability</th><th>Score</th></tr>
 TABLE
@@ -675,7 +678,7 @@ TABLE
   
     my $expander = make_expander($expander_id);
   
-    $content .= "<div>$expander $title\n$list_table\n</div>";
+    $content .= "<div><tr><td>$expander</td><td>$title</td><tr><td></td><td>$list_table</td></tr></div>";
   }
   if (!$content)
   {
@@ -691,6 +694,7 @@ sub notableListToHTML
   my $grouptitle        = shift;
   my $group_expander_id = shift;
   my $div_style         = shift;
+  my $table_style  = Constants::RESULTS_PAGE_TABLE_STYLE;
 
   my $prefix = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
 
@@ -709,7 +713,7 @@ sub notableListToHTML
     $expander_id =~ s/\s//g;
     my $list_table = <<TABLE
     <div class="collapse" id="$expander_id" style="overflow-y: auto; height: 40%">
-      <table>
+      <table $table_style>
         <tbody>
         <tr><th>Color Code</th><th>Play</th><th>Probability</th><th>Score</th></tr>
 TABLE

@@ -465,6 +465,14 @@ style=
 RESULTSPAGE
 ;
 
+use constant RESULTS_PAGE_TABLE_STYLE => <<RESULTSPAGETABLE
+style=
+      'width: 100%;
+
+      '
+
+RESULTSPAGETABLE
+;
 
 use constant HTML_HEAD_CONTENT => <<HEAD
   <meta charset="utf-8">
