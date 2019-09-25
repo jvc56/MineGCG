@@ -296,12 +296,12 @@ sub mine
       <table style='width: 100%;'>
         <tbody>
 	  <tr>
-	   <td style='width: $cell_width%;'><img src='$player_photo' alt='$player_pretty_name' style='margin: auto'></td>
+	   <td style='width: $cell_width%;'><div style='margin: auto'><img src='$player_photo' alt='$player_pretty_name'></div></td>
 	   <td style='width: $cell_width%;'>
 	     <table  style='margin: auto'>
 	     <tbody>
        <tr>
-         <td colspan='3'>
+         <td colspan='3' style='text-align: center'>
            $player_pretty_name
          </td>
        </tr>
@@ -346,7 +346,7 @@ PLAYERHEADER
     border-radius: 5px;
     background-color: #33b5e5;
     text-align: center;
-    border: 1px solid #33b5e5;
+    border-collapse: separate;
   }
   .content_td
   {
