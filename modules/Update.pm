@@ -896,7 +896,7 @@ sub update_name_id_hash
     my $arrayref_string = '[';
     for (my $i = 0; $i < scalar @{$arrayref}; $i++)
     {
-      $arrayref_string .= $arrayref->[$i] . ",";
+      $arrayref_string .= '"' . $arrayref->[$i] . '",';
     }
     chop($arrayref_string);
     $arrayref_string .= ']';

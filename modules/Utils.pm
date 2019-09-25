@@ -621,7 +621,7 @@ sub get_player_info
     }
     elsif (/"photourl":\s*"([^"]*)"/)
     {
-      $photo = $2;
+      $photo = $1;
     }
   }
   return [$name, $photo];
