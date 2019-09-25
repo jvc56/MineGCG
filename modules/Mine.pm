@@ -441,7 +441,7 @@ sub make_color_key
     my $color = $item->[0];
     my $title = $item->[1];
 
-    my $style = get_color_dot_style($color);
+    my $style = Utils::get_color_dot_style($color);
     my $td_style = "style='vertical-align: middle'";
     $color_key .= "<tr><td><span $style></span></td><td $td_style>$title</td></tr>";
   }
