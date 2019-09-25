@@ -678,7 +678,7 @@ TABLE
   
     my $expander = make_expander($expander_id);
   
-    $content .= "<div><table><tbody><tr><td>$expander</td><td>$title</td></tr><tr><td></td><td>$list_table</td></tr></tbody></table></div>";
+    $content .= make_content_item($expander, $title, $list_table);
   }
   if (!$content)
   {
@@ -729,7 +729,7 @@ TABLE
   
     my $expander = make_expander($expander_id);
   
-    $content .= "<div>$expander $title\n$list_table\n</div>";
+    $content .= make_content_item($expander, $title, $list_table);
   }
   if (!$content)
   {
@@ -739,6 +739,30 @@ TABLE
   return make_group($group_expander, $grouptitle, $group_expander_id, $div_style, $content);
 }
 
+
+sub make_content_item
+{
+  my $expander   = shift;
+  my $title      = shift;
+  my $list_table = shift;
+
+  my $table_style = 'style="width: 100%"';
+  my $ex_td_style = 'style="width: 20%"';
+
+  my $content = <<CONTENT
+  <div>
+    <table $table_style>
+    <tbody>
+      <tr>
+        <td $ex_td_style>$expander</td><td>$title</td></tr>
+        <tr><td></td><td>$list_table</td></tr>
+    </tbody>
+    </table>
+  </div>
+CONTENT
+;
+  return $content;
+}
 
 sub make_group
 {
