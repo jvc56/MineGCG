@@ -656,19 +656,20 @@ sub statListToHTML
     <div class="collapse" id="$expander_id" style="overflow-y: auto; height: 40%">
       <table>
         <tbody>
-        <tr><th>Color Code</th><th>Play</th><th>Probability</th><th>Score</th></tr>
+        <tr><th></th><th>Play</th><th>Probability</th><th>Score</th></tr>
 TABLE
   ;
     for (my $i = 0; $i < scalar @{$playlist}; $i++)
     {
       my $item  = $playlist->[$i];
-      my $code  = $item->[0];
+      my $color  = $item->[0];
       my $play  = $item->[1];
       my $prob  = $item->[2];
       my $score = $item->[3];
       my $id    = $item->[4];
 
-      $list_table .= "<tr><td>$code</td><td><a href='$prefix$id' target='_blank'>$play</a></td><td>$prob</td><td>$score</td><tr>\n";
+      my $span_style = get_color_dot_style($color);
+      $list_table .= "<tr><td><span $span_style></span></td></td><td><a href='$prefix$id' target='_blank'>$play</a></td><td>$prob</td><td>$score</td><tr>\n";
     }
     $list_table .= "</tbody>\n</table>\n</div>";
   

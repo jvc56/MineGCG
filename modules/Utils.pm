@@ -627,6 +627,23 @@ sub get_player_info
   return [$name, $photo];
 }
 
+sub get_color_dot_style
+{
+  my $color = shift;
+    my $style = <<STYLE
+style='
+  height: 10px;
+  width: 10px;
+  background-color: $color;
+  border-radius: 50%;
+  display: inline-block;
+  vertical-align: middle;
+'
+STYLE
+;
+  return $style; 
+}
+
 sub delete_function_from_statslist
 {
   my $stats = shift;

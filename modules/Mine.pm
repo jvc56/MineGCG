@@ -342,6 +342,11 @@ PLAYERHEADER
     border-radius: 20px;
     background-color: #33b5e5;
     text-align: center;
+    border: 1px solid #33b5e5;
+  }
+  .content_td
+  {
+    background-color: #000000;
   }
   </style>
   </head>
@@ -436,17 +441,7 @@ sub make_color_key
     my $color = $item->[0];
     my $title = $item->[1];
 
-    my $style = <<STYLE
-style='
-  height: 10px;
-  width: 10px;
-  background-color: $color;
-  border-radius: 50%;
-  display: inline-block;
-  vertical-align: middle;
-'
-STYLE
-;
+    my $style = get_color_dot_style($color);
     my $td_style = "style='vertical-align: middle'";
     $color_key .= "<tr><td><span $style></span></td><td $td_style>$title</td></tr>";
   }
@@ -459,28 +454,12 @@ sub make_infobox
   my $title   = shift;
   my $content = shift;
 
-  my $title_style = 
-  "
-  style=
-  '
-    padding: 5px
-  '
-  ";
-  my $content_style =
-  "
-  style=
-  '
-    padding: 5px;
-    background-color: #000000
-  '
-  ";
-
   my $html = <<HTML
   <div>
   <table class='infobox'>
     <tbody>
-    <tr><td $title_style>$title</td></tr>
-    <tr><td $content_style>$content</td></tr>
+    <tr><td>$title</td></tr>
+    <tr><td class='content_td'>$content</td></tr>
     </tbody>
   </table>
   </div>
