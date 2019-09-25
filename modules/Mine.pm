@@ -296,15 +296,19 @@ sub mine
       <table style='width: 100%;'>
         <tbody>
 	  <tr>
-	   <td style='width: $cell_width%;'><img src='$player_photo' alt='$player_pretty_name'></td>
+	   <td style='width: $cell_width%;'><img src='$player_photo' alt='$player_pretty_name' style='margin: auto'></td>
 	   <td style='width: $cell_width%;'>
-	     $player_pretty_name
-	     <table>
+	     <table  style='margin: auto'>
 	     <tbody>
+       <tr>
+         <td colspan='3'>
+           $player_pretty_name
+         </td>
+       </tr>
 	     <tr>
 	       <td>
-                 $search_params	     
-               </td>
+           $search_params	     
+         </td>
 	       <td>
 	         $total_games
 	       </td>
@@ -339,14 +343,15 @@ PLAYERHEADER
   <style>
   .infobox
   {
-    border-radius: 20px;
+    border-radius: 5px;
     background-color: #33b5e5;
     text-align: center;
     border: 1px solid #33b5e5;
   }
   .content_td
   {
-    background-color: #000000;
+    background-color: #0000FF;
+    border-radius: 5px;
   }
   </style>
   </head>
@@ -434,7 +439,7 @@ sub make_color_key
     [Constants::ALL_THREE_COLOR,               'Triple Triple and Bingo Nine or Above and Improbable']
   );
   
-  my $color_key = '<table><tbody>';
+  my $color_key = '<table  style="margin: auto"><tbody>';
   for (my $i = 0; $i < scalar @colors_and_titles; $i++)
   {
     my $item = $colors_and_titles[$i];
