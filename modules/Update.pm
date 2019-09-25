@@ -285,7 +285,6 @@ sub update_leaderboard
 
   my @all_mistakes = ();
   my $total_mistakes = 0;
-
   foreach my $player_item (@player_data)
   {
     my $total_games  = $player_item->{Constants::PLAYER_TOTAL_GAMES_COLUMN_NAME};
@@ -294,7 +293,6 @@ sub update_leaderboard
     my $player_stats_data = $player_stats->{Constants::STATS_DATA_KEY_NAME};
 
     my @stat_keys = (Constants::STATS_DATA_GAME_KEY_NAME, Constants::STATS_DATA_PLAYER_ONE_KEY_NAME);
-    
     foreach my $key (@stat_keys)
     {
       my $statlist = $player_stats_data->{$key};
