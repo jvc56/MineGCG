@@ -379,7 +379,7 @@ PLAYERHEADER
   <script>
       \$(document).ready(function () {
       
-        \$('.collapse').on('shown.bs.collapse', function (e) {
+        \$('.collapse').on('show.bs.collapse', function (e) {
         
 
             \$(\$.fn.dataTable.tables(true)).DataTable()
@@ -396,7 +396,7 @@ PLAYERHEADER
         
         });
         
-        \$('.collapse').on('hidden.bs.collapse', function (e) {
+        \$('.collapse').on('hide.bs.collapse', function (e) {
       
           var id = e.target.id;
       
