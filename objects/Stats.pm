@@ -613,7 +613,7 @@ sub statItemsToHTML
           $average = $total;
           $total   = '';
         }
-        $subtable .= "<tr><td>$subtitle</td><td>$subaverage</td><td>$subtotal</td></tr>\n";
+        $subtable .= "<tr><td></td><td>$subtitle</td><td>$subaverage</td><td>$subtotal</td></tr>\n";
       }
       $subtable .= "</tbody></table></div></td></tr>";
     }
@@ -622,7 +622,7 @@ sub statItemsToHTML
   }
   my $group_expander = make_expander($group_expander_id);
   $content = <<CONTENT
-      <table>
+      <table style='width: 100%; table-layout: fixed'>
         <tbody>
           <tr><th></th><th>Stat</th><th>Average</th><th>Total</th></tr>
             $content
