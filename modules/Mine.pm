@@ -417,8 +417,6 @@ PLAYERHEADER
               info:   false
           }
         );
-        \$('.collapse').toggle();
-        \$('.collapse').toggle();
         // \$('.dataTables_length').addClass('bs-select');
 
       });

@@ -656,7 +656,7 @@ sub statListToHTML
     my $expander_id = $group_expander_id . '_' . $title;
     $expander_id =~ s/\s//g;
     my $list_table = <<TABLE
-    <div class="collapse" id="$expander_id">
+    <div class="collapse show" id="$expander_id">
       <table class="display" cellspacing="0" width="100%">
         <thead>
           <tr>
