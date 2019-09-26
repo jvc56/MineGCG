@@ -538,14 +538,14 @@ sub mistakesToHTML
     my $game = $mistake->[2];
     my $play = $mistake->[3];
     my $cmnt = $mistake->[4];
-    $content .= "<tr><td>$type</td><td>$size</td><td>$game</td><td>$play</td><td>$cmnt</td></tr>";
+    $content .= "<tr><td>$game</td><td>$type</td><td>$size</td><td>$play</td><td>$cmnt</td></tr>";
   }
   my $mistake_expander = make_expander($expander_id);
   my $grouphtml = <<GROUP
   <div $div_style>
     $mistake_expander $title
      <div class="collapse" id="$expander_id">
-      <table $table_style>
+      <table class="display" cellspacing="0" width="100%">
         <tbody>
           <tr><th>Game</th><th>Type</th><th>Size</th><th>Play</th><th>Comment</th></tr>
 	  $content
@@ -727,9 +727,9 @@ sub notableListToHTML
     $expander_id =~ s/\s//g;
     my $list_table = <<TABLE
     <div class="collapse" id="$expander_id">
-      <table $table_style>
+      <table  class="display" cellspacing="0" width="100%">
         <tbody>
-        <tr><th>Color Code</th><th>Play</th><th>Probability</th><th>Score</th></tr>
+        <tr><th>Game</th></tr>
 TABLE
   ;
     for (my $i = 0; $i < scalar @{$gamelist}; $i++)
