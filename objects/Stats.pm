@@ -546,8 +546,16 @@ sub mistakesToHTML
     $mistake_expander $title
      <div class="collapse" id="$expander_id">
       <table class="display" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th>Game</th>
+            <th>Type</th>
+            <th>Size</th>
+            <th>Play</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
         <tbody>
-          <tr><th>Game</th><th>Type</th><th>Size</th><th>Play</th><th>Comment</th></tr>
 	  $content
         </tbody>
        </table>
@@ -728,8 +736,12 @@ sub notableListToHTML
     my $list_table = <<TABLE
     <div class="collapse" id="$expander_id">
       <table  class="display" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th>Game</th>
+          </tr>
+        </thead>
         <tbody>
-        <tr><th>Game</th></tr>
 TABLE
   ;
     for (my $i = 0; $i < scalar @{$gamelist}; $i++)
