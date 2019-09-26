@@ -544,7 +544,7 @@ sub mistakesToHTML
   my $grouphtml = <<GROUP
   <div $div_style>
     $mistake_expander $title
-     <div class="collapse" id="$expander_id" style="overflow-y: auto; height: 40%">
+     <div class="collapse" id="$expander_id">
       <table $table_style>
         <tbody>
           <tr><th>Game</th><th>Type</th><th>Size</th><th>Play</th><th>Comment</th></tr>
@@ -656,7 +656,7 @@ sub statListToHTML
     my $expander_id = $group_expander_id . '_' . $title;
     $expander_id =~ s/\s//g;
     my $list_table = <<TABLE
-    <div class="collapse" id="$expander_id" style="overflow-y: auto; height: 40%">
+    <div class="collapse" id="$expander_id">
       <table class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
         <thead>
           <tr><th>Type</th><th>Play</th><th>Probability</th><th>Score</th></tr>
@@ -714,7 +714,7 @@ sub notableListToHTML
     my $expander_id = $group_expander_id . '_' . $title;
     $expander_id =~ s/\s//g;
     my $list_table = <<TABLE
-    <div class="collapse" id="$expander_id" style="overflow-y: auto; height: 40%">
+    <div class="collapse" id="$expander_id">
       <table $table_style>
         <tbody>
         <tr><th>Color Code</th><th>Play</th><th>Probability</th><th>Score</th></tr>
@@ -751,15 +751,22 @@ sub make_content_item
   my $table_style = 'style="width: 100%"';
   my $ex_td_style = 'style="width: 20%"';
 
+#   my $content = <<CONTENT
+#   <div>
+#     <table $table_style>
+#     <tbody>
+#       <tr>
+#         <td $ex_td_style>$expander</td><td>$title</td></tr>
+#         <tr><td></td><td>$list_table</td></tr>
+#     </tbody>
+#     </table>
+#   </div>
+# CONTENT
+# ;
   my $content = <<CONTENT
   <div>
-    <table $table_style>
-    <tbody>
-      <tr>
-        <td $ex_td_style>$expander</td><td>$title</td></tr>
-        <tr><td></td><td>$list_table</td></tr>
-    </tbody>
-    </table>
+$expander $title
+$list_table
   </div>
 CONTENT
 ;
