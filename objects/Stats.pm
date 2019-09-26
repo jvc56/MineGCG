@@ -657,9 +657,14 @@ sub statListToHTML
     $expander_id =~ s/\s//g;
     my $list_table = <<TABLE
     <div class="collapse" id="$expander_id">
-      <table class="display" cellspacing="0" width="100%">
+      <table class="display hover row-border stripe" cellspacing="0" width="100%">
         <thead>
-          <tr><th>Type</th><th>Play</th><th>Probability</th><th>Score</th></tr>
+          <tr>
+            <th>Type</th>
+            <th>Play</th>
+            <th>Probability</th>
+            <th>Score</th>
+          </tr>
         </thead>
         <tbody>
 TABLE
@@ -674,7 +679,14 @@ TABLE
       my $id    = $item->[4];
 
       my $span_style = Utils::get_color_dot_style($color);
-      $list_table .= "<tr><td><span $span_style></span></td><td><a href='$prefix$id' target='_blank'>$play</a></td><td>$prob</td><td>$score</td></tr>\n";
+      $list_table .=
+      "
+        <tr>
+          <td><span $span_style></span></td>
+          <td><a href='$prefix$id' target='_blank'>$play</a></td>
+          <td>$prob</td>
+          <td>$score</td>
+        </tr>\n";
     }
     $list_table .= "</tbody>\n</table>\n</div>";
   
