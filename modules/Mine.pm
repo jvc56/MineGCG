@@ -381,6 +381,10 @@ PLAYERHEADER
       
         \$('.collapse').on('shown.bs.collapse', function (e) {
         
+
+            \$(\$.fn.dataTable.tables(true)).DataTable()
+                  .columns.adjust();
+
           var id = e.target.id;
       
           id = 'button_' + id; 
