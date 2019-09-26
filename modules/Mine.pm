@@ -293,15 +293,15 @@ sub mine
   my $player_header = <<PLAYERHEADER
   <div $player_header_style>
     <div $player_inner_header_style>
-      <table>
+      <table style='margin: auto'>
         <tbody>
           <tr>
-           <td style='width: $cell_width%;'><div style='margin: auto'><img src='$player_photo' alt='$player_pretty_name'></div></td>
-           <td style='width: $cell_width%;'>
+           <td><div style='margin: auto'><img src='$player_photo' alt='$player_pretty_name'></div></td>
+           <td>
              <table>
              <tbody>
              <tr>
-               <td>
+               <td colspan='3'>
                  $player_pretty_name
                </td>
              </tr>
@@ -325,8 +325,12 @@ sub mine
       </table>
     </div>
     <div $player_inner_header_style>
-    $search_params
-             $color_key
+    <table>
+      <tr>
+      <td>$search_params</td>
+      <td>$color_key</td>
+      <\tr>
+    </table>
     </div>
   </div>
 PLAYERHEADER
