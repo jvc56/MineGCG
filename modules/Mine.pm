@@ -400,7 +400,7 @@ PLAYERHEADER
       
           id = 'button_' + id; 
           var el = document.getElementById(id);
-          if (el.nodeName && el.nodeName == "BUTTON")
+          if (el && el.nodeName == "BUTTON")
           {
             el.innerHTML = '&#8722';
           }
@@ -413,7 +413,7 @@ PLAYERHEADER
       
           id = 'button_' + id; 
           var el = document.getElementById(id);
-          if (el.nodeName && el.nodeName == "BUTTON")
+          if (el && el.nodeName == "BUTTON")
           {
             el.innerHTML = '+';
           }
