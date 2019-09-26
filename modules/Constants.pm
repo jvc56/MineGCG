@@ -563,7 +563,7 @@ SCRIPTS
 
 use constant TOGGLE_ICON_SCRIPT => <<TOGGLEICON
 <script>
-    function toggle_icon(el)
+    function toggle_icon(el, key)
     {
       if (el.innerHTML.includes('down'))
       {
@@ -573,7 +573,7 @@ use constant TOGGLE_ICON_SCRIPT => <<TOGGLEICON
       {
         el.innerHTML = '<i class="fas fa-angle-down rotate-icon"></i>'
       }
-      \$('#collapseOptions').collapse('toggle');
+      \$('#' + key).collapse('toggle');
     }
 </script>
 TOGGLEICON

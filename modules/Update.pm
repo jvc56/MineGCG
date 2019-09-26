@@ -113,7 +113,7 @@ DATEPICKER
 
       <div style="text-align: center">
         <a data-toggle="collapse" data-target="#collapseOptions"
-          aria-expanded="false" aria-controls="collapseOptions" onclick='toggle_icon(this)'>
+          aria-expanded="false" aria-controls="collapseOptions" onclick='toggle_icon(this, "collapseOptions")'>
           <i class="fas fa-angle-down rotate-icon"></i>
         </a>
       </div>
