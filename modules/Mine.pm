@@ -326,7 +326,7 @@ sub mine
         </tbody>
       </table>
     </div>
-    <div $player_inner_header_style id='collapseKey'>
+    <div $player_inner_header_style id='collapseKey' class="collapse">
     <table style='width: 100%;'>
       <tr>
       <td style='width: 50%'>$search_params</td>
