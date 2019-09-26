@@ -485,6 +485,8 @@ use constant HTML_HEAD_CONTENT => <<HEAD
   <link href="/css/bootstrap.min.css" rel="stylesheet">
   <!-- Material Design Bootstrap -->
   <link href="/css/mdb.min.css" rel="stylesheet">
+  <!-- Styles for Table Sort -->
+  <link href="/css/addons/datatables.min.css" rel="stylesheet">
   <!-- Your custom styles (optional) -->
 
   <link href="/css/style.css" rel="stylesheet">
@@ -554,6 +556,8 @@ use constant HTML_SCRIPTS => <<SCRIPTS
   <script type="text/javascript" src="/js/mdb.min.js"></script>
   <!-- Datepicker JavaScript -->
   <script type="text/javascript" src="/js/bootstrap-datepicker.js"></script>
+  <!-- Table Sort JavaScript -->
+  <script type="text/javascript" src="/js/addons/datatables.min.js"></script>
 SCRIPTS
 ;
 
