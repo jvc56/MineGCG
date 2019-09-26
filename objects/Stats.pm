@@ -657,9 +657,11 @@ sub statListToHTML
     $expander_id =~ s/\s//g;
     my $list_table = <<TABLE
     <div class="collapse" id="$expander_id" style="overflow-y: auto; height: 40%">
-      <table $table_style>
+      <table class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+        <thead>
+          <tr><th></th><th>Play</th><th>Probability</th><th>Score</th></tr>
+        </thead>
         <tbody>
-        <tr><th></th><th>Play</th><th>Probability</th><th>Score</th></tr>
 TABLE
   ;
     for (my $i = 0; $i < scalar @{$playlist}; $i++)
