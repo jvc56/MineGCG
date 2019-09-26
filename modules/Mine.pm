@@ -281,6 +281,7 @@ sub mine
   '
     width: 90%;
     margin: auto;
+    padding: 20px;
   '
   "
   ;
@@ -325,10 +326,10 @@ sub mine
       </table>
     </div>
     <div $player_inner_header_style>
-    <table>
+    <table style='width: 100%;'>
       <tr>
-      <td>$search_params</td>
-      <td>$color_key</td>
+      <td style='width: 50%'>$search_params</td>
+      <td style='width: 50%'>$color_key</td>
       </tr>
     </table>
     </div>
@@ -350,6 +351,7 @@ PLAYERHEADER
     background-color: #33b5e5;
     text-align: center;
     border-collapse: separate;
+    margin: auto;
   }
   .content_td
   {
@@ -467,7 +469,7 @@ sub make_color_key
     [Constants::ALL_THREE_COLOR,               'Triple Triple and Bingo Nine or Above and Improbable']
   );
   
-  my $color_key = '<table  style="margin: auto"><tbody>';
+  my $color_key = '<table><tbody>';
   for (my $i = 0; $i < scalar @colors_and_titles; $i++)
   {
     my $item = $colors_and_titles[$i];
