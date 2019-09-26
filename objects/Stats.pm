@@ -492,22 +492,14 @@ sub toString
 
   my $content_div_style = Constants::RESULTS_PAGE_DIV_STYLE; 
 
-  my $list_div = '';
-  $list_div .= statListToHTML(\@player_list_stats, 'Player Lists',   'player_list_stats_expander', $content_div_style);
-  $list_div .= statListToHTML(\@opp_list_stats,    'Opponent Lists', 'opponent_list_stats_expander', $content_div_style);
-  $list_div .= notableListToHTML(\@notable_stats,     'Notable Lists',  'notable_stats_expander', $content_div_style);
-  $s .= $list_div;
-
-  my $stat_div = '';
-  $stat_div .= statItemsToHTML(\@game_stats,        $num, 'Game Stats',     'game_stats_expander', $content_div_style);
-  $stat_div .= statItemsToHTML(\@player_item_stats, $num, 'Player Stats',   'player_stats_expander', $content_div_style);
-  $stat_div .= statItemsToHTML(\@opp_item_stats,    $num, 'Opponent Stats', 'opp_stats_expander', $content_div_style);
-  $s .= $stat_div;
-
-  my $mistake_div = '';
-  $mistake_div .= mistakesToHTML($player_mistake_list, 'Player Mistakes',     'player_mistakes_expander', $content_div_style);
-  $mistake_div .= mistakesToHTML($opp_mistake_list,    'Opponent Mistakes',   'opponent_mistakes_expander', $content_div_style);
-  $s .= $mistake_div;
+  $s .= statListToHTML(\@player_list_stats, 'Player Lists',   'player_list_stats_expander', $content_div_style);
+  $s .= statListToHTML(\@opp_list_stats,    'Opponent Lists', 'opponent_list_stats_expander', $content_div_style);
+  $s .= notableListToHTML(\@notable_stats,     'Notable Lists',  'notable_stats_expander', $content_div_style);
+  $s .= statItemsToHTML(\@game_stats,        $num, 'Game Stats',     'game_stats_expander', $content_div_style);
+  $s .= statItemsToHTML(\@player_item_stats, $num, 'Player Stats',   'player_stats_expander', $content_div_style);
+  $s .= statItemsToHTML(\@opp_item_stats,    $num, 'Opponent Stats', 'opp_stats_expander', $content_div_style);
+  $s .= mistakesToHTML($player_mistake_list, 'Player Mistakes',     'player_mistakes_expander', $content_div_style);
+  $s .= mistakesToHTML($opp_mistake_list,    'Opponent Mistakes',   'opponent_mistakes_expander', $content_div_style);
 
   return $s;
 }
