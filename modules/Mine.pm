@@ -380,6 +380,10 @@ PLAYERHEADER
       \$(document).ready(function () {
       
         \$('.collapse').on('shown.bs.collapse', function (e) {
+        
+
+            \$(\$.fn.dataTable.tables(true)).DataTable()
+                  .columns.adjust();
 
           var id = e.target.id;
       
@@ -412,7 +416,8 @@ PLAYERHEADER
               paging: false
           }
         );
-        \$('.display').DataTable().columns.adjust();
+        // \$('.dataTables_length').addClass('bs-select');
+
       });
   </script>
   </body>
