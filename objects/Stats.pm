@@ -674,7 +674,7 @@ TABLE
       my $id    = $item->[4];
 
       my $span_style = Utils::get_color_dot_style($color);
-      $list_table .= "<tr><td><span $span_style></span></td><td><a href='$prefix$id' target='_blank'>$play</a></td><td>$prob</td><td>$score</td><tr>\n";
+      $list_table .= "<tr><td><span $span_style></span></td><td><a href='$prefix$id' target='_blank'>$play</a></td><td>$prob</td><td>$score</td></tr>\n";
     }
     $list_table .= "</tbody>\n</table>\n</div>";
   
