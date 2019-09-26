@@ -366,7 +366,7 @@ PLAYERHEADER
     table.dataTable thead .sorting_desc:before,
     table.dataTable thead .sorting_desc_disabled:after,
     table.dataTable thead .sorting_desc_disabled:before {
-    bottom: .5em;
+    bottom: 0em;
     }
   </style>
   </head>
@@ -417,6 +417,8 @@ PLAYERHEADER
               info:   false
           }
         );
+        \$('.collapse').toggle();
+        \$('.collapse').toggle();
         // \$('.dataTables_length').addClass('bs-select');
 
       });
