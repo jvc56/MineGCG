@@ -659,7 +659,7 @@ sub statListToHTML
     <div class="collapse" id="$expander_id" style="overflow-y: auto; height: 40%">
       <table class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
         <thead>
-          <tr><th>Play</th><th>Probability</th><th>Score</th></tr>
+          <tr><th>Type</th><th>Play</th><th>Probability</th><th>Score</th></tr>
         </thead>
         <tbody>
 TABLE
