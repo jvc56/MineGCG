@@ -617,7 +617,7 @@ sub statItemsToHTML
       }
       $subtable .= "</tbody></table></div></td></tr>";
     }
-    my $stathtml = "<tr><td>$stat_expander</td><td>$title</td><td>$average</td><td>$total</td></tr>";
+    my $stathtml = "<tr><td style='height: 60px'>$stat_expander</td><td>$title</td><td>$average</td><td>$total</td></tr>";
     $content .= "$stathtml\n$subtable";
   }
   my $group_expander = make_expander($group_expander_id);
