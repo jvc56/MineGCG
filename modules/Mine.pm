@@ -293,41 +293,40 @@ sub mine
   my $player_header = <<PLAYERHEADER
   <div $player_header_style>
     <div $player_inner_header_style>
-      <table style='width: 100%;'>
+      <table>
         <tbody>
-	  <tr>
-	   <td style='width: $cell_width%;'><div style='margin: auto'><img src='$player_photo' alt='$player_pretty_name'></div></td>
-	   <td style='width: $cell_width%;'>
-	     <table  style='margin: auto'>
-	     <tbody>
-       <tr>
-         <td colspan='3' style='text-align: center'>
-           $player_pretty_name
-         </td>
-       </tr>
-	     <tr>
-	       <td>
-           $search_params	     
-         </td>
-	       <td>
-	         $total_games
-	       </td>
-	       <td>
-	         $total_errors
-	       </td>
-	       <td>
-	         $total_warnings
-	       </td>
-	     </tr>
-	     </tbody>
-	     </table>
-	   </td>
-	   <td style='width: $cell_width%;'>
-	     $color_key
-	   </td>
-	  </tr>
-	</tbody>
+          <tr>
+           <td style='width: $cell_width%;'><div style='margin: auto'><img src='$player_photo' alt='$player_pretty_name'></div></td>
+           <td style='width: $cell_width%;'>
+             <table>
+             <tbody>
+             <tr>
+               <td>
+                 $player_pretty_name
+               </td>
+             </tr>
+             <tr>
+               <td>
+                 $total_games
+               </td>
+               <td>
+                 $total_errors
+               </td>
+               <td>
+                 $total_warnings
+               </td>
+             </tr>
+             </tbody>
+             </table>
+           </td>
+
+          </tr>
+        </tbody>
       </table>
+    </div>
+    <div $player_inner_header_style>
+    $search_params
+             $color_key
     </div>
   </div>
 PLAYERHEADER
