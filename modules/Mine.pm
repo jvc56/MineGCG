@@ -379,11 +379,7 @@ PLAYERHEADER
   <script>
       \$(document).ready(function () {
       
-        \$('.collapse').on('show.bs.collapse', function (e) {
-        
-
-            \$(\$.fn.dataTable.tables(true)).DataTable()
-                  .columns.adjust();
+        \$('.collapse').on('shown.bs.collapse', function (e) {
 
           var id = e.target.id;
       
@@ -396,7 +392,7 @@ PLAYERHEADER
         
         });
         
-        \$('.collapse').on('hide.bs.collapse', function (e) {
+        \$('.collapse').on('hidden.bs.collapse', function (e) {
       
           var id = e.target.id;
       
@@ -416,8 +412,7 @@ PLAYERHEADER
               paging: false
           }
         );
-        // \$('.dataTables_length').addClass('bs-select');
-
+        \$('.display').DataTable().columns.adjust();
       });
   </script>
   </body>
