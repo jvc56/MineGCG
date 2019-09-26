@@ -413,7 +413,8 @@ PLAYERHEADER
 
           {
               scrollY: 300,
-              paging: false
+              paging: false,
+              info:   false
           }
         );
         // \$('.dataTables_length').addClass('bs-select');
