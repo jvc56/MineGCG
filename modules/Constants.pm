@@ -561,6 +561,24 @@ use constant HTML_SCRIPTS => <<SCRIPTS
 SCRIPTS
 ;
 
+use constant TOGGLE_ICON_SCRIPT => <<TOGGLEICON
+<script>
+    function toggle_icon(el)
+    {
+      if (el.innerHTML.includes('down'))
+      {
+        el.innerHTML = '<i class="fas fa-angle-up rotate-icon"></i>'
+      }
+      else
+      {
+        el.innerHTML = '<i class="fas fa-angle-down rotate-icon"></i>'
+      }
+      \$('#collapseOptions').collapse('toggle');
+    }
+</script>
+TOGGLEICON
+;
+
 use constant RESULTS_PAGE_JAVASCRIPT =>
 "
 <script>

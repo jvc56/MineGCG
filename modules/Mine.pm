@@ -247,6 +247,7 @@ sub mine
   my $default_scripts = Constants::HTML_SCRIPTS;
   my $body_style        = Constants::HTML_BODY_STYLE;
   my $javascript = Constants::RESULTS_PAGE_JAVASCRIPT;
+  my $toggle_icon_script = Constants::TOGGLE_ICON_SCRIPT;
 
   my $search_params =
     make_search_params_table
@@ -325,7 +326,7 @@ sub mine
         </tbody>
       </table>
     </div>
-    <div $player_inner_header_style>
+    <div $player_inner_header_style id='collapseKey'>
     <table style='width: 100%;'>
       <tr>
       <td style='width: 50%'>$search_params</td>
@@ -333,6 +334,13 @@ sub mine
       </tr>
     </table>
     </div>
+    <div style="text-align: center">
+      <a data-toggle="collapse" data-target="#collapseKey"
+        aria-expanded="false" aria-controls="collapseOptions" onclick='toggle_icon(this)'>
+        <i class="fas fa-angle-down rotate-icon"></i>
+      </a>
+    </div>
+
   </div>
 PLAYERHEADER
 ;
@@ -377,6 +385,7 @@ PLAYERHEADER
   $player_header
   $html_string
   $default_scripts
+  $toggle_icon_script
 
   <script>
       \$(document).ready(function () {

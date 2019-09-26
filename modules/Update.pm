@@ -732,7 +732,7 @@ sub update_html
   my $head_content = Constants::HTML_HEAD_CONTENT;
   my $nav          = Constants::HTML_NAV;
   my $default_scripts = Constants::HTML_SCRIPTS;
-
+  my $toggle_icon_script = Constants::TOGGLE_ICON_SCRIPT;
   my $content_div_style = Constants::FRONT_PAGE_DIV_STYLE; 
   my $inner_content_padding = '5%';
   my $title_style       = "style='font-size: 20px;'";
@@ -793,6 +793,7 @@ $nav
   
 
   $default_scripts
+  $toggle_icon_script
 
   <script>
     function nocacheresult()
@@ -826,18 +827,7 @@ $nav
       return false;
     }
 
-    function toggle_icon(el)
-    {
-      if (el.innerHTML.includes('down'))
-      {
-        el.innerHTML = '<i class="fas fa-angle-up rotate-icon"></i>'
-      }
-      else
-      {
-        el.innerHTML = '<i class="fas fa-angle-down rotate-icon"></i>'
-      }
-      \$('#collapseOptions').collapse('toggle');
-    }
+
 
 
     \$.fn.shuffleChildren = function() {
