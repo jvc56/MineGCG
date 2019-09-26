@@ -405,7 +405,13 @@ PLAYERHEADER
          
         });
 
-        \$('.table.table-striped.table-bordered.table-sm').DataTable();
+        \$('.table.table-striped.table-bordered.table-sm').DataTable(
+
+          {
+              scrollY: 300,
+              paging: false
+          }
+        );
         \$('.dataTables_length').addClass('bs-select');
 
       });
