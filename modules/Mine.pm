@@ -405,7 +405,7 @@ PLAYERHEADER
          
         });
 
-        \$('.display.hover.row-border.stripe').DataTable(
+        \$('.display').DataTable(
 
           {
               scrollY: 300,
