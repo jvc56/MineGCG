@@ -417,10 +417,6 @@ PLAYERHEADER
               info:   false
           }
         );
-        \$('.collapse').collapse('show');
-        \$('.collapse').collapse('hide');
-        // \$('.dataTables_length').addClass('bs-select');
-
       });
   </script>
   </body>

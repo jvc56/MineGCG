@@ -658,7 +658,7 @@ sub statListToHTML
     my $list_table = <<TABLE
     <div class="collapse show" id="$expander_id">
       <table class="display" cellspacing="0" width="100%">
-        <thead>
+        <thead style='display: table; width: 100%'>
           <tr>
             <th>Type</th>
             <th>Play</th>
