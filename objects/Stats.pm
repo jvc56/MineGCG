@@ -538,7 +538,15 @@ sub mistakesToHTML
     my $game = $mistake->[2];
     my $play = $mistake->[3];
     my $cmnt = $mistake->[4];
-    $content .= "<tr><td>$game</td><td>$type</td><td>$size</td><td>$play</td><td>$cmnt</td></tr>";
+    $content .=
+    "
+    <tr>
+      <td>$game</td>
+      <td>$type</td>
+      <td>$size</td>
+      <td>$play</td>
+      <td>$cmnt</td>
+    </tr>";
   }
   my $mistake_expander = make_expander($expander_id);
   my $grouphtml = <<GROUP
@@ -749,7 +757,7 @@ TABLE
       my $gamename  = $gamelist->[$i];
       my $gameid    = $idslist->[$i];
   
-      $list_table .= "<tr><td><a href='$prefix$gameid' target='_blank'>$gamename</a></td><tr>\n";
+      $list_table .= "<tr><td><a href='$prefix$gameid' target='_blank'>$gamename</a></td></tr>\n";
     }
     $list_table .= "</tbody>\n</table>\n</div>";
   
