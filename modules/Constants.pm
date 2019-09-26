@@ -468,7 +468,7 @@ RESULTSPAGE
 use constant RESULTS_PAGE_TABLE_STYLE => <<RESULTSPAGETABLE
 style=
       'width: 100%;
-
+       table-layout: fixed;
       '
 
 RESULTSPAGETABLE
