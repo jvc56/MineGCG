@@ -534,18 +534,19 @@ sub toString
 
   my $s = "";
 
-  my $content_div_style = Constants::RESULTS_PAGE_DIV_STYLE; 
+  my $odd_div_style = Constants::DIV_STYLE_ODD; 
+  my $even_div_style = Constants::DIV_STYLE_EVEN; 
 
-  $s .= statListToHTML(\@player_list_stats, 'Player Lists',   'player_list_stats_expander', $content_div_style);
-  $s .= statListToHTML(\@opp_list_stats,    'Opponent Lists', 'opponent_list_stats_expander', $content_div_style);
-  $s .= notableListToHTML(\@notable_stats,     'Notable Lists',  'notable_stats_expander', $content_div_style);
-  $s .= statItemsToHTML(\@game_stats,        $num, 'Game Stats',     'game_stats_expander', $content_div_style);
-  $s .= statItemsToHTML(\@player_item_stats, $num, 'Player Stats',   'player_stats_expander', $content_div_style);
-  $s .= statItemsToHTML(\@opp_item_stats,    $num, 'Opponent Stats', 'opp_stats_expander', $content_div_style);
-  $s .= mistakesToHTML($player_mistake_list, 'Player Mistakes',     'player_mistakes_expander', $content_div_style);
-  $s .= mistakesToHTML($opp_mistake_list,    'Opponent Mistakes',   'opponent_mistakes_expander', $content_div_style);
-  $s .= errorsToHTML($error_list, 'Errors', 'error_list_expander', $content_div_style);
-  $s .= errorsToHTML($error_list, 'Warnings', 'warning_list_expander', $content_div_style);
+  $s .= statListToHTML(\@player_list_stats, 'Player Lists',   'player_list_stats_expander', $odd_div_style);
+  $s .= statListToHTML(\@opp_list_stats,    'Opponent Lists', 'opponent_list_stats_expander', $even_div_style);
+  $s .= notableListToHTML(\@notable_stats,     'Notable Lists',  'notable_stats_expander', $odd_div_style);
+  $s .= statItemsToHTML(\@game_stats,        $num, 'Game Stats',     'game_stats_expander', $even_div_style);
+  $s .= statItemsToHTML(\@player_item_stats, $num, 'Player Stats',   'player_stats_expander', $odd_div_style);
+  $s .= statItemsToHTML(\@opp_item_stats,    $num, 'Opponent Stats', 'opp_stats_expander', $even_div_style);
+  $s .= mistakesToHTML($player_mistake_list, 'Player Mistakes',     'player_mistakes_expander', $odd_div_style);
+  $s .= mistakesToHTML($opp_mistake_list,    'Opponent Mistakes',   'opponent_mistakes_expander', $even_div_style);
+  $s .= errorsToHTML($error_list, 'Errors', 'error_list_expander', $odd_div_style);
+  $s .= errorsToHTML($error_list, 'Warnings', 'warning_list_expander', $even_div_style);
 
   return $s;
 }
@@ -564,7 +565,7 @@ sub errorsToHTML
 
   if (scalar @error_list == 0)
   {
-    return '';
+    return 'Empty Error List';
   }
 
   my $content = '';

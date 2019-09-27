@@ -438,39 +438,24 @@ use constant METATYPE_ERROR   => 'error';
 
 use constant HTML_BODY_STYLE => 'style="background-color: #343a40; color: white"';
 
-use constant FRONT_PAGE_DIV_STYLE => <<FRONTPAGE
+use constant DIV_STYLE_EVEN => <<DIVEVEN
 style=
-      'width: 90%;
+      '
        background-color: #22262a;
-       margin: 1% auto;
-       border-radius: 15px;
-       padding: 2%;
-       box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+       padding: 1%;
       '
 
-FRONTPAGE
+DIVEVEN
 ;
 
-use constant RESULTS_PAGE_DIV_STYLE => <<RESULTSPAGE
+use constant DIV_STYLE_ODD => <<DIVODD
 style=
-      'width: 90%;
-       background-color: #22262a;
-       margin: 1% auto;
-       border-radius: 15px;
-       padding: 2%;
-       box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      '
+       background-color: #394047;
+       padding: 1%;
       '
 
-RESULTSPAGE
-;
-
-use constant RESULTS_PAGE_TABLE_STYLE => <<RESULTSPAGETABLE
-style=
-      'width: 100%;
-       table-layout: fixed;
-      '
-
-RESULTSPAGETABLE
+DIVODD
 ;
 
 use constant HTML_HEAD_CONTENT => <<HEAD

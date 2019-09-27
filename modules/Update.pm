@@ -731,7 +731,8 @@ sub update_html
   my $nav          = Constants::HTML_NAV;
   my $default_scripts = Constants::HTML_SCRIPTS;
   my $toggle_icon_script = Constants::TOGGLE_ICON_SCRIPT;
-  my $content_div_style = Constants::FRONT_PAGE_DIV_STYLE; 
+  my $odd_div_style = Constants::DIV_STYLE_ODD; 
+  my $even_div_style = Constants::DIV_STYLE_EVEN; 
   my $inner_content_padding = '5%';
   my $title_style       = "style='font-size: 20px;'";
   my $body_style        = Constants::HTML_BODY_STYLE;
@@ -748,7 +749,7 @@ $head_content
 
 $nav
 
-<div $content_div_style>
+<div $odd_div_style>
   <b $title_style >Search</b>
     <div style="padding-bottom: $inner_content_padding; padding-top: $inner_content_padding">
       <form action="$cgibin_name/mine_webapp.pl" target="_blank" method="get" onsubmit="return nocacheresult()">
@@ -762,7 +763,7 @@ $nav
     </div>
 </div>
 
-<div $content_div_style>
+<div $even_div_style>
   <b $title_style >Quotes</b>
   <div style="padding-bottom: $inner_content_padding; padding-top: $inner_content_padding" class="carousel slide" data-ride="carousel" data-interval="10000">
     <div id="quotes-carousel-content" class="carousel-inner">
@@ -771,7 +772,7 @@ $nav
   </div>
 </div>
   
-<div $content_div_style>
+<div $odd_div_style>
   <b $title_style >Blooper Reel</b>
   <div style="padding-bottom: $inner_content_padding; padding-top: $inner_content_padding" class="carousel slide" data-ride="carousel" data-interval="15000">
     <div id="mistakes-carousel-content" class="carousel-inner">
@@ -780,7 +781,7 @@ $nav
   </div>
 </div>
   
-<div $content_div_style>
+<div $even_div_style>
   <b $title_style >Notable games</b>
   <div style="padding-bottom: $inner_content_padding; padding-top: $inner_content_padding" class="carousel slide" data-ride="carousel" data-interval="5000">
     <div id="notable-carousel-content" class="carousel-inner">
