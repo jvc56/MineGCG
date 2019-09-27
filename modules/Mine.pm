@@ -22,7 +22,6 @@ sub mine
   my $notable_dir             = Constants::NOTABLE_DIRECTORY_NAME;
   my $blacklisted_tournaments = Constants::BLACKLISTED_TOURNAMENTS;
   my $cache_dir               = Constants::CACHE_DIRECTORY_NAME;
-  my $stats_note              = Constants::STATS_NOTE;
   my $names_to_info_hashref   = NameConversion::NAMES_TO_IDS;
 
   my $dbh = Utils::connect_to_database();
@@ -214,7 +213,7 @@ sub mine
     }
     elsif ($warning)
     {
-      $all_stats->addWarning($warning);
+      $all_stats->addError($warning, 1);
       $num_warnings++;
     }
 

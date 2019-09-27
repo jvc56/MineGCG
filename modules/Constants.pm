@@ -132,6 +132,7 @@ use constant STATS_DATA_PLAYER_ONE_KEY_NAME      => 'player1';
 use constant STATS_DATA_PLAYER_TWO_KEY_NAME      => 'player2';
 use constant STATS_DATA_GAME_KEY_NAME            => 'game';
 use constant STATS_DATA_NOTABLE_KEY_NAME         => 'notable';
+use constant STATS_DATA_ERROR_KEY_NAME           => 'error';
 
 use constant DATABASE_TABLES =>
 {
@@ -409,9 +410,6 @@ DOUBLE_LETTER . '  ' . DOUBLE_WORD . '   ' . DOUBLE_LETTER . '   ' . DOUBLE_WORD
 TRIPLE_WORD . '  ' . DOUBLE_LETTER . '   ' . TRIPLE_WORD . '   ' . DOUBLE_LETTER . '  ' . TRIPLE_WORD
 ;
 
-use constant STATS_NOTE => "\n\nFor more information about how these statistcs were computed, check the <a href='https://github.com/jvc56/MineGCG#minegcg'>documentation</a>.\n\n";
-
-
 use constant STAT_DATATYPE_NAME         => 'datatype';
 use constant STAT_METATYPE_NAME         => 'metatype';
 use constant STAT_ADD_FUNCTION_NAME     => 'function';
@@ -436,6 +434,7 @@ use constant DATATYPE_ITEM => 'item';
 use constant METATYPE_PLAYER  => 'player';
 use constant METATYPE_GAME    => 'game';
 use constant METATYPE_NOTABLE => 'notable';
+use constant METATYPE_ERROR   => 'error';
 
 use constant HTML_BODY_STYLE => 'style="background-color: #343a40; color: white"';
 

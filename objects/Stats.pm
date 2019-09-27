@@ -36,6 +36,7 @@ sub new
   my @player2_stats = ();
   my @game_stats    = ();
   my @notable_stats = ();
+  my @error_stats   = ();
 
   for (my $i = 0; $i < scalar @{$statlist}; $i++)
   {
@@ -47,6 +48,10 @@ sub new
     elsif ($statitem->{Constants::STAT_METATYPE_NAME} eq Constants::METATYPE_NOTABLE)
     {
       push @notable_stats, $statitem;
+    }
+    elsif ($statitem->{Constants::STAT_METATYPE_NAME} eq Constants::METATYPE_ERROR)
+    {
+      push @error_stats, $statitem;
     }
     elsif ($statitem->{Constants::STAT_METATYPE_NAME} eq Constants::METATYPE_PLAYER)
     {
@@ -65,6 +70,7 @@ sub new
       Constants::STATS_DATA_PLAYER_TWO_KEY_NAME => \@player2_stats,
       Constants::STATS_DATA_GAME_KEY_NAME       => \@game_stats,
       Constants::STATS_DATA_NOTABLE_KEY_NAME    => \@notable_stats,
+      Constants::STATS_DATA_ERROR_KEY_NAME      => \@error_stats,
     }
   );
   my $self = bless \%stats, $this;
@@ -150,30 +156,47 @@ sub addError
 {
   my $this  = shift;
   my $error = shift;
+  my $is_warning = shift;
 
   my $game_stats = $this->{Constants::STATS_DATA_KEY_NAME}->{Constants::STATS_DATA_GAME_KEY_NAME};
+  my $invalid_stat;
+  my $error_stat;
 
   for (my $i = 0; $i < scalar @{$game_stats}; $i++)
   {
     my $stat = $game_stats->[$i];
-    if ($stat->{Constants::STAT_ERRORTYPE_NAME} && $stat->{Constants::STAT_ERRORTYPE_NAME} eq Constants::ERRORTYPE_ERROR)
+    if ($stat->{Constants::STAT_NAME} eq 'Invalid Games')
     {
-      my $obj = $stat->{Constants::STAT_ITEM_OBJECT_NAME};
-      $obj->{'total'}++;
-      if ($error =~ /incomplete/i)
-      {
-        $obj->{'subitems'}->{Constants::GAMEERROR_INCOMPLETE}++;
-      }
-      elsif ($error =~ /disconnected/i)
-      {
-        $obj->{'subitems'}->{Constants::GAMEERROR_DISCONNECTED}++;
-      }
-      else
-      {
-        $obj->{'subitems'}->{Constants::GAMEERROR_OTHER}++;
-      }
+      $invalid_stat = $stat->{Constants::STAT_ITEM_OBJECT_NAME};
+    }
+    elsif ($is_warning && $stat->{Constants::STAT_NAME} eq 'Warnings')
+    {
+      $error_stat = $stat->{Constants::STAT_ITEM_OBJECT_NAME};
+    }
+    elsif (!$is_warning && $stat->{Constants::STAT_NAME} eq 'Errors')
+    {
+      $error_stat = $stat->{Constants::STAT_ITEM_OBJECT_NAME};
     }
   }
+
+  my $incomp_pattern = Constants::GAMEERROR_INCOMPLETE;
+  my $disco_pattern  = Constants::GAMEERROR_DISCONNECTED;
+
+  $invalid_stat->{'total'}++;
+  if ($error =~ /$incomp_pattern/i)
+  {
+    $invalid_stat->{'subitems'}->{Constants::GAMEERROR_INCOMPLETE}++;
+  }
+  elsif ($error =~ /$disco_pattern/i)
+  {
+    $invalid_stat->{'subitems'}->{Constants::GAMEERROR_DISCONNECTED}++;
+  }
+  else
+  {
+    $invalid_stat->{'subitems'}->{Constants::GAMEERROR_OTHER}++;
+  }
+  my @items = split /;/, $error;
+  push @{$error_stat->{'list'}}, \@items;
 }
 sub makeTitleRow
 {
@@ -415,6 +438,7 @@ sub toString
   my $player2_ref = $this->{Constants::STATS_DATA_KEY_NAME}->{Constants::STATS_DATA_PLAYER_TWO_KEY_NAME};
   my $game_ref    = $this->{Constants::STATS_DATA_KEY_NAME}->{Constants::STATS_DATA_GAME_KEY_NAME      };
   my $notable_ref = $this->{Constants::STATS_DATA_KEY_NAME}->{Constants::STATS_DATA_NOTABLE_KEY_NAME   };
+  my $error_ref   = $this->{Constants::STATS_DATA_KEY_NAME}->{Constants::STATS_DATA_ERROR_KEY_NAME     };
 
   foreach my $statob (@{$game_ref})
   {
@@ -488,6 +512,26 @@ sub toString
     }
   }
 
+  my $error_list;
+  my $warning_list;
+
+  for (my $i = 0; $i < scalar @{$error_ref}; $i++)
+  {
+    my $stat   = $error_ref->[$i];
+    my $object = $stat->{Constants::STAT_ITEM_OBJECT_NAME};
+    $object->{Constants::STAT_NAME} = $stat->{Constants::STAT_NAME};
+    if ($stat->{Constants::STAT_NAME} eq 'Errors')
+    {
+      $error_list = $object;
+    }
+    elsif ($stat->{Constants::STAT_NAME} eq 'Warnings')
+    {
+      $warning_list = $object;
+    }
+  }
+
+
+
   my $s = "";
 
   my $content_div_style = Constants::RESULTS_PAGE_DIV_STYLE; 
@@ -500,8 +544,68 @@ sub toString
   $s .= statItemsToHTML(\@opp_item_stats,    $num, 'Opponent Stats', 'opp_stats_expander', $content_div_style);
   $s .= mistakesToHTML($player_mistake_list, 'Player Mistakes',     'player_mistakes_expander', $content_div_style);
   $s .= mistakesToHTML($opp_mistake_list,    'Opponent Mistakes',   'opponent_mistakes_expander', $content_div_style);
+  $s .= errorsToHTML($error_list, 'Errors', 'error_list_expander', $content_div_style);
+  $s .= errorsToHTML($error_list, 'Warnings', 'warning_list_expander', $content_div_style);
 
   return $s;
+}
+
+sub errorsToHTML
+{
+  my $error_list    = shift;
+  my $title         = shift;
+  my $expander_id   = shift;
+  my $div_style     = shift;
+
+  my $table_style  = Constants::RESULTS_PAGE_TABLE_STYLE;
+  my $url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
+
+  my @error_list = @{$error_list->{'list'}};
+
+  if (scalar @error_list == 0)
+  {
+    return '';
+  }
+
+  my $content = '';
+
+  foreach my $error (@error_list)
+  {
+    my $id   = $error->[0];
+    my $num  = $error->[1];
+    my $type = $error->[2];
+    my $game = "<a href='$url$id' target='_blank'>Game $id</a>";
+
+    $content .=
+    "
+    <tr>
+      <td>$game</td>
+      <td>$num</td>
+      <td>$type</td>
+    </tr>";
+  }
+  my $error_expander = make_expander($expander_id);
+  my $grouphtml = <<GROUP
+  <div $div_style>
+    $error_expander $title
+     <div class="collapse" id="$expander_id">
+      <table class="display" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th>Game</th>
+            <th>Line Number of Error</th>
+            <th>Error</th>
+          </tr>
+        </thead>
+        <tbody>
+	  $content
+        </tbody>
+       </table>
+     </div>
+  </div>
+GROUP
+;
+  return $grouphtml;
 }
 
 sub mistakesToHTML
@@ -511,7 +615,6 @@ sub mistakesToHTML
   my $expander_id   = shift;
   my $div_style     = shift;
   my $table_style  = Constants::RESULTS_PAGE_TABLE_STYLE;
-
 
   my $list = $mistakes_list->{'list'};
   my @list = @{$list};
@@ -827,173 +930,42 @@ BUTTON
   return $button;
 }
 
-sub toStringLegacy
-{
-  my $this = shift;
-  my $html = shift;
-
-  my $tiw        = Constants::TITLE_WIDTH;
-  my $aw         = Constants::AVERAGE_WIDTH;
-  my $tow        = Constants::TOTAL_WIDTH;
-  my $tot        = $tiw + $aw + $tow;
-  my $num;
-
-  my $player1_ref = $this->{Constants::STATS_DATA_KEY_NAME}->{Constants::STATS_DATA_PLAYER_ONE_KEY_NAME};
-  my $player2_ref = $this->{Constants::STATS_DATA_KEY_NAME}->{Constants::STATS_DATA_PLAYER_TWO_KEY_NAME};
-  my $game_ref    = $this->{Constants::STATS_DATA_KEY_NAME}->{Constants::STATS_DATA_GAME_KEY_NAME      };
-  my $notable_ref = $this->{Constants::STATS_DATA_KEY_NAME}->{Constants::STATS_DATA_NOTABLE_KEY_NAME   };
-
-  foreach my $statob (@{$game_ref})
-  {
-    if ($statob->{Constants::STAT_NAME} eq 'Games')
-    {
-      $num = $statob->{Constants::STAT_ITEM_OBJECT_NAME}->{'total'};
-      last;
-    }
-  }
-
-  my @notable_stats = ();    
-  my @game_stats = ();
-
-  for (my $i = 0; $i < scalar @{$notable_ref}; $i++) 
-  {
-    my $object = $notable_ref->[$i]->{Constants::STAT_ITEM_OBJECT_NAME};
-    $object->{Constants::STAT_NAME} = $notable_ref->[$i]->{Constants::STAT_NAME};
-    push @notable_stats, $object;
-  }
-  for (my $i = 0; $i < scalar @{$game_ref}; $i++) 
-  {
-    my $object = $game_ref->[$i]->{Constants::STAT_ITEM_OBJECT_NAME};
-    $object->{Constants::STAT_NAME} = $game_ref->[$i]->{Constants::STAT_NAME};
-    push @game_stats, $object;
-  }
-
-  my @player_list_stats  = ();
-  my @opp_list_stats     = ();
-
-  my @player_item_stats  = ();
-  my @opp_item_stats     = ();
-
-  my $player_mistake_list;
-  my $opp_mistake_list;
-
-  for (my $i = 0; $i < scalar @{$player1_ref}; $i++)
-  {
-    my $stat   = $player1_ref->[$i];
-    my $object = $stat->{Constants::STAT_ITEM_OBJECT_NAME};
-    $object->{Constants::STAT_NAME} = $stat->{Constants::STAT_NAME};
-    if ($stat->{Constants::STAT_NAME} eq "Mistakes List")
-    {
-      $player_mistake_list = $object;
-    }
-    elsif ($stat->{Constants::STAT_DATATYPE_NAME} eq Constants::DATATYPE_LIST)
-    {
-      push @player_list_stats, $object;
-    }
-    elsif ($stat->{Constants::STAT_DATATYPE_NAME} eq Constants::DATATYPE_ITEM)
-    {
-      push @player_item_stats, $object;
-    }
-  }
-
-  for (my $i = 0; $i < scalar @{$player2_ref}; $i++)
-  {
-    my $stat   = $player2_ref->[$i];
-    my $object = $stat->{Constants::STAT_ITEM_OBJECT_NAME};
-    $object->{Constants::STAT_NAME} = $stat->{Constants::STAT_NAME};
-    if ($stat->{Constants::STAT_NAME} eq "Mistakes List")
-    {
-      $opp_mistake_list = $object;
-    }
-    elsif ($stat->{Constants::STAT_DATATYPE_NAME} eq Constants::DATATYPE_LIST)
-    {
-      push @opp_list_stats, $object;
-    }
-    elsif ($stat->{Constants::STAT_DATATYPE_NAME} eq Constants::DATATYPE_ITEM)
-    {
-      push @opp_item_stats, $object;
-    }
-  }
-
-
-  my $s = "";
-
-  $s .= "\n" . Constants::STAT_ITEM_LIST_PLAYER . "\n\n";
-  for (my $i = 0; $i < scalar @player_list_stats; $i++)
-  {
-    $s .= statItemToString($player_list_stats[$i], $num, Constants::STAT_ITEM_LIST, $html);
-  }
-  $s .= "\n" . Constants::STAT_ITEM_LIST_OPP . "\n\n";
-  for (my $i = 0; $i < scalar @opp_list_stats; $i++)
-  {
-    $s .= statItemToString($opp_list_stats[$i], $num, Constants::STAT_ITEM_LIST, $html);
-  }
-  $s .= "\n" . Constants::STAT_ITEM_LIST_NOTABLE . "\n\n";
-  for (my $i = 0; $i < scalar @notable_stats; $i++)
-  {
-    $s .= statItemToString($notable_stats[$i], $num, Constants::STAT_ITEM_LIST, $html);
-  }
-
-  my $title_divider = ("_" x ($tot+2)) . "\n";
-  my $empty_line = "|" . (" " x $tot) . "|\n";
-
-  $s .= "\nResults for $num game(s)\n";
-  $s .= $title_divider;
-  $s .= makeTitleRow($tiw, $aw, $tow, "", "AVERAGE", "TOTAL");
-
-  $s .= makeTitleRow($tiw, $aw, $tow, Constants::STAT_ITEM_GAME, "", "");
-  
-  for (my $i = 0; $i < scalar @game_stats; $i++)
-  {
-    $s .= statItemToString($game_stats[$i], $num, $html);
-  }
-
-  $s .= makeTitleRow($tiw, $aw, $tow, "", "", "");
-
-  $s .= makeTitleRow($tiw, $aw, $tow, Constants::STAT_ITEM_PLAYER, "", "");
-  
-  for (my $i = 0; $i < scalar @player_item_stats; $i++)
-  {
-    $s .= statItemToString($player_item_stats[$i], $num, $html);
-  }
-
-  $s .= makeTitleRow($tiw, $aw, $tow, "", "", "");
-
-  $s .= makeTitleRow($tiw, $aw, $tow, Constants::STAT_ITEM_OPP, "", "");
-  
-  for (my $i = 0; $i < scalar @opp_item_stats; $i++)
-  {
-    $s .= statItemToString($opp_item_stats[$i], $num, $html);
-  }
-  
-  $s .= ("_" x ($tot+2)) . "\n\n";
-
-  if ($html)
-  {
-    $s .= "<div id='" . Constants::MISTAKES_DIV_ID . "' style='display: none;'>";
-  }
-
-  $s .= "\n".Constants::MISTAKE_ITEM_LIST_PLAYER . "\n";
-
-  $s .= statItemToString($player_mistake_list, $num, Constants::MISTAKE_ITEM_LIST, $html);
-
-  $s .= "\n\n\n".Constants::MISTAKE_ITEM_LIST_OPP . "\n";
-  
-  $s .= statItemToString($opp_mistake_list, $num, Constants::MISTAKE_ITEM_LIST, $html);
-
-  if ($html)
-  {
-      $s .=  "</div>\n\n";
-      $s .=  "<button onclick='toggle(\"" . Constants::MISTAKES_DIV_ID . "\")'>Toggle Mistakes List</button>\n";
-  }
-
-  return $s; 
-}
-
 sub statsList
 {
   return
   [
+    {
+      Constants::STAT_NAME => 'Errors',
+      Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
+      Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
+      Constants::STAT_METATYPE_NAME => Constants::METATYPE_ERROR,
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        # Do nothing, errors added elsewhere	      
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
+      sub
+      {
+        # Do nothing, errors added elsewhere
+      }
+    },
+    {
+      Constants::STAT_NAME => 'Warnings',
+      Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
+      Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
+      Constants::STAT_METATYPE_NAME => Constants::METATYPE_ERROR,
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        # Do nothing, warnings added elsewhere	      
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
+      sub
+      {
+        # Do nothing, warnings added elsewhere
+      }
+    },
     {
       Constants::STAT_NAME => 'Games',
       Constants::STAT_ITEM_OBJECT_NAME =>  {'total' => 0, Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_TOTAL, 'int' => 1},

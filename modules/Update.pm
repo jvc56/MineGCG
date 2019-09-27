@@ -265,7 +265,6 @@ sub update_leaderboard
   my $min_games      = Constants::LEADERBOARD_MIN_GAMES;
   my $column_spacing = Constants::LEADERBOARD_COLUMN_SPACING;
   my $cache_dir      = Constants::CACHE_DIRECTORY_NAME;
-  my $stats_note     = Constants::STATS_NOTE;
 
   $cache_dir = substr $cache_dir, 2;
 
@@ -416,7 +415,7 @@ sub update_leaderboard
 
   my $expand_all_button = "\n<button onclick='toggle_all()'>Toggle Full Standings for all leaderboards</button>\n";
 
-  $leaderboard_string = "\nUpdated on $lt\n\n" . $stats_note . $table_of_contents . $expand_all_button . $leaderboard_string;
+  $leaderboard_string = "\nUpdated on $lt\n\n" . $table_of_contents . $expand_all_button . $leaderboard_string;
 
   $leaderboard_string = "<pre style='white-space: pre-wrap;' > $leaderboard_string </pre>\n";
 
@@ -479,7 +478,6 @@ sub update_notable
 {
   my $notable_dir    = Constants::NOTABLE_DIRECTORY_NAME;
   my $url            = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
-  my $stats_note     = Constants::STATS_NOTE;
   
   my $dbh = Utils::connect_to_database();
   my $playerstable = Constants::PLAYERS_TABLE_NAME;
@@ -544,7 +542,7 @@ sub update_notable
 
   my $lt = localtime();
 
-  $notable_string = "\nUpdated on $lt\n\n" . $stats_note . $table_of_contents . "</br></br></br>" . $notable_string;
+  $notable_string = "\nUpdated on $lt\n\n" . $table_of_contents . "</br></br></br>" . $notable_string;
 
   $notable_string = "<pre style='white-space: pre-wrap;' > $notable_string </pre>\n";
 

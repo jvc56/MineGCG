@@ -520,6 +520,7 @@ sub prepare_stats
        Constants::STATS_DATA_PLAYER_TWO_KEY_NAME => delete_function_from_statslist($stats->{Constants::STATS_DATA_KEY_NAME}->{ Constants::STATS_DATA_PLAYER_TWO_KEY_NAME}),
        Constants::STATS_DATA_GAME_KEY_NAME       => delete_function_from_statslist($stats->{Constants::STATS_DATA_KEY_NAME}->{ Constants::STATS_DATA_GAME_KEY_NAME      }),
        Constants::STATS_DATA_NOTABLE_KEY_NAME    => delete_function_from_statslist($stats->{Constants::STATS_DATA_KEY_NAME}->{ Constants::STATS_DATA_NOTABLE_KEY_NAME   }),
+       Constants::STATS_DATA_ERROR_KEY_NAME      => delete_function_from_statslist($stats->{Constants::STATS_DATA_KEY_NAME}->{ Constants::STATS_DATA_ERROR_KEY_NAME     }),
     }
   };
 }

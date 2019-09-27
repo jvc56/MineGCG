@@ -88,7 +88,7 @@ sub new
     {
       if (!(@moves))
       {
-        $warning .= "WARNING: note before moves detected\nFILE:   $filename\nLINE $line_number: $line\n";
+        $warning .= format_game_error('note before moves detected', $filename, $line_number, $line);
       }
       else
       {
@@ -1747,18 +1747,7 @@ sub format_game_error
   my $line_number = shift;
   my $line        = shift;
 
-  my $url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX . $id;
-
-  my $link = "<a href='$url'>$id</a>";
-
-  my $spacing   = 12;
-  my $error_msg = "";
-
-  $error_msg .= (sprintf "%-$spacing".'s' , "ERROR:")             . $msg   . "\n";
-  $error_msg .= (sprintf "%-$spacing".'s' , "GAME:")              . $link  . "\n";
-  $error_msg .= (sprintf "%-$spacing".'s' , "LINE $line_number:") . $line  . "\n";
-
-  return $error_msg;
+  return join( ";", ($id, $line_number, $msg));
 }
 
 1;
