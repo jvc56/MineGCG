@@ -332,10 +332,10 @@ sub mine
       </table>
     </div>
     <div style='width: 100%' id='collapseKey' class="collapse">
-      <div>
+      <div style='padding: 10px'>
         $search_params
       </div>
-      <div>
+      <div style='padding: 10px'>
         $color_key
       </div>
     </div>
@@ -507,7 +507,7 @@ sub make_color_key
 
     my $style = Utils::get_color_dot_style($color);
     my $td_style = "style='text-align: center'";
-    $color_key .= "<tr><td><span $style></span></td><td> = </td><td $td_style>$title</td></tr>";
+    $color_key .= "<tr><td style='padding-right: 30px'><span $style></span></td><td style='padding-right: 20px'> = </td><td $td_style>$title</td></tr>";
   }
   $color_key .= '</tbody></table>';
   return $color_key;
