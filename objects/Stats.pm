@@ -192,18 +192,18 @@ sub addError
   if (!$is_warning)
   {
     $invalid_stat->{'total'}++;
-  }
-  if ($error =~ /$incomp_pattern/i)
-  {
-    $invalid_stat->{'subitems'}->{Constants::GAMEERROR_INCOMPLETE}++;
-  }
-  elsif ($error =~ /$disco_pattern/i)
-  {
-    $invalid_stat->{'subitems'}->{Constants::GAMEERROR_DISCONNECTED}++;
-  }
-  else
-  {
-    $invalid_stat->{'subitems'}->{Constants::GAMEERROR_OTHER}++;
+    if ($error =~ /$incomp_pattern/i)
+    {
+      $invalid_stat->{'subitems'}->{Constants::GAMEERROR_INCOMPLETE}++;
+    }
+    elsif ($error =~ /$disco_pattern/i)
+    {
+      $invalid_stat->{'subitems'}->{Constants::GAMEERROR_DISCONNECTED}++;
+    }
+    else
+    {
+      $invalid_stat->{'subitems'}->{Constants::GAMEERROR_OTHER}++;
+    }
   }
   my @items = split /;/, $error;
   push @{$error_stat->{'list'}}, \@items;
