@@ -338,6 +338,7 @@ sub mine
       <div>
         $color_key
       </div>
+    </div>
     <div style="text-align: center">
       <a data-toggle="collapse" data-target="#collapseKey"
         aria-expanded="false" aria-controls="collapseOptions" onclick='toggle_icon(this, "collapseKey")'>
