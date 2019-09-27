@@ -286,9 +286,14 @@ sub mine
   "
   ;
 
-  my $infobox_style = '';
-
-  my $cell_width = 100 / 3;
+  my $img_style = 
+  "
+  style='
+    padding: 10px;
+    background-color: #666666;
+    border-radius: 20px;
+    '
+  ";
 
   # Put player stats header here, include color key
   my $player_header = <<PLAYERHEADER
@@ -297,13 +302,13 @@ sub mine
       <table style='margin: auto'>
         <tbody>
           <tr>
-           <td><div style='margin: auto'><img src='$player_photo' alt='$player_pretty_name'></div></td>
+           <td><div style='margin: auto'><img src='$player_photo' alt='$player_pretty_name' $img_style></div></td>
            <td>
              <table>
              <tbody>
              <tr>
-               <td colspan='3'>
-                 $player_pretty_name
+               <td colspan='3' style='font-size: 20px'>
+                 <b>$player_pretty_name</b>
                </td>
              </tr>
              <tr>

@@ -572,7 +572,7 @@ sub errorsToHTML
 
   if (scalar @error_list == 0)
   {
-    return 'Empty Error List';
+    return '';
   }
 
   my $content = '';
