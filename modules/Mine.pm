@@ -499,7 +499,7 @@ sub make_color_key
   my @colors_and_titles =
   (
     [Constants::TRIPLE_TRIPLE_COLOR, 'Triple Triple'],
-    [Constants::NINE_OR_ABOVE_COLOR, 'Bingo Nine or Above'],
+    [Constants::NINE_OR_ABOVE_COLOR, 'Bingo 9+'],
     [Constants::IMPROBABLE_COLOR,    'Improbable'],
     [Constants::TRIPLE_TRIPLE_NINE_COLOR, 'Triple Triple and Bingo Nine or Above', [0, 1]],
     [Constants::IMPROBABLE_NINE_OR_ABOVE_COLOR, 'Improbable and Bingo Nine or Above', [2, 1]],
@@ -530,8 +530,8 @@ sub make_color_key
     }
 
     my $style = Utils::get_color_dot_style($color);
-    my $td_style = "style='text-align: center'";
-    $color_key .= "<tr class='content_td'><td><span $style></span></td><td> = </td><td $td_style>$title</td></tr>";
+    my $td_style = "style='text-align: center; padding-left: 10px; padding-right: 10px'";
+    $color_key .= "<tr class='content_td'><td $td_style><span $style></span></td><td $td_style> = </td><td $td_style>$title</td></tr>";
   }
   $color_key .= '</tbody></table></td></tr></tbody></table>';
   return $color_key;
