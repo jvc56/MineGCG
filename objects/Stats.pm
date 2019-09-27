@@ -169,13 +169,19 @@ sub addError
     {
       $invalid_stat = $stat->{Constants::STAT_ITEM_OBJECT_NAME};
     }
-    elsif ($is_warning && $stat->{Constants::STAT_NAME} eq 'Warnings')
+  }
+
+  my $error_stats = $this->{Constants::STATS_DATA_KEY_NAME}->{Constants::STATS_DATA_ERROR_KEY_NAME};
+
+  for (my $i = 0; $i < scalar @{$error_stats}; $i++)
+  {
+    my $stat = $error_stats->[$i];
+    if ($is_warning && $stat->{Constants::STAT_NAME} eq 'Warnings')
     {
       $error_stat = $stat->{Constants::STAT_ITEM_OBJECT_NAME};
     }
     elsif (!$is_warning && $stat->{Constants::STAT_NAME} eq 'Errors')
     {
-      die "We got an error\n";
       $error_stat = $stat->{Constants::STAT_ITEM_OBJECT_NAME};
     }
   }
