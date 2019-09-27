@@ -361,14 +361,14 @@ PLAYERHEADER
   .infobox
   {
     border-radius: 5px;
-    background-color: #33b5e5;
+    background-color: #000000;
     text-align: center;
     border-collapse: separate;
     margin: auto;
   }
   .content_td
   {
-    background-color: #0000FF;
+    background-color: #394047;
     border-radius: 5px;
   }
     table.dataTable thead .sorting:after,
@@ -483,7 +483,7 @@ sub make_color_key
     [Constants::ALL_THREE_COLOR,               'Triple Triple and Bingo Nine or Above and Improbable', [0, 1, 2]]
   );
   
-  my $color_key = '<table style="margin: auto"><tbody>';
+  my $color_key = '<table class="infobox"><tbody>';
   for (my $i = 0; $i < scalar @colors_and_titles; $i++)
   {
     my $item     = $colors_and_titles[$i];
@@ -507,7 +507,7 @@ sub make_color_key
 
     my $style = Utils::get_color_dot_style($color);
     my $td_style = "style='text-align: center'";
-    $color_key .= "<tr><td style='padding-right: 30px'><span $style></span></td><td style='padding-right: 20px'> = </td><td $td_style>$title</td></tr>";
+    $color_key .= "<tr class='content_td'><td style='padding-right: 30px'><span $style></span></td><td style='padding-right: 20px'> = </td><td $td_style>$title</td></tr>";
   }
   $color_key .= '</tbody></table>';
   return $color_key;
