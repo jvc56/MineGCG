@@ -460,7 +460,7 @@ PLAYERHEADER
          
         });
 
-        \$('.display').DataTable(
+        \$('.table.table-striped.table-bordered').DataTable(
 
           {
               scrollY: 300,
