@@ -925,7 +925,7 @@ sub make_expander
   my $id = shift;
 
   my $button = <<BUTTON
-<button type='button' id='button_$id'  class='btn btn-info' data-toggle='collapse' data-target='#$id'>+</button>
+<button type='button' id='button_$id'  class='btn btn-sm' data-toggle='collapse' data-target='#$id'>+</button>
 BUTTON
 ;
   return $button;
