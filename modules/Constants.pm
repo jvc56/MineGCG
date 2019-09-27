@@ -458,6 +458,15 @@ style=
 DIVODD
 ;
 
+use constant RESULTS_PAGE_TABLE_STYLE => <<RESULTSPAGETABLE
+style=
+      'width: 100%;
+       table-layout: fixed;
+      '
+
+RESULTSPAGETABLE
+;
+
 use constant HTML_HEAD_CONTENT => <<HEAD
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
