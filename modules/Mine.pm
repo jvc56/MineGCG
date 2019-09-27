@@ -302,7 +302,7 @@ sub mine
       <table style='margin: auto'>
         <tbody>
           <tr>
-           <td><div style='margin: auto'><img src='$player_photo' alt='$player_pretty_name' $img_style></div></td>
+           <td><div style='margin: auto; text-align: center;'><img src='$player_photo' alt='$player_pretty_name' $img_style></div></td>
           </tr>
           <tr>
            <td>
@@ -332,14 +332,14 @@ sub mine
       </table>
     </div>
     <div style='width: 100%; margin: auto' id='collapseKey' class="collapse">
-    <table>
-      <tr>
-        <td>$search_params</td>
-      </tr>
-      <tr>
-        <td>$color_key</td>
-      </tr>
-    </table>
+      <table style='width: 100%; margin: auto'>
+        <tr>
+          <td>$search_params</td>
+        </tr>
+        <tr>
+          <td>$color_key</td>
+        </tr>
+      </table>
     </div>
     <div style="text-align: center">
       <a data-toggle="collapse" data-target="#collapseKey"
@@ -479,10 +479,10 @@ sub make_color_key
     [Constants::TRIPLE_TRIPLE_COLOR, 'Triple Triple'],
     [Constants::NINE_OR_ABOVE_COLOR, 'Bingo Nine or Above'],
     [Constants::IMPROBABLE_COLOR,    'Improbable'],
-    [Constants::TRIPLE_TRIPLE_NINE_COLOR, 'Triple Triple and Bingo Nine or Above', [1, 2]],
-    [Constants::IMPROBABLE_NINE_OR_ABOVE_COLOR, 'Improbable and Bingo Nine or Above', [3, 2]],
-    [Constants::IMPROBABLE_TRIPLE_TRIPE_COLOR, 'Triple Triple and Improbable', [1, 3]],
-    [Constants::ALL_THREE_COLOR,               'Triple Triple and Bingo Nine or Above and Improbable', [1, 2, 3]]
+    [Constants::TRIPLE_TRIPLE_NINE_COLOR, 'Triple Triple and Bingo Nine or Above', [0, 1]],
+    [Constants::IMPROBABLE_NINE_OR_ABOVE_COLOR, 'Improbable and Bingo Nine or Above', [2, 1]],
+    [Constants::IMPROBABLE_TRIPLE_TRIPE_COLOR, 'Triple Triple and Improbable', [0, 2]],
+    [Constants::ALL_THREE_COLOR,               'Triple Triple and Bingo Nine or Above and Improbable', [0, 1, 2]]
   );
   
   my $color_key = '<table><tbody>';
