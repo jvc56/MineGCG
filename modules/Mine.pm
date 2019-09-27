@@ -331,16 +331,13 @@ sub mine
         </tbody>
       </table>
     </div>
-    <div style='width: 100%; margin: auto' id='collapseKey' class="collapse">
-      <table style='width: 100%; margin: auto'>
-        <tr>
-          <td>$search_params</td>
-        </tr>
-        <tr>
-          <td>$color_key</td>
-        </tr>
-      </table>
-    </div>
+    <div style='width: 100%' id='collapseKey' class="collapse">
+      <div>
+        $search_params
+      </div>
+      <div>
+        $color_key
+      </div>
     <div style="text-align: center">
       <a data-toggle="collapse" data-target="#collapseKey"
         aria-expanded="false" aria-controls="collapseOptions" onclick='toggle_icon(this, "collapseKey")'>
@@ -485,7 +482,7 @@ sub make_color_key
     [Constants::ALL_THREE_COLOR,               'Triple Triple and Bingo Nine or Above and Improbable', [0, 1, 2]]
   );
   
-  my $color_key = '<table><tbody>';
+  my $color_key = '<table style="margin: auto"><tbody>';
   for (my $i = 0; $i < scalar @colors_and_titles; $i++)
   {
     my $item     = $colors_and_titles[$i];
@@ -509,7 +506,7 @@ sub make_color_key
 
     my $style = Utils::get_color_dot_style($color);
     my $td_style = "style='text-align: center'";
-    $color_key .= "<tr><td><span $style></span></td><td $td_style>$title</td></tr>";
+    $color_key .= "<tr><td><span $style></span></td><td> = </td><td $td_style>$title</td></tr>";
   }
   $color_key .= '</tbody></table>';
   return $color_key;
