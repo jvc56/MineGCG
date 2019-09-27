@@ -184,13 +184,17 @@ sub mine
   my $num_games    = 0;
   my $num_errors   = 0;
   my $num_warnings = 0;
+  my %duplicates   = ();
 
   while (@game_results)
   {
     my $game = shift @game_results;
 
-    my $error   = $game->{$game_error_column_name};
-    my $warning = $game->{$game_warning_column_name};
+    my $error      = $game->{$game_error_column_name};
+    my $warning    = $game->{$game_warning_column_name};
+    my $tournament = $game->{$game_cross_tables_tournament_id_column_name};
+    my $round      = $game->{$game_round_column_name};
+    my $dupkey     = $tournament . '-' . $round;
 
     my $game_opp_name = $game->{$game_player2_name_column_name};
     my $player_is_first = 1;
@@ -215,6 +219,19 @@ sub mine
     {
       $all_stats->addError($warning, 1);
       $num_warnings++;
+    }
+    
+    if ($tournament && $round)
+    {
+      if ($duplicates{$dupkey})
+      {
+        $all_stats->addError("$game_id;0;Duplicate game detected (Tournament $tournament, Round $round).", 1);
+        $num_warnings++;
+      }
+      else
+      {
+        $duplicates{$dupkey} = 1;
+      }
     }
 
     my $game_stat = Stats->new($player_is_first, $game->{$game_stats_column_name});
@@ -309,7 +326,7 @@ sub mine
              <table>
              <tbody>
              <tr>
-               <td colspan='3' style='font-size: 20px'>
+               <td colspan='3' style='font-size: 20px; text-align: center;'>
                  <b>$player_pretty_name</b>
                </td>
              </tr>
