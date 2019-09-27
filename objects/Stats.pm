@@ -779,7 +779,7 @@ sub statListToHTML
     $expander_id =~ s/\s//g;
     my $list_table = <<TABLE
     <div class="collapse" id="$expander_id">
-      <table class="table table-striped table-bordered" cellspacing="0" width="100%">
+      <table class="display" cellspacing="0" width="100%">
         <thead>
           <tr>
             <th>Type</th>
