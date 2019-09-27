@@ -483,7 +483,7 @@ sub make_color_key
     [Constants::ALL_THREE_COLOR,               'Triple Triple and Bingo Nine or Above and Improbable', [0, 1, 2]]
   );
   
-  my $color_key = '<table class="infobox"><tbody>';
+  my $color_key = '<table class="infobox"><tbody><tr><td>Color Key</td></tr><tr><td class="content_td"><table><tbody>';
   for (my $i = 0; $i < scalar @colors_and_titles; $i++)
   {
     my $item     = $colors_and_titles[$i];
@@ -507,9 +507,9 @@ sub make_color_key
 
     my $style = Utils::get_color_dot_style($color);
     my $td_style = "style='text-align: center'";
-    $color_key .= "<tr class='content_td'><td style='padding-right: 30px'><span $style></span></td><td style='padding-right: 20px'> = </td><td $td_style>$title</td></tr>";
+    $color_key .= "<tr class='content_td'><td><span $style></span></td><td> = </td><td $td_style>$title</td></tr>";
   }
-  $color_key .= '</tbody></table>';
+  $color_key .= '</tbody></table></td></tr></tbody></table>';
   return $color_key;
 }
 
