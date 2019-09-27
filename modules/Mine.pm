@@ -138,6 +138,7 @@ sub mine
        $game_player1_cross_tables_id_column_name,
        $game_player2_cross_tables_id_column_name,
        $game_stats_column_name,
+       $game_cross_tables_id_column_name,
        $game_cross_tables_tournament_id_column_name,
        $game_round_column_name
   FROM $games_table AS g, $players_table AS p $opp_table_statement
