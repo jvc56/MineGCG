@@ -194,7 +194,11 @@ sub mine
     my $warning    = $game->{$game_warning_column_name};
     my $tournament = $game->{$game_cross_tables_tournament_id_column_name};
     my $round      = $game->{$game_round_column_name};
-    my $dupkey     = $tournament . '-' . $round;
+    my $dupkey;
+    if ($tournament && $round)
+    {
+      $dupkey = $tournament . '-' . $round;
+    }
 
     my $game_opp_name = $game->{$game_player2_name_column_name};
     my $player_is_first = 1;
@@ -221,7 +225,7 @@ sub mine
       $num_warnings++;
     }
     
-    if ($tournament && $round)
+    if ($dupkey)
     {
       if ($duplicates{$dupkey})
       {
