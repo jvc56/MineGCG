@@ -502,7 +502,7 @@ sub make_color_key
       {
         my $color_part = $colors_and_titles[$list[$k]]->[0];
         my $style_part = Utils::get_color_dot_style($color_part);
-        $title .= " <span $style></span> +";
+        $title .= " <span $style_part></span> +";
       }
       chop($title);
     }
