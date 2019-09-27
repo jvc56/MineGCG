@@ -175,6 +175,7 @@ sub addError
     }
     elsif (!$is_warning && $stat->{Constants::STAT_NAME} eq 'Errors')
     {
+      die "We got an error\n";
       $error_stat = $stat->{Constants::STAT_ITEM_OBJECT_NAME};
     }
   }
@@ -545,8 +546,8 @@ sub toString
   $s .= statItemsToHTML(\@opp_item_stats,    $num, 'Opponent Stats', 'opp_stats_expander', $even_div_style);
   $s .= mistakesToHTML($player_mistake_list, 'Player Mistakes',     'player_mistakes_expander', $odd_div_style);
   $s .= mistakesToHTML($opp_mistake_list,    'Opponent Mistakes',   'opponent_mistakes_expander', $even_div_style);
-  $s .= errorsToHTML($error_list, 'Errors', 'error_list_expander', $odd_div_style);
-  $s .= errorsToHTML($error_list, 'Warnings', 'warning_list_expander', $even_div_style);
+  $s .= errorsToHTML($error_list,   'Errors', 'error_list_expander', $odd_div_style);
+  $s .= errorsToHTML($warning_list, 'Warnings', 'warning_list_expander', $even_div_style);
 
   return $s;
 }
