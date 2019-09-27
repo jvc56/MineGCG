@@ -381,6 +381,11 @@ PLAYERHEADER
 <html lang="en">
   <head>
   $head_content
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css" rel="stylesheet">
+  <link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+
   <style>
   .infobox
   {
@@ -414,6 +419,13 @@ PLAYERHEADER
   $player_header
   $html_string
   $default_scripts
+
+  <!-- Datatable scripts -->
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+  
+
   $toggle_icon_script
 
   <script>
@@ -454,7 +466,8 @@ PLAYERHEADER
           {
               scrollY: 300,
               paging: false,
-              info:   false
+              info:   false,
+              scrollCollapse: true
           }
         );
       });

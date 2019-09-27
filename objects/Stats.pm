@@ -189,7 +189,10 @@ sub addError
   my $incomp_pattern = Constants::GAMEERROR_INCOMPLETE;
   my $disco_pattern  = Constants::GAMEERROR_DISCONNECTED;
 
-  $invalid_stat->{'total'}++;
+  if (!$is_warning)
+  {
+    $invalid_stat->{'total'}++;
+  }
   if ($error =~ /$incomp_pattern/i)
   {
     $invalid_stat->{'subitems'}->{Constants::GAMEERROR_INCOMPLETE}++;
