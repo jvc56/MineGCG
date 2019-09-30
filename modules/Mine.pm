@@ -359,12 +359,11 @@ sub mine
       </table>
     </div>
     <div style='width: 100%' id='collapseKey' class="collapse">
-      <div style='padding: 10px'>
-        $search_params
-      </div>
-      <div style='padding: 10px'>
-        $color_key
-      </div>
+      <table style='width: 100%; margin: auto'>
+        <tr>
+          <td> $search_params</td>
+          <td>$color_key</td>
+        </tr>
     </div>
     <div style="text-align: center">
       <a data-toggle="collapse" data-target="#collapseKey"

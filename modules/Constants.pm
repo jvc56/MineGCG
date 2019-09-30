@@ -746,7 +746,7 @@ function sortTable(n, tableid, numeric)
     }
     table.setAttribute('data-sort', 'asc' + n);
   }
-  elsif (sort_state == 'asc' + n)
+  else if (sort_state == 'asc' + n)
   {
     for (j = 1; j < (rows.length - 1); j++)
     {
