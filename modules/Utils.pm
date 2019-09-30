@@ -33,11 +33,13 @@ sub make_datatable
   my $spacing_tr = "<tr>";
   for (my $m = 0; $m < scalar @{$titles}; $m++)
   {
-    #my $style = $titlestyles->[$m];
+    my $style = $titlestyles->[$m];
     my $sval  = $sortvalues->[$m];
     my $title = $titles->[$m];
 
-    $titlecontent .= "<th style='width: $td_width%' onclick=\"sortTable($m, '$table_id', $sval)\">$title</th>\n";
+    $style = "style='width: $td_width%; $style'";
+
+    $titlecontent .= "<th $style onclick=\"sortTable($m, '$table_id', $sval)\">$title</th>\n";
     $spacing_tr .= "<td style='width: $td_width%;' ></td>";
   }
   $spacing_tr .= "</tr>";
@@ -60,7 +62,7 @@ sub make_datatable
       <tr>
         <td>
           <div class='scrollwindow'>
-            <table class='display' id='$table_id' style='margin-right: -50px; padding-right: 50px;'>
+            <table class='display' id='$table_id'>
               <tbody>
                 $content
                 $spacing_tr

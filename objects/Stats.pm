@@ -804,7 +804,7 @@ sub statListToHTML
       $expander_id,
       $table_id,
       ['Type', 'Play', 'Probability', 'Score'],
-      ['', '', '', ''],
+      ['text-align: center', '', '', ''],
       ['false', 'false', 'true', 'true'],
       $table_content
     );
