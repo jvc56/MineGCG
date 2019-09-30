@@ -658,7 +658,7 @@ sub mistakesToHTML
 
   my $mistake_table = Utils::make_datatable(
     $expander_id,
-    $table_id,
+    $expander_id . '_actually_table_id_okay',
     ['Game', 'Type', 'Size', 'Play', 'Comment'],
     ['', '', '', '', ''],
     ['false', 'false', 'false', 'false', 'false'],
@@ -666,7 +666,6 @@ sub mistakesToHTML
   );
 
   my $mistake_expander = Utils::make_expander($expander_id);
-  my $table_id = $title . '_mistakes_table_id';
   my $grouphtml = <<GROUP
   <div $div_style>
     $mistake_expander $title
