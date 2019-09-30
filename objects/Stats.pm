@@ -845,13 +845,13 @@ sub notableListToHTML
     my $expander_id = $group_expander_id . '_' . $title;
     my $table_id    = $grouptitle . '_' . $title . '_notable_table_id';
     $expander_id =~ s/\s//g;
-    my $content = '';
+    my $notable_list = '';
     for (my $i = 0; $i < scalar @{$gamelist}; $i++)
     {
       my $gamename  = $gamelist->[$i];
       my $gameid    = $idslist->[$i];
   
-      $content .= "<tr><td><a href='$prefix$gameid' target='_blank'>$gamename</a></td></tr>\n";
+      $notable_list .= "<tr><td><a href='$prefix$gameid' target='_blank'>$gamename</a></td></tr>\n";
     }
   
     my $notable_table = Utils::make_datatable(
@@ -860,7 +860,7 @@ sub notableListToHTML
       ['Game'],
       [''],
       ['false'],
-      $content
+      $notable_list
     );
 
     my $expander = Utils::make_expander($expander_id);
