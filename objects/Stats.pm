@@ -588,7 +588,7 @@ sub errorsToHTML
     my $game = "<a href='$url$id' target='_blank'>Game $id</a>";
 
     my $width = 100 / 3;
-    my $width_style_part = 'width: $width%;';
+    my $width_style_part = "width: $width%;";
     my $width_style = "style='$width_style_part'";
 
     $content .=
@@ -651,7 +651,7 @@ sub mistakesToHTML
     my $cmnt = $mistake->[4];
 
     my $width = 100 / 5;
-    my $width_style_part = 'width: $width%;';
+    my $width_style_part = "width: $width%;";
     my $width_style = "style='$width_style_part'";
 
 
@@ -799,7 +799,7 @@ sub statListToHTML
       $alphaplay =~ s/\W//g;
 
       my $width = 100 / 4;
-      my $width_style_part = 'width: $width%;';
+      my $width_style_part = "width: $width%;";
       my $width_style = "style='$width_style_part'";
 
       my $span_style = Utils::get_color_dot_style($color);

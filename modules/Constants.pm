@@ -804,7 +804,7 @@ function sortTable(n, tableid, numeric)
 
   for (j = 0; j < rows.length; j++)
   {
-    rows[j].innerHTML = content[values[j - 1][1] - 1];
+    rows[j].innerHTML = content[values[j][1]];
   }
 }
 </script>
