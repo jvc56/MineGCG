@@ -568,20 +568,16 @@ use constant HTML_STYLES => <<HTMLSTYLES
       border-bottom-right-radius: 5px;
   }
 
-  .display
-  {
-      -ms-overflow-style: none;  /* IE 10+ */
-      scrollbar-width: none;  /* Firefox */
-  }
-  .display::-webkit-scrollbar
-  { 
-      display: none;  /* Safari and Chrome */
-  }
-
   .scrollwindow
   {
     max-height: 300px;
     overflow: auto;
+    -ms-overflow-style: none;  /* IE 10+ */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .scrollwindow::-webkit-scrollbar
+  { 
+      display: none;  /* Safari and Chrome */
   }
   </style>
 
