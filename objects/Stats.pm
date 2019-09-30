@@ -596,7 +596,7 @@ sub errorsToHTML
     </tr>";
   }
   my $error_expander = Utils::make_expander($expander_id);
-  my $table_id = $grouptitle . '_error_table_id';
+  my $table_id = $title . '_error_table_id';
   my $grouphtml = <<GROUP
   <div $div_style>
     $error_expander $title
@@ -656,7 +656,7 @@ sub mistakesToHTML
     </tr>";
   }
   my $mistake_expander = Utils::make_expander($expander_id);
-  my $table_id = $grouptitle . '_mistakes_table_id';
+  my $table_id = $title . '_mistakes_table_id';
   my $grouphtml = <<GROUP
   <div $div_style>
     $mistake_expander $title
