@@ -272,6 +272,7 @@ sub mine
   my $javascript = Constants::RESULTS_PAGE_JAVASCRIPT;
   my $toggle_icon_script = Constants::TOGGLE_ICON_SCRIPT;
   my $html_styles         = Constants::HTML_STYLES;
+  my $table_sort_function             = Constants::TABLE_SORT_FUNCTION;
   my $html_table_and_collapse_scripts = Constants::HTML_TABLE_AND_COLLAPSE_SCRIPTS;
 
   my $search_params =
