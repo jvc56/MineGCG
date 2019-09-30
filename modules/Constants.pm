@@ -519,11 +519,19 @@ use constant HTML_STYLES => <<HTMLSTYLES
   }
   .display
   {
-    margin: auto;
+    width: 100%;
   }
   .display th
   {
     cursor: pointer;
+  }
+  .display tr:nth-child(odd)
+  {
+    background: #22262a;;
+  }
+  .display tr:nth-child(even)
+  {
+    background:  #394047;
   }
   </style>
 
@@ -748,7 +756,7 @@ function sortTable(n, tableid, numeric)
     content.reverse();
     table.setAttribute('data-sort', 'dsc' + n);
   }
-  
+
   for (j = 1; j < rows.length; j++)
   {
     rows[j].innerHTML = content[values[j - 1][1] - 1];
