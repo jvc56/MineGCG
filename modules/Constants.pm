@@ -738,7 +738,7 @@ function sortTable(n, tableid, numeric)
     values.sort(sortAlpha);
   }
   var sort_state = table.getAttribute('data-sort');
-  if (!sort_state || sort_state == 'dsc' + n)
+  if (!sort_state || sort_state != 'asc' + n)
   {
     for (j = 1; j < (rows.length - 1); j++)
     {

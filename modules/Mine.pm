@@ -359,10 +359,10 @@ sub mine
       </table>
     </div>
     <div style='width: 100%' id='collapseKey' class="collapse">
-      <table style='width: 100%; margin: auto'>
+      <table style='margin: auto'>
         <tr>
-          <td> $search_params</td>
-          <td>$color_key</td>
+          <td style='vertical-align: top'>$search_params</td>
+          <td style='vertical-align: top'>$color_key</td>
         </tr>
       </table>
     </div>
