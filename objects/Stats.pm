@@ -589,7 +589,7 @@ sub errorsToHTML
 
     my $width = 100 / 3;
     my $width_style_part = 'width: $width%;';
-    my $width_style = "style='$width_style'";
+    my $width_style = "style='$width_style_part'";
 
     $content .=
     "
@@ -652,7 +652,7 @@ sub mistakesToHTML
 
     my $width = 100 / 5;
     my $width_style_part = 'width: $width%;';
-    my $width_style = "style='$width_style'";
+    my $width_style = "style='$width_style_part'";
 
 
     $content .=
@@ -800,7 +800,7 @@ sub statListToHTML
 
       my $width = 100 / 4;
       my $width_style_part = 'width: $width%;';
-      my $width_style = "style='$width_style'";
+      my $width_style = "style='$width_style_part'";
 
       my $span_style = Utils::get_color_dot_style($color);
       $table_content .=
