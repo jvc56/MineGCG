@@ -599,25 +599,23 @@ sub errorsToHTML
       <td $width_style>$type</td>
     </tr>";
   }
+
+  my $error_table = Utils::make_datatable(
+    $expander_id,
+    $expander_id . '_actually_error_id_okay',
+    ['Game', 'Line Number of Error', 'Error'],
+    ['text-align: center', '', ''],
+    ['false', 'false', 'false'],
+    $content
+  );
+
+
   my $error_expander = Utils::make_expander($expander_id);
   my $table_id = $title . '_error_table_id';
   my $grouphtml = <<GROUP
   <div $div_style>
     $error_expander $title
-     <div class="collapse" id="$expander_id">
-     <div class="scrollwindow">
-      <table class="display" id='$table_id'>
-        <tbody>
-          <tr>
-            <th  onclick="sortTable(0, '$table_id', false)"  >Game</th>
-            <th  onclick="sortTable(1, '$table_id', true)"  >Line Number of Error</th>
-            <th  onclick="sortTable(2, '$table_id', false)"  >Error</th>
-          </tr>
-	      $content
-        </tbody>
-       </table>
-     </div>
-     </div>
+    $error_table
   </div>
 GROUP
 ;
@@ -670,7 +668,7 @@ sub mistakesToHTML
     $expander_id,
     $expander_id . '_actually_table_id_okay',
     ['Game', 'Type', 'Size', 'Play', 'Comment'],
-    ['', '', '', '', ''],
+    ['text-align: center', '', '', '', ''],
     ['false', 'false', 'false', 'false', 'false'],
     $content
   );
