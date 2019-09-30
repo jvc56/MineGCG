@@ -54,7 +54,7 @@ sub make_datatable
     padding-right: 17px; /* Increase/decrease this value for cross-browser compatibility */
     box-sizing: content-box; /* So the width will be 100% + 17px */
   '
-  "
+  ";
 
   my $table = <<TABLE
 <div class="collapse" id="$expander_id">
