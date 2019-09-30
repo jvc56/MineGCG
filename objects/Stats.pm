@@ -596,16 +596,17 @@ sub errorsToHTML
     </tr>";
   }
   my $error_expander = Utils::make_expander($expander_id);
+  my $table_id = 'error_table_id';
   my $grouphtml = <<GROUP
   <div $div_style>
     $error_expander $title
      <div class="collapse" id="$expander_id">
-      <table class="display" cellspacing="0" width="100%">
+      <table class="display" id='$table_id'>
         <thead>
           <tr>
-            <th>Game</th>
-            <th>Line Number of Error</th>
-            <th>Error</th>
+            <th  onclick="sortTable(0, '$table_id', false)"  >Game</th>
+            <th  onclick="sortTable(1, '$table_id', true)"  >Line Number of Error</th>
+            <th  onclick="sortTable(2, '$table_id', false)"  >Error</th>
           </tr>
         </thead>
         <tbody>
@@ -655,18 +656,19 @@ sub mistakesToHTML
     </tr>";
   }
   my $mistake_expander = Utils::make_expander($expander_id);
+  my $table_id = 'mistakes_table_id';
   my $grouphtml = <<GROUP
   <div $div_style>
     $mistake_expander $title
      <div class="collapse" id="$expander_id">
-      <table class="display" cellspacing="0" width="100%">
+      <table class="display" id='$table_id'>
         <thead>
           <tr>
-            <th>Game</th>
-            <th>Type</th>
-            <th>Size</th>
-            <th>Play</th>
-            <th>Comment</th>
+            <th  onclick="sortTable(0, '$table_id', false)"  >Game</th>
+            <th  onclick="sortTable(1, '$table_id', false)"  >Type</th>
+            <th  onclick="sortTable(2, '$table_id', false)"  >Size</th>
+            <th  onclick="sortTable(3, '$table_id', false)"  >Play</th>
+            <th  onclick="sortTable(4, '$table_id', false)"  >Comment</th>
           </tr>
         </thead>
         <tbody>
@@ -777,15 +779,16 @@ sub statListToHTML
     my $title    = $statitem->{Constants::STAT_NAME};
     my $expander_id = $group_expander_id . '_' . $title;
     $expander_id =~ s/\s//g;
+    my $table_id = $title . '_statlist_table_id';
     my $list_table = <<TABLE
     <div class="collapse" id="$expander_id">
-      <table class="display" cellspacing="0" width="100%">
+      <table class="display" id='$table_id'>
         <thead>
           <tr>
-            <th>Type</th>
-            <th>Play</th>
-            <th>Probability</th>
-            <th>Score</th>
+            <th  onclick="sortTable(0, '$table_id', false)"  >Type</th>
+            <th  onclick="sortTable(1, '$table_id', false)"  >Play</th>
+            <th  onclick="sortTable(2, '$table_id', true)"   >Probability</th>
+            <th  onclick="sortTable(3, '$table_id', true)"   >Score</th>
           </tr>
         </thead>
         <tbody>
@@ -846,13 +849,14 @@ sub notableListToHTML
     my $idslist  = $statitem->{'ids'};
     my $title    = $statitem->{Constants::STAT_NAME};
     my $expander_id = $group_expander_id . '_' . $title;
+    my $table_id    = $title . '_notable_table_id';
     $expander_id =~ s/\s//g;
     my $list_table = <<TABLE
     <div class="collapse" id="$expander_id">
-      <table  class="display" cellspacing="0" width="100%">
+      <table  class="display" id='$table_id'>
         <thead>
           <tr>
-            <th>Game</th>
+            <th   onclick="sortTable(0, '$table_id', false)"  >Game</th>
           </tr>
         </thead>
         <tbody>

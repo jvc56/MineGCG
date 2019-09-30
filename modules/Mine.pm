@@ -391,6 +391,7 @@ PLAYERHEADER
   $html_string
   $default_scripts
   $toggle_icon_script
+  $table_sort_function
   $html_table_and_collapse_scripts
   </body>
 </html>

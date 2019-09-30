@@ -517,6 +517,10 @@ use constant HTML_STYLES => <<HTMLSTYLES
     background-color: #394047;
     border-radius: 5px;
   }
+  .display
+  {
+    margin: auto;
+  }
   </style>
 
 
