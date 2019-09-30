@@ -521,6 +521,10 @@ use constant HTML_STYLES => <<HTMLSTYLES
   {
     margin: auto;
   }
+  .display th
+  {
+    cursor: pointer;
+  }
   </style>
 
 
@@ -733,9 +737,22 @@ function sortTable(n, tableid, numeric)
   {
     values.sort(sortAlpha);
   }
-  for (j = 1; j < (rows.length - 1); j++)
+  var sort_state = table.getAttribute('data-sort');
+  if (!sort_state || sort_state == 'dsc' + n)
   {
-    rows[j].innerHTML = content[values[j - 1][1] - 1];
+    for (j = 1; j < (rows.length - 1); j++)
+    {
+      rows[j].innerHTML = content[values[j - 1][1] - 1];
+    }
+    table.setAttribute('data-sort', 'asc' + n);
+  }
+  elsif (sort_state == 'asc' + n)
+  {
+    for (j = 1; j < (rows.length - 1); j++)
+    {
+      rows[j].innerHTML = content[ (rows.length - 1) - (values[j - 1][1] - 1)];
+    }
+    table.setAttribute('data-sort', 'dsc' + n);
   }
 }
 </script>
