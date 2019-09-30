@@ -655,27 +655,22 @@ sub mistakesToHTML
       <td>$cmnt</td>
     </tr>";
   }
+
+  my $mistake_table = Utils::make_datatable(
+    $expander_id,
+    $table_id,
+    ['Game', 'Type', 'Size', 'Play', 'Comment'],
+    ['', '', '', '', ''],
+    ['false', 'false', 'false', 'false', 'false'],
+    $content
+  );
+
   my $mistake_expander = Utils::make_expander($expander_id);
   my $table_id = $title . '_mistakes_table_id';
   my $grouphtml = <<GROUP
   <div $div_style>
     $mistake_expander $title
-     <div class="collapse" id="$expander_id">
-     <div class="scrollwindow">
-      <table class="display" id='$table_id'>
-        <tbody>
-          <tr>
-            <th  onclick="sortTable(0, '$table_id', false)"  >Game</th>
-            <th  onclick="sortTable(1, '$table_id', false)"  >Type</th>
-            <th  onclick="sortTable(2, '$table_id', false)"  >Size</th>
-            <th  onclick="sortTable(3, '$table_id', false)"  >Play</th>
-            <th  onclick="sortTable(4, '$table_id', false)"  >Comment</th>
-          </tr>
-	        $content
-        </tbody>
-       </table>
-     </div>
-     </div>
+    $mistake_table
   </div>
 GROUP
 ;
@@ -780,19 +775,8 @@ sub statListToHTML
     my $expander_id = $group_expander_id . '_' . $title;
     $expander_id =~ s/\s//g;
     my $table_id = $grouptitle . '_' . $title . '_statlist_table_id';
-    my $list_table = <<TABLE
-    <div class="collapse" id="$expander_id">
-    <div class="scrollwindow">
-      <table class="display" id='$table_id'>
-        <tbody>
-          <tr>
-            <th  onclick="sortTable(0, '$table_id', false)"  >Type</th>
-            <th  onclick="sortTable(1, '$table_id', false)"  >Play</th>
-            <th  onclick="sortTable(2, '$table_id', true)"   >Probability</th>
-            <th  onclick="sortTable(3, '$table_id', true)"   >Score</th>
-          </tr>
-TABLE
-  ;
+    my $table_content = '';
+
     for (my $i = 0; $i < scalar @{$playlist}; $i++)
     {
       my $item  = $playlist->[$i];
@@ -806,17 +790,26 @@ TABLE
       $alphaplay =~ s/\W//g;
 
       my $span_style = Utils::get_color_dot_style($color);
-      $list_table .=
+      $table_content .=
       "
         <tr>
-          <td><span $span_style></span></td>
+          <td style='text-align: center' ><span $span_style></span></td>
           <td><a data-alpha='$alphaplay' href='$prefix$id' target='_blank'>$play</a></td>
           <td>$prob</td>
           <td>$score</td>
         </tr>\n";
-    }
-    $list_table .= "</tbody>\n</table>\n</div>\n</div>";
-  
+    }  
+
+    my $list_table = Utils::make_datatable(
+    
+      $expander_id,
+      $table_id,
+      ['Type', 'Play', 'Probability', 'Score'],
+      ["style='text-align: center'", '', '', ''],
+      ['false', 'false', 'true', 'true'],
+      $table_content
+    );
+
     my $expander = Utils::make_expander($expander_id);
   
     $content .= Utils::make_content_item($expander, $title, $list_table);
@@ -853,30 +846,27 @@ sub notableListToHTML
     my $expander_id = $group_expander_id . '_' . $title;
     my $table_id    = $grouptitle . '_' . $title . '_notable_table_id';
     $expander_id =~ s/\s//g;
-    my $list_table = <<TABLE
-    <div class="collapse" id="$expander_id">
-    <div class="scrollwindow">
-      <table  class="display" id='$table_id'>
-        <thead>
-          <tr>
-            <th   onclick="sortTable(0, '$table_id', false)"  >Game</th>
-          </tr>
-        </thead>
-        <tbody>
-TABLE
-  ;
+    my $content = '';
     for (my $i = 0; $i < scalar @{$gamelist}; $i++)
     {
       my $gamename  = $gamelist->[$i];
       my $gameid    = $idslist->[$i];
   
-      $list_table .= "<tr><td><a href='$prefix$gameid' target='_blank'>$gamename</a></td></tr>\n";
+      $content .= "<tr><td><a href='$prefix$gameid' target='_blank'>$gamename</a></td></tr>\n";
     }
-    $list_table .= "</tbody>\n</table>\n</div>\n</div>";
   
+    my $notable_table = Utils::make_datatable(
+      $expander_id,
+      $table_id,
+      ['Game'],
+      [''],
+      ['false'],
+      $content
+    );
+
     my $expander = Utils::make_expander($expander_id);
   
-    $content .= Utils::make_content_item($expander, $title, $list_table);
+    $content .= Utils::make_content_item($expander, $title, $notable_table);
   }
   if (!$content)
   {

@@ -1067,26 +1067,21 @@ sub update_notable
       $div_style = $even_style;
     }
 
-    my $list_table = <<TABLE
-    <div class="collapse" id="$expander_id">
-    <div class="scrollwindow">
-      
-      <table  class="display" cellspacing="0" width="100%">
-        <thead>
-          <tr>
-            <th>Game</th>
-          </tr>
-        </thead>
-        <tbody>
-TABLE
-  ;
-
+    my $content = '';
     for (my $k = 0; $k < scalar @{$notables}; $k++)
     {
       my $game = $notables->[$k];
-      $list_table .= "<tr><td>$game</td></tr>\n";
+      $content .= "<tr><td>$game</td></tr>\n";
     }
-    $list_table .= "</tbody>\n</table>\n</div>\n</div>";
+
+    my $notable_table = Utils::make_datatable(
+      $expander_id,
+      $key . '_table_id',
+      ['Game'],
+      [''],
+      ['false'],
+      $content
+    );
 
     my $expander = Utils::make_expander($expander_id);
 

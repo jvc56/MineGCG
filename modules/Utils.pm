@@ -18,6 +18,59 @@ use Constants;
 use Game;
 use JSON::XS;
 
+sub make_datatable
+{
+
+  my $expander_id = shift;
+  my $table_id    = shift;
+  my $titles      = shift;
+  my $titlestyles = shift;
+  my $sortvalues  = shift;
+  my $content     = shift;
+
+  my $titlecontent = '';
+
+  for (my $m = 0; $m < scalar @{$titles}; $m++)
+  {
+    my $style = $titlestyles->[$m];
+    my $sval  = $sortvalues->[$m];
+    my $title = $titles->[$m];
+
+    $titlecontent .= "<th $style onclick=\"sortTable($m, '$table_id', $sval)\">$title</th>\n";
+  }
+
+  my $table = <<TABLE
+<div class="collapse" id="$expander_id">
+  <table>
+    <tbody>
+      <tr>
+        <td>
+          <table>
+            <tbody>
+              <tr>
+                $titlecontent
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table id='$table_id'>
+            <tbody>
+              $content
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+TABLE
+;
+  return $table;
+}
+
 sub make_content_item
 {
   my $expander   = shift;
