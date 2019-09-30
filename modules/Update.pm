@@ -423,17 +423,10 @@ TABSCRIPT
 
     my $average = sprintf "%.2f", $sum / $array_length;
 
-    my $stattable = <<TABLE
-    <table class='display' id='$table_id'>
-      <tbody>
-        <tr><th onclick="sortTable(0, '$table_id', false)">Player</th><th   onclick="sortTable(1, '$table_id', true)" >Average</th></tr>
-TABLE
-;
-
     my $chart_data = "['Correlation of $fullname to Win Percentage', '$fullname', 'Win Percentage', [";
     my @xvalues = ();
     my @yvalues = ();
-
+    my $statcontent = '';
     for (my $j = 0; $j < $array_length; $j++)
     {
       my $player  = $ranked_array[$j][1];
@@ -442,7 +435,7 @@ TABLE
       my $link = "<a href='/$cache_dir/$name_with_underscores.html' target='_blank'>$player</a>";
       my $average = $ranked_array[$j][0];
 
-      $stattable .= "<tr><td>$link</td><td>$average</td></tr>\n";
+      $statcontent .= "<tr><td>$link</td><td>$average</td></tr>\n";
 
       my $win_percentage = $player_win_percentages{$player};
       $player =~ s/'/\\'/g;
@@ -451,7 +444,14 @@ TABLE
       push @yvalues, $average;
     }
 
-    $stattable .= '</tbody></table>';
+    $stattable = Utils::make_datatable(
+    $expander_id,
+    $expander_id . '_actually_error_id_okay',
+    ['Player', 'Average'],
+    ['text-align: center', 'text-align: center'],
+    ['false', 'false', 'false'],
+    $content
+  );
 
     chop($chart_data);
     $chart_data .= '], ';
@@ -999,8 +999,9 @@ sub update_leaderboard_legacy
 
 sub update_notable
 {
-  my $notable_dir    = Constants::NOTABLE_DIRECTORY_NAME;
-  my $url            = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
+  my $notable_dir         = Constants::NOTABLE_DIRECTORY_NAME;
+  my $url                 = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
+  my $table_sort_function = Constants::TABLE_SORT_FUNCTION;
   
   my $dbh = Utils::connect_to_database();
   my $playerstable = Constants::PLAYERS_TABLE_NAME;
@@ -1074,6 +1075,10 @@ sub update_notable
       $content .= "<tr><td>$game</td></tr>\n";
     }
 
+    if (!$content)
+    {
+      next;
+    }
     my $notable_table = Utils::make_datatable(
       $expander_id,
       $key . '_table_id',
@@ -1093,6 +1098,7 @@ sub update_notable
   my $body_style                      = Constants::HTML_BODY_STYLE;
   my $nav                             = Constants::HTML_NAV;
   my $default_scripts                 = Constants::HTML_SCRIPTS;
+  my $table_sort_function             = Constants::TABLE_SORT_FUNCTION;
   my $html_table_and_collapse_scripts = Constants::HTML_TABLE_AND_COLLAPSE_SCRIPTS;
 
   $notable_string = <<HTMLPAGE
@@ -1112,6 +1118,7 @@ sub update_notable
   </div>
   $notable_string
   $default_scripts
+  $table_sort_function
   $html_table_and_collapse_scripts
   </body>
 </html>

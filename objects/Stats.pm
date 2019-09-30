@@ -594,7 +594,7 @@ sub errorsToHTML
     $content .=
     "
     <tr>
-      <td $width_style>$game</td>
+      <td style='text-align: center $width_style_part'>$game</td>
       <td $width_style>$num</td>
       <td $width_style>$type</td>
     </tr>";
