@@ -364,6 +364,7 @@ sub mine
           <td> $search_params</td>
           <td>$color_key</td>
         </tr>
+      </table>
     </div>
     <div style="text-align: center">
       <a data-toggle="collapse" data-target="#collapseKey"

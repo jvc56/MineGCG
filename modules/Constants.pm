@@ -748,9 +748,10 @@ function sortTable(n, tableid, numeric)
   }
   else if (sort_state == 'asc' + n)
   {
+    content.reverse();
     for (j = 1; j < (rows.length - 1); j++)
     {
-      rows[j].innerHTML = content[ (rows.length - 1) - (values[j - 1][1] - 1)];
+      rows[j].innerHTML = content[values[j - 1][1] - 1];
     }
     table.setAttribute('data-sort', 'dsc' + n);
   }
