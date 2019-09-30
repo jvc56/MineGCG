@@ -425,10 +425,8 @@ TABSCRIPT
 
     my $stattable = <<TABLE
     <table class='display' id='$table_id'>
-      <thead>
-        <tr><th onclick="sortTable(0, '$table_id', false)">Player</th><th   onclick="sortTable(1, '$table_id', true)" >Average</th></tr>
-      </thead>
       <tbody>
+        <tr><th onclick="sortTable(0, '$table_id', false)">Player</th><th   onclick="sortTable(1, '$table_id', true)" >Average</th></tr>
 TABLE
 ;
 
@@ -489,10 +487,8 @@ TABLE
       my $over_table_id = $table_id . '_over';
       my $overtable = <<TABLE
       <table class='display' id='$over_table_id'>
-        <thead>
-          <tr><th onclick="sortTable(0, '$over_table_id', false)">Player</th><th   onclick="sortTable(1, '$over_table_id', true)" >Some Value</th></tr>
-        </thead>
         <tbody>
+          <tr><th onclick="sortTable(0, '$over_table_id', false)">Player</th><th   onclick="sortTable(1, '$over_table_id', true)" >Some Value</th></tr>
 TABLE
     ;
  

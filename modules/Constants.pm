@@ -520,6 +520,10 @@ use constant HTML_STYLES => <<HTMLSTYLES
   .display
   {
     width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 5px;
+    border: 1px solid black;
   }
   .display th
   {
@@ -533,6 +537,23 @@ use constant HTML_STYLES => <<HTMLSTYLES
   {
     background:  #394047;
   }
+  .display tr:last-child td:first-child
+  {
+      border-bottom-left-radius: 5px;
+  }
+  .display tr:last-child td:last-child
+  {
+      border-bottom-right-radius: 5px;
+  }
+  .display tr:first-child td:first-child
+  {
+      border-bottom-left-radius: 5px;
+  }
+  .display tr:first-child td:last-child
+  {
+      border-bottom-right-radius: 5px;
+  }
+
   </style>
 
 

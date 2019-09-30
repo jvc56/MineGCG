@@ -602,15 +602,13 @@ sub errorsToHTML
     $error_expander $title
      <div class="collapse" id="$expander_id">
       <table class="display" id='$table_id'>
-        <thead>
+        <tbody>
           <tr>
             <th  onclick="sortTable(0, '$table_id', false)"  >Game</th>
             <th  onclick="sortTable(1, '$table_id', true)"  >Line Number of Error</th>
             <th  onclick="sortTable(2, '$table_id', false)"  >Error</th>
           </tr>
-        </thead>
-        <tbody>
-	  $content
+	      $content
         </tbody>
        </table>
      </div>
@@ -662,7 +660,7 @@ sub mistakesToHTML
     $mistake_expander $title
      <div class="collapse" id="$expander_id">
       <table class="display" id='$table_id'>
-        <thead>
+        <tbody>
           <tr>
             <th  onclick="sortTable(0, '$table_id', false)"  >Game</th>
             <th  onclick="sortTable(1, '$table_id', false)"  >Type</th>
@@ -670,8 +668,6 @@ sub mistakesToHTML
             <th  onclick="sortTable(3, '$table_id', false)"  >Play</th>
             <th  onclick="sortTable(4, '$table_id', false)"  >Comment</th>
           </tr>
-        </thead>
-        <tbody>
 	  $content
         </tbody>
        </table>
@@ -783,15 +779,13 @@ sub statListToHTML
     my $list_table = <<TABLE
     <div class="collapse" id="$expander_id">
       <table class="display" id='$table_id'>
-        <thead>
+        <tbody>
           <tr>
             <th  onclick="sortTable(0, '$table_id', false)"  >Type</th>
             <th  onclick="sortTable(1, '$table_id', false)"  >Play</th>
             <th  onclick="sortTable(2, '$table_id', true)"   >Probability</th>
             <th  onclick="sortTable(3, '$table_id', true)"   >Score</th>
           </tr>
-        </thead>
-        <tbody>
 TABLE
   ;
     for (my $i = 0; $i < scalar @{$playlist}; $i++)
@@ -803,12 +797,15 @@ TABLE
       my $score = $item->[3];
       my $id    = $item->[4];
 
+      my $alphaplay = $play;
+      $alphaplay =~ s/\W//g;
+
       my $span_style = Utils::get_color_dot_style($color);
       $list_table .=
       "
         <tr>
           <td><span $span_style></span></td>
-          <td><a href='$prefix$id' target='_blank'>$play</a></td>
+          <td><a data-alpha='$alphaplay' href='$prefix$id' target='_blank'>$play</a></td>
           <td>$prob</td>
           <td>$score</td>
         </tr>\n";
