@@ -538,6 +538,7 @@ use constant HTML_STYLES => <<HTMLSTYLES
   {
     background:  #394047;
   }
+
   .display tr:last-child td:first-child
   {
       border-bottom-left-radius: 5px;
@@ -545,14 +546,6 @@ use constant HTML_STYLES => <<HTMLSTYLES
   .display tr:last-child td:last-child
   {
       border-bottom-right-radius: 5px;
-  }
-  .display tr:first-child th:first-child
-  {
-      border-top-left-radius: 5px;
-  }
-  .display tr:first-child th:last-child
-  {
-      border-top-right-radius: 5px;
   }
   .display tr:first-child td:first-child
   {
@@ -562,10 +555,26 @@ use constant HTML_STYLES => <<HTMLSTYLES
   {
       border-top-right-radius: 5px;
   }
+
+
+  .display th:first-child
+  {
+      border-top-left-radius: 5px;
+      border-bottom-left-radius: 5px;
+  }
+  .display th:last-child
+  {
+      border-top-right-radius: 5px;
+      border-bottom-right-radius: 5px;
+  }
+
   .scrollwindow
   {
     max-height: 300px;
     overflow: auto;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
   }
   </style>
 
