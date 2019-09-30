@@ -596,7 +596,7 @@ sub errorsToHTML
     </tr>";
   }
   my $error_expander = Utils::make_expander($expander_id);
-  my $table_id = 'error_table_id';
+  my $table_id = $grouptitle . '_error_table_id';
   my $grouphtml = <<GROUP
   <div $div_style>
     $error_expander $title
@@ -656,7 +656,7 @@ sub mistakesToHTML
     </tr>";
   }
   my $mistake_expander = Utils::make_expander($expander_id);
-  my $table_id = 'mistakes_table_id';
+  my $table_id = $grouptitle . '_mistakes_table_id';
   my $grouphtml = <<GROUP
   <div $div_style>
     $mistake_expander $title
@@ -779,7 +779,7 @@ sub statListToHTML
     my $title    = $statitem->{Constants::STAT_NAME};
     my $expander_id = $group_expander_id . '_' . $title;
     $expander_id =~ s/\s//g;
-    my $table_id = $title . '_statlist_table_id';
+    my $table_id = $grouptitle . '_' . $title . '_statlist_table_id';
     my $list_table = <<TABLE
     <div class="collapse" id="$expander_id">
       <table class="display" id='$table_id'>
@@ -849,7 +849,7 @@ sub notableListToHTML
     my $idslist  = $statitem->{'ids'};
     my $title    = $statitem->{Constants::STAT_NAME};
     my $expander_id = $group_expander_id . '_' . $title;
-    my $table_id    = $title . '_notable_table_id';
+    my $table_id    = $grouptitle . '_' . $title . '_notable_table_id';
     $expander_id =~ s/\s//g;
     my $list_table = <<TABLE
     <div class="collapse" id="$expander_id">

@@ -718,7 +718,7 @@ function sortTable(n, tableid, numeric)
   var rows = table.rows;
   var content  = [];
   var values   = [];
-  for (i = 1; i < (rows.length - 1); i++)
+  for (i = 1; i < rows.length; i++)
   {
     var val = rows[i].getElementsByTagName("TD")[n].innerHTML;
     if (numeric)
@@ -737,23 +737,21 @@ function sortTable(n, tableid, numeric)
   {
     values.sort(sortAlpha);
   }
+
   var sort_state = table.getAttribute('data-sort');
   if (!sort_state || sort_state != 'asc' + n)
   {
-    for (j = 1; j < (rows.length - 1); j++)
-    {
-      rows[j].innerHTML = content[values[j - 1][1] - 1];
-    }
     table.setAttribute('data-sort', 'asc' + n);
   }
   else if (sort_state == 'asc' + n)
   {
     content.reverse();
-    for (j = 1; j < (rows.length - 1); j++)
-    {
-      rows[j].innerHTML = content[values[j - 1][1] - 1];
-    }
     table.setAttribute('data-sort', 'dsc' + n);
+  }
+  
+  for (j = 1; j < rows.length; j++)
+  {
+    rows[j].innerHTML = content[values[j - 1][1] - 1];
   }
 }
 </script>
