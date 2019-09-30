@@ -68,21 +68,21 @@ sub update_search_data
       my $data = Utils::get_all_unique_values($dbh, $table, $field);
       $html .= make_datalist_input
       (
-	$title,
-	$name,
-	$required,
+  $title,
+  $name,
+  $required,
         $field,
         $data,
         $button_id,
-	$input_id,
-	$html_id
+  $input_id,
+  $html_id
       );
       $validate .= add_input_validation
       (
         $title,
         $field,
-	$input_id,
-	$html_id
+  $input_id,
+  $html_id
       );
     }
     elsif ($table && $table eq 'date')
@@ -193,7 +193,7 @@ sub add_input_validation
           if (input.value != "" && input.value != relevantOptions[0])
           {
             alert('Invalid value for $title. Choose an option by typing in the box and selecting an option from the dropdown menu.');
-	    return false;
+      return false;
           }
 
 FUNCTION
@@ -232,12 +232,12 @@ sub make_datalist_input
           if (relevantOptions.length > 0 && input.value != relevantOptions[0])
           {
             input.value = relevantOptions.shift();
-	    event.preventDefault();
+      event.preventDefault();
           }
           else if (relevantOptions.length == 0)
           {
             alert('Choose an option by typing in the box and selecting an option from the dropdown menu.');
-	    event.preventDefault();
+      event.preventDefault();
           }
 FUNCTION
 ;
@@ -328,13 +328,13 @@ sub update_leaderboard
           my $statname = $statlist->[$i]->{Constants::STAT_NAME};
 
           my $statval      = $statitem->{'total'};
-	  my $display_type = $statitem->{Constants::STAT_OBJECT_DISPLAY_NAME};
+    my $display_type = $statitem->{Constants::STAT_OBJECT_DISPLAY_NAME};
           my $is_int       = $statitem->{'int'};
 
-	  if ($statname eq 'Wins')
-	  {
-	    $player_win_percentages{$name} = $statval / $total_games;
-	  }
+    if ($statname eq 'Wins')
+    {
+      $player_win_percentages{$name} = $statval / $total_games;
+    }
           add_stat(\%leaderboards, $name, $statname, $statval, $total_games, $display_type, $is_int,\@name_order);
 
           my $subitems = $statitem->{'subitems'};
@@ -496,27 +496,27 @@ TABLE
       for (my $j = 0; $j < $array_length; $j++)
       {
         my $player  = $ranked_array[$j][1];
-	my $average = $ranked_array[$j][0];
+  my $average = $ranked_array[$j][0];
         my $name_with_underscores = Utils::sanitize($player);
         
         my $link = "<a href='/$cache_dir/$name_with_underscores.html' target='_blank'>$player</a>";
  
         # Calculate binomial stuff
-	my $P = 0.5; # Approximation for now
-	my $total_games = $player_total_games{$player};
-	my $n = $tile_frequencies->{$name} * $total_games;
-	my $mean = $P * $n;
-	my $sigma = sqrt($n) / 2;
-	my $outcome = $average * $total_games;
-	my $z = ($outcome - $mean) / $sigma;
+  my $P = 0.5; # Approximation for now
+  my $total_games = $player_total_games{$player};
+  my $n = $tile_frequencies->{$name} * $total_games;
+  my $mean = $P * $n;
+  my $sigma = sqrt($n) / 2;
+  my $outcome = $average * $total_games;
+  my $z = ($outcome - $mean) / $sigma;
         my $actual_deviation = $z - ($mean / $n);
-	my $pct = Statistics::Standard_Normal::z_to_pct($actual_deviation);
-	my $prob = 2 * abs($pct - 50);
+  my $pct = Statistics::Standard_Normal::z_to_pct($actual_deviation);
+  my $prob = 2 * abs($pct - 50);
 
-	#printf "%s,  %s,  %s,  %s,  %s,  %s,  %s,  %s,  %s, %s, %s  \n", $P, $total_games,
-	#$n, $mean, $sigma, $outcome, $z, $actual_deviation, $pct, $name, $tile_frequencies->{$name};
+  #printf "%s,  %s,  %s,  %s,  %s,  %s,  %s,  %s,  %s, %s, %s  \n", $P, $total_games,
+  #$n, $mean, $sigma, $outcome, $z, $actual_deviation, $pct, $name, $tile_frequencies->{$name};
 
-	$prob = (sprintf "%.2f", $prob) . '%';
+  $prob = (sprintf "%.2f", $prob) . '%';
         $overtable .= "<tr><td>$link</td><td>$prob</td></tr>\n";
       }
   
@@ -526,12 +526,12 @@ TABLE
     }
 
     my $tabbed_content = make_tabbed_content(
-	                   \@tab_titles,
-			   \@tab_content,
-			   $chart_id,
-			   $chart_data,
-		           $function_name,
-		           $og_name);
+                     \@tab_titles,
+         \@tab_content,
+         $chart_id,
+         $chart_data,
+               $function_name,
+               $og_name);
 
     if (!$is_substat)
     {
@@ -556,7 +556,7 @@ TABLE
       my $super_expander = Utils::make_expander($super_expander_id);
       $leaderboard_string .= <<SUPER
         <div $div_style>$super_expander $name</div>
-	<div class='collapse' id='$super_expander_id'>
+  <div class='collapse' id='$super_expander_id'>
 SUPER
 ;
       $name = 'All';
@@ -565,7 +565,9 @@ SUPER
     my $expander = Utils::make_expander($expander_id);
     $tabbed_content = <<TABBED
     <div class='collapse' id ='$expander_id'>
+    <div class="scrollwindow">
       $tabbed_content
+    </div>
     </div>
 TABBED
 ;
@@ -823,7 +825,7 @@ sub update_leaderboard_legacy
           my $statname = $statlist->[$i]->{Constants::STAT_NAME};
 
           my $statval      = $statitem->{'total'};
-	  my $display_type = $statitem->{Constants::STAT_OBJECT_DISPLAY_NAME};
+    my $display_type = $statitem->{Constants::STAT_OBJECT_DISPLAY_NAME};
           my $is_int       = $statitem->{'int'};
 
           add_stat(\%leaderboards, $name, $statname, $statval, $total_games, $display_type, $is_int,\@name_order);
@@ -848,7 +850,7 @@ sub update_leaderboard_legacy
         {
           my $player_mistakes = $statlist->[$i]->{Constants::STAT_ITEM_OBJECT_NAME}->{'list'};  
           push @all_mistakes, $player_mistakes;
-	  $total_mistakes += scalar @{$player_mistakes};
+    $total_mistakes += scalar @{$player_mistakes};
         }
       }
     }
@@ -982,7 +984,7 @@ sub update_leaderboard_legacy
     {
       if ($random_indexes{$i})
       {
-	push @featured_mistakes, $m;
+  push @featured_mistakes, $m;
       }
       $i++
     }
@@ -1033,7 +1035,7 @@ sub update_notable
           $notable_hash{$statname} = [];
         }
         my $list = $statitem->{'list'};
-	# my $ids  = $statitem->{'ids'};
+  # my $ids  = $statitem->{'ids'};
         for (my $i = 0; $i < scalar @{$list}; $i++)
         {
           my $unique_name = $statname . $list->[$i];
@@ -1067,6 +1069,8 @@ sub update_notable
 
     my $list_table = <<TABLE
     <div class="collapse" id="$expander_id">
+    <div class="scrollwindow">
+      
       <table  class="display" cellspacing="0" width="100%">
         <thead>
           <tr>
@@ -1082,7 +1086,7 @@ TABLE
       my $game = $notables->[$k];
       $list_table .= "<tr><td>$game</td></tr>\n";
     }
-    $list_table .= "</tbody>\n</table>\n</div>";
+    $list_table .= "</tbody>\n</table>\n</div>\n</div>";
 
     my $expander = Utils::make_expander($expander_id);
 
@@ -1187,7 +1191,7 @@ sub update_notable_legacy
           }
           my $notable_game = $list->[$i];
           $notable_hash{$statname} .= $notable_game . "<br>";
-	  push @featured_notable_games, [$statname, $notable_game];
+    push @featured_notable_games, [$statname, $notable_game];
           $check_for_repeats_hash{$unique_name} = 1;
         }
       }

@@ -601,6 +601,7 @@ sub errorsToHTML
   <div $div_style>
     $error_expander $title
      <div class="collapse" id="$expander_id">
+     <div class="scrollwindow">
       <table class="display" id='$table_id'>
         <tbody>
           <tr>
@@ -611,6 +612,7 @@ sub errorsToHTML
 	      $content
         </tbody>
        </table>
+     </div>
      </div>
   </div>
 GROUP
@@ -659,6 +661,7 @@ sub mistakesToHTML
   <div $div_style>
     $mistake_expander $title
      <div class="collapse" id="$expander_id">
+     <div class="scrollwindow">
       <table class="display" id='$table_id'>
         <tbody>
           <tr>
@@ -668,9 +671,10 @@ sub mistakesToHTML
             <th  onclick="sortTable(3, '$table_id', false)"  >Play</th>
             <th  onclick="sortTable(4, '$table_id', false)"  >Comment</th>
           </tr>
-	  $content
+	        $content
         </tbody>
        </table>
+     </div>
      </div>
   </div>
 GROUP
@@ -851,6 +855,7 @@ sub notableListToHTML
     $expander_id =~ s/\s//g;
     my $list_table = <<TABLE
     <div class="collapse" id="$expander_id">
+    <div class="scrollwindow">
       <table  class="display" id='$table_id'>
         <thead>
           <tr>
@@ -867,7 +872,7 @@ TABLE
   
       $list_table .= "<tr><td><a href='$prefix$gameid' target='_blank'>$gamename</a></td></tr>\n";
     }
-    $list_table .= "</tbody>\n</table>\n</div>";
+    $list_table .= "</tbody>\n</table>\n</div>\n</div>";
   
     my $expander = Utils::make_expander($expander_id);
   

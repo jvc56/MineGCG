@@ -548,15 +548,15 @@ use constant HTML_STYLES => <<HTMLSTYLES
   }
   .display tr:first-child th:first-child
   {
-      border-bottom-left-radius: 5px;
+      border-top-left-radius: 5px;
   }
   .display tr:first-child th:last-child
   {
-      border-bottom-right-radius: 5px;
+      border-top-right-radius: 5px;
   }
   .scrollwindow
   {
-    height: 300px;
+    max-height: 300px;
     overflow: auto;
   }
   </style>
