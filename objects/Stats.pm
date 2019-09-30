@@ -595,7 +595,7 @@ sub errorsToHTML
       <td>$type</td>
     </tr>";
   }
-  my $error_expander = make_expander($expander_id);
+  my $error_expander = Utils::make_expander($expander_id);
   my $grouphtml = <<GROUP
   <div $div_style>
     $error_expander $title
@@ -654,7 +654,7 @@ sub mistakesToHTML
       <td>$cmnt</td>
     </tr>";
   }
-  my $mistake_expander = make_expander($expander_id);
+  my $mistake_expander = Utils::make_expander($expander_id);
   my $grouphtml = <<GROUP
   <div $div_style>
     $mistake_expander $title
@@ -720,7 +720,7 @@ sub statItemsToHTML
     {
       my $stat_expander_id = $grouptitle . $title . '_subitems';
       $stat_expander_id =~ s/\s//g;
-      $stat_expander = make_expander($stat_expander_id);
+      $stat_expander = Utils::make_expander($stat_expander_id);
 
       $subtable .= "<tr><td colspan='4'><div class='collapse' id='$stat_expander_id'><table $table_style>\n<tbody>\n";
 
@@ -742,7 +742,7 @@ sub statItemsToHTML
     my $stathtml = "<tr><td style='height: 60px'>$stat_expander</td><td>$title</td><td>$average</td><td>$total</td></tr>";
     $content .= "$stathtml\n$subtable";
   }
-  my $group_expander = make_expander($group_expander_id);
+  my $group_expander = Utils::make_expander($group_expander_id);
   $content = <<CONTENT
       <table style='width: 100%; table-layout: fixed'>
         <tbody>
@@ -812,15 +812,15 @@ TABLE
     }
     $list_table .= "</tbody>\n</table>\n</div>";
   
-    my $expander = make_expander($expander_id);
+    my $expander = Utils::make_expander($expander_id);
   
-    $content .= make_content_item($expander, $title, $list_table);
+    $content .= Utils::make_content_item($expander, $title, $list_table);
   }
   if (!$content)
   {
     return '';
   }
-  my $group_expander = make_expander($group_expander_id);
+  my $group_expander = Utils::make_expander($group_expander_id);
   return make_group($group_expander, $grouptitle, $group_expander_id, $div_style, $content);
 }
 
@@ -867,49 +867,18 @@ TABLE
     }
     $list_table .= "</tbody>\n</table>\n</div>";
   
-    my $expander = make_expander($expander_id);
+    my $expander = Utils::make_expander($expander_id);
   
-    $content .= make_content_item($expander, $title, $list_table);
+    $content .= Utils::make_content_item($expander, $title, $list_table);
   }
   if (!$content)
   {
     return '';
   }
-  my $group_expander = make_expander($group_expander_id);
+  my $group_expander = Utils::make_expander($group_expander_id);
   return make_group($group_expander, $grouptitle, $group_expander_id, $div_style, $content);
 }
 
-
-sub make_content_item
-{
-  my $expander   = shift;
-  my $title      = shift;
-  my $list_table = shift;
-
-  my $table_style = 'style="width: 100%"';
-  my $ex_td_style = 'style="width: 20%"';
-
-#   my $content = <<CONTENT
-#   <div>
-#     <table $table_style>
-#     <tbody>
-#       <tr>
-#         <td $ex_td_style>$expander</td><td>$title</td></tr>
-#         <tr><td></td><td>$list_table</td></tr>
-#     </tbody>
-#     </table>
-#   </div>
-# CONTENT
-# ;
-  my $content = <<CONTENT
-  <div>
-$expander $title
-$list_table
-  </div>
-CONTENT
-;
-  return $content;
-}
 
 sub make_group
 {
@@ -928,17 +897,6 @@ sub make_group
      </div>
   </div>
   ";
-}
-
-sub make_expander
-{
-  my $id = shift;
-
-  my $button = <<BUTTON
-<button type='button' id='button_$id'  class='btn btn-sm' data-toggle='collapse' data-target='#$id'>+</button>
-BUTTON
-;
-  return $button;
 }
 
 sub statsList

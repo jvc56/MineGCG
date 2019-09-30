@@ -271,6 +271,8 @@ sub mine
   my $body_style        = Constants::HTML_BODY_STYLE;
   my $javascript = Constants::RESULTS_PAGE_JAVASCRIPT;
   my $toggle_icon_script = Constants::TOGGLE_ICON_SCRIPT;
+  my $html_styles         = Constants::HTML_STYLES;
+  my $html_table_and_collapse_scripts = Constants::HTML_TABLE_AND_COLLAPSE_SCRIPTS;
 
   my $search_params =
     make_search_params_table
@@ -366,7 +368,7 @@ sub mine
     <div style="text-align: center">
       <a data-toggle="collapse" data-target="#collapseKey"
         aria-expanded="false" aria-controls="collapseOptions" onclick='toggle_icon(this, "collapseKey")'>
-        <i class="fas fa-angle-down rotate-icon"></i>
+        Show More<br><i class="fas fa-angle-down rotate-icon"></i>
       </a>
     </div>
 
@@ -381,87 +383,15 @@ PLAYERHEADER
 <html lang="en">
   <head>
   $head_content
-
-  <style>
-  .infobox
-  {
-    border-radius: 5px;
-    background-color: #000000;
-    text-align: center;
-    border-collapse: separate;
-    margin: auto;
-  }
-  .content_td
-  {
-    background-color: #394047;
-    border-radius: 5px;
-  }
-    table.dataTable thead .sorting:after,
-    table.dataTable thead .sorting:before,
-    table.dataTable thead .sorting_asc:after,
-    table.dataTable thead .sorting_asc:before,
-    table.dataTable thead .sorting_asc_disabled:after,
-    table.dataTable thead .sorting_asc_disabled:before,
-    table.dataTable thead .sorting_desc:after,
-    table.dataTable thead .sorting_desc:before,
-    table.dataTable thead .sorting_desc_disabled:after,
-    table.dataTable thead .sorting_desc_disabled:before {
-    bottom: 0em;
-    }
-  </style>
+  $html_styles
   </head>
   <body $body_style>
   $nav
   $player_header
   $html_string
   $default_scripts
-
   $toggle_icon_script
-
-  <script>
-      \$(document).ready(function () {
-      
-        \$('.collapse').on('shown.bs.collapse', function (e) {
-        
-
-            \$(\$.fn.dataTable.tables(true)).DataTable()
-                  .columns.adjust();
-
-          var id = e.target.id;
-      
-          id = 'button_' + id; 
-          var el = document.getElementById(id);
-          if (el && el.nodeName == "BUTTON")
-          {
-            el.innerHTML = '&#8722';
-          }
-        
-        });
-        
-        \$('.collapse').on('hidden.bs.collapse', function (e) {
-      
-          var id = e.target.id;
-      
-          id = 'button_' + id; 
-          var el = document.getElementById(id);
-          if (el && el.nodeName == "BUTTON")
-          {
-            el.innerHTML = '+';
-          }
-         
-        });
-
-        \$('.display').DataTable(
-
-          {
-              scrollY: 300,
-              paging: false,
-              info:   false,
-              scrollCollapse: true
-          }
-        );
-      });
-  </script>
+  $html_table_and_collapse_scripts
   </body>
 </html>
 FINAL
@@ -469,10 +399,10 @@ FINAL
 
   if ($cache_condition && $at_least_one && $statsdump)
   {
-    my $lt = localtime();
+    print "PRINTING TO THE CACHE\n";
     system "mkdir -p $cache_dir";
     open(my $fh, '>', $cache_filename);
-    print $fh, $final_output; 
+    print $fh $final_output; 
     close $fh;
   }
 

@@ -46,6 +46,7 @@ use constant CGIBIN_DIRECTORY_NAME            => './cgi-bin';
 use constant DATA_DIRECTORY_NAME              => './data';
 use constant LOGS_DIRECTORY_NAME              => './logs';
 use constant HTML_STATIC_DIRECTORY_NAME       => './html_static';
+use constant LEGACY_DIRECTORY_NAME            => './legacy';
 use constant NAME_ID_DATA_FILENAME            => 'NameConversion.pm';
 use constant NAME_ID_VARIABLE_NAME            => 'NAMES_TO_IDS';
 use constant BLACKLISTED_TOURNAMENTS          => {
@@ -54,6 +55,8 @@ use constant BLACKLISTED_TOURNAMENTS          => {
 
 use constant TOURNAMENT_OPTION                => 'Tournament';
 use constant CASUAL_OPTION                    => 'Casual';
+
+use constant CHART_TAB_NAME                   => 'Win Correlation';
 
 use constant ANNOTATED_GAMES_API_CALL         => 'http://cross-tables.com/rest/allanno.php';
 use constant PLAYER_INFO_API_CALL             => 'http://cross-tables.com/rest/player.php?player=';
@@ -343,6 +346,37 @@ use constant CHAR_TO_VALUE =>
   "?" => 0,
 };
 
+use constant TILE_FREQUENCIES =>
+{
+  "A" => 9,
+  "B" => 2,
+  "C" => 2,
+  "D" => 4,
+  "E" => 12,
+  "F" => 2,
+  "G" => 3,
+  "H" => 2,
+  "I" => 9,
+  "J" => 1,
+  "K" => 1,
+  "L" => 4,
+  "M" => 2,
+  "N" => 6,
+  "O" => 8,
+  "P" => 2,
+  "Q" => 1,
+  "R" => 6,
+  "S" => 4,
+  "T" => 6,
+  "U" => 4,
+  "V" => 2,
+  "W" => 2,
+  "X" => 1,
+  "Y" => 2,
+  "Z" => 1,
+  "?" => 2
+};
+
 use constant TRIPLE_TRIPLE_COLOR            => 'red';
 use constant NINE_OR_ABOVE_COLOR            => 'lime';
 use constant IMPROBABLE_COLOR               => 'royalblue';
@@ -467,6 +501,65 @@ style=
 RESULTSPAGETABLE
 ;
 
+use constant HTML_STYLES => <<HTMLSTYLES
+
+  <style>
+  .infobox
+  {
+    border-radius: 5px;
+    background-color: #000000;
+    text-align: center;
+    border-collapse: separate;
+    margin: auto;
+  }
+  .content_td
+  {
+    background-color: #394047;
+    border-radius: 5px;
+  }
+  </style>
+
+
+HTMLSTYLES
+;
+
+use constant HTML_TABLE_AND_COLLAPSE_SCRIPTS => <<TCSCRIPTS
+
+  <script>
+      \$(document).ready(function () {
+
+        \$('.collapse').on('shown.bs.collapse', function (e) {
+          var id = e.target.id;
+
+          id = 'button_' + id;
+          var el = document.getElementById(id);
+          if (el && el.nodeName == "BUTTON")
+          {
+            el.innerHTML = '&#8722';
+          }
+
+        });
+
+        \$('.collapse').on('hidden.bs.collapse', function (e) {
+
+          var id = e.target.id;
+
+          id = 'button_' + id;
+          var el = document.getElementById(id);
+          if (el && el.nodeName == "BUTTON")
+          {
+            el.innerHTML = '+';
+          }
+
+        });
+      });
+  </script>
+
+
+TCSCRIPTS
+;
+
+
 use constant HTML_HEAD_CONTENT => <<HEAD
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -478,12 +571,22 @@ use constant HTML_HEAD_CONTENT => <<HEAD
   <link href="/css/bootstrap.min.css" rel="stylesheet">
   <!-- Material Design Bootstrap -->
   <link href="/css/mdb.min.css" rel="stylesheet">
-  <!-- Styles for Table Sort -->
-  <link href="/css/addons/datatables.min.css" rel="stylesheet">
   <!-- Your custom styles (optional) -->
 
+  <!-- Datepicker Syles -->
+  <link href="/datepickercss/bootstrap-datepicker3.css" rel="stylesheet">
+  <link href="/datepickercss/bootstrap-datepicker3.min.css" rel="stylesheet">
+
+  <link href="/datepickercss/bootstrap-datepicker3.standalone.css" rel="stylesheet">
+  <link href="/datepickercss/bootstrap-datepicker3.standalone.min.css" rel="stylesheet">
+
+  <link href="/datepickercss/bootstrap-datepicker.css" rel="stylesheet">
+  <link href="/datepickercss/bootstrap-datepicker.min.css" rel="stylesheet">
+
+  <link href="/datepickercss/bootstrap-datepicker.standalone.css" rel="stylesheet">
+  <link href="/datepickercss/bootstrap-datepicker.standalone.min.css" rel="stylesheet">
+
   <link href="/css/style.css" rel="stylesheet">
-  <link href="/css/datepicker.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
 HEAD
 ;
@@ -514,17 +617,15 @@ use constant HTML_NAV => <<NAV
         <a class="nav-link" href="/notable.html" >Notable</a>
       </li>
 
-      <!-- Dropdown
+      <!-- Dropdown -->
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false">Dropdown</a>
+          aria-haspopup="true" aria-expanded="false">Legacy</a>
         <div class="dropdown-menu dropdown-primary" aria-labelledby="navbarDropdownMenuLink">
-          <a class="dropdown-item" href="#">Action</a>
-          <a class="dropdown-item" href="#">Another action</a>
-          <a class="dropdown-item" href="#">Something else here</a>
+          <a class="dropdown-item" href="/legacy/notable.html">Notable</a>
+          <a class="dropdown-item" href="/legacy/leaderboard.html">Leaderboards</a>
         </div>
       </li>
-      -->
     </ul>
     <!-- Links -->
   </div>
@@ -547,10 +648,11 @@ use constant HTML_SCRIPTS => <<SCRIPTS
   <script type="text/javascript" src="/js/bootstrap.min.js"></script>
   <!-- MDB core JavaScript -->
   <script type="text/javascript" src="/js/mdb.min.js"></script>
+
   <!-- Datepicker JavaScript -->
-  <script type="text/javascript" src="/js/bootstrap-datepicker.js"></script>
-  <!-- Table Sort JavaScript -->
-  <script type="text/javascript" src="/js/addons/datatables.min.js"></script>
+  <script type="text/javascript" src="/datepickerjs/bootstrap-datepicker.js"></script>
+  <script type="text/javascript" src="/datepickerjs/bootstrap-datepicker.min.js"></script>
+
 SCRIPTS
 ;
 
@@ -560,16 +662,81 @@ use constant TOGGLE_ICON_SCRIPT => <<TOGGLEICON
     {
       if (el.innerHTML.includes('down'))
       {
-        el.innerHTML = '<i class="fas fa-angle-up rotate-icon"></i>'
+        el.innerHTML = '<br>Show Less<br><i class="fas fa-angle-up rotate-icon"></i>'
       }
       else
       {
-        el.innerHTML = '<i class="fas fa-angle-down rotate-icon"></i>'
+        el.innerHTML = '<br>Show More<br><i class="fas fa-angle-down rotate-icon"></i>'
       }
       \$('#' + key).collapse('toggle');
     }
 </script>
 TOGGLEICON
+;
+
+use constant TABLE_SORT_FUNCTION => <<TABLESORT
+
+<script>
+
+function sortNumeric(a, b)
+{
+    if (a[0] === b[0])
+    {
+        return 0;
+    }
+    else
+    {
+        return (a[0] < b[0]) ? -1 : 1;
+    }
+}
+function sortAlpha(a, b)
+{
+    var x = a[0].toLowerCase();
+    var y = b[0].toLowerCase();
+    if (x === y)
+    {
+        return 0;
+    }
+    else
+    {
+        return (x < y) ? -1 : 1;
+    }
+}
+
+
+function sortTable(n, tableid, numeric)
+{
+  var table = document.getElementById(tableid);
+  var rows = table.rows;
+  var content  = [];
+  var values   = [];
+  for (i = 1; i < (rows.length - 1); i++)
+  {
+    var val = rows[i].getElementsByTagName("TD")[n].innerHTML;
+    if (numeric)
+    {
+      val = Number(val);
+    }
+    values.push([val , i]);
+    content.push(rows[i].innerHTML);
+  }
+  if (numeric)
+  {
+    console.log('Sorting numbers');
+    values.sort(sortNumeric);
+  }
+  else
+  {
+    values.sort(sortAlpha);
+  }
+  for (j = 1; j < (rows.length - 1); j++)
+  {
+    rows[j].innerHTML = content[values[j - 1][1] - 1];
+  }
+}
+</script>
+
+TABLESORT
 ;
 
 use constant RESULTS_PAGE_JAVASCRIPT =>

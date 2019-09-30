@@ -9,6 +9,7 @@ use Utils;
 use Constants;
 
 my $cache_dir       = Constants::CACHE_DIRECTORY_NAME;
+my $legacy_dir      = Constants::LEGACY_DIRECTORY_NAME;
 my $logs            = Constants::LOGS_DIRECTORY_NAME;
 my $static          = Constants::HTML_STATIC_DIRECTORY_NAME;
 
@@ -33,6 +34,7 @@ my @commands =
 (
   "cp -r $static/* $source_html",
   "cp -r $cache_dir $source_html",
+  "cp -r $legacy_dir $source_html",
   "ssh $scp_args $rr_username\@$rr_host 'sudo rm -rf  $dest_html'",
   "ssh $scp_args $rr_username\@$rr_host 'sudo rm -rf  $dest_cgi '",
   "scp -r $scp_args $source_html $rr_username\@$rr_host:$dest_html",

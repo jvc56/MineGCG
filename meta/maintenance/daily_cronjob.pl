@@ -13,6 +13,7 @@ system "mkdir -p " . Constants::DATA_DIRECTORY_NAME;
 system "mkdir -p " . Constants::CACHE_DIRECTORY_NAME;
 system "mkdir -p " . Constants::HTML_DIRECTORY_NAME;
 system "mkdir -p " . Constants::CGIBIN_DIRECTORY_NAME;
+system "mkdir -p " . Constants::LEGACY_DIRECTORY_NAME;
 
 my $rr_host         = Constants::RR_IP_ADDRESS;
 my $rr_username     = Constants::RR_USERNAME;
@@ -27,8 +28,8 @@ my @jobs =
   "Preload",     "./meta/maintenance/preload.pl         > $logs/preload.log 2>&1   ",
   "Check",       "./meta/maintenance/check_data.pl      > $logs/check_data.log 2>&1"  ,
   "Test",        "./meta/maintenance/mine_games_test.pl                             "  ,
-  "Access",      "./meta/maintenance/get_access_log.pl  > /dev/null 2>&1            "  ,
-  "Update",      "./modules/Update.pm                   > /dev/null 2>&1",
+  "Access",      "./meta/maintenance/get_access_log.pl  > /$logs/access_retrieval.log 2>&1            "  ,
+  "Update",      "./modules/Update.pm                   > /$logs/update_html.log 2>&1",
   "Copy",        "./meta/maintenance/copy_to_remote.pl                              " 
 );
 

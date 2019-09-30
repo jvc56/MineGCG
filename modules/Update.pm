@@ -8,6 +8,8 @@ use Data::Dumper;
 use Cwd;
 use List::Util qw(shuffle);
 use Scalar::Util qw(looks_like_number);
+use Statistics::LineFit;
+use Statistics::Standard_Normal;
 
 use lib './objects';
 use lib './modules';
@@ -19,8 +21,10 @@ use Stats;
 unless (caller)
 {
   my $validation        = update_search_data();
-  my $featured_mistakes = update_leaderboard();
-  my $featured_notable  = update_notable();
+  my $featured_mistakes = update_leaderboard_legacy();
+  my $featured_notable  = update_notable_legacy();
+  update_leaderboard();
+  update_notable();
   update_remote_cgi();
   update_html($validation, $featured_mistakes, $featured_notable);
 }
@@ -36,13 +40,12 @@ sub update_search_data
   my @inputs =
   (
     ['Player Name',   Constants::PLAYER_FIELD_NAME,        'required', Constants::PLAYER_NAME_COLUMN_NAME, $players_table],
-    ['Game Type',     Constants::CORT_FIELD_NAME,          '', [Constants::GAME_TYPE_TOURNAMENT, Constants::GAME_TYPE_CASUAL]],
+    ['Game Type',     Constants::CORT_FIELD_NAME,          '', ['', Constants::GAME_TYPE_TOURNAMENT, Constants::GAME_TYPE_CASUAL]],
     ['Tournament ID', Constants::TOURNAMENT_ID_FIELD_NAME, '', Constants::GAME_CROSS_TABLES_TOURNAMENT_ID_COLUMN_NAME, $games_table],
-    ['Lexicon',       Constants::LEXICON_FIELD_NAME,       '', ['CSW19', 'NSW18', 'CSW15', 'TWL15', 'CSW12', 'CSW07', 'TWL06', 'TWL98']],
+    ['Lexicon',       Constants::LEXICON_FIELD_NAME,       '', ['', 'CSW19', 'NSW18', 'CSW15', 'TWL15', 'CSW12', 'CSW07', 'TWL06', 'TWL98']],
     ['Game ID',       Constants::GAME_ID_FIELD_NAME,       '', Constants::GAME_CROSS_TABLES_ID_COLUMN_NAME, $games_table],
     ['Opponent',      Constants::OPPONENT_FIELD_NAME,      '', Constants::PLAYER_NAME_COLUMN_NAME, $players_table],
-    ['Start Date',    Constants::START_DATE_FIELD_NAME,    '', Constants::GAME_DATE_COLUMN_NAME, 'date'],
-    ['End Date',      Constants::END_DATE_FIELD_NAME,      '', Constants::GAME_DATE_COLUMN_NAME, 'date'],
+    [['Start Date', 'End Date'], [Constants::START_DATE_FIELD_NAME, Constants::END_DATE_FIELD_NAME],'', Constants::GAME_DATE_COLUMN_NAME, 'date']
   );
 
   my $html = "";
@@ -84,11 +87,32 @@ sub update_search_data
     }
     elsif ($table && $table eq 'date')
     {
+      my $start_title = $title->[0];
+      my $start_name  = $name->[0];
+      my $end_title   = $title->[1];
+      my $end_name    = $name->[1];
+
       my $datepicker = <<DATEPICKER
-<div class="input-append date"  data-date-format="mm/dd/yyyy">
-  <input name="$name" class="form-control mb-4" type="text"   placeholder="$title" >
-  <span class="add-on"><i class="icon-th"></i></span>
-</div>
+      <div>
+        <table style='width: 100%'>
+          <tbody>
+            <tr>
+              <td>
+                <div class="input-group date">
+                  <input name="$start_name" type="text" class="form-control" placeholder="$start_title" >
+                  <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                </div>
+              </td>
+              <td>
+                <div class="input-group date">
+                  <input name="$end_name" type="text" class="form-control" placeholder="$end_title" >
+                  <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 DATEPICKER
       ;
       $html .= $datepicker;
@@ -114,7 +138,7 @@ DATEPICKER
       <div style="text-align: center">
         <a data-toggle="collapse" data-target="#collapseOptions"
           aria-expanded="false" aria-controls="collapseOptions" onclick='toggle_icon(this, "collapseOptions")'>
-          <i class="fas fa-angle-down rotate-icon"></i>
+          Show more<br><i class="fas fa-angle-down rotate-icon"></i>
         </a>
       </div>
       <div style="text-align: center">
@@ -260,6 +284,506 @@ FUNCTION
 }
 
 sub update_leaderboard
+{
+  my $cutoff         = Constants::LEADERBOARD_CUTOFF;
+  my $min_games      = Constants::LEADERBOARD_MIN_GAMES;
+  my $column_spacing = Constants::LEADERBOARD_COLUMN_SPACING;
+  my $cache_dir      = Constants::CACHE_DIRECTORY_NAME;
+
+  $cache_dir = substr $cache_dir, 2;
+
+  my %leaderboards  = ();
+  my @name_order    = ();
+
+  my $leaderboard_string = "";
+
+  my $dbh = Utils::connect_to_database();
+
+  my $playerstable = Constants::PLAYERS_TABLE_NAME;
+  my $gamestable   = Constants::GAMES_TABLE_NAME;
+  my $total_games_name = Constants::PLAYER_TOTAL_GAMES_COLUMN_NAME;
+
+  my @player_data = @{$dbh->selectall_arrayref("SELECT * FROM $playerstable WHERE $total_games_name >= $min_games", {Slice => {}, "RaiseError" => 1})};
+
+  my %player_win_percentages = ();
+  my %player_total_games     = ();
+
+  foreach my $player_item (@player_data)
+  {
+    my $total_games  = $player_item->{Constants::PLAYER_TOTAL_GAMES_COLUMN_NAME};
+    my $name         = $player_item->{Constants::PLAYER_NAME_COLUMN_NAME};
+    $player_total_games{$name} = $total_games;
+    my $player_stats = Stats->new(1, $player_item->{Constants::PLAYER_STATS_COLUMN_NAME});
+    my $player_stats_data = $player_stats->{Constants::STATS_DATA_KEY_NAME};
+
+    my @stat_keys = (Constants::STATS_DATA_GAME_KEY_NAME, Constants::STATS_DATA_PLAYER_ONE_KEY_NAME);
+    foreach my $key (@stat_keys)
+    {
+      my $statlist = $player_stats_data->{$key};
+      for (my $i = 0; $i < scalar @{$statlist}; $i++)
+      {
+        if ($statlist->[$i]->{Constants::STAT_DATATYPE_NAME} eq Constants::DATATYPE_ITEM)
+        {
+          my $statitem = $statlist->[$i]->{Constants::STAT_ITEM_OBJECT_NAME};
+          my $statname = $statlist->[$i]->{Constants::STAT_NAME};
+
+          my $statval      = $statitem->{'total'};
+	  my $display_type = $statitem->{Constants::STAT_OBJECT_DISPLAY_NAME};
+          my $is_int       = $statitem->{'int'};
+
+	  if ($statname eq 'Wins')
+	  {
+	    $player_win_percentages{$name} = $statval / $total_games;
+	  }
+          add_stat(\%leaderboards, $name, $statname, $statval, $total_games, $display_type, $is_int,\@name_order);
+
+          my $subitems = $statitem->{'subitems'};
+          if ($subitems)
+          {
+            my $order = $statitem->{'list'};
+            for (my $i = 0; $i < scalar @{$order}; $i++)
+            {
+              my $subitemname = $order->[$i];
+
+              my $substatname = "$statname-$subitemname";
+
+              my $substatval  = $subitems->{$subitemname};
+
+              add_stat(\%leaderboards, $name, $substatname, $substatval, $total_games, $display_type, $is_int,  \@name_order);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  my $previous_was_substat = 0;
+
+
+  my $function_name     = 'openTab';
+  my $tab_script = <<TABSCRIPT
+
+<script>
+function $function_name(evt, tabName, tabContentClass, tabLinkClass)
+{
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName(tabContentClass);
+  for (i = 0; i < tabcontent.length; i++)
+  {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName(tabLinkClass);
+  for (i = 0; i < tablinks.length; i++)
+  {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(tabName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+</script>
+
+TABSCRIPT
+;
+  my $even_style = Constants::DIV_STYLE_EVEN;
+  my $odd_style  = Constants::DIV_STYLE_ODD;
+  my $color_counter = 0;
+  for (my $i = 0; $i < scalar @name_order; $i++)
+  {
+    my $name = $name_order[$i];
+    my $og_name = $name;
+    my $expander_id = $name . '_expander_id';
+    my $chart_id    = $name . '_chart_id';
+    my $table_id    = $name . '_table_id';
+    $table_id    =~ s/\s//g;
+    $expander_id =~ s/\s//g;
+    $chart_id    =~ s/\s//g;
+    my @ranked_array =  sort { $b->[0] <=> $a->[0] } @{$leaderboards{$name}};
+    my $array_length = scalar @ranked_array;
+    my $sum = 0;
+    my $is_substat = 0;
+    my $has_substats = 0;
+    my $fullname     = $name;
+    my $parent_name  = $name;
+
+    if ($name =~ /(.*)-(.*)/)
+    {
+      $parent_name = $1;
+      $name = $2;
+      $is_substat = 1;
+      $fullname = $1 . ' ' . $2;
+    }
+    $has_substats = !$is_substat && ($i + 1 < scalar @name_order) && $name_order[$i+1] =~ /-/;
+
+ 
+
+    for (my $j = 0; $j < $array_length; $j++)
+    {
+      $sum += $ranked_array[$j][0];
+    }
+
+    my $average = sprintf "%.2f", $sum / $array_length;
+
+    my $stattable = <<TABLE
+    <table class='display' id='$table_id'>
+      <thead>
+        <tr><th onclick="sortTable(0, '$table_id', false)">Player</th><th   onclick="sortTable(1, '$table_id', true)" >Average</th></tr>
+      </thead>
+      <tbody>
+TABLE
+;
+
+    my $chart_data = "['Correlation of $fullname to Win Percentage', '$fullname', 'Win Percentage', [";
+    my @xvalues = ();
+    my @yvalues = ();
+
+    for (my $j = 0; $j < $array_length; $j++)
+    {
+      my $player  = $ranked_array[$j][1];
+      my $name_with_underscores = Utils::sanitize($player);
+      
+      my $link = "<a href='/$cache_dir/$name_with_underscores.html' target='_blank'>$player</a>";
+      my $average = $ranked_array[$j][0];
+
+      $stattable .= "<tr><td>$link</td><td>$average</td></tr>\n";
+
+      my $win_percentage = $player_win_percentages{$player};
+      $player =~ s/'/\\'/g;
+      $chart_data .= "{'y': $average, 'x': $win_percentage, 'name': '$player'},";
+      push @xvalues, $win_percentage;
+      push @yvalues, $average;
+    }
+
+    $stattable .= '</tbody></table>';
+
+    chop($chart_data);
+    $chart_data .= '], ';
+
+    my $rsquared  = '';
+    my @p1        = (0, 0);
+    my @p2        = (0, 0);
+    my $info      = '';
+
+    my $lineFit = Statistics::LineFit->new();
+    $lineFit->setData(\@xvalues, \@yvalues);
+    if (defined $lineFit->rSquared())
+    {
+      my ($intercept, $slope) = $lineFit->coefficients();
+      @p1 = (0, $intercept);
+      @p2 = (1, $intercept + $slope);
+      $rsquared = $lineFit->rSquared();
+
+      my $increase = $slope / 10;
+      my $info_style = "style='text-align: center;'";
+      $info = "<div $info_style>A 10% increase in win percentage correlates to an increase of $increase in $fullname</div>";
+    }
+
+    $chart_data .= "'$rsquared', [$p1[0], $p1[1]], [$p2[0], $p2[1]]]";
+
+
+    my $chart = "<div style='width: 100%; height: 500px' id='$chart_id'></div>$info";
+    my @tab_titles  = ('Leaderboard', Constants::CHART_TAB_NAME); 
+    my @tab_content = ($stattable, $chart);
+
+    if (length $name == 1 && ($og_name =~ /Tiles Played/ || $parent_name =~ /Tiles Played/))
+    {
+      my $over_table_id = $table_id . '_over';
+      my $overtable = <<TABLE
+      <table class='display' id='$over_table_id'>
+        <thead>
+          <tr><th onclick="sortTable(0, '$over_table_id', false)">Player</th><th   onclick="sortTable(1, '$over_table_id', true)" >Some Value</th></tr>
+        </thead>
+        <tbody>
+TABLE
+    ;
+ 
+      my $tile_frequencies = Constants::TILE_FREQUENCIES; 
+      for (my $j = 0; $j < $array_length; $j++)
+      {
+        my $player  = $ranked_array[$j][1];
+	my $average = $ranked_array[$j][0];
+        my $name_with_underscores = Utils::sanitize($player);
+        
+        my $link = "<a href='/$cache_dir/$name_with_underscores.html' target='_blank'>$player</a>";
+ 
+        # Calculate binomial stuff
+	my $P = 0.5; # Approximation for now
+	my $total_games = $player_total_games{$player};
+	my $n = $tile_frequencies->{$name} * $total_games;
+	my $mean = $P * $n;
+	my $sigma = sqrt($n) / 2;
+	my $outcome = $average * $total_games;
+	my $z = ($outcome - $mean) / $sigma;
+        my $actual_deviation = $z - ($mean / $n);
+	my $pct = Statistics::Standard_Normal::z_to_pct($actual_deviation);
+	my $prob = 2 * abs($pct - 50);
+
+	#printf "%s,  %s,  %s,  %s,  %s,  %s,  %s,  %s,  %s, %s, %s  \n", $P, $total_games,
+	#$n, $mean, $sigma, $outcome, $z, $actual_deviation, $pct, $name, $tile_frequencies->{$name};
+
+	$prob = (sprintf "%.2f", $prob) . '%';
+        $overtable .= "<tr><td>$link</td><td>$prob</td></tr>\n";
+      }
+  
+      $overtable .= '</tbody></table>';
+      push @tab_titles, 'Probability of Averages';
+      push @tab_content, $overtable;
+    }
+
+    my $tabbed_content = make_tabbed_content(
+	                   \@tab_titles,
+			   \@tab_content,
+			   $chart_id,
+			   $chart_data,
+		           $function_name,
+		           $og_name);
+
+    if (!$is_substat)
+    {
+      $color_counter++;
+    }
+
+    my $div_style = $odd_style;
+
+    if ($color_counter % 2 == 1)
+    {
+      $div_style = $even_style;
+    }
+
+    if ($previous_was_substat && !$is_substat)
+    {
+      $leaderboard_string .= "</div>\n";
+    }
+
+    if ($has_substats)
+    {
+      my $super_expander_id = 'super_' . $expander_id;
+      my $super_expander = Utils::make_expander($super_expander_id);
+      $leaderboard_string .= <<SUPER
+        <div $div_style>$super_expander $name</div>
+	<div class='collapse' id='$super_expander_id'>
+SUPER
+;
+      $name = 'All';
+    }
+
+    my $expander = Utils::make_expander($expander_id);
+    $tabbed_content = <<TABBED
+    <div class='collapse' id ='$expander_id'>
+      $tabbed_content
+    </div>
+TABBED
+;
+    $leaderboard_string .= Utils::make_content_item($expander, $name, $tabbed_content, $div_style);
+
+    $previous_was_substat = $is_substat;
+  }
+
+  my $head_content                    = Constants::HTML_HEAD_CONTENT;
+  my $html_styles                     = Constants::HTML_STYLES;
+  my $body_style                      = Constants::HTML_BODY_STYLE;
+  my $nav                             = Constants::HTML_NAV;
+  my $default_scripts                 = Constants::HTML_SCRIPTS;
+  my $html_table_and_collapse_scripts = Constants::HTML_TABLE_AND_COLLAPSE_SCRIPTS;
+  my $table_sort_function             = Constants::TABLE_SORT_FUNCTION;
+
+  $leaderboard_string = <<HTMLPAGE
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  $head_content
+  $html_styles
+  </head>
+  <body $body_style>
+  $nav
+  <div style='text-align: center; vertical-align: middle; padding: 2%'>
+    <h1>
+      Leaderboards
+    </h1>
+  </div>
+  $leaderboard_string
+  $default_scripts
+  $table_sort_function
+  <!-- Amchart JavaScript -->
+  <script src="https://www.amcharts.com/lib/4/core.js"></script>
+  <script src="https://www.amcharts.com/lib/4/charts.js"></script>
+  <script src="https://www.amcharts.com/lib/4/themes/dark.js"></script>
+  <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
+
+  <script>
+  function make_chart(chart_id, chart_data)
+  {
+    var chart_div = document.getElementById(chart_id);
+    if (chart_div.innerHTML)
+    {
+      return;
+    }
+
+    var title = chart_data[0];
+    var yaxis = chart_data[1];
+    var xaxis = chart_data[2];
+    var data  = chart_data[3];
+    var rsquared  = chart_data[4];
+    var p1    = chart_data[5];
+    var p2    = chart_data[6];
+
+    // Themes begin
+    am4core.useTheme(am4themes_dark);
+    am4core.useTheme(am4themes_animated);
+    // Themes end
+
+    var chart = am4core.create(chart_id, am4charts.XYChart);
+
+    chart.data = data;
+
+    var chart_title = chart.titles.create();
+    chart_title.text = title + ' (R[baseline-shift: super; font-size: 9px]2[/b] = ' + rsquared + ')';
+    
+    // Create axes
+    var valueAxisX = chart.xAxes.push(new am4charts.ValueAxis());
+    valueAxisX.title.text = xaxis;
+    valueAxisX.min = 0;
+    valueAxisX.max = 1;
+    valueAxisX.strictMinMax = true;
+    //valueAxisX.renderer.minGridDistance = 40;
+    
+    // Create value axis
+    var valueAxisY = chart.yAxes.push(new am4charts.ValueAxis());
+    valueAxisY.title.text = yaxis;
+    
+    // Create series
+    var lineSeries = chart.series.push(new am4charts.LineSeries());
+    lineSeries.dataFields.valueY = "y";
+    lineSeries.dataFields.valueX = "x";
+    lineSeries.strokeOpacity = 0;
+   
+    // Add a bullet
+    var bullet = lineSeries.bullets.push(new am4charts.CircleBullet());
+    bullet.circle.radius        = 4;
+    //bullet.circle.fill        = am4core.color('blue');
+    //bullet.circle.stroke      = am4core.color('blue');
+    bullet.circle.fillOpacity = 1;
+    bullet.tooltipText        = "{name}";
+    
+    //add the trendlines
+    var trend = chart.series.push(new am4charts.LineSeries());
+    trend.dataFields.valueY = "value2";
+    trend.dataFields.valueX = "value";
+    trend.strokeWidth = 2
+    trend.stroke = chart.colors.getIndex(0);
+    trend.strokeOpacity = 0.7;
+    trend.data = [
+      { "value": p1[0], "value2": p1[1] },
+      { "value": p2[0], "value2": p2[1] }
+    ];
+    
+    //scrollbars
+    chart.scrollbarX = new am4core.Scrollbar();
+    chart.scrollbarY = new am4core.Scrollbar();    
+    
+    // Make info downloadable
+    chart.exporting.menu = new am4core.ExportMenu();
+    chart.exporting.menu.align         = "left";
+    chart.exporting.menu.verticalAlign = "top"; 
+  }
+  </script>
+  $html_table_and_collapse_scripts
+  $tab_script
+  </body>
+</html>
+
+HTMLPAGE
+;
+
+
+  my $logs = Constants::LOGS_DIRECTORY_NAME;
+
+  my $leaderboard_name = "$logs/" . Constants::LEADERBOARD_NAME . ".log";
+  my $leaderboard_html = Constants::HTML_DIRECTORY_NAME . '/' . Constants::RR_LEADERBOARD_NAME;
+
+  open(my $log_leaderboard, '>', $leaderboard_name);
+  print $log_leaderboard $leaderboard_string;
+  close $log_leaderboard;
+
+  open(my $rr_leaderboard, '>', $leaderboard_html);
+  print $rr_leaderboard $leaderboard_string;
+  close $rr_leaderboard;
+}
+
+sub make_tabbed_content
+{
+  my $titles_ref    = shift;
+  my $content_ref   = shift;
+  my $chart_id      = shift;
+  my $chart_data    = shift;
+  my $func_name     = shift;
+  my $stat_name     = shift;
+  my $num_tabs      = scalar @{$titles_ref};
+  my $width         = 98 / $num_tabs;
+
+  my $link_style =
+  "
+  style='
+  width: 100%;
+  text-align: center;
+  '
+  ";
+
+  my $button_style =
+  "
+  style='
+  width: 90%;
+  cursor: pointer;
+  background-color: #222222;
+  color: inherit;
+  border: 1px solid #AAAAAA;
+  border-radius: 10px;
+  '
+  ";
+
+  my $link_class    = $stat_name . '_link';
+  my $content_class = $stat_name . '_content';
+
+  my $tab_div     = "<div $link_style><table style='width: 100%'><tbody><tr>\n";
+  my $tab_content = '';
+  for (my $i = 0; $i < $num_tabs; $i++)
+  {
+    my $title   = $titles_ref->[$i];
+    my $content = $content_ref->[$i];
+    my $id = $title . $stat_name . '_tab_id';
+    my $display_style = '';
+    if ($i != 0)
+    {
+      $display_style = 'style="display: none"';
+    }
+    $id =~ s/\s//g;
+
+    my $make_chart_function_call = '';
+    if ($title eq Constants::CHART_TAB_NAME)
+    {
+      $make_chart_function_call = "make_chart('$chart_id', $chart_data);";  
+    }
+
+    $tab_div .= <<BUTTON
+    <td style='width: $width%'>
+    <button
+       $button_style
+       class='$link_class'
+       onclick="$func_name(event, '$id', '$content_class', '$link_class'); $make_chart_function_call"
+       style='width: $width%'
+    >
+      $title
+    </button>
+    </td>
+BUTTON
+;
+    $tab_content .= "<div id='$id' class='$content_class' $display_style>$content</div>\n";
+  }
+  $tab_div .= '</tr></tbody></table></div>';
+  return $tab_div  . $tab_content;
+}
+
+sub update_leaderboard_legacy
 {
   my $cutoff         = Constants::LEADERBOARD_CUTOFF;
   my $min_games      = Constants::LEADERBOARD_MIN_GAMES;
@@ -425,8 +949,8 @@ sub update_leaderboard
 
   my $logs = Constants::LOGS_DIRECTORY_NAME;
 
-  my $leaderboard_name = "$logs/" . Constants::LEADERBOARD_NAME . ".log";
-  my $leaderboard_html = Constants::HTML_DIRECTORY_NAME . '/' . Constants::RR_LEADERBOARD_NAME;
+  my $leaderboard_name = "$logs/" . Constants::LEADERBOARD_NAME . "legacy.log";
+  my $leaderboard_html = Constants::LEGACY_DIRECTORY_NAME . '/' . Constants::RR_LEADERBOARD_NAME;
 
   open(my $log_leaderboard, '>', $leaderboard_name);
   print $log_leaderboard $leaderboard_string;
@@ -474,7 +998,149 @@ sub update_leaderboard
 }
 
 
+
 sub update_notable
+{
+  my $notable_dir    = Constants::NOTABLE_DIRECTORY_NAME;
+  my $url            = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
+  
+  my $dbh = Utils::connect_to_database();
+  my $playerstable = Constants::PLAYERS_TABLE_NAME;
+
+  my %notable_hash;
+  my %check_for_repeats_hash;
+  my $notable_string = "";
+  my $init = 0;
+  my @ordering = ();
+
+  my @player_data = @{$dbh->selectall_arrayref("SELECT * FROM $playerstable", {Slice => {}, "RaiseError" => 1})};
+  
+  foreach my $player_item (@player_data)
+  {
+    my $player_stats = Stats->new(1, $player_item->{Constants::PLAYER_STATS_COLUMN_NAME});
+    my $player_stats_data = $player_stats->{Constants::STATS_DATA_KEY_NAME};
+
+    my @stat_keys = (Constants::STATS_DATA_NOTABLE_KEY_NAME);
+    
+    foreach my $key (@stat_keys)
+    {
+      my $statlist = $player_stats_data->{$key};
+
+      for (my $i = 0; $i < scalar @{$statlist}; $i++)
+      {
+        my $statitem = $statlist->[$i]->{Constants::STAT_ITEM_OBJECT_NAME};
+        my $statname = $statlist->[$i]->{Constants::STAT_NAME};
+
+        if (!$notable_hash{$statname})
+        {
+          push @ordering, $statname;
+          $notable_hash{$statname} = [];
+        }
+        my $list = $statitem->{'list'};
+	# my $ids  = $statitem->{'ids'};
+        for (my $i = 0; $i < scalar @{$list}; $i++)
+        {
+          my $unique_name = $statname . $list->[$i];
+          if ($check_for_repeats_hash{$unique_name})
+          {
+            next;
+          }
+          push @{$notable_hash{$statname}}, $list->[$i];
+          $check_for_repeats_hash{$unique_name} = 1;
+        }
+      }
+    }
+  }
+
+  my $even_style = Constants::DIV_STYLE_EVEN;
+  my $odd_style  = Constants::DIV_STYLE_ODD;
+
+  for (my $i = 0; $i < scalar @ordering; $i++)
+  {
+    my $key             = $ordering[$i];
+    my $notables        = $notable_hash{$key};
+    my $expander_id     = $key . '_expander';
+    $expander_id =~ s/\s//g;
+
+    my $div_style = $odd_style;
+
+    if ($i % 2 == 0)
+    {
+      $div_style = $even_style;
+    }
+
+    my $list_table = <<TABLE
+    <div class="collapse" id="$expander_id">
+      <table  class="display" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th>Game</th>
+          </tr>
+        </thead>
+        <tbody>
+TABLE
+  ;
+
+    for (my $k = 0; $k < scalar @{$notables}; $k++)
+    {
+      my $game = $notables->[$k];
+      $list_table .= "<tr><td>$game</td></tr>\n";
+    }
+    $list_table .= "</tbody>\n</table>\n</div>";
+
+    my $expander = Utils::make_expander($expander_id);
+
+    $notable_string .= Utils::make_content_item($expander, $key, $list_table, $div_style);
+  }
+
+  my $head_content                    = Constants::HTML_HEAD_CONTENT;
+  my $html_styles                     = Constants::HTML_STYLES;
+  my $body_style                      = Constants::HTML_BODY_STYLE;
+  my $nav                             = Constants::HTML_NAV;
+  my $default_scripts                 = Constants::HTML_SCRIPTS;
+  my $html_table_and_collapse_scripts = Constants::HTML_TABLE_AND_COLLAPSE_SCRIPTS;
+
+  $notable_string = <<HTMLPAGE
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  $head_content
+  $html_styles
+  </head>
+  <body $body_style>
+  $nav
+  <div style='text-align: center; vertical-align: middle; padding: 2%'>
+    <h1>
+      All Time Notable Games
+    </h1>
+  </div>
+  $notable_string
+  $default_scripts
+  $html_table_and_collapse_scripts
+  </body>
+</html>
+
+HTMLPAGE
+;
+
+  my $logs = Constants::LOGS_DIRECTORY_NAME;
+
+  my $notable_name = "$logs/" . Constants::NOTABLE_NAME . ".log";
+  my $notable_html = Constants::HTML_DIRECTORY_NAME . '/' . Constants::RR_NOTABLE_NAME;
+
+  open(my $new_notable, '>', $notable_name);
+  print $new_notable $notable_string;
+  close $new_notable;
+
+  open(my $rr_notable, '>', $notable_html);
+  print $rr_notable $notable_string;
+  close $rr_notable;
+}
+
+
+
+sub update_notable_legacy
 {
   my $notable_dir    = Constants::NOTABLE_DIRECTORY_NAME;
   my $url            = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
@@ -548,8 +1214,8 @@ sub update_notable
 
   my $logs = Constants::LOGS_DIRECTORY_NAME;
 
-  my $notable_name = "$logs/" . Constants::NOTABLE_NAME . ".log";
-  my $notable_html = Constants::HTML_DIRECTORY_NAME . '/' . Constants::RR_NOTABLE_NAME;
+  my $notable_name = "$logs/" . Constants::NOTABLE_NAME . ".legacy.log";
+  my $notable_html = Constants::LEGACY_DIRECTORY_NAME . '/' . Constants::RR_NOTABLE_NAME;
 
   open(my $new_notable, '>', $notable_name);
   print $new_notable $notable_string;
@@ -774,7 +1440,7 @@ $nav
   
 <div $odd_div_style>
   <b $title_style >Blooper Reel</b>
-  <div style="padding-bottom: $inner_content_padding; padding-top: $inner_content_padding" class="carousel slide" data-ride="carousel" data-interval="15000">
+  <div style="padding-bottom: $inner_content_padding; padding-top: $inner_content_padding" class="carousel slide" data-ride="carousel" data-interval="10000">
     <div id="mistakes-carousel-content" class="carousel-inner">
       $mistakes_carousel_content
     </div>
@@ -844,10 +1510,12 @@ $nav
     };
 
     \$(function(){
+
       \$("#$search_data_id").load("$search_data_html",
+
       function()
       {
-        \$('.input-append.date').datepicker({format: "mm/dd/yyyy"});
+        \$('.input-group.date').datepicker({});
       });
 
       \$("#quotes-carousel-content").shuffleChildren();
@@ -1037,7 +1705,7 @@ sub make_mistakes_carousel
 
     my $div = <<MISTAKE
       <div class="carousel-item $active" style="$mistake_style">
-        $type $size<br>$play<br>$comment<br>$link
+        $type $size<br><br>$play<br><br>$comment<br><br>$link
       </div>
 MISTAKE
 ;

@@ -18,6 +18,39 @@ use Constants;
 use Game;
 use JSON::XS;
 
+sub make_content_item
+{
+  my $expander   = shift;
+  my $title      = shift;
+  my $list_table = shift;
+  my $div_style  = shift;
+
+  if (!$div_style)
+  {
+    $div_style = '';
+  }
+  my $content = <<CONTENT
+  <div $div_style>
+$expander $title
+$list_table
+  </div>
+CONTENT
+;
+  return $content;
+}
+
+sub make_expander
+{
+  my $id = shift;
+  my $color = shift;
+
+  my $button = <<BUTTON
+<button type='button' id='button_$id'  class='btn btn-sm' data-toggle='collapse' data-target='#$id'>+</button>
+BUTTON
+;
+  return $button;
+}
+
 sub write_string_to_file
 {
   my $string   = shift;

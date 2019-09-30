@@ -4,5 +4,6 @@ cache
 cgi-bin
 html
 data
+legacy
 nyt*
 wget*
