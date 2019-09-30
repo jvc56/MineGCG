@@ -554,6 +554,14 @@ use constant HTML_STYLES => <<HTMLSTYLES
   {
       border-top-right-radius: 5px;
   }
+  .display tr:first-child td:first-child
+  {
+      border-top-left-radius: 5px;
+  }
+  .display tr:first-child td:last-child
+  {
+      border-top-right-radius: 5px;
+  }
   .scrollwindow
   {
     max-height: 300px;
