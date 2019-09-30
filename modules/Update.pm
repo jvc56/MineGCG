@@ -1085,7 +1085,7 @@ sub update_notable
 
     my $expander = Utils::make_expander($expander_id);
 
-    $notable_string .= Utils::make_content_item($expander, $key, $list_table, $div_style);
+    $notable_string .= Utils::make_content_item($expander, $key, $notable_table, $div_style);
   }
 
   my $head_content                    = Constants::HTML_HEAD_CONTENT;
