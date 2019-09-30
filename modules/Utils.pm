@@ -44,18 +44,6 @@ sub make_datatable
   }
   $spacing_tr .= "</tr>";
 
-  my $content_style =
-  "
-  style=
-  '
-    width: 100%;
-    height: 100%;
-    overflow-y: scroll;
-    padding-right: 17px; /* Increase/decrease this value for cross-browser compatibility */
-    box-sizing: content-box; /* So the width will be 100% + 17px */
-  '
-  ";
-
   my $table = <<TABLE
 <div class="collapse" id="$expander_id">
   <table style='width: 100%'>
@@ -74,7 +62,7 @@ sub make_datatable
       <tr>
         <td>
           <div class='scrollwindow'>
-            <table class='display' id='$table_id' $content_style>
+            <table class='display' id='$table_id'>
               <tbody>
                 $content
                 $spacing_tr
