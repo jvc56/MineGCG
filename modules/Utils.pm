@@ -30,7 +30,7 @@ sub make_datatable
 
   my $titlecontent = '';
   my $td_width = 100 / (scalar @{$titles});
-  my $spacing_tr = "<tr>";
+
   for (my $m = 0; $m < scalar @{$titles}; $m++)
   {
     my $style = $titlestyles->[$m];
@@ -40,9 +40,7 @@ sub make_datatable
     $style = "style='width: $td_width%; $style'";
 
     $titlecontent .= "<th $style onclick=\"sortTable($m, '$table_id', $sval)\">$title</th>\n";
-    $spacing_tr .= "<td style='width: $td_width%;' ></td>";
   }
-  $spacing_tr .= "</tr>";
 
   my $table = <<TABLE
 <div class="collapse" id="$expander_id">
@@ -65,7 +63,6 @@ sub make_datatable
             <table class='display' id='$table_id'>
               <tbody>
                 $content
-                $spacing_tr
               </tbody>
             </table>
           </div>

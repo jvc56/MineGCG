@@ -587,12 +587,16 @@ sub errorsToHTML
     my $type = $error->[2];
     my $game = "<a href='$url$id' target='_blank'>Game $id</a>";
 
+    my $width = 100 / 3;
+    my $width_style_part = 'width: $width%;';
+    my $width_style = "style='$width_style'";
+
     $content .=
     "
     <tr>
-      <td>$game</td>
-      <td>$num</td>
-      <td>$type</td>
+      <td $width_style>$game</td>
+      <td $width_style>$num</td>
+      <td $width_style>$type</td>
     </tr>";
   }
   my $error_expander = Utils::make_expander($expander_id);
@@ -645,14 +649,20 @@ sub mistakesToHTML
     my $game = $mistake->[2];
     my $play = $mistake->[3];
     my $cmnt = $mistake->[4];
+
+    my $width = 100 / 5;
+    my $width_style_part = 'width: $width%;';
+    my $width_style = "style='$width_style'";
+
+
     $content .=
     "
     <tr>
-      <td>$game</td>
-      <td>$type</td>
-      <td>$size</td>
-      <td>$play</td>
-      <td>$cmnt</td>
+      <td $width_style>$game</td>
+      <td $width_style>$type</td>
+      <td $width_style>$size</td>
+      <td $width_style>$play</td>
+      <td $width_style>$cmnt</td>
     </tr>";
   }
 
@@ -788,14 +798,18 @@ sub statListToHTML
       my $alphaplay = $play;
       $alphaplay =~ s/\W//g;
 
+      my $width = 100 / 4;
+      my $width_style_part = 'width: $width%;';
+      my $width_style = "style='$width_style'";
+
       my $span_style = Utils::get_color_dot_style($color);
       $table_content .=
       "
         <tr>
-          <td style='text-align: center' ><span $span_style></span></td>
-          <td><a data-alpha='$alphaplay' href='$prefix$id' target='_blank'>$play</a></td>
-          <td>$prob</td>
-          <td>$score</td>
+          <td style='text-align: center; $width_style_part' ><span $span_style></span></td>
+          <td $width_style ><a data-alpha='$alphaplay' href='$prefix$id' target='_blank'>$play</a></td>
+          <td $width_style >$prob</td>
+          <td $width_style>$score</td>
         </tr>\n";
     }  
 
@@ -851,14 +865,14 @@ sub notableListToHTML
       my $gamename  = $gamelist->[$i];
       my $gameid    = $idslist->[$i];
   
-      $notable_list .= "<tr><td><a href='$prefix$gameid' target='_blank'>$gamename</a></td></tr>\n";
+      $notable_list .= "<tr><td style='text-align: center'><a href='$prefix$gameid' target='_blank'>$gamename</a></td></tr>\n";
     }
   
     my $notable_table = Utils::make_datatable(
       $expander_id,
       $table_id,
       ['Game'],
-      [''],
+      ['text-align: center'],
       ['false'],
       $notable_list
     );
