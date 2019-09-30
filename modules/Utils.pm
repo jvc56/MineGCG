@@ -41,7 +41,7 @@ sub make_datatable
 
   my $table = <<TABLE
 <div class="collapse" id="$expander_id">
-  <table>
+  <table  class='display' >
     <tbody>
       <tr>
         <td>
@@ -56,7 +56,7 @@ sub make_datatable
       </tr>
       <tr>
         <td>
-          <table id='$table_id'>
+          <table class='display' id='$table_id' style='max-height: 300px; overflow: auto'>
             <tbody>
               $content
             </tbody>
