@@ -778,6 +778,7 @@ sub statListToHTML
     my $table_id = $grouptitle . '_' . $title . '_statlist_table_id';
     my $list_table = <<TABLE
     <div class="collapse" id="$expander_id">
+    <div class="scrollwindow">
       <table class="display" id='$table_id'>
         <tbody>
           <tr>
@@ -810,7 +811,7 @@ TABLE
           <td>$score</td>
         </tr>\n";
     }
-    $list_table .= "</tbody>\n</table>\n</div>";
+    $list_table .= "</tbody>\n</table>\n</div>\n</div>";
   
     my $expander = Utils::make_expander($expander_id);
   

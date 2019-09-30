@@ -519,7 +519,8 @@ use constant HTML_STYLES => <<HTMLSTYLES
   }
   .display
   {
-    width: 100%;
+    width: 99%;
+    margin: auto;
     border-collapse: separate;
     border-spacing: 0;
     border-radius: 5px;
@@ -545,15 +546,19 @@ use constant HTML_STYLES => <<HTMLSTYLES
   {
       border-bottom-right-radius: 5px;
   }
-  .display tr:first-child td:first-child
+  .display tr:first-child th:first-child
   {
       border-bottom-left-radius: 5px;
   }
-  .display tr:first-child td:last-child
+  .display tr:first-child th:last-child
   {
       border-bottom-right-radius: 5px;
   }
-
+  .scrollwindow
+  {
+    height: 300px;
+    overflow: auto;
+  }
   </style>
 
 
@@ -759,7 +764,6 @@ function sortTable(n, tableid, numeric)
   }
   if (numeric)
   {
-    console.log('Sorting numbers');
     values.sort(sortNumeric);
   }
   else
