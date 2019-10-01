@@ -772,12 +772,12 @@ sub make_tabbed_content
     }
 
     $tab_div .= <<BUTTON
-    <td
+    <th
        class='$link_class'
        onclick="$func_name(event, '$id', '$content_class', '$link_class'); $make_chart_function_call"
        >
       $title
-    </td>
+    </th>
 BUTTON
 ;
     $tab_content .= "<div id='$id' class='$content_class' $display_style>$content</div>\n";
