@@ -291,8 +291,9 @@ sub mine
   if($search_params)
   {
     $search_params = make_infobox('Search Parameters', $search_params);
+    $search_params = "<td style='vertical-align: top'>$search_params</td>";
   }
-  
+
   my $total_games    = make_infobox('Games', $num_games);
   my $total_errors   = make_infobox('Errors', $num_errors);
   my $total_warnings = make_infobox('Warnings', $num_warnings);
