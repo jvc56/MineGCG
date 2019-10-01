@@ -288,12 +288,11 @@ sub mine
       ['End Date',   $enddate]
     ]);
 
-  if ($search_params)
+  if($search_params)
   {
-    $search_params = "<td style='vertical-align: top'>$search_params</td>";
+    $search_params = make_infobox('Search Parameters', $search_params);
   }
-
-  $search_params     = make_infobox('Search Parameters', $search_params);
+  
   my $total_games    = make_infobox('Games', $num_games);
   my $total_errors   = make_infobox('Errors', $num_errors);
   my $total_warnings = make_infobox('Warnings', $num_warnings);
@@ -434,7 +433,7 @@ sub make_search_params_table
   }
   if ($content)
   {
-    return "<td><table><tbody>$content</tbody></table></td>";
+    return "<table><tbody>$content</tbody></table>";
   }
   return '';
 }
