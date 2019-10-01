@@ -26,6 +26,8 @@ sub make_datatable
   my $titlestyles = shift;
   my $sortvalues  = shift;
   my $content     = shift;
+  my $initcol     = shift;
+  my $initclass   = shift;
 
   my $title_row_id    = $table_id . '_title_row_id';
   my $titlecontent = '';
@@ -38,8 +40,13 @@ sub make_datatable
     my $title = $titles->[$m];
 
     $style = "style='width: $td_width%; $style'";
+    my $class = '';
+    if ($title eq $initcol)
+    {
+      my $class = "class='$initclass'";
+    }
 
-    $titlecontent .= "<th $style onclick=\"sortTable($m, '$table_id', $sval)\">$title</th>\n";
+    $titlecontent .= "<th $style $class onclick=\"sortTable($m, '$table_id', $sval)\">$title</th>\n";
   }
 
   my $table = <<TABLE

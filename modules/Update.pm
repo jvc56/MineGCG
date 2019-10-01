@@ -366,6 +366,8 @@ sub update_leaderboard
 <script>
 function $function_name(evt, tabName, tabContentClass, tableid, n)
 {
+  changeSelector(tableid, 'dscclass', n);
+
   var i, tabcontent, tablinks;
   tabcontent = document.getElementsByClassName(tabContentClass);
   var n;
@@ -375,7 +377,6 @@ function $function_name(evt, tabName, tabContentClass, tableid, n)
   }
   document.getElementById(tabName).style.display = "block";
 
-  changeSelector(tableid, 'dscclass', n);
 }
 </script>
 
@@ -448,7 +449,9 @@ TABSCRIPT
     ['Player', 'Average'],
     ['text-align: center', 'text-align: center'],
     ['false', 'true'],
-    $statcontent
+    $statcontent,
+    'Average',
+    'dscclass'
   );
 
     chop($chart_data);
