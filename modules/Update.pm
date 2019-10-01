@@ -737,12 +737,12 @@ sub make_tabbed_content
   my $button_style =
   "
   style='
-  width: 90%;
+  width: $width%;
   cursor: pointer;
   background-color: #222222;
   color: inherit;
-  border: 1px solid #AAAAAA;
-  border-radius: 10px;
+  /*border: 1px solid #AAAAAA;
+  border-radius: 10px; */
   font-size: 20px;
   '
   ";
@@ -773,15 +773,12 @@ sub make_tabbed_content
     }
 
     $tab_div .= <<BUTTON
-    <td style='width: $width%'>
-    <button
+    <td
        $button_style
        class='$link_class'
        onclick="$func_name(event, '$id', '$content_class', '$link_class'); $make_chart_function_call"
-       style='width: $width%'
-    >
+       >
       $title
-    </button>
     </td>
 BUTTON
 ;

@@ -572,15 +572,16 @@ use constant HTML_STYLES => <<HTMLSTYLES
     text-align: center;
     cursor: pointer;
     font-size: 20px;
+    border-radius: 10px;
   }
   .dscclass
   {
-    background-color: white;
-    color: black;
+    background-color: #444444;
+    color: white;
   }
   .ascclass
   {
-    background-color: black;
+    background-color: #222222;
     color: white;
   }
 
