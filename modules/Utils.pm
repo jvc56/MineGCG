@@ -28,9 +28,10 @@ sub make_datatable
   my $sortvalues  = shift;
   my $content     = shift;
 
+  my $scroll_table_id = $table_id . '_scrollwindow';
   my $titlecontent = '';
   my $td_width = 100 / (scalar @{$titles});
-
+  my $span_style = "style='border-radius: 10px; background-color: #555555; padding: 5px'";
   for (my $m = 0; $m < scalar @{$titles}; $m++)
   {
     my $style = $titlestyles->[$m];
@@ -39,16 +40,18 @@ sub make_datatable
 
     $style = "style='width: $td_width%; $style'";
 
-    $titlecontent .= "<th $style onclick=\"sortTable($m, '$table_id', $sval)\">$title</th>\n";
+    $titlecontent .= "<th $style onclick=\"sortTable($m, '$table_id', $sval)\"><span $span_style >$title</span></th>\n";
   }
 
   my $table = <<TABLE
-<div class="collapse" id="$expander_id">
+  <div style='text-align: left; padding: 10px'>
+    Filter: <input oninput="filterTable(this, '$table_id')" style='border-radius: .25em'>
+  </div>
   <table style='width: 100%'>
     <tbody>
       <tr>
         <td>
-          <table class='display' >
+          <table class='titledisplay' >
             <tbody>
               <tr>
                 $titlecontent
@@ -59,7 +62,7 @@ sub make_datatable
       </tr>
       <tr>
         <td>
-          <div class='scrollwindow'>
+          <div class='scrollwindow' id='$scroll_table_id'>
             <table class='display' id='$table_id'>
               <tbody>
                 $content
@@ -70,9 +73,12 @@ sub make_datatable
       </tr>
     </tbody>
   </table>
-</div>
 TABLE
 ;
+  if ($expander_id)
+  {
+    $table = "<div class=\"collapse\" id=\"$expander_id\">$table</div>";
+  }
   return $table;
 }
 

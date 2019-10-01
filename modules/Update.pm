@@ -91,7 +91,7 @@ sub update_search_data
       my $start_name  = $name->[0];
       my $end_title   = $title->[1];
       my $end_name    = $name->[1];
-
+      my $style       = 'style="border-radius: .25em"';
       my $datepicker = <<DATEPICKER
       <div>
         <table style='width: 100%'>
@@ -99,13 +99,13 @@ sub update_search_data
             <tr>
               <td>
                 <div class="input-group date">
-                  <input name="$start_name" type="text" class="form-control" placeholder="$start_title" >
+                  <input $style name="$start_name" type="text" class="form-control" placeholder="$start_title" >
                   <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
                 </div>
               </td>
               <td>
                 <div class="input-group date">
-                  <input name="$end_name" type="text" class="form-control" placeholder="$end_title" >
+                  <input $style name="$end_name" type="text" class="form-control" placeholder="$end_title" >
                   <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
                 </div>
               </td>
@@ -435,7 +435,8 @@ TABSCRIPT
       my $link = "<a href='/$cache_dir/$name_with_underscores.html' target='_blank'>$player</a>";
       my $average = $ranked_array[$j][0];
 
-      $statcontent .= "<tr><td>$link</td><td>$average</td></tr>\n";
+      my $td_style = "style='width: 50%; text-align: center'";
+      $statcontent .= "<tr><td $td_style>$link</td><td $td_style>$average</td></tr>\n";
 
       my $win_percentage = $player_win_percentages{$player};
       $player =~ s/'/\\'/g;
@@ -444,13 +445,13 @@ TABSCRIPT
       push @yvalues, $average;
     }
 
-    $stattable = Utils::make_datatable(
-    $expander_id,
-    $expander_id . '_actually_error_id_okay',
+    my $stattable = Utils::make_datatable(
+    0,
+    $table_id,
     ['Player', 'Average'],
     ['text-align: center', 'text-align: center'],
-    ['false', 'false', 'false'],
-    $content
+    ['false', 'true'],
+    $statcontent
   );
 
     chop($chart_data);
@@ -478,20 +479,14 @@ TABSCRIPT
     $chart_data .= "'$rsquared', [$p1[0], $p1[1]], [$p2[0], $p2[1]]]";
 
 
-    my $chart = "<div style='width: 100%; height: 500px' id='$chart_id'></div>$info";
+    my $chart = "<div style='width: 100%; height: 600px' id='$chart_id'></div>$info";
     my @tab_titles  = ('Leaderboard', Constants::CHART_TAB_NAME); 
     my @tab_content = ($stattable, $chart);
 
     if (length $name == 1 && ($og_name =~ /Tiles Played/ || $parent_name =~ /Tiles Played/))
     {
       my $over_table_id = $table_id . '_over';
-      my $overtable = <<TABLE
-      <table class='display' id='$over_table_id'>
-        <tbody>
-          <tr><th onclick="sortTable(0, '$over_table_id', false)">Player</th><th   onclick="sortTable(1, '$over_table_id', true)" >Some Value</th></tr>
-TABLE
-    ;
- 
+      my $overtable_content = ''; 
       my $tile_frequencies = Constants::TILE_FREQUENCIES; 
       for (my $j = 0; $j < $array_length; $j++)
       {
@@ -502,36 +497,46 @@ TABLE
         my $link = "<a href='/$cache_dir/$name_with_underscores.html' target='_blank'>$player</a>";
  
         # Calculate binomial stuff
-  my $P = 0.5; # Approximation for now
-  my $total_games = $player_total_games{$player};
-  my $n = $tile_frequencies->{$name} * $total_games;
-  my $mean = $P * $n;
-  my $sigma = sqrt($n) / 2;
-  my $outcome = $average * $total_games;
-  my $z = ($outcome - $mean) / $sigma;
+        my $P = 0.5; # Approximation for now
+        my $total_games = $player_total_games{$player};
+        my $n = $tile_frequencies->{$name} * $total_games;
+        my $mean = $P * $n;
+        my $sigma = sqrt($n) / 2;
+        my $outcome = $average * $total_games;
+        my $z = ($outcome - $mean) / $sigma;
         my $actual_deviation = $z - ($mean / $n);
-  my $pct = Statistics::Standard_Normal::z_to_pct($actual_deviation);
-  my $prob = 2 * abs($pct - 50);
+        my $pct = Statistics::Standard_Normal::z_to_pct($actual_deviation);
+        my $prob = 2 * abs($pct - 50);
 
-  #printf "%s,  %s,  %s,  %s,  %s,  %s,  %s,  %s,  %s, %s, %s  \n", $P, $total_games,
-  #$n, $mean, $sigma, $outcome, $z, $actual_deviation, $pct, $name, $tile_frequencies->{$name};
+        #printf "%s,  %s,  %s,  %s,  %s,  %s,  %s,  %s,  %s, %s, %s  \n", $P, $total_games,
+        #$n, $mean, $sigma, $outcome, $z, $actual_deviation, $pct, $name, $tile_frequencies->{$name};
 
-  $prob = (sprintf "%.2f", $prob) . '%';
-        $overtable .= "<tr><td>$link</td><td>$prob</td></tr>\n";
+        $prob = (sprintf "%.2f", $prob) . '%';
+        my $td_style = "style='width: 50%; text-align: center'";
+        $overtable_content .= "<tr><td $td_style>$link</td><td $td_style>$prob</td></tr>\n";
       }
-  
-      $overtable .= '</tbody></table>';
+
+      my $overtable = Utils::make_datatable(
+        0,
+        $over_table_id,
+        ['Player', 'I Dunno'],
+        ['text-align: center', 'text-align: center'],
+        ['false', 'true'],
+        $overtable_content
+      );
+
+ 
       push @tab_titles, 'Probability of Averages';
       push @tab_content, $overtable;
     }
 
     my $tabbed_content = make_tabbed_content(
-                     \@tab_titles,
+         \@tab_titles,
          \@tab_content,
          $chart_id,
          $chart_data,
-               $function_name,
-               $og_name);
+         $function_name,
+         $og_name);
 
     if (!$is_substat)
     {
@@ -565,9 +570,7 @@ SUPER
     my $expander = Utils::make_expander($expander_id);
     $tabbed_content = <<TABBED
     <div class='collapse' id ='$expander_id'>
-    <div class="scrollwindow">
       $tabbed_content
-    </div>
     </div>
 TABBED
 ;
@@ -576,6 +579,8 @@ TABBED
     $previous_was_substat = $is_substat;
   }
 
+  $leaderboard_string .= '</div>';
+
   my $head_content                    = Constants::HTML_HEAD_CONTENT;
   my $html_styles                     = Constants::HTML_STYLES;
   my $body_style                      = Constants::HTML_BODY_STYLE;
@@ -583,6 +588,7 @@ TABBED
   my $default_scripts                 = Constants::HTML_SCRIPTS;
   my $html_table_and_collapse_scripts = Constants::HTML_TABLE_AND_COLLAPSE_SCRIPTS;
   my $table_sort_function             = Constants::TABLE_SORT_FUNCTION;
+  my $footer                          = Constants::HTML_FOOTER;
 
   $leaderboard_string = <<HTMLPAGE
 
@@ -635,7 +641,7 @@ TABBED
     chart.data = data;
 
     var chart_title = chart.titles.create();
-    chart_title.text = title + ' (R[baseline-shift: super; font-size: 9px]2[/b] = ' + rsquared + ')';
+    chart_title.text = title + '\\n(R[baseline-shift: super; font-size: 9px]2[/b] = ' + rsquared + ')';
     
     // Create axes
     var valueAxisX = chart.xAxes.push(new am4charts.ValueAxis());
@@ -660,7 +666,7 @@ TABBED
     bullet.circle.radius        = 4;
     //bullet.circle.fill        = am4core.color('blue');
     //bullet.circle.stroke      = am4core.color('blue');
-    bullet.circle.fillOpacity = 1;
+    //bullet.circle.fillOpacity = 1;
     bullet.tooltipText        = "{name}";
     
     //add the trendlines
@@ -687,6 +693,7 @@ TABBED
   </script>
   $html_table_and_collapse_scripts
   $tab_script
+  $footer
   </body>
 </html>
 
@@ -736,13 +743,14 @@ sub make_tabbed_content
   color: inherit;
   border: 1px solid #AAAAAA;
   border-radius: 10px;
+  font-size: 20px;
   '
   ";
 
   my $link_class    = $stat_name . '_link';
   my $content_class = $stat_name . '_content';
 
-  my $tab_div     = "<div $link_style><table style='width: 100%'><tbody><tr>\n";
+  my $tab_div     = "<div $link_style><table style='width: 100%; height: 80px'><tbody><tr>\n";
   my $tab_content = '';
   for (my $i = 0; $i < $num_tabs; $i++)
   {
@@ -756,10 +764,12 @@ sub make_tabbed_content
     }
     $id =~ s/\s//g;
 
+    my $is_chart = 'false';
     my $make_chart_function_call = '';
     if ($title eq Constants::CHART_TAB_NAME)
     {
       $make_chart_function_call = "make_chart('$chart_id', $chart_data);";  
+      $is_chart = 'true';
     }
 
     $tab_div .= <<BUTTON
@@ -1001,7 +1011,6 @@ sub update_notable
 {
   my $notable_dir         = Constants::NOTABLE_DIRECTORY_NAME;
   my $url                 = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
-  my $table_sort_function = Constants::TABLE_SORT_FUNCTION;
   
   my $dbh = Utils::connect_to_database();
   my $playerstable = Constants::PLAYERS_TABLE_NAME;
@@ -1072,7 +1081,7 @@ sub update_notable
     for (my $k = 0; $k < scalar @{$notables}; $k++)
     {
       my $game = $notables->[$k];
-      $content .= "<tr><td>$game</td></tr>\n";
+      $content .= "<tr><td style='text-align: center'>$game</td></tr>\n";
     }
 
     if (!$content)
@@ -1083,7 +1092,7 @@ sub update_notable
       $expander_id,
       $key . '_table_id',
       ['Game'],
-      [''],
+      ['text-align: center'],
       ['false'],
       $content
     );
@@ -1100,7 +1109,7 @@ sub update_notable
   my $default_scripts                 = Constants::HTML_SCRIPTS;
   my $table_sort_function             = Constants::TABLE_SORT_FUNCTION;
   my $html_table_and_collapse_scripts = Constants::HTML_TABLE_AND_COLLAPSE_SCRIPTS;
-
+  my $footer                          = Constants::HTML_FOOTER;
   $notable_string = <<HTMLPAGE
 
 <!DOCTYPE html>
@@ -1120,6 +1129,7 @@ sub update_notable
   $default_scripts
   $table_sort_function
   $html_table_and_collapse_scripts
+  $footer
   </body>
 </html>
 
@@ -1398,11 +1408,13 @@ sub update_html
   my $head_content = Constants::HTML_HEAD_CONTENT;
   my $nav          = Constants::HTML_NAV;
   my $default_scripts = Constants::HTML_SCRIPTS;
+  my $footer          = Constants::HTML_FOOTER;
   my $toggle_icon_script = Constants::TOGGLE_ICON_SCRIPT;
   my $odd_div_style = Constants::DIV_STYLE_ODD; 
   my $even_div_style = Constants::DIV_STYLE_EVEN; 
   my $inner_content_padding = '5%';
   my $title_style       = "style='font-size: 20px;'";
+  my $title_div_style   = "style='text-align: center'";
   my $body_style        = Constants::HTML_BODY_STYLE;
   my $index_html = <<HTML
 
@@ -1418,7 +1430,7 @@ $head_content
 $nav
 
 <div $odd_div_style>
-  <b $title_style >Search</b>
+   <div $title_div_style> <b $title_style >Search</b></div>
     <div style="padding-bottom: $inner_content_padding; padding-top: $inner_content_padding">
       <form action="$cgibin_name/mine_webapp.pl" target="_blank" method="get" onsubmit="return nocacheresult()">
 
@@ -1432,7 +1444,7 @@ $nav
 </div>
 
 <div $even_div_style>
-  <b $title_style >Quotes</b>
+   <div $title_div_style> <b $title_style >Quotes</b></div>
   <div style="padding-bottom: $inner_content_padding; padding-top: $inner_content_padding" class="carousel slide" data-ride="carousel" data-interval="10000">
     <div id="quotes-carousel-content" class="carousel-inner">
       $quotes_carousel_content
@@ -1441,7 +1453,7 @@ $nav
 </div>
   
 <div $odd_div_style>
-  <b $title_style >Blooper Reel</b>
+  <div $title_div_style><b $title_style >Blooper Reel</b></div>
   <div style="padding-bottom: $inner_content_padding; padding-top: $inner_content_padding" class="carousel slide" data-ride="carousel" data-interval="10000">
     <div id="mistakes-carousel-content" class="carousel-inner">
       $mistakes_carousel_content
@@ -1450,7 +1462,7 @@ $nav
 </div>
   
 <div $even_div_style>
-  <b $title_style >Notable games</b>
+   <div $title_div_style> <b $title_style >Notable games</b></div>
   <div style="padding-bottom: $inner_content_padding; padding-top: $inner_content_padding" class="carousel slide" data-ride="carousel" data-interval="5000">
     <div id="notable-carousel-content" class="carousel-inner">
       $notable_carousel_content
@@ -1459,6 +1471,7 @@ $nav
 </div>
   
 
+  $footer
   $default_scripts
   $toggle_icon_script
 
@@ -1524,7 +1537,6 @@ $nav
     });
 
   </script>
-
 </body>
 
 </html>

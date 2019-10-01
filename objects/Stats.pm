@@ -603,7 +603,7 @@ sub errorsToHTML
   my $error_table = Utils::make_datatable(
     $expander_id,
     $expander_id . '_actually_error_id_okay',
-    ['Game', 'Line Number of Error', 'Error'],
+    ['Game', 'Line', 'Error'],
     ['text-align: center', '', ''],
     ['false', 'false', 'false'],
     $content
@@ -651,15 +651,15 @@ sub mistakesToHTML
     my $width = 100 / 5;
     my $width_style_part = "width: $width%;";
     my $width_style = "style='$width_style_part'";
-
+    my $also_centered = "style='$width_style_part text-align: center'";
 
     $content .=
     "
     <tr>
-      <td $width_style>$game</td>
-      <td $width_style>$type</td>
-      <td $width_style>$size</td>
-      <td $width_style>$play</td>
+      <td $also_centered>$game</td>
+      <td $also_centered>$type</td>
+      <td $also_centered>$size</td>
+      <td $also_centered>$play</td>
       <td $width_style>$cmnt</td>
     </tr>";
   }

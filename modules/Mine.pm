@@ -274,6 +274,7 @@ sub mine
   my $html_styles         = Constants::HTML_STYLES;
   my $table_sort_function             = Constants::TABLE_SORT_FUNCTION;
   my $html_table_and_collapse_scripts = Constants::HTML_TABLE_AND_COLLAPSE_SCRIPTS;
+  my $footer = Constants::HTML_FOOTER;
 
   my $search_params =
     make_search_params_table
@@ -394,6 +395,7 @@ PLAYERHEADER
   $toggle_icon_script
   $table_sort_function
   $html_table_and_collapse_scripts
+  $footer
   </body>
 </html>
 FINAL

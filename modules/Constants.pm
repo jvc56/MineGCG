@@ -557,20 +557,26 @@ use constant HTML_STYLES => <<HTMLSTYLES
   }
 
 
-  .display th:first-child
+  .titledisplay
   {
-      border-top-left-radius: 5px;
-      border-bottom-left-radius: 5px;
+    width: 99%;
+    margin: auto;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 5px;
+    background-color: black;
+    padding: 10px;
   }
-  .display th:last-child
+  .titledisplay th
   {
-      border-top-right-radius: 5px;
-      border-bottom-right-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 20px;
   }
 
   .scrollwindow
   {
-    max-height: 300px;
+    max-height: 500px;
     overflow: auto;
     -ms-overflow-style: none;  /* IE 10+ */
     scrollbar-width: none;  /* Firefox */
@@ -740,6 +746,36 @@ use constant TABLE_SORT_FUNCTION => <<TABLESORT
 
 <script>
 
+function filterTable(input, tableid)
+{
+  var table = document.getElementById(tableid);
+  var rows  = table.getElementsByTagName("tr");
+  var s     = input.value;
+  var cc    = 0;
+  console.log('In filter: ' + s);
+  for (i = 0; i < rows.length; i++)
+  {
+    var row = rows[i];
+    var text = row.innerHTML;
+    var style = '';
+    var color = '#22262a'
+    if (!(text.toLowerCase().includes(s.toLowerCase())))
+    {
+      style = 'none';
+    }
+    else
+    {
+      cc++;
+    }
+
+    if (cc % 2 == 0)
+    {
+      color = '#394047';
+    }
+    row.style.backgroundColor = color;
+    row.style.display = style;
+  }
+}
 function sortNumeric(a, b)
 {
     if (a[0] === b[0])
@@ -863,6 +899,19 @@ use constant LEADERBOARD_JAVASCRIPT =>
   }
 </script>
 ";
+
+use constant HTML_FOOTER => <<FOOTER
+<footer>
+  <!-- Copyright -->
+  <div class="footer-copyright text-center py-3">© 2019 Copyright
+    <a href="/">RandomRacer.com</a>
+  </div>
+  <!-- Copyright -->
+</footer>
+
+
+FOOTER
+;
 
 1;
 
