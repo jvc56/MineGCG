@@ -592,7 +592,7 @@ use constant HTML_STYLES => <<HTMLSTYLES
 
   .statitemtable td, th
   {
-    width: 100/3;
+    width: 33.333333333%;
   }
 
   .statitemdiv

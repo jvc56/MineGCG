@@ -696,7 +696,19 @@ sub statItemsToHTML
   my $tableclass = 'statitemtable';
   my $divclass   = 'statitemdiv';
 
-  my $content .= "<div class='$divclass'><table class='$tableclass'></tbody><tr><th>Stat</th><th>Average</th><th>Total</th></tr></tbody></table>";
+  my $content .= <<CONTENT
+  <div class='$divclass'>
+    <table class='$tableclass'>
+      <tbody>
+        <tr>
+          <th>Stat</th>
+          <th>Average</th>
+          <th>Total</th>
+        </tr>
+      </tbody>
+    </table>;
+CONTENT
+;
 
   for(my $i = 0; $i < scalar @{$listref}; $i++)
   {
@@ -723,7 +735,19 @@ sub statItemsToHTML
       $title = "<a href='$link' target='_blank'>$title</a>";
     }
 
-    $content .= "<div class='$divclass'><table class='$tableclass'></tbody><tr><td>$title</td><td>$average</td><td>$total</td></tr></tbody></table>";
+    $content .= <<CONTENT
+    <div class='$divclass'>
+      <table class='$tableclass'>
+        <tbody>
+          <tr>
+            <td>$title</td>
+            <td>$average</td>
+            <td>$total</td>
+          </tr>
+        </tbody>
+      </table>
+CONTENT
+;
 
     if ($subitems)
     {
