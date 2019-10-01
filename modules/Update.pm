@@ -733,7 +733,7 @@ sub make_tabbed_content
   my $content_class = $stat_name . '_content';
   my $tableid       = $chart_id . '_actually_title_table_id';
 
-  my $tab_div     = "<div $link_style><table class='titledisplay' id='$tableid'><tbody><tr>\n";
+  my $tab_div     = "<div><table class='titledisplay' id='$tableid'><tbody><tr>\n";
   my $tab_content = '';
   for (my $i = 0; $i < $num_tabs; $i++)
   {
