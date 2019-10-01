@@ -436,7 +436,7 @@ sub make_search_params_table
   {
     return "<table><tbody>$content</tbody></table>";
   }
-  $return '';
+  return '';
 }
 
 sub make_color_key

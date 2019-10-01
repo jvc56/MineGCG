@@ -815,7 +815,6 @@ function sortAlpha(a, b)
 
 function changeSelector(tableid, thclass, n)
 {
-  console.log(tableid);
   var titleths = document.getElementById(tableid).getElementsByTagName("TH");
   for (k = 0; k < titleths.length; k++)
   {
