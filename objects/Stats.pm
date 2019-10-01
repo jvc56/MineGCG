@@ -748,9 +748,9 @@ sub statItemsToHTML
   }
   my $group_expander = Utils::make_expander($group_expander_id);
   $content = <<CONTENT
-      <table style='width: 100%; table-layout: fixed'>
+      <table style='width: 100%;'>
         <tbody>
-          <tr><th></th><th>Stat</th><th>Average</th><th>Total</th></tr>
+          <tr><th style='height: 60px; width; 1px'></th><th>Stat</th><th>Average</th><th>Total</th></tr>
             $content
         </tbody>
        </table>
