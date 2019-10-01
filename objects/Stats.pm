@@ -696,7 +696,7 @@ sub statItemsToHTML
   my $tableclass = 'statitemtable';
   my $divclass   = 'statitemdiv';
 
-  my $content .= "<div class='$divclass'><table class='$statitemtable'></tbody><tr><<th>Stat</th><th>Average</th><th>Total</th></tr></tbody></table>";
+  my $content .= "<div class='$divclass'><table class='$tableclass'></tbody><tr><<th>Stat</th><th>Average</th><th>Total</th></tr></tbody></table>";
 
   for(my $i = 0; $i < scalar @{$listref}; $i++)
   {
@@ -723,7 +723,7 @@ sub statItemsToHTML
       $title = "<a href='$link' target='_blank'>$title</a>";
     }
 
-    $content .= "<div class='$divclass'><table class='$statitemtable'></tbody><tr><<td>$title</td><td>$average</td><td>$total</td></tr></tbody></table>";
+    $content .= "<div class='$divclass'><table class='$tableclass'></tbody><tr><<td>$title</td><td>$average</td><td>$total</td></tr></tbody></table>";
 
     if ($subitems)
     {
@@ -731,7 +731,7 @@ sub statItemsToHTML
       $stat_expander_id =~ s/\s//g;
       $stat_expander = Utils::make_expander($stat_expander_id);
 
-      $subtable .= "<div class='collapse' id='$stat_expander_id'><table  class='$statitemtable' ><tbody>";
+      $subtable .= "<div class='collapse' id='$stat_expander_id'><table  class='$tableclass' ><tbody>";
 
       my $order = $statitem->{'list'};
       for (my $i = 0; $i < scalar @{$order}; $i++)
