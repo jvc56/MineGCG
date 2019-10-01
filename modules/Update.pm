@@ -364,10 +364,11 @@ sub update_leaderboard
   my $tab_script = <<TABSCRIPT
 
 <script>
-function $function_name(evt, tabName, tabContentClass, tabLinkClass)
+function $function_name(evt, tabName, tabContentClass, tabLinkClass,  tableid, n);
 {
   var i, tabcontent, tablinks;
   tabcontent = document.getElementsByClassName(tabContentClass);
+  var n;
   for (i = 0; i < tabcontent.length; i++)
   {
     tabcontent[i].style.display = "none";
@@ -379,6 +380,8 @@ function $function_name(evt, tabName, tabContentClass, tabLinkClass)
   }
   document.getElementById(tabName).style.display = "block";
   evt.currentTarget.className += " active";
+
+  changeSelector(tableid, 'dscclass', n);
 }
 </script>
 
@@ -724,32 +727,13 @@ sub make_tabbed_content
   my $func_name     = shift;
   my $stat_name     = shift;
   my $num_tabs      = scalar @{$titles_ref};
-  my $width         = 98 / $num_tabs;
-
-  my $link_style =
-  "
-  style='
-  width: 100%;
-  text-align: center;
-  '
-  ";
-
-  my $button_style =
-  "
-  style='
-  width: $width%;
-  cursor: pointer;
-  background-color: #222222;
-  color: inherit;
-  border-radius: 5px;
-  font-size: 30px;
-  '
-  ";
+  my $width         = 100 / $num_tabs;
 
   my $link_class    = $stat_name . '_link';
   my $content_class = $stat_name . '_content';
+  my $tableid       = $chart_id . '_actually_title_table_id';
 
-  my $tab_div     = "<div $link_style><table class='titledisplay'><tbody><tr>\n";
+  my $tab_div     = "<div $link_style><table class='titledisplay' id='$tableid'><tbody><tr>\n";
   my $tab_content = '';
   for (my $i = 0; $i < $num_tabs; $i++)
   {
@@ -773,8 +757,9 @@ sub make_tabbed_content
 
     $tab_div .= <<BUTTON
     <th
+       style='width: $width%'
        class='$link_class'
-       onclick="$func_name(event, '$id', '$content_class', '$link_class'); $make_chart_function_call"
+       onclick="$func_name(event, '$id', '$content_class', '$link_class', '$tableid', $i); $make_chart_function_call"
        >
       $title
     </th>

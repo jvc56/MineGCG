@@ -813,6 +813,21 @@ function sortAlpha(a, b)
     }
 }
 
+function changeSelector(tableid, thclass, n)
+{
+  var titleths = document.getElementById(tableid + '_title_row_id').getElementsByTagName("TH");
+  for (k = 0; k < titleths.length; k++)
+  {
+    if (k == n)
+    {
+      titleths[k].className = thclass;
+    }
+    else
+    {
+      titleths[k].className = '';
+    }
+  }
+}
 
 function sortTable(n, tableid, numeric)
 {
@@ -820,7 +835,6 @@ function sortTable(n, tableid, numeric)
   var rows = table.rows;
   var content  = [];
   var values   = [];
-  var titleths = document.getElementById(tableid + '_title_row_id').getElementsByTagName("TH");
   for (i = 0; i < rows.length; i++)
   {
     var val = rows[i].getElementsByTagName("TD")[n].innerHTML;
@@ -852,17 +866,8 @@ function sortTable(n, tableid, numeric)
     content.reverse();
     table.setAttribute('data-sort', 'dsc' + n);
   }
-  for (k = 0; k < titleths.length; k++)
-  {
-    if (k == n)
-    {
-      titleths[k].className = thclass;
-    }
-    else
-    {
-      titleths[k].className = '';
-    }
-  }
+
+  changeSelector(tableid, thclass, n);
 
   for (j = 0; j < rows.length; j++)
   {
