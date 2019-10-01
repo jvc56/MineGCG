@@ -741,16 +741,15 @@ sub make_tabbed_content
   cursor: pointer;
   background-color: #222222;
   color: inherit;
-  /*border: 1px solid #AAAAAA;
-  border-radius: 10px; */
-  font-size: 20px;
+  border-radius: 5px;
+  font-size: 30px;
   '
   ";
 
   my $link_class    = $stat_name . '_link';
   my $content_class = $stat_name . '_content';
 
-  my $tab_div     = "<div $link_style><table style='width: 100%; height: 80px'><tbody><tr>\n";
+  my $tab_div     = "<div $link_style><table class='titledisplay'><tbody><tr>\n";
   my $tab_content = '';
   for (my $i = 0; $i < $num_tabs; $i++)
   {
@@ -774,7 +773,6 @@ sub make_tabbed_content
 
     $tab_div .= <<BUTTON
     <td
-       $button_style
        class='$link_class'
        onclick="$func_name(event, '$id', '$content_class', '$link_class'); $make_chart_function_call"
        >

@@ -43,9 +43,6 @@ sub make_datatable
   }
 
   my $table = <<TABLE
-  <div style='text-align: left; padding: 10px'>
-    Filter: <input oninput="filterTable(this, '$table_id')" style='border-radius: .25em'>
-  </div>
   <table style='width: 100%'>
     <tbody>
       <tr>
@@ -72,6 +69,9 @@ sub make_datatable
       </tr>
     </tbody>
   </table>
+  <div style='text-align: left; padding: 10px'>
+    Filter: <input oninput="filterTable(this, '$table_id')" style='border-radius: .25em'>
+  </div>
 TABLE
 ;
   if ($expander_id)
