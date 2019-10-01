@@ -815,8 +815,8 @@ function sortAlpha(a, b)
 
 function changeSelector(tableid, thclass, n)
 {
-  console.log('tableid is ' + tableid);
-  var titleths = document.getElementById(tableid + '_title_row_id').getElementsByTagName("TH");
+  console.log(tableid);
+  var titleths = document.getElementById(tableid).getElementsByTagName("TH");
   for (k = 0; k < titleths.length; k++)
   {
     if (k == n)
@@ -868,7 +868,7 @@ function sortTable(n, tableid, numeric)
     table.setAttribute('data-sort', 'dsc' + n);
   }
 
-  changeSelector(tableid, thclass, n);
+  changeSelector(tableid + '_title_row_id', thclass, n);
 
   for (j = 0; j < rows.length; j++)
   {
