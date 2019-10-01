@@ -43,7 +43,7 @@ sub make_datatable
     my $class = '';
     if ($initcol && $title eq $initcol)
     {
-      my $class = "class='$initclass'";
+      $class = "class='$initclass'";
     }
 
     $titlecontent .= "<th $style $class onclick=\"sortTable($m, '$table_id', $sval)\">$title</th>\n";
