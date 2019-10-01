@@ -723,7 +723,7 @@ sub statItemsToHTML
       $title = "<a href='$link' target='_blank'>$title</a>";
     }
 
-    $content .= "<div class='$divclass'><table class='$tableclass'></tbody><tr><<td>$title</td><td>$average</td><td>$total</td></tr></tbody></table>";
+    $content .= "<div class='$divclass'><table class='$tableclass'></tbody><tr><td>$title</td><td>$average</td><td>$total</td></tr></tbody></table>";
 
     if ($subitems)
     {
