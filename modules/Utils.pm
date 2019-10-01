@@ -41,7 +41,7 @@ sub make_datatable
 
     $style = "style='width: $td_width%; $style'";
     my $class = '';
-    if ($title eq $initcol)
+    if ($initcol && $title eq $initcol)
     {
       my $class = "class='$initclass'";
     }
