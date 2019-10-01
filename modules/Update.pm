@@ -364,7 +364,7 @@ sub update_leaderboard
   my $tab_script = <<TABSCRIPT
 
 <script>
-function $function_name(evt, tabName, tabContentClass, tabLinkClass,  tableid, n)
+function $function_name(evt, tabName, tabContentClass, tableid, n)
 {
   var i, tabcontent, tablinks;
   tabcontent = document.getElementsByClassName(tabContentClass);
@@ -373,13 +373,7 @@ function $function_name(evt, tabName, tabContentClass, tabLinkClass,  tableid, n
   {
     tabcontent[i].style.display = "none";
   }
-  tablinks = document.getElementsByClassName(tabLinkClass);
-  for (i = 0; i < tablinks.length; i++)
-  {
-    tablinks[i].className = tablinks[i].className.replace(" active", "");
-  }
   document.getElementById(tabName).style.display = "block";
-  evt.currentTarget.className += " active";
 
   changeSelector(tableid, 'dscclass', n);
 }
@@ -763,8 +757,8 @@ sub make_tabbed_content
     $tab_div .= <<BUTTON
     <th
        style='width: $width%'
-       class='$link_class'
-       onclick="$func_name(event, '$id', '$content_class', '$link_class', '$tableid', $i); $make_chart_function_call"
+       class='$selectclass'
+       onclick="$func_name(event, '$id', '$content_class', '$tableid', $i); $make_chart_function_call"
        >
       $title
     </th>
