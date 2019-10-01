@@ -573,6 +573,17 @@ use constant HTML_STYLES => <<HTMLSTYLES
     cursor: pointer;
     font-size: 20px;
   }
+  .dscclass
+  {
+    background-color: white;
+    color: black;
+  }
+  .ascclass
+  {
+    background-color: black;
+    color: white;
+  }
+
 
   .scrollwindow
   {
@@ -808,6 +819,7 @@ function sortTable(n, tableid, numeric)
   var rows = table.rows;
   var content  = [];
   var values   = [];
+  var titleths = document.getElementById(tableid + '_title_row_id').getElementsByTagName("TH");
   for (i = 0; i < rows.length; i++)
   {
     var val = rows[i].getElementsByTagName("TD")[n].innerHTML;
@@ -827,15 +839,28 @@ function sortTable(n, tableid, numeric)
     values.sort(sortAlpha);
   }
 
+  var thclass = 'dscclass';
   var sort_state = table.getAttribute('data-sort');
   if (!sort_state || sort_state != 'asc' + n)
   {
     table.setAttribute('data-sort', 'asc' + n);
+    thclass = 'ascclass';
   }
   else if (sort_state == 'asc' + n)
   {
     content.reverse();
     table.setAttribute('data-sort', 'dsc' + n);
+  }
+  for (k = 0; k < titleths.length: k++)
+  {
+    if (k == n)
+    {
+      titleths[k].class = thclass;
+    }
+    else
+    {
+      titleths[k].class = '';
+    }
   }
 
   for (j = 0; j < rows.length; j++)

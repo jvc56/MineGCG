@@ -20,7 +20,6 @@ use JSON::XS;
 
 sub make_datatable
 {
-
   my $expander_id = shift;
   my $table_id    = shift;
   my $titles      = shift;
@@ -28,7 +27,7 @@ sub make_datatable
   my $sortvalues  = shift;
   my $content     = shift;
 
-  my $scroll_table_id = $table_id . '_scrollwindow';
+  my $title_row_id    = $table_id . '_title_row_id';
   my $titlecontent = '';
   my $td_width = 100 / (scalar @{$titles});
   my $span_style = "style='border-radius: 10px; background-color: #555555; padding: 5px'";
@@ -38,9 +37,7 @@ sub make_datatable
     my $sval  = $sortvalues->[$m];
     my $title = $titles->[$m];
 
-    $style = "style='width: $td_width%; $style'";
-
-    $titlecontent .= "<th $style onclick=\"sortTable($m, '$table_id', $sval)\"><span $span_style >$title</span></th>\n";
+    $titlecontent .= "<th $style onclick=\"sortTable($m, '$table_id', $sval)\">$title</th>\n";
   }
 
   my $table = <<TABLE
@@ -53,7 +50,7 @@ sub make_datatable
         <td>
           <table class='titledisplay' >
             <tbody>
-              <tr>
+              <tr id='$title_row_id'>
                 $titlecontent
               </tr>
             </tbody>
@@ -62,7 +59,7 @@ sub make_datatable
       </tr>
       <tr>
         <td>
-          <div class='scrollwindow' id='$scroll_table_id'>
+          <div class='scrollwindow'>
             <table class='display' id='$table_id'>
               <tbody>
                 $content
