@@ -696,7 +696,7 @@ sub statItemsToHTML
   my $tableclass = 'statitemtable';
   my $divclass   = 'statitemdiv';
 
-  my $content .= "<div class='$divclass'><table class='$tableclass'></tbody><tr><<th>Stat</th><th>Average</th><th>Total</th></tr></tbody></table>";
+  my $content .= "<div class='$divclass'><table class='$tableclass'></tbody><tr><th>Stat</th><th>Average</th><th>Total</th></tr></tbody></table>";
 
   for(my $i = 0; $i < scalar @{$listref}; $i++)
   {
@@ -750,6 +750,7 @@ sub statItemsToHTML
     }
     $content .= "</div>";
   }
+  $content .= "</div>";
   my $group_expander = Utils::make_expander($group_expander_id);
   return make_group($group_expander, $grouptitle, $group_expander_id, $div_style, $content);
 }
