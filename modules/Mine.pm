@@ -434,7 +434,7 @@ sub make_search_params_table
   }
   if ($content)
   {
-    return "<table><tbody>$content</tbody></table>";
+    return "<td><table><tbody>$content</tbody></table></td>";
   }
   return '';
 }
