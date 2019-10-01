@@ -805,9 +805,9 @@ sub statListToHTML
       "
         <tr>
           <td style='text-align: center; $width_style_part' ><span $span_style></span></td>
-          <td $width_style ><a data-alpha='$alphaplay' href='$prefix$id' target='_blank'>$play</a></td>
-          <td $width_style >$prob</td>
-          <td $width_style>$score</td>
+          <td style='text-align: center; $width_style_part' ><a data-alpha='$alphaplay' href='$prefix$id' target='_blank'>$play</a></td>
+          <td style='text-align: center; $width_style_part' >$prob</td>
+          <td style='text-align: center; $width_style_part' >$score</td>
         </tr>\n";
     }  
 
