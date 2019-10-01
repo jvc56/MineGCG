@@ -851,7 +851,7 @@ function sortTable(n, tableid, numeric)
     content.reverse();
     table.setAttribute('data-sort', 'dsc' + n);
   }
-  for (k = 0; k < titleths.length: k++)
+  for (k = 0; k < titleths.length; k++)
   {
     if (k == n)
     {

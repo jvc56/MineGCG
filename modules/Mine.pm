@@ -288,6 +288,11 @@ sub mine
       ['End Date',   $enddate]
     ]);
 
+  if ($search_params)
+  {
+    $search_params = "<td style='vertical-align: top'>$search_params</td>";
+  }
+
   $search_params     = make_infobox('Search Parameters', $search_params);
   my $total_games    = make_infobox('Games', $num_games);
   my $total_errors   = make_infobox('Errors', $num_errors);
@@ -362,7 +367,7 @@ sub mine
     <div style='width: 100%' id='collapseKey' class="collapse">
       <table style='margin: auto'>
         <tr>
-          <td style='vertical-align: top'>$search_params</td>
+          $search_params
           <td style='vertical-align: top'>$color_key</td>
         </tr>
       </table>
@@ -416,7 +421,7 @@ FINAL
 sub make_search_params_table
 {
   my $params = shift;
-  my $table = '<table><tbody>';
+  my $content = '';
   for (my $i = 0; $i < scalar @{$params}; $i++)
   {
     my $item = $params->[$i];
@@ -424,11 +429,14 @@ sub make_search_params_table
     my $value = $item->[1];
     if ($value)
     {
-      $table .= "<tr><td>$title</td><td>$value</td></tr>\n";
+      $content .= "<tr><td>$title</td><td>$value</td></tr>\n";
     }
   }
-  $table .= '</tbody></table>';
-  return $table;
+  if ($content)
+  {
+    return "<table><tbody>$content</tbody></table>";
+  }
+  $return '';
 }
 
 sub make_color_key
