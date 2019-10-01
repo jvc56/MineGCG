@@ -706,7 +706,8 @@ sub statItemsToHTML
           <th>Total</th>
         </tr>
       </tbody>
-    </table>;
+    </table>
+  </div>
 CONTENT
 ;
 
@@ -774,7 +775,6 @@ CONTENT
     }
     $content .= "</div>";
   }
-  $content .= "</div>";
   my $group_expander = Utils::make_expander($group_expander_id);
   return make_group($group_expander, $grouptitle, $group_expander_id, $div_style, $content);
 }
