@@ -855,11 +855,11 @@ function sortTable(n, tableid, numeric)
   {
     if (k == n)
     {
-      titleths[k].class = thclass;
+      titleths[k].className = thclass;
     }
     else
     {
-      titleths[k].class = '';
+      titleths[k].className = '';
     }
   }
 

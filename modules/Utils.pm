@@ -37,6 +37,8 @@ sub make_datatable
     my $sval  = $sortvalues->[$m];
     my $title = $titles->[$m];
 
+    $style = "style='width: $td_width%; $style'";
+
     $titlecontent .= "<th $style onclick=\"sortTable($m, '$table_id', $sval)\">$title</th>\n";
   }
 
