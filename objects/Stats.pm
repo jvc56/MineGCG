@@ -693,7 +693,10 @@ sub statItemsToHTML
   my $div_style    = shift;
   my $table_style  = Constants::RESULTS_PAGE_TABLE_STYLE;
 
-  my $content = '';
+  my $tableclass = 'statitemtable';
+  my $divclass   = 'statitemdiv';
+
+  my $content .= "<div class='$divclass'><table class='$statitemtable'></tbody><tr><<th>Stat</th><th>Average</th><th>Total</th></tr></tbody></table>";
 
   for(my $i = 0; $i < scalar @{$listref}; $i++)
   {
@@ -720,42 +723,34 @@ sub statItemsToHTML
       $title = "<a href='$link' target='_blank'>$title</a>";
     }
 
+    $content .= "<div class='$divclass'><table class='$statitemtable'></tbody><tr><<td>$title</td><td>$average</td><td>$total</td></tr></tbody></table>";
+
     if ($subitems)
     {
       my $stat_expander_id = $grouptitle . $title . '_subitems';
       $stat_expander_id =~ s/\s//g;
       $stat_expander = Utils::make_expander($stat_expander_id);
 
-      $subtable .= "<tr><td colspan='4'><div class='collapse' id='$stat_expander_id'><table $table_style>\n<tbody>\n";
+      $subtable .= "<div class='collapse' id='$stat_expander_id'><table  class='$statitemtable' ><tbody>";
 
       my $order = $statitem->{'list'};
       for (my $i = 0; $i < scalar @{$order}; $i++)
       {
-	my $subtitle = $order->[$i];
+        my $subtitle = $order->[$i];
         my $subtotal = $subitems->{$subtitle};
         my $subaverage = sprintf "%.2f", $subtotal/$numgames; 
-	if ($nototal_cond)
+        if ($nototal_cond)
         {
           $average = $total;
           $total   = '';
         }
         $subtable .= "<tr><td></td><td>$subtitle</td><td>$subaverage</td><td>$subtotal</td></tr>\n";
       }
-      $subtable .= "</tbody></table></div></td></tr>";
+      $subtable .= $stat_expander;
     }
-    my $stathtml = "<tr><td style='height: 60px'>$stat_expander</td><td>$title</td><td>$average</td><td>$total</td></tr>";
-    $content .= "$stathtml\n$subtable";
+    $content .= "</div>";
   }
   my $group_expander = Utils::make_expander($group_expander_id);
-  $content = <<CONTENT
-      <table style='width: 100%;'>
-        <tbody>
-          <tr><th style='height: 60px; width; 1px'></th><th>Stat</th><th>Average</th><th>Total</th></tr>
-            $content
-        </tbody>
-       </table>
-CONTENT
-;
   return make_group($group_expander, $grouptitle, $group_expander_id, $div_style, $content);
 }
 
@@ -919,7 +914,7 @@ sub statsList
       Constants::STAT_COMBINE_FUNCTION_NAME =>
       sub
       {
-        # Do nothing, errors added elsewhere	      
+        # Do nothing, errors added elsewhere        
       },
       Constants::STAT_ADD_FUNCTION_NAME =>
       sub
@@ -935,7 +930,7 @@ sub statsList
       Constants::STAT_COMBINE_FUNCTION_NAME =>
       sub
       {
-        # Do nothing, warnings added elsewhere	      
+        # Do nothing, warnings added elsewhere        
       },
       Constants::STAT_ADD_FUNCTION_NAME =>
       sub
@@ -1317,10 +1312,10 @@ sub statsList
 
         $this->{'total_verticals'}   += $game->getNumVerticalOpeningPlays($this_player);
         $this->{'total_firsts'}      += $game->getNumFirsts($this_player);
-	if ($this->{'total_firsts'} == 0)
-	{
+  if ($this->{'total_firsts'} == 0)
+  {
           return;
-	}
+  }
         $this->{'total'} = sprintf "%.4f", $this->{'total_verticals'} / $this->{'total_firsts'};
       }
     },

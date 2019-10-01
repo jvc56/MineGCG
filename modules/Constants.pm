@@ -585,6 +585,23 @@ use constant HTML_STYLES => <<HTMLSTYLES
     color: white;
   }
 
+  .statitemtable
+  {
+    width: 100%;
+  }
+
+  .statitemtable td, th
+  {
+    width: 100/3;
+  }
+
+  .statitemdiv
+  {
+    background-color: black;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+  }
 
   .scrollwindow
   {
@@ -934,7 +951,7 @@ use constant LEADERBOARD_JAVASCRIPT =>
 use constant HTML_FOOTER => <<FOOTER
 <footer>
   <!-- Copyright -->
-  <div class="footer-copyright text-center py-3">© 2019 Copyright
+  <div class="footer-copyright text-center py-3" style='font-size: 12px'>© 2019 Copyright
     <a href="/">RandomRacer.com</a>
   </div>
   <!-- Copyright -->
