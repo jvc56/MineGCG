@@ -364,7 +364,7 @@ sub update_leaderboard
   my $tab_script = <<TABSCRIPT
 
 <script>
-function $function_name(evt, tabName, tabContentClass, tabLinkClass,  tableid, n);
+function $function_name(evt, tabName, tabContentClass, tabLinkClass,  tableid, n)
 {
   var i, tabcontent, tablinks;
   tabcontent = document.getElementsByClassName(tabContentClass);
@@ -753,6 +753,11 @@ sub make_tabbed_content
     {
       $make_chart_function_call = "make_chart('$chart_id', $chart_data);";  
       $is_chart = 'true';
+    }
+    my $selectclass = '';
+    if ($i == 0)
+    {
+      $selectclass = 'dscclass';
     }
 
     $tab_div .= <<BUTTON
