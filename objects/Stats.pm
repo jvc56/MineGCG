@@ -570,6 +570,7 @@ sub errorsToHTML
 
   my $table_style  = Constants::RESULTS_PAGE_TABLE_STYLE;
   my $url = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
+  my $download   = Constants::DATA_DOWNLOAD_ATTRIBUTE;
 
   my @error_list = @{$error_list->{'list'}};
 
@@ -593,7 +594,7 @@ sub errorsToHTML
 
     $content .=
     "
-    <tr>
+    <tr $download >
       <td  style='text-align: center; $width_style_part'>$game</td>
       <td  style='text-align: center; $width_style_part'>$num</td>
       <td  style='text-align: center; $width_style_part'>$type</td>
@@ -630,6 +631,7 @@ sub mistakesToHTML
   my $div_style     = shift;
   my $prefix        = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
   my $table_style   = Constants::RESULTS_PAGE_TABLE_STYLE;
+  my $download      = Constants::DATA_DOWNLOAD_ATTRIBUTE;
 
   my $list = $mistakes_list->{'list'};
   my @list = @{$list};
@@ -669,7 +671,7 @@ sub mistakesToHTML
       <td style='text-align: center'>
         <table style='width: 100%'>
     <tbody>
-      <tr style='background-color: inherit'>
+      <tr style='background-color: inherit'  $download >
               <td $also_centered>$play</td>
               <td $also_centered>$type</td>
               <td $also_centered>$size</td>
@@ -716,7 +718,7 @@ sub statItemsToHTML
 
   my $tableclass = 'statitemtable';
   my $divclass   = 'statitemdiv';
-  my $nameattr   = "data-download='true'";
+  my $download   = Constants::DATA_DOWNLOAD_ATTRIBUTE;
 
   my $content = '';
   my $width = 100 / 3;
@@ -755,7 +757,7 @@ sub statItemsToHTML
       <td style='text-align: center'>
         <table style='width: 100%'>
           <tbody>
-            <tr style='background-color: inherit' $nameattr >
+            <tr style='background-color: inherit' $download >
               <td $also_centered>$title</td>
               <td $also_centered>$average</td>
               <td $also_centered>$total</td>
@@ -790,7 +792,7 @@ sub statItemsToHTML
         }
         $content .=
         "
-        <tr $nameattr >
+        <tr $download  >
           <td $also_centered>$subtitle</td>
           <td $also_centered>$subaverage</td>
           <td $also_centered>$subtotal</td>
@@ -830,6 +832,7 @@ sub statListToHTML
   my $group_expander_id  = shift;
   my $div_style    = shift;
   my $table_style  = Constants::RESULTS_PAGE_TABLE_STYLE;
+  my $download   = Constants::DATA_DOWNLOAD_ATTRIBUTE;
 
   my $prefix = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
 
@@ -883,8 +886,8 @@ sub statListToHTML
       my $span_style = Utils::get_color_dot_style($color);
       $table_content .=
       "
-        <tr>
-          <td style='text-align: center; $width_style_part' ><span $span_style data-text='$texttype'></span></td>
+        <tr $download >
+          <td style='text-align: center; $width_style_part'  data-downloadtext='$texttype'><span $span_style></span></td>
           <td style='text-align: center; $width_style_part' ><a data-alpha='$alphaplay' href='$prefix$id' target='_blank'>$play</a></td>
           <td style='text-align: center; $width_style_part' >$prob</td>
           <td style='text-align: center; $width_style_part' >$score</td>
@@ -920,6 +923,7 @@ sub notableListToHTML
   my $group_expander_id = shift;
   my $div_style         = shift;
   my $table_style  = Constants::RESULTS_PAGE_TABLE_STYLE;
+  my $download   = Constants::DATA_DOWNLOAD_ATTRIBUTE;
 
   my $prefix = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
 
@@ -943,7 +947,7 @@ sub notableListToHTML
       my $gamename  = $gamelist->[$i];
       my $gameid    = $idslist->[$i];
   
-      $notable_list .= "<tr><td style='text-align: center'><a href='$prefix$gameid' target='_blank'>$gamename</a></td></tr>\n";
+      $notable_list .= "<tr $download ><td style='text-align: center'><a href='$prefix$gameid' target='_blank'>$gamename</a></td></tr>\n";
     }
   
     my $notable_table = Utils::make_datatable(

@@ -289,6 +289,7 @@ sub update_leaderboard
   my $min_games      = Constants::LEADERBOARD_MIN_GAMES;
   my $column_spacing = Constants::LEADERBOARD_COLUMN_SPACING;
   my $cache_dir      = Constants::CACHE_DIRECTORY_NAME;
+  my $download   = Constants::DATA_DOWNLOAD_ATTRIBUTE;
 
   $cache_dir = substr $cache_dir, 2;
 
@@ -434,7 +435,7 @@ TABSCRIPT
       my $average = $ranked_array[$j][0];
 
       my $td_style = "style='width: 50%; text-align: center'";
-      $statcontent .= "<tr><td $td_style>$link</td><td $td_style>$average</td></tr>\n";
+      $statcontent .= "<tr $download ><td $td_style>$link</td><td $td_style>$average</td></tr>\n";
 
       my $win_percentage = $player_win_percentages{$player};
       $player =~ s/'/\\'/g;
@@ -513,7 +514,7 @@ TABSCRIPT
 
         $prob = (sprintf "%.2f", $prob) . '%';
         my $td_style = "style='width: 50%; text-align: center'";
-        $overtable_content .= "<tr><td $td_style>$link</td><td $td_style>$prob</td></tr>\n";
+        $overtable_content .= "<tr $download ><td $td_style>$link</td><td $td_style>$prob</td></tr>\n";
       }
 
       my $overtable = Utils::make_datatable(
@@ -995,6 +996,7 @@ sub update_notable
 {
   my $notable_dir         = Constants::NOTABLE_DIRECTORY_NAME;
   my $url                 = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
+  my $download   = Constants::DATA_DOWNLOAD_ATTRIBUTE;
   
   my $dbh = Utils::connect_to_database();
   my $playerstable = Constants::PLAYERS_TABLE_NAME;
@@ -1065,7 +1067,7 @@ sub update_notable
     for (my $k = 0; $k < scalar @{$notables}; $k++)
     {
       my $game = $notables->[$k];
-      $content .= "<tr><td style='text-align: center'>$game</td></tr>\n";
+      $content .= "<tr $download ><td style='text-align: center'>$game</td></tr>\n";
     }
 
     if (!$content)

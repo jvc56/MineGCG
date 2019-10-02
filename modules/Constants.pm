@@ -470,6 +470,8 @@ use constant METATYPE_GAME    => 'game';
 use constant METATYPE_NOTABLE => 'notable';
 use constant METATYPE_ERROR   => 'error';
 
+use constant DATA_DOWNLOAD_ATTRIBUTE = "data-download='true'";
+
 use constant HTML_BODY_STYLE => 'style="background-color: #343a40; color: white"';
 
 use constant DIV_STYLE_EVEN => <<DIVEVEN
@@ -1012,92 +1014,39 @@ function exportTableToCSV(filename, tableid)
 {
     var csv = [];
     var rows = document.getElementById(tableid).getElementsByTagName("TR");
+
+    var newrows = [];
+    for (var i = 0; i < rows.length; i++)
+    {
+      var row = rows[i];
+      if (row.getAttribute('data-download') == 'true')
+      {
+        newrows.push(row);
+      }
+    }
+
+    rows = newrows;
     
-    if (
-        tableid == 'player_mistakes_expander_actually_table_id_okay' ||
-        tableid == 'opponent_mistakes_expander_actually_table_id_okay' 
-       )
+    for (var i = 0; i < rows.length; i++)
     {
-       for (var i = 0; i < rows.length; i += 2)
-       {
-         var cells = rows[i].getElementsByTagName("TD");
-
-	 var play = cells[1].innerText;
-	 var type = cells[2].innerText;
-	 var size = cells[3].innerText;
-	 var cmnt = rows[i].getElementsByTagName("DIV")[0].innerText;
-
-	 cmnt = cmnt.replace(/^\\s+|\\s+\$/g, '');
-         
-	 var row = [play, type, size, cmnt]; 
-         csv.push(row.join(",") + ';');        
-       }
-  
-      // Download CSV file
-      downloadCSV(csv.join("\\n"), filename);     
-    }
-    else if (tableid.includes('Player Lists') || tableid.includes('Opponent Lists'))
-    {
-      for (var i = 0; i < rows.length; i += 2)
-       {
-         var cells = rows[i].getElementsByTagName("TD");
-	 var type  = cells[0].getElementsByTagName("SPAN")[0].getAttribute('data-text');;
-	 var play  = cells[1].innerText;
-	 var prob  = cells[2].innerText;
-	 var score = cells[3].innerText;
-
-	 var row = [type, play, prob, score]; 
-         csv.push(row.join(",") + ';');        
-       }
-  
-      // Download CSV file
-      downloadCSV(csv.join("\\n"), filename);          
-    }
-    else if (
-        tableid == 'player_stats_expander_actually_table_id_okay' ||
-        tableid == 'opponent_stats_expander_actually_table_id_okay' 
-       )
-    {
-      var newrows = [];
-      for (var i = 0; i < rows.length; i++)
-      {
-        var row = rows[i];
-        if (row.getAttribute('data-download') == 'true')
-        {
-          newrows.push(row);
-        }
-      }
-      rows = newrows;
-      for (var i = 0; i < rows.length; i++)
-      {
-          var row = [], cols = rows[i].querySelectorAll("td, th");
-          
-          for (var j = 0; j < cols.length; j++) 
-              row.push(cols[j].innerText);
-          
-          csv.push(row.join(",") + ';');        
-      }
-  
-      // Download CSV file
-      downloadCSV(csv.join("\\n"), filename);       
-    }
-
-
-    else
-    {
-      for (var i = 0; i < rows.length; i++)
-      {
         var row = [], cols = rows[i].querySelectorAll("td, th");
-        for (var j = 0; j < cols.length; j++) 
+        
+        for (var j = 0; j < cols.length; j++)
         {
-          row.push(cols[j].innerText);
-        }  
+          var data = cols[j].innerText.trim();
+          var altdata = cols[j].getAttribute('data-downloadtext');
+          if (altdata)
+          {
+            data = altdata;
+          }
+          row.push(data);
+        }
+        
         csv.push(row.join(",") + ';');        
-      }
-  
-      // Download CSV file
-      downloadCSV(csv.join("\\n"), filename);
     }
+
+    // Download CSV file
+    downloadCSV(csv.join("\\n"), filename);       
 }
 
 </script>
