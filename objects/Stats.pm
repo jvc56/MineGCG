@@ -661,7 +661,7 @@ sub mistakesToHTML
     my $id = $1;
     $play = "<a href='$prefix$id' target='_blank'>$play</a>";
 
-    $play_download_text = "Game $id, $play";
+    my $play_download_text = "Game $id, $play";
 
     my $width = 100 / 4;
     my $width_style_part = "width: $width%;";
