@@ -655,10 +655,13 @@ sub mistakesToHTML
 
     my $comment_expander_id = $expander_id . '_comment_' . $number;
     my $comment_expander = Utils::make_expander($comment_expander_id, 1, 1);
+
     # Fix this plz
     $game =~ /annotated.php.u=(\d+)/;
     my $id = $1;
     $play = "<a href='$prefix$id' target='_blank'>$play</a>";
+
+    $play_download_text = "Game $id, $play";
 
     my $width = 100 / 4;
     my $width_style_part = "width: $width%;";
@@ -672,7 +675,7 @@ sub mistakesToHTML
         <table style='width: 100%'>
     <tbody>
       <tr style='background-color: inherit'  $download >
-              <td $also_centered>$play</td>
+              <td $also_centered data-downloadtext='$play_download_text'>$play</td>
               <td $also_centered>$type</td>
               <td $also_centered>$size</td>
         <td $also_centered data-downloadid='$comment_expander_id'>$comment_expander</td>
