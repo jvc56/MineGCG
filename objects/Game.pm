@@ -693,7 +693,7 @@ sub getDynamicMistakes
         push @mistakes_list,
 	[$match,
 	 'Dynamic',
-	 $this->getReadableName(),
+	 $this->{'id'},
 	 $move->toString($this->readableMove($move)),
 	 $comment];
       }
@@ -739,7 +739,7 @@ sub getMistakes
           {
             $mistake_mag = Constants::UNSPECIFIED_MISTAKE_NAME;
           }
-          push @mistakes_list, [$cat, $mistake_mag, $this->getReadableName(), $move->toString($this->readableMove($move)), $comment];
+          push @mistakes_list, [$cat, $mistake_mag, $this->{'id'}, $move->toString($this->readableMove($move)), $comment];
         }
       }
     }
