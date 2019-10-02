@@ -866,7 +866,7 @@ function sortTable(n, tableid, numeric)
   var values   = [];
   for (i = 0; i < rows.length; i++)
   {
-    var val = rows[i].getElementsByTagName("TD")[n].innerHTML;
+    var val = rows[i].getElementsByTagName("TD")[n].innerText;
     if (numeric)
     {
       val = Number(val);
