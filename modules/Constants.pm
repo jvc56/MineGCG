@@ -382,7 +382,7 @@ use constant NINE_OR_ABOVE_COLOR            => 'lime';
 use constant IMPROBABLE_COLOR               => 'royalblue';
 use constant TRIPLE_TRIPLE_NINE_COLOR       => 'yellow';
 use constant IMPROBABLE_NINE_OR_ABOVE_COLOR => 'cyan';
-use constant IMPROBABLE_TRIPLE_TRIPE_COLOR  => 'blueviolet';
+use constant IMPROBABLE_TRIPLE_TRIPLE_COLOR => 'blueviolet';
 use constant ALL_THREE_COLOR                => 'orangered';
 
 use constant NO_CHALLENGE          => 'No Challenge';
@@ -996,17 +996,61 @@ function exportTableToCSV(filename, tableid)
     var csv = [];
     var rows = document.getElementById(tableid).getElementsByTagName("TR");
     
-    for (var i = 0; i < rows.length; i++) {
-        var row = [], cols = rows[i].querySelectorAll("td, th");
-        
-        for (var j = 0; j < cols.length; j++) 
-            row.push(cols[j].innerText);
-        
-        csv.push(row.join(","));        
-    }
+    if (
+        tableid == 'player_mistakes_expander_actually_table_id_okay' ||
+        tableid == 'opponent_mistakes_expander_actually_table_id_okay' 
+       )
+    {
+       for (var i = 0; i < rows.length; i += 2)
+       {
+         var cells = rows[i].getElementsByTagName("TD");
 
-    // Download CSV file
-    downloadCSV(csv.join("\\n"), filename);
+	 var play = cells[1].innerText;
+	 var type = cells[2].innerText;
+	 var size = cells[3].innerText;
+	 var cmnt = rows[i].getElementsByTagName("DIV")[0].innerText;
+
+	 cmnt = cmnt.replace(/^\\s+|\\s+\$/g, '');
+         
+	 var row = [play, type, size, cmnt]; 
+         csv.push(row.join(","));        
+       }
+  
+      // Download CSV file
+      downloadCSV(csv.join("\\n"), filename);     
+    }
+    else if (tableid.includes('Player Lists') || tableid.includes('Opponent Lists'))
+    {
+      for (var i = 0; i < rows.length; i += 2)
+       {
+         var cells = rows[i].getElementsByTagName("TD");
+	 var type  = cells[0].getElementsByTagName("SPAN")[0].getAttribute('data-text');;
+	 var play  = cells[1].innerText;
+	 var prob  = cells[2].innerText;
+	 var score = cells[3].innerText;
+
+	 var row = [type, play, prob, score]; 
+         csv.push(row.join(","));        
+       }
+  
+      // Download CSV file
+      downloadCSV(csv.join("\\n"), filename);          
+    }
+    else
+    {
+  
+      for (var i = 0; i < rows.length; i++) {
+          var row = [], cols = rows[i].querySelectorAll("td, th");
+          
+          for (var j = 0; j < cols.length; j++) 
+              row.push(cols[j].innerText);
+          
+          csv.push(row.join(","));        
+      }
+  
+      // Download CSV file
+      downloadCSV(csv.join("\\n"), filename);
+    }
 }
 
 </script>

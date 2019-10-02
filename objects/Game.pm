@@ -1182,7 +1182,7 @@ sub labelPlay
   my $im_color    = Constants::IMPROBABLE_COLOR;
   my $tt_na_color = Constants::TRIPLE_TRIPLE_NINE_COLOR;
   my $im_na_color = Constants::IMPROBABLE_NINE_OR_ABOVE_COLOR;
-  my $im_tt_color = Constants::IMPROBABLE_TRIPLE_TRIPE_COLOR;
+  my $im_tt_color = Constants::IMPROBABLE_TRIPLE_TRIPLE_COLOR;
   my $at_color    = Constants::ALL_THREE_COLOR;
 
   my $color = '';

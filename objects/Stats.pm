@@ -810,6 +810,17 @@ sub statListToHTML
 
   my $prefix = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
 
+  my $list_color_to_type =
+  {
+    Constants::TRIPLE_TRIPLE_COLOR            => 'Triple Triple',
+    Constants::NINE_OR_ABOVE_COLOR            => 'Bingo Nine or Above',
+    Constants::IMPROBABLE_COLOR               => 'Improbable',
+    Constants::TRIPLE_TRIPLE_NINE_COLOR       => 'Triple Triple and Nine or Above',
+    Constants::IMPROBABLE_NINE_OR_ABOVE_COLOR => 'Improbable and Nine or Above',
+    Constants::IMPROBABLE_TRIPLE_TRIPLE_COLOR => 'Improbable and Triple Triple',
+    Constants::ALL_THREE_COLOR                => 'Triple Triple and Bingo Nine or Above and Improbable'
+  };
+
   my $content = '';
   for(my $i = 0; $i < scalar @{$listref}; $i++)
   {
@@ -834,6 +845,11 @@ sub statListToHTML
       my $score = $item->[3];
       my $id    = $item->[4];
 
+      my $texttype = $list_color_to_type->{$color};
+      if (!$texttype)
+      {
+        $texttype = '';
+      }
       my $alphaplay = $play;
       $alphaplay =~ s/\W//g;
 
@@ -845,7 +861,7 @@ sub statListToHTML
       $table_content .=
       "
         <tr>
-          <td style='text-align: center; $width_style_part' ><span $span_style></span></td>
+          <td style='text-align: center; $width_style_part' ><span $span_style data-text='$texttype'></span></td>
           <td style='text-align: center; $width_style_part' ><a data-alpha='$alphaplay' href='$prefix$id' target='_blank'>$play</a></td>
           <td style='text-align: center; $width_style_part' >$prob</td>
           <td style='text-align: center; $width_style_part' >$score</td>

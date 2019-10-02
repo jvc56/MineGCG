@@ -450,7 +450,7 @@ sub make_color_key
     [Constants::IMPROBABLE_COLOR,    'Improbable'],
     [Constants::TRIPLE_TRIPLE_NINE_COLOR, 'Triple Triple and Bingo Nine or Above', [0, 1]],
     [Constants::IMPROBABLE_NINE_OR_ABOVE_COLOR, 'Improbable and Bingo Nine or Above', [2, 1]],
-    [Constants::IMPROBABLE_TRIPLE_TRIPE_COLOR, 'Triple Triple and Improbable', [0, 2]],
+    [Constants::IMPROBABLE_TRIPLE_TRIPLE_COLOR, 'Triple Triple and Improbable', [0, 2]],
     [Constants::ALL_THREE_COLOR,               'Triple Triple and Bingo Nine or Above and Improbable', [0, 1, 2]]
   );
   
