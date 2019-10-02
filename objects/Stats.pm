@@ -716,7 +716,7 @@ sub statItemsToHTML
 
   my $tableclass = 'statitemtable';
   my $divclass   = 'statitemdiv';
-  my $nameattr   = "name='data-download'";
+  my $nameattr   = "data-download='true'";
 
   my $content = '';
   my $width = 100 / 3;

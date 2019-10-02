@@ -1062,7 +1062,7 @@ function exportTableToCSV(filename, tableid)
       for (var i = 0; i < rows.length; i++)
       {
         var row = rows[i];
-        if (row.name == 'data-download')
+        if (row.getAttribute('data-download') == 'true')
         {
           newrows.push(row);
         }
