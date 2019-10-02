@@ -1067,7 +1067,7 @@ function exportTableToCSV(filename, tableid)
           newrows.push(row);
         }
       }
-      rows = newsrows;
+      rows = newrows;
       for (var i = 0; i < rows.length; i++)
       {
           var row = [], cols = rows[i].querySelectorAll("td, th");
