@@ -1053,7 +1053,10 @@ function exportTableToCSV(filename, tableid)
       // Download CSV file
       downloadCSV(csv.join("\\n"), filename);          
     }
-    else if (tableid.includes('Player Lists') || tableid.includes('Opponent Lists'))
+    if (
+        tableid == 'player_stats_expander_actually_table_id_okay' ||
+        tableid == 'opponent_stats_expander_actually_table_id_okay' 
+       )
     {
       var newrows = [];
       for (var i = 0; i < rows.length; i++)
