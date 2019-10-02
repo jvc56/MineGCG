@@ -45,17 +45,17 @@ sub make_datatable
     {
       $class = "class='$initclass'";
     }
-    
+
     my $clickfunc = '';
 
     if ($sval ne 'disable')
     {
       $clickfunc = "onclick=\"sortTable($m, '$table_id', $sval)\"";
-      style = "style='width: $td_width%; $style'";
+      $style = "style='width: $td_width%; $style'";
     }
     else
     {
-      style = "style='width: $td_width%; cursor: inherit; $style'";
+      $style = "style='width: $td_width%; cursor: inherit; $style'";
     }
 
     $titlecontent .= "<th $style $class $clickfunc>$title</th>\n";
