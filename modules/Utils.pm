@@ -39,14 +39,26 @@ sub make_datatable
     my $sval  = $sortvalues->[$m];
     my $title = $titles->[$m];
 
-    $style = "style='width: $td_width%; $style'";
+    $style = '';
     my $class = '';
     if ($initcol && $title eq $initcol)
     {
       $class = "class='$initclass'";
     }
+    
+    my $clickfunc = '';
 
-    $titlecontent .= "<th $style $class onclick=\"sortTable($m, '$table_id', $sval)\">$title</th>\n";
+    if ($sval ne 'disable')
+    {
+      $clickfunc = "onclick=\"sortTable($m, '$table_id', $sval)\"";
+      style = "style='width: $td_width%; $style'";
+    }
+    else
+    {
+      style = "style='width: $td_width%; cursor: inherit; $style'";
+    }
+
+    $titlecontent .= "<th $style $class $clickfunc>$title</th>\n";
   }
 
   my $table = <<TABLE

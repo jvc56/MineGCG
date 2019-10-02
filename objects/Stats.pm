@@ -745,7 +745,7 @@ sub statItemsToHTML
     if ($statitem->{'link'})
     {
       my $link = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX . $statitem->{'link'};
-      $title = "<a href='$link' target='_blank'>$title</a>";
+      $title = "<a data-sort='$title' href='$link' target='_blank'>$title</a>";
     }
 
     $content .=
@@ -814,7 +814,7 @@ sub statItemsToHTML
     $group_expander_id . '_actually_table_id_okay',
     ['Stat', 'Average', 'Total'],
     ['text-align: center',  'text-align: center', 'text-align: center'],
-    ['false', 'true', 'false'],
+    ['false', 'disable', 'disable'],
     $content
   );
 
