@@ -659,9 +659,10 @@ sub mistakesToHTML
     # Fix this plz
     $game =~ /annotated.php.u=(\d+)/;
     my $id = $1;
+    my $play_download_text = "Game $id, $play";
     $play = "<a href='$prefix$id' target='_blank'>$play</a>";
 
-    my $play_download_text = "Game $id, $play";
+
 
     my $width = 100 / 4;
     my $width_style_part = "width: $width%;";
