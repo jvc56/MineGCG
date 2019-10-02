@@ -793,7 +793,7 @@ function filterTable(input, tableid)
   var allrows  = table.getElementsByTagName("tr");
   var rows = [];
 
-  for (j = 0; j < rows.length; j++)
+  for (j = 0; j < allrows.length; j++)
   {
     var row = allrows[j];
     console.log(row.parentElement);
