@@ -675,7 +675,7 @@ sub mistakesToHTML
               <td $also_centered>$play</td>
               <td $also_centered>$type</td>
               <td $also_centered>$size</td>
-        <td $also_centered>$comment_expander</td>
+        <td $also_centered data-downloadid='$comment_expander_id'>$comment_expander</td>
       </tr>
     </tbody>
   </table>

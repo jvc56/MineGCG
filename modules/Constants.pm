@@ -1035,9 +1035,14 @@ function exportTableToCSV(filename, tableid)
         {
           var data = cols[j].innerText.trim();
           var altdata = cols[j].getAttribute('data-downloadtext');
+          var otherid = cols[j].getAttribute('data-downloadid');
           if (altdata)
           {
             data = altdata;
+          }
+          else if (otherid)
+          {
+            data = document.getElementById(otherid).innerText.trim(0);
           }
           row.push(data);
         }
