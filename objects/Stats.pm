@@ -668,18 +668,18 @@ sub mistakesToHTML
     <tr>
       <td style='text-align: center'>
         <table style='width: 100%'>
-	  <tbody>
-	    <tr style='background-color: inherit'>
+    <tbody>
+      <tr style='background-color: inherit'>
               <td $also_centered>$play</td>
               <td $also_centered>$type</td>
               <td $also_centered>$size</td>
-	      <td $also_centered>$comment_expander</td>
-	    </tr>
-	  </tbody>
-	</table>
-	<div class='collapse' id='$comment_expander_id'>
-	$cmnt
-	</div>
+        <td $also_centered>$comment_expander</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class='collapse' id='$comment_expander_id'>
+  $cmnt
+  </div>
       </td>
     </tr>
     ";
@@ -717,21 +717,8 @@ sub statItemsToHTML
   my $tableclass = 'statitemtable';
   my $divclass   = 'statitemdiv';
 
-  my $content .= <<CONTENT
-  <div class='$divclass'>
-    <table class='$tableclass'>
-      <tbody>
-        <tr>
-          <th>Stat</th>
-          <th>Average</th>
-          <th>Total</th>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-CONTENT
-;
-  my $width = 100 / 4;
+  my $content = '';
+  my $width = 100 / 3;
   my $width_style_part = "width: $width%;";
   my $width_style = "style='$width_style_part'";
   my $also_centered = "style='$width_style_part text-align: center'";
@@ -766,20 +753,14 @@ CONTENT
     <tr>
       <td style='text-align: center'>
         <table style='width: 100%'>
-	  <tbody>
-	    <tr style='background-color: inherit'>
+          <tbody>
+            <tr style='background-color: inherit'>
               <td $also_centered>$title</td>
               <td $also_centered>$$average</td>
               <td $also_centered>$total</td>
-	    </tr>
-	  </tbody>
-	</table>
-	<div class='collapse' id='$comment_expander_id'>
-	$cmnt
-	</div>
-        $comment_expander
-      </td>
-    </tr>
+            </tr>
+          </tbody>
+        </table>
     ";
 
     if ($subitems)
@@ -788,7 +769,12 @@ CONTENT
       $stat_expander_id =~ s/\s//g;
       $stat_expander = Utils::make_expander($stat_expander_id, 1, 1);
 
-      $content .= "<div class='collapse' id='$stat_expander_id'><table  class='$tableclass' ><tbody>";
+      $content .=
+      "
+      <div class='collapse' id='$stat_expander_id'>
+        <table  class='$tableclass' >
+          <tbody>
+      ";
 
       my $order = $statitem->{'list'};
       for (my $i = 0; $i < scalar @{$order}; $i++)
@@ -801,11 +787,37 @@ CONTENT
           $subaverage = $subtotal;
           $subtotal   = '';
         }
-        $content .= "<tr><td>$subtitle</td><td>$subaverage</td><td>$subtotal</td></tr>\n";
+        $content .=
+        "
+        <tr>
+          <td $also_centered>$subtitle</td>
+          <td $also_centered>$subaverage</td>
+          <td $also_centered>$subtotal</td>
+        </tr>
+        ";
       }
+      $content .=
+      "
+          </tbody>
+        </table>
+      </div>
+      <div>
+        $stat_expander
+      </div>
+      ";
     }
     $content .= "</td></tr>";
   }
+
+  $content = Utils::make_datatable(
+    $group_expander_id,
+    $group_expander_id . '_actually_table_id_okay',
+    ['Stat', 'Average', 'Total'],
+    ['text-align: center',  'text-align: center', 'text-align: center'],
+    ['false', 'true', 'false'],
+    $content
+  );
+
   my $group_expander = Utils::make_expander($group_expander_id);
   return make_group($group_expander, $grouptitle, $group_expander_id, $div_style, $content);
 }
@@ -2853,7 +2865,7 @@ sub statsList
       {
         'total'    => 0,
         'list'     => [],
-	'subitems' => {} 
+  'subitems' => {} 
       },
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -2865,10 +2877,10 @@ sub statsList
         $this->{'total'} += $other->{'total'};
         foreach my $key (keys %{$other->{'subitems'}})
         {
-	  if (! (defined $this->{'subitems'}->{$key}))
-	  {
-	    $this->{'subitems'}->{$key} = 0;
-	  }
+    if (! (defined $this->{'subitems'}->{$key}))
+    {
+      $this->{'subitems'}->{$key} = 0;
+    }
           $this->{'subitems'}->{$key} += $other->{'subitems'}->{$key};
         }
       },
@@ -2883,11 +2895,11 @@ sub statsList
 
         foreach my $key (keys %{$dynamic_mistakes_hash_ref})
         {
-	  if (! (defined $this->{'subitems'}->{$key}))
-	  {
-	    $this->{'subitems'}->{$key} = 0;
-	  }
-	  my $num = $dynamic_mistakes_hash_ref->{$key};
+    if (! (defined $this->{'subitems'}->{$key}))
+    {
+      $this->{'subitems'}->{$key} = 0;
+    }
+    my $num = $dynamic_mistakes_hash_ref->{$key};
           $this->{'total'}            += $num;
           $this->{'subitems'}->{$key} += $num;
         }
