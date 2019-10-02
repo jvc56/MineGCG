@@ -274,6 +274,7 @@ sub mine
   my $html_styles         = Constants::HTML_STYLES;
   my $table_sort_function             = Constants::TABLE_SORT_FUNCTION;
   my $html_table_and_collapse_scripts = Constants::HTML_TABLE_AND_COLLAPSE_SCRIPTS;
+  my $csv_download_scripts            = Constants::CSV_DOWNLOAD_SCRIPTS;
   my $footer = Constants::HTML_FOOTER;
 
   my $search_params =
@@ -374,7 +375,7 @@ sub mine
     </div>
     <div style="text-align: center">
       <a data-toggle="collapse" data-target="#collapseKey"
-        aria-expanded="false" aria-controls="collapseOptions" onclick='toggle_icon(this, "collapseKey")'>
+        aria-expanded="false" aria-controls="collapseOptions" onclick='toggle_icon(this, "collapseKey", true)'>
         Show More<br><i class="fas fa-angle-down rotate-icon"></i>
       </a>
     </div>
@@ -400,6 +401,7 @@ PLAYERHEADER
   $toggle_icon_script
   $table_sort_function
   $html_table_and_collapse_scripts
+  $csv_download_scripts
   $footer
   </body>
 </html>

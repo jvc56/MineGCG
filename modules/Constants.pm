@@ -532,11 +532,13 @@ use constant HTML_STYLES => <<HTMLSTYLES
   }
   .display tr:nth-child(odd)
   {
-    background: #22262a;;
+    /*background: #22262a; */
+    background-color: black;
   }
   .display tr:nth-child(even)
   {
-    background:  #394047;
+    /* background:  #394047; */
+    background-color: #111111;
   }
 
   .display tr:last-child td:first-child
@@ -599,8 +601,9 @@ use constant HTML_STYLES => <<HTMLSTYLES
   {
     background-color: black;
     padding: 10px;
-    border-radius: 5px;
+    border-radius: 10px;
     text-align: center;
+    margin: 5px;
   }
 
   .scrollwindow
@@ -755,15 +758,24 @@ SCRIPTS
 
 use constant TOGGLE_ICON_SCRIPT => <<TOGGLEICON
 <script>
-    function toggle_icon(el, key)
+    function toggle_icon(el, key, showtext)
     {
+      var text = '';
       if (el.innerHTML.includes('down'))
       {
-        el.innerHTML = '<br>Show Less<br><i class="fas fa-angle-up rotate-icon"></i>'
+	if (showtext)
+	{
+          text = '<br>Show Less<br>';
+	}
+        el.innerHTML = text + '<i class="fas fa-angle-up rotate-icon"></i>'
       }
       else
       {
-        el.innerHTML = '<br>Show More<br><i class="fas fa-angle-down rotate-icon"></i>'
+	if (showtext)
+	{
+          text = '<br>Show More<br>';
+	}
+        el.innerHTML = text + '<i class="fas fa-angle-down rotate-icon"></i>'
       }
       \$('#' + key).collapse('toggle');
     }
@@ -787,7 +799,7 @@ function filterTable(input, tableid)
     var row = rows[i];
     var text = row.innerHTML;
     var style = '';
-    var color = '#22262a'
+    var color = 'black'
     if (!(text.toLowerCase().includes(s.toLowerCase())))
     {
       style = 'none';
@@ -799,7 +811,7 @@ function filterTable(input, tableid)
 
     if (cc % 2 == 0)
     {
-      color = '#394047';
+      color = '#111111';
     }
     row.style.backgroundColor = color;
     row.style.display = style;
@@ -947,6 +959,61 @@ use constant LEADERBOARD_JAVASCRIPT =>
   }
 </script>
 ";
+
+use constant CSV_DOWNLOAD_SCRIPTS => <<CSV
+
+<script>
+
+function downloadCSV(csv, filename)
+{
+    var csvFile;
+    var downloadLink;
+
+    // CSV file
+    csvFile = new Blob([csv], {type: "text/csv"});
+
+    // Download link
+    downloadLink = document.createElement("a");
+
+    // File name
+    downloadLink.download = filename;
+
+    // Create a link to the file
+    downloadLink.href = window.URL.createObjectURL(csvFile);
+
+    // Hide download link
+    downloadLink.style.display = "none";
+
+    // Add the link to DOM
+    document.body.appendChild(downloadLink);
+
+    // Click download link
+    downloadLink.click();
+}
+
+function exportTableToCSV(filename, tableid)
+{
+    var csv = [];
+    var rows = document.getElementById(tableid).getElementsByTagName("TR");
+    
+    for (var i = 0; i < rows.length; i++) {
+        var row = [], cols = rows[i].querySelectorAll("td, th");
+        
+        for (var j = 0; j < cols.length; j++) 
+            row.push(cols[j].innerText);
+        
+        csv.push(row.join(","));        
+    }
+
+    // Download CSV file
+    downloadCSV(csv.join("\\n"), filename);
+}
+
+</script>
+
+
+CSV
+;
 
 use constant HTML_FOOTER => <<FOOTER
 <footer>

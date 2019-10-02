@@ -597,6 +597,112 @@ sub getNumMistakes
   return \%mistakes;
 }
 
+sub getNumDynamicMistakes
+{
+  my $this = shift;
+
+  my $player = shift;
+
+  my @moves = @{$this->{'moves'}};
+
+  my @categories = Constants::MISTAKES;
+
+  my $mistake_magnitudes = Constants::MISTAKES_MAGNITUDE;
+  push @categories, 'note';
+  my %mistakes;
+
+  foreach my $move (@moves)
+  {
+    my $turn = $move->{'turn'};
+    if ($turn == $player)
+    {
+      my $comment = $move->{'comment'};
+      
+      my @matches = ($comment =~ /#(\w+)/gi);
+
+      outer: foreach my $match (@matches)
+      {
+        foreach my $cat (@categories)
+	{
+          if (uc $cat eq uc $match)
+	  {
+	    next outer;
+	  }
+          foreach my $mag (keys %{$mistake_magnitudes})
+          {
+            if (uc ($cat . $mag) eq uc $match)
+            {
+              next outer;
+            }
+          }
+        }
+	if ($mistakes{$match})
+	{
+	  $mistakes{$match}++;
+	}
+	else
+	{
+          $mistakes{$match} = 1;
+	}
+      }
+    }
+  }
+  return \%mistakes;
+}
+
+sub getDynamicMistakes
+{
+  my $this = shift;
+
+  my $player = shift;
+
+  my @moves = @{$this->{'moves'}};
+
+  my @categories = Constants::MISTAKES;
+
+  my $mistake_magnitudes = Constants::MISTAKES_MAGNITUDE;
+  push @categories, 'note';
+
+  my @mistakes_list = ();
+
+  foreach my $move (@moves)
+  {
+    my $turn = $move->{'turn'};
+    if ($turn == $player)
+    {
+      my $comment = $move->{'comment'};
+      
+      my @matches = ($comment =~ /#(\w+)/gi);
+
+      outer: foreach my $match (@matches)
+      {
+        foreach my $cat (@categories)
+	{
+          if ($cat eq $match)
+	  {
+	    next outer;
+	  }
+          foreach my $mag (keys %{$mistake_magnitudes})
+          {
+            if (uc ($cat . $mag) eq uc $match)
+            {
+              next outer;
+            }
+          }
+        }
+        push @mistakes_list,
+	[$match,
+	 'Dynamic',
+	 $this->getReadableName(),
+	 $move->toString($this->readableMove($move)),
+	 $comment];
+      }
+    }
+  }
+  return \@mistakes_list;
+}
+
+
 sub getMistakes
 {
   my $this = shift;
@@ -607,6 +713,7 @@ sub getMistakes
 
   my @categories = Constants::MISTAKES;
 
+  my $mistake_magnitudes = Constants::MISTAKES_MAGNITUDE;
   my @mistakes_list = ();
 
   foreach my $move (@moves)
@@ -621,7 +728,6 @@ sub getMistakes
         foreach my $m (@matches)
         {
           my $mistake_mag;
-          my $mistake_magnitudes = Constants::MISTAKES_MAGNITUDE;
           foreach my $mag (keys %{$mistake_magnitudes})
           {
             if (uc ($cat . $mag) eq uc $m)

@@ -77,7 +77,16 @@ sub make_datatable
     </tbody>
   </table>
   <div style='text-align: left; padding: 10px'>
-    Filter: <input oninput="filterTable(this, '$table_id')" style='border-radius: .25em'>
+    <table style='width: 100%'>
+      <tbody>
+        <td style='width: 50%; text-align: center'>
+          <input oninput="filterTable(this, '$table_id')" style='border-radius: .25em' placeholder='Filter'>
+        </td>
+        <td style='width: 50%; text-align: center'>
+          <button class="btn btn-sm waves-effect waves-light" style='color: white' onclick="exportTableToCSV('$table_id', '$table_id')">Download</button>
+        </td>
+      </tbody>
+    </table>
   </div>
 TABLE
 ;
@@ -112,12 +121,33 @@ CONTENT
 sub make_expander
 {
   my $id = shift;
-  my $color = shift;
+  my $isarrow = shift;
+  my $nobr      = shift;
 
-  my $button = <<BUTTON
-<button type='button' id='button_$id'  class='btn btn-sm' data-toggle='collapse' data-target='#$id'>+</button>
+
+  my $br = '<br>';
+  if ($nobr)
+  {
+    $br = '';
+  }
+  my $button;
+  if ($isarrow)
+  {
+    $button = <<BUTTON
+        <a data-toggle="collapse" data-target="#$id"
+          aria-expanded="false" aria-controls="collapseOptions" onclick='toggle_icon(this, "$id", false)'>
+          $br<i class="fas fa-angle-down rotate-icon"></i>
+        </a>
 BUTTON
-;
+    ;   
+  }
+  else
+  {
+    $button = <<BUTTON
+  <button type='button' id='button_$id'  class='btn btn-sm' data-toggle='collapse' data-target='#$id'>+</button>
+BUTTON
+  ;
+  }
   return $button;
 }
 

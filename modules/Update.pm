@@ -137,7 +137,7 @@ DATEPICKER
 
       <div style="text-align: center">
         <a data-toggle="collapse" data-target="#collapseOptions"
-          aria-expanded="false" aria-controls="collapseOptions" onclick='toggle_icon(this, "collapseOptions")'>
+          aria-expanded="false" aria-controls="collapseOptions" onclick='toggle_icon(this, "collapseOptions", true)'>
           Show more<br><i class="fas fa-angle-down rotate-icon"></i>
         </a>
       </div>
@@ -588,6 +588,7 @@ TABBED
   my $default_scripts                 = Constants::HTML_SCRIPTS;
   my $html_table_and_collapse_scripts = Constants::HTML_TABLE_AND_COLLAPSE_SCRIPTS;
   my $table_sort_function             = Constants::TABLE_SORT_FUNCTION;
+  my $csv_download_scripts            = Constants::CSV_DOWNLOAD_SCRIPTS;
   my $footer                          = Constants::HTML_FOOTER;
 
   $leaderboard_string = <<HTMLPAGE
@@ -608,6 +609,7 @@ TABBED
   $leaderboard_string
   $default_scripts
   $table_sort_function
+  $csv_download_scripts
   <!-- Amchart JavaScript -->
   <script src="https://www.amcharts.com/lib/4/core.js"></script>
   <script src="https://www.amcharts.com/lib/4/charts.js"></script>
@@ -1091,6 +1093,7 @@ sub update_notable
   my $default_scripts                 = Constants::HTML_SCRIPTS;
   my $table_sort_function             = Constants::TABLE_SORT_FUNCTION;
   my $html_table_and_collapse_scripts = Constants::HTML_TABLE_AND_COLLAPSE_SCRIPTS;
+  my $csv_download_scripts            = Constants::CSV_DOWNLOAD_SCRIPTS;
   my $footer                          = Constants::HTML_FOOTER;
   $notable_string = <<HTMLPAGE
 
@@ -1111,6 +1114,7 @@ sub update_notable
   $default_scripts
   $table_sort_function
   $html_table_and_collapse_scripts
+  $csv_download_scripts
   $footer
   </body>
 </html>

@@ -594,9 +594,9 @@ sub errorsToHTML
     $content .=
     "
     <tr>
-      <td style='text-align: center $width_style_part'>$game</td>
-      <td $width_style>$num</td>
-      <td $width_style>$type</td>
+      <td  style='text-align: center; $width_style_part'>$game</td>
+      <td  style='text-align: center; $width_style_part'>$num</td>
+      <td  style='text-align: center; $width_style_part'>$type</td>
     </tr>";
   }
 
@@ -604,7 +604,7 @@ sub errorsToHTML
     $expander_id,
     $expander_id . '_actually_error_id_okay',
     ['Game', 'Line', 'Error'],
-    ['text-align: center', '', ''],
+    ['text-align: center', 'text-align: center', 'text-align: center'],
     ['false', 'false', 'false'],
     $content
   );
@@ -628,7 +628,8 @@ sub mistakesToHTML
   my $title         = shift;
   my $expander_id   = shift;
   my $div_style     = shift;
-  my $table_style  = Constants::RESULTS_PAGE_TABLE_STYLE;
+  my $prefix        = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX;
+  my $table_style   = Constants::RESULTS_PAGE_TABLE_STYLE;
 
   my $list = $mistakes_list->{'list'};
   my @list = @{$list};
@@ -639,16 +640,25 @@ sub mistakesToHTML
   }
 
   my $content = '';
-
+  my $number = 0;
   foreach my $mistake (@list)
   {
+    $number++;
     my $type = $mistake->[0];
     my $size = $mistake->[1];
     my $game = $mistake->[2];
     my $play = $mistake->[3];
     my $cmnt = $mistake->[4];
 
-    my $width = 100 / 5;
+
+    my $comment_expander_id = $expander_id . '_comment_' . $number;
+    my $comment_expander = Utils::make_expander($comment_expander_id, 1, 1);
+    # Fix this plz
+    $game =~ /annotated.php.u=(\d+)/;
+    my $id = $1;
+    $play = "<a href='$prefix$id' target='_blank'>$play</a>";
+
+    my $width = 100 / 4;
     my $width_style_part = "width: $width%;";
     my $width_style = "style='$width_style_part'";
     my $also_centered = "style='$width_style_part text-align: center'";
@@ -656,20 +666,31 @@ sub mistakesToHTML
     $content .=
     "
     <tr>
-      <td $also_centered>$game</td>
-      <td $also_centered>$type</td>
-      <td $also_centered>$size</td>
-      <td $also_centered>$play</td>
-      <td $width_style>$cmnt</td>
-    </tr>";
+      <td style='text-align: center'>
+        <table style='width: 100%'>
+	  <tbody>
+	    <tr style='background-color: inherit'>
+              <td $also_centered>$play</td>
+              <td $also_centered>$type</td>
+              <td $also_centered>$size</td>
+	      <td $also_centered>$comment_expander</td>
+	    </tr>
+	  </tbody>
+	</table>
+	<div class='collapse' id='$comment_expander_id'>
+	$cmnt
+	</div>
+      </td>
+    </tr>
+    ";
   }
 
   my $mistake_table = Utils::make_datatable(
     $expander_id,
     $expander_id . '_actually_table_id_okay',
-    ['Game', 'Type', 'Size', 'Play', 'Comment'],
-    ['text-align: center', '', '', '', ''],
-    ['false', 'false', 'false', 'false', 'false'],
+    ['Play', 'Type', 'Size', 'Comment'],
+    ['text-align: center',  'text-align: center', 'text-align: center', 'text-align: center'],
+    ['false', 'false', 'false', 'false'],
     $content
   );
 
@@ -754,9 +775,9 @@ CONTENT
     {
       my $stat_expander_id = $grouptitle . $title . '_subitems';
       $stat_expander_id =~ s/\s//g;
-      $stat_expander = Utils::make_expander($stat_expander_id);
+      $stat_expander = Utils::make_expander($stat_expander_id, 1);
 
-      $subtable .= "<div class='collapse' id='$stat_expander_id'><table  class='$tableclass' ><tbody>";
+      $content .= "<div class='collapse' id='$stat_expander_id'><table  class='$tableclass' ><tbody>";
 
       my $order = $statitem->{'list'};
       for (my $i = 0; $i < scalar @{$order}; $i++)
@@ -766,12 +787,12 @@ CONTENT
         my $subaverage = sprintf "%.2f", $subtotal/$numgames; 
         if ($nototal_cond)
         {
-          $average = $total;
-          $total   = '';
+          $subaverage = $subtotal;
+          $subtotal   = '';
         }
-        $subtable .= "<tr><td></td><td>$subtitle</td><td>$subaverage</td><td>$subtotal</td></tr>\n";
+        $content .= "<tr><td>$subtitle</td><td>$subaverage</td><td>$subtotal</td></tr>\n";
       }
-      $subtable .= $stat_expander;
+      $content .= "</tbody></table></div>$stat_expander";
     }
     $content .= "</div>";
   }
