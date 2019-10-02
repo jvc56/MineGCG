@@ -790,14 +790,27 @@ use constant TABLE_SORT_FUNCTION => <<TABLESORT
 function filterTable(input, tableid)
 {
   var table = document.getElementById(tableid);
-  var rows  = table.getElementsByTagName("tr");
+  var allrows  = table.getElementsByTagName("tr");
+  var rows = [];
+
+  for (j = 0; j < rows.length; j++)
+  {
+    var row = allrows[j];
+    console.log(row.parentElement);
+    console.log(row.parentElement.parentElement);
+    if (row.parentElement.getAttribute('id') == tableid)
+    {
+      rows.push(row);
+    }
+  }
+
   var s     = input.value;
   var cc    = 0;
   console.log('In filter: ' + s);
   for (i = 0; i < rows.length; i++)
   {
     var row = rows[i];
-    var text = row.innerHTML;
+    var text = row.innerText;
     var style = '';
     var color = 'black'
     if (!(text.toLowerCase().includes(s.toLowerCase())))
@@ -1013,7 +1026,7 @@ function exportTableToCSV(filename, tableid)
 	 cmnt = cmnt.replace(/^\\s+|\\s+\$/g, '');
          
 	 var row = [play, type, size, cmnt]; 
-         csv.push(row.join(","));        
+         csv.push(row.join(",") + ';');        
        }
   
       // Download CSV file
@@ -1030,7 +1043,7 @@ function exportTableToCSV(filename, tableid)
 	 var score = cells[3].innerText;
 
 	 var row = [type, play, prob, score]; 
-         csv.push(row.join(","));        
+         csv.push(row.join(",") + ';');        
        }
   
       // Download CSV file
@@ -1045,7 +1058,7 @@ function exportTableToCSV(filename, tableid)
           for (var j = 0; j < cols.length; j++) 
               row.push(cols[j].innerText);
           
-          csv.push(row.join(","));        
+          csv.push(row.join(",") + ';');        
       }
   
       // Download CSV file
