@@ -756,7 +756,7 @@ sub statItemsToHTML
           <tbody>
             <tr style='background-color: inherit'>
               <td $also_centered>$title</td>
-              <td $also_centered>$$average</td>
+              <td $also_centered>$average</td>
               <td $also_centered>$total</td>
             </tr>
           </tbody>
