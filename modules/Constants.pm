@@ -1053,7 +1053,7 @@ function exportTableToCSV(filename, tableid)
       // Download CSV file
       downloadCSV(csv.join("\\n"), filename);          
     }
-    if (
+    else if (
         tableid == 'player_stats_expander_actually_table_id_okay' ||
         tableid == 'opponent_stats_expander_actually_table_id_okay' 
        )
@@ -1062,6 +1062,8 @@ function exportTableToCSV(filename, tableid)
       for (var i = 0; i < rows.length; i++)
       {
         var row = rows[i];
+        console.log(row);
+        console.log(row.name);
         if (row.name == 'data')
         {
           newrows.push(row);
