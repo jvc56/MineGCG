@@ -617,6 +617,11 @@ use constant HTML_STYLES => <<HTMLSTYLES
   { 
       display: none;  /* Safari and Chrome */
   }
+
+  .dropdown-toggle::after
+  {
+      vertical-align: 0em;
+  }
   </style>
 
 
@@ -1048,16 +1053,43 @@ function exportTableToCSV(filename, tableid)
       // Download CSV file
       downloadCSV(csv.join("\\n"), filename);          
     }
-    else
+    else if (tableid.includes('Player Lists') || tableid.includes('Opponent Lists'))
     {
-  
-      for (var i = 0; i < rows.length; i++) {
+      var newrows = [];
+      for (var i = 0; i < rows.length; i++)
+      {
+        var row = rows[i];
+        if (row.name == 'data')
+        {
+          newrows.push(row);
+        }
+      }
+      rows = newsrows;
+      for (var i = 0; i < rows.length; i++)
+      {
           var row = [], cols = rows[i].querySelectorAll("td, th");
           
           for (var j = 0; j < cols.length; j++) 
               row.push(cols[j].innerText);
           
           csv.push(row.join(",") + ';');        
+      }
+  
+      // Download CSV file
+      downloadCSV(csv.join("\\n"), filename);       
+    }
+
+
+    else
+    {
+      for (var i = 0; i < rows.length; i++)
+      {
+        var row = [], cols = rows[i].querySelectorAll("td, th");
+        for (var j = 0; j < cols.length; j++) 
+        {
+          row.push(cols[j].innerText);
+        }  
+        csv.push(row.join(",") + ';');        
       }
   
       // Download CSV file

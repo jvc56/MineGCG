@@ -716,6 +716,7 @@ sub statItemsToHTML
 
   my $tableclass = 'statitemtable';
   my $divclass   = 'statitemdiv';
+  my $nameattr   = "name='data'";
 
   my $content = '';
   my $width = 100 / 3;
@@ -754,7 +755,7 @@ sub statItemsToHTML
       <td style='text-align: center'>
         <table style='width: 100%'>
           <tbody>
-            <tr style='background-color: inherit'>
+            <tr style='background-color: inherit' $nameattr >
               <td $also_centered>$title</td>
               <td $also_centered>$average</td>
               <td $also_centered>$total</td>
@@ -789,7 +790,7 @@ sub statItemsToHTML
         }
         $content .=
         "
-        <tr>
+        <tr $nameattr >
           <td $also_centered>$subtitle</td>
           <td $also_centered>$subaverage</td>
           <td $also_centered>$subtotal</td>
