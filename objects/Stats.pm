@@ -2858,76 +2858,75 @@ sub statsList
 
         push @{$this->{'list'}}, @{$game->getMistakes($player)};
       }
-    },
-    {
-      Constants::STAT_NAME => 'Dynamic Mistakes',
-      Constants::STAT_ITEM_OBJECT_NAME =>
-      {
-        'total'    => 0,
-        'list'     => [],
-  'subitems' => {} 
-      },
-      Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
-      Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_COMBINE_FUNCTION_NAME =>
-      sub
-      {
-        my $this  = shift;
-        my $other = shift;
-        $this->{'total'} += $other->{'total'};
-        foreach my $key (keys %{$other->{'subitems'}})
-        {
-    if (! (defined $this->{'subitems'}->{$key}))
-    {
-      $this->{'subitems'}->{$key} = 0;
     }
-          $this->{'subitems'}->{$key} += $other->{'subitems'}->{$key};
-        }
-      },
-      Constants::STAT_ADD_FUNCTION_NAME =>
-      sub
-      {
-        my $this   = shift;
-        my $game   = shift;
-        my $player = shift;
+    # {
+    #   Constants::STAT_NAME => 'Dynamic Mistakes',
+    #   Constants::STAT_ITEM_OBJECT_NAME =>
+    #   {
+    #     'total'    => 0,
+    #     'list'     => [],
+    #     'subitems' => {} 
+    #   },
+    #   Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
+    #   Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
+    #   Constants::STAT_COMBINE_FUNCTION_NAME =>
+    #   sub
+    #   {
+    #     my $this  = shift;
+    #     my $other = shift;
+    #     $this->{'total'} += $other->{'total'};
+    #     foreach my $key (keys %{$other->{'subitems'}})
+    #     {
+    # if (! (defined $this->{'subitems'}->{$key}))
+    # {
+    #   $this->{'subitems'}->{$key} = 0;
+    # }
+    #       $this->{'subitems'}->{$key} += $other->{'subitems'}->{$key};
+    #     }
+    #   },
+    #   Constants::STAT_ADD_FUNCTION_NAME =>
+    #   sub
+    #   {
+    #     my $this   = shift;
+    #     my $game   = shift;
+    #     my $player = shift;
         
-        my $dynamic_mistakes_hash_ref = $game->getNumDynamicMistakes($player);
+    #     my $dynamic_mistakes_hash_ref = $game->getNumDynamicMistakes($player);
 
-        foreach my $key (keys %{$dynamic_mistakes_hash_ref})
-        {
-    if (! (defined $this->{'subitems'}->{$key}))
-    {
-      $this->{'subitems'}->{$key} = 0;
-    }
-    my $num = $dynamic_mistakes_hash_ref->{$key};
-          $this->{'total'}            += $num;
-          $this->{'subitems'}->{$key} += $num;
-        }
-      }
-    },
-    {
-      Constants::STAT_NAME => 'Dynamic Mistakes List',
-      Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
-      Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
-      Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
-      Constants::STAT_COMBINE_FUNCTION_NAME =>
-      sub
-      {
-        my $this  = shift;
-        my $other = shift;
-        push @{$this->{'list'}}, @{$other->{'list'}};
-      },
-      Constants::STAT_ADD_FUNCTION_NAME =>
-      sub
-      {
-        my $this   = shift;
-        my $game   = shift;
-        my $player = shift;
+    #     foreach my $key (keys %{$dynamic_mistakes_hash_ref})
+    #     {
+    # if (! (defined $this->{'subitems'}->{$key}))
+    # {
+    #   $this->{'subitems'}->{$key} = 0;
+    # }
+    # my $num = $dynamic_mistakes_hash_ref->{$key};
+    #       $this->{'total'}            += $num;
+    #       $this->{'subitems'}->{$key} += $num;
+    #     }
+    #   }
+    # },
+    # {
+    #   Constants::STAT_NAME => 'Dynamic Mistakes List',
+    #   Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
+    #   Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
+    #   Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
+    #   Constants::STAT_COMBINE_FUNCTION_NAME =>
+    #   sub
+    #   {
+    #     my $this  = shift;
+    #     my $other = shift;
+    #     push @{$this->{'list'}}, @{$other->{'list'}};
+    #   },
+    #   Constants::STAT_ADD_FUNCTION_NAME =>
+    #   sub
+    #   {
+    #     my $this   = shift;
+    #     my $game   = shift;
+    #     my $player = shift;
 
-        push @{$this->{'list'}}, @{$game->getDynamicMistakes($player)};
-      }
-    }
-
+    #     push @{$this->{'list'}}, @{$game->getDynamicMistakes($player)};
+    #   }
+    # }
   ];
 }
 
