@@ -484,6 +484,9 @@ sub toString
   my $player_mistake_list;
   my $opp_mistake_list;
 
+  my $player_dynamic_list;
+  my $opp_dynamic_list;
+
   for (my $i = 0; $i < scalar @{$player1_ref}; $i++)
   {
     my $stat   = $player1_ref->[$i];
@@ -492,6 +495,10 @@ sub toString
     if ($stat->{Constants::STAT_NAME} eq "Mistakes List")
     {
       $player_mistake_list = $object;
+    }
+    elsif ($stat->{Constants::STAT_NAME} eq "Dynamic Mistakes List")
+    {
+      $player_dynamic_list = $object;
     }
     elsif ($stat->{Constants::STAT_DATATYPE_NAME} eq Constants::DATATYPE_LIST)
     {
@@ -511,6 +518,10 @@ sub toString
     if ($stat->{Constants::STAT_NAME} eq "Mistakes List")
     {
       $opp_mistake_list = $object;
+    }
+    elsif ($stat->{Constants::STAT_NAME} eq "Dynamic Mistakes List")
+    {
+      $opp_dynamic_list = $object;
     }
     elsif ($stat->{Constants::STAT_DATATYPE_NAME} eq Constants::DATATYPE_LIST)
     {
