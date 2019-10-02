@@ -470,7 +470,7 @@ use constant METATYPE_GAME    => 'game';
 use constant METATYPE_NOTABLE => 'notable';
 use constant METATYPE_ERROR   => 'error';
 
-use constant DATA_DOWNLOAD_ATTRIBUTE = "data-download='true'";
+use constant DATA_DOWNLOAD_ATTRIBUTE => "data-download='true'";
 
 use constant HTML_BODY_STYLE => 'style="background-color: #343a40; color: white"';
 
