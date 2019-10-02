@@ -796,9 +796,8 @@ function filterTable(input, tableid)
   for (j = 0; j < allrows.length; j++)
   {
     var row = allrows[j];
-    console.log(row.parentElement);
     console.log(row.parentElement.parentElement);
-    if (row.parentElement.getAttribute('id') == tableid)
+    if (row.parentElement.parentElement.id == tableid)
     {
       rows.push(row);
     }
