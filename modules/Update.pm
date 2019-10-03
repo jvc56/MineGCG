@@ -455,34 +455,43 @@ TABSCRIPT
       'dscclass'
     );
 
-    chop($chart_data);
-    $chart_data .= '], ';
 
-    my $rsquared  = '';
-    my @p1        = (0, 0);
-    my @p2        = (0, 0);
-    my $info      = '';
+    my @tab_titles  = ('Leaderboard'); 
+    my @tab_content = ($stattable);
 
-    my $lineFit = Statistics::LineFit->new();
-    $lineFit->setData(\@xvalues, \@yvalues);
-    if (defined $lineFit->rSquared())
+    if ($array_length > 1)
     {
-      my ($intercept, $slope) = $lineFit->coefficients();
-      @p1 = (0, $intercept);
-      @p2 = (1, $intercept + $slope);
-      $rsquared = $lineFit->rSquared();
+    
+      chop($chart_data);
+      $chart_data .= '], ';
 
-      my $increase = $slope / 10;
-      my $info_style = "style='text-align: center;'";
-      $info = "<div $info_style>A 10% increase in win percentage correlates to an increase of $increase in $fullname</div>";
+      my $rsquared  = '';
+      my @p1        = (0, 0);
+      my @p2        = (0, 0);
+      my $info      = '';
+
+      my $lineFit = Statistics::LineFit->new();
+      $lineFit->setData(\@xvalues, \@yvalues);
+      if (defined $lineFit->rSquared())
+      {
+        my ($intercept, $slope) = $lineFit->coefficients();
+        @p1 = (0, $intercept);
+        @p2 = (1, $intercept + $slope);
+        $rsquared = $lineFit->rSquared();
+
+        my $increase = $slope / 10;
+        my $info_style = "style='text-align: center;'";
+        $info = "<div $info_style>A 10% increase in win percentage correlates to an increase of $increase in $fullname</div>";
+      }
+
+      $chart_data .= "'$rsquared', [$p1[0], $p1[1]], [$p2[0], $p2[1]]]";
+
+
+      my $chart = "<div style='width: 100%; height: 600px' id='$chart_id'></div>$info";
+
+      push @tab_titles, Constants::CHART_TAB_NAME; 
+      push @tab_content, $chart;
     }
-
-    $chart_data .= "'$rsquared', [$p1[0], $p1[1]], [$p2[0], $p2[1]]]";
-
-
-    my $chart = "<div style='width: 100%; height: 600px' id='$chart_id'></div>$info";
-    my @tab_titles  = ('Leaderboard', Constants::CHART_TAB_NAME); 
-    my @tab_content = ($stattable, $chart);
 
     if (length $name == 1 && ($og_name =~ /Tiles Played/ || $parent_name =~ /Tiles Played/))
     {
