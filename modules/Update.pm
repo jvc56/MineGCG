@@ -393,9 +393,15 @@ TABSCRIPT
     my $expander_id = $name . '_expander_id';
     my $chart_id    = $name . '_chart_id';
     my $table_id    = $name . '_table_id';
+
     $table_id    =~ s/\s//g;
     $expander_id =~ s/\s//g;
     $chart_id    =~ s/\s//g;
+
+    $table_id    =~ s/\?/blank/g;
+    $expander_id =~ s/\?/blank/g;
+    $chart_id    =~ s/\?/blank/g;
+
     my @ranked_array =  sort { $b->[0] <=> $a->[0] } @{$leaderboards{$name}};
     my $array_length = scalar @ranked_array;
     my $sum = 0;
