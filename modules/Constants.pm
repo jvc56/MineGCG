@@ -178,8 +178,7 @@ use constant MISTAKES =>
   'Tactics',
   'Strategy',
   'Endgame',
-  'Time',
-  'Focus'
+  'Time'
 );
 
 use constant MISTAKES_MAGNITUDE =>
@@ -209,8 +208,7 @@ use constant MISTAKE_COLORS =>
   'Tactics'   => 'red',
   'Strategy'  => 'green',
   'Endgame'   => 'purple',
-  'Time'      => 'magenta',
-  'Focus'     => 'blue'
+  'Time'      => 'magenta'
 };
 
 
@@ -793,6 +791,23 @@ TOGGLEICON
 use constant TABLE_SORT_FUNCTION => <<TABLESORT
 
 <script>
+
+
+function toggleMaxHeight(tableid, conid)
+{
+  var table = document.getElementById(tableid);
+  var height = table.style.maxHeight;
+  if (height)
+  {
+    table.style.maxHeight = 'none';
+    document.getElementById('conid').innerHTML = '<i class="fas fa-angle-up rotate-icon"></i>';
+  }
+  else
+  {
+    table.style.maxHeight = '500px';
+    document.getElementById('conid').innerHTML = '<i class="fas fa-angle-down rotate-icon"></i>';
+  }
+}
 
 function filterTable(input, tableid)
 {

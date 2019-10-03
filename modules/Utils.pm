@@ -30,6 +30,7 @@ sub make_datatable
   my $initclass   = shift;
 
   my $title_row_id    = $table_id . '_title_row_id';
+  my $moreid          = $table_id . '_toggle_show';
   my $titlecontent = '';
   my $td_width = 100 / (scalar @{$titles});
   my $span_style = "style='border-radius: 10px; background-color: #555555; padding: 5px'";
@@ -88,6 +89,9 @@ sub make_datatable
       </tr>
     </tbody>
   </table>
+  <div id='$moreid'>
+    <i class="fas fa-angle-down rotate-icon" onclick="toggleMaxHeight('$tableid', '$moreid')"></i>
+  </div>
   <div style='text-align: left; padding: 10px'>
     <table style='width: 100%'>
       <tbody>
