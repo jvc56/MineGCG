@@ -1762,5 +1762,115 @@ NOTABLE
 }
 
 
+sub update_readme_and_about
+{
+
+  my $about =
+  [
+    [
+      'RandomRacer',
+      'This is RandomRacer, a site that collects and presents statistics
+       and comments from annotated scrabble games on cross-tables.com.'
+    ],
+    [
+      'Usage',
+      '
+      Simply enter a name in the \'Player Name\' field on the main page and hit submit.
+      There are other parameters you can use to narrow your search:
+
+      Game Type
+      An optional parameter used to search for only casual and club games or only tournament games.
+      Games are considered tournament games if they are associated with a tournament and a round number.
+      Games tagged as \'Tournament Game\' in cross-tables with no specific tournament are not considered tournament games.
+
+      Tournament ID
+      An optional parameter used to search for only games of a specific tournament.
+      To find a tournament\'s ID, go to that tournament\'s page on cross-tables.com
+      and look for the number in the address bar.
+
+      For example, the address of the 29th National Championship Main Event is
+
+      https://www.cross-tables.com/tourney.php?t=10353&div=1
+
+      which has a tournament ID of 10353.
+
+      Lexicon
+      An optional parameter used to search for only games of a specific lexicon.
+
+      Game ID
+      An optional parameter used to search for only one game. To find a game\'s ID,
+      go to that game\'s page on cross-tables.com and look for the number in the address bar.
+      For example, the following game:
+
+      https://www.cross-tables.com/annotated.php?u=31231#0#
+
+      has a game ID of 31231.
+
+      Opponent Name
+      An optional parameter used to search for only games against a specific opponent.
+
+      Start Date
+      An optional parameter used to search for only games beyond a certain date.
+
+      End Date
+      An optional parameter used to search for only games before a certain date.
+      '
+    ]
+    [
+      'Statistics and Lists',
+      $stats_explanation
+    ],
+    [
+      'Leaderboards'
+      'Leaderboards are updated every midnight (EST).
+       Only players with 50 or more games are included in the leaderboards.'
+    ],
+
+    [
+      'Omitted Games',
+      '
+      You might notice that there are some annotated games that are
+      not included in your statistics or in the leaderboards. Games
+      are omitted if they meet any of the following criteria:
+
+       - The game does not appear on your annotated games page on cross-tables.com
+       - The game gives an error
+       - The game does not have any associated lexicon
+
+
+      Games with no lexicons are omitted because the lexicons are necessary for
+      computing several statistics and the resulting inaccuracies could be
+      misleading and introduce error (or more error anyway) into the leaderboards.
+      '
+    ],
+    [
+      'Development Team'
+      'RandomRacer is maintained by Joshua Castellano. Various contributors
+      are listed in the Contributions section.'
+    ],
+    [
+      'Contributions',
+      '
+        The following lists the intellectual contributions made to RandomRacer
+        in reverse chronological (roughly) order.
+
+        Win Correlations (James Curley)
+        Dynamic Mistakes (Kenji Matsumoto)
+        Vertical Play statistics (Matthew O\'Connor)
+        Mistakeless Turns statistic (César Del Solar)
+        Saddest/Sadder/Sad mistake magnitudes aliases (Jackson Smylie)
+        Highest Scoring Play statistic (Will Anderson)
+        Discovery of a bug in the Full Rack per Turn statistic (Will Anderson)
+        Notable games (Matthew O\'Connor)
+        Firsts statistic (Ben Schoenbrun)
+        Turns with a blank statistic (Marlon Hill)
+        Discovery of GCG mining bug in the preload script (Ben Schoenbrun)
+        Bingo lists, bingo probabilities, and various statistics (Joshua Sokol)
+        Initial idea (Matthew O\'Connor)
+      '
+    ]
+  ];
+}
+
 1;
 
