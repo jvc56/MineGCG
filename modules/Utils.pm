@@ -90,7 +90,7 @@ sub make_datatable
     </tbody>
   </table>
   <div id='$moreid'>
-    <i class="fas fa-angle-down rotate-icon" onclick="toggleMaxHeight('$tableid', '$moreid')"></i>
+    <i class="fas fa-angle-down rotate-icon" onclick="toggleMaxHeight('$table_id', '$moreid')"></i>
   </div>
   <div style='text-align: left; padding: 10px'>
     <table style='width: 100%'>
