@@ -553,21 +553,45 @@ sub toString
 
 
 
-  my $s = "";
+  my $s = '';
+  my @styles = (Constants::DIV_STYLE_ODD, Constants::DIV_STYLE_EVEN);
+  my $stylebit = 0;
+  my $stmp;
 
-  my $odd_div_style = Constants::DIV_STYLE_ODD; 
-  my $even_div_style = Constants::DIV_STYLE_EVEN; 
-
-  $s .= statListToHTML(\@player_list_stats, 'Player Lists',   'player_list_stats_expander', $odd_div_style);
-  $s .= statListToHTML(\@opp_list_stats,    'Opponent Lists', 'opponent_list_stats_expander', $even_div_style);
-  $s .= notableListToHTML(\@notable_stats,     'Notable Lists',  'notable_stats_expander', $odd_div_style);
-  $s .= statItemsToHTML(\@game_stats,        $num, 'Game Stats',     'game_stats_expander', $even_div_style);
-  $s .= statItemsToHTML(\@player_item_stats, $num, 'Player Stats',   'player_stats_expander', $odd_div_style);
-  $s .= statItemsToHTML(\@opp_item_stats,    $num, 'Opponent Stats', 'opp_stats_expander', $even_div_style);
-  $s .= mistakesToHTML($player_mistake_list, 'Player Mistakes',     'player_mistakes_expander', $odd_div_style);
-  $s .= mistakesToHTML($opp_mistake_list,    'Opponent Mistakes',   'opponent_mistakes_expander', $even_div_style);
-  $s .= errorsToHTML($error_list,   'Errors', 'error_list_expander', $odd_div_style);
-  $s .= errorsToHTML($warning_list, 'Warnings', 'warning_list_expander', $even_div_style);
+  $stmp = statListToHTML(\@player_list_stats, 'Player Lists','player_list_stats_expander', $styles[$stylebit]);
+  if ($stmp){$stylebit = 1 - $stylebit;}
+  $s .= $stmp; 
+  $stmp = statListToHTML(\@opp_list_stats,    'Opponent Lists', 'opponent_list_stats_expander', $styles[$stylebit]);
+  if ($stmp){$stylebit = 1 - $stylebit;}
+  $s .= $stmp; 
+  $stmp = notableListToHTML(\@notable_stats,     'Notable Lists', 'notable_stats_expander', $styles[$stylebit]);
+  if ($stmp){$stylebit = 1 - $stylebit;}
+  $s .= $stmp; 
+  $stmp = statItemsToHTML(\@game_stats,        $num, 'Game Stats', 'game_stats_expander', $styles[$stylebit]);
+  if ($stmp){$stylebit = 1 - $stylebit;}
+  $s .= $stmp; 
+  $stmp = statItemsToHTML(\@player_item_stats, $num, 'Player Stats', 'player_stats_expander', $styles[$stylebit]);
+  if ($stmp){$stylebit = 1 - $stylebit;}
+  $s .= $stmp; 
+  $stmp = statItemsToHTML(\@opp_item_stats,    $num, 'Opponent Stats', 'opp_stats_expander', $styles[$stylebit]);
+  if ($stmp){$stylebit = 1 - $stylebit;}
+  $s .= $stmp; 
+  $stmp = mistakesToHTML($player_mistake_list, 'Player Mistakes', 'player_mistakes_expander', $styles[$stylebit]);
+  if ($stmp){$stylebit = 1 - $stylebit;}
+  $s .= $stmp; 
+  $stmp = mistakesToHTML($player_dynamic_list, 'Player Dynamic Mistakes', 'player_dynamics_expander', $styles[$stylebit]);
+  if ($stmp){$stylebit = 1 - $stylebit;}
+  $s .= $stmp; 
+  $stmp = mistakesToHTML($opp_mistake_list, 'Opponent Mistakes',     'opponent_mistake_expander', $styles[$stylebit]);
+  if ($stmp){$stylebit = 1 - $stylebit;}
+  $s .= $stmp; 
+  $stmp = mistakesToHTML($opp_dynamic_list,'Opponent Dynamic Mistakes', 'opponent_dynamics_expander', $styles[$stylebit]);
+  if ($stmp){$stylebit = 1 - $stylebit;}
+  $s .= $stmp; 
+  $stmp = errorsToHTML($error_list,   'Errors', 'error_list_expander', $styles[$stylebit]);
+  if ($stmp){$stylebit = 1 - $stylebit;}
+  $s .= $stmp; 
+  $stmp = errorsToHTML($warning_list, 'Warnings', 'warning_list_expander', $styles[$stylebit]);
 
   return $s;
 }
@@ -2892,10 +2916,11 @@ sub statsList
         $this->{'total'} += $other->{'total'};
         foreach my $key (keys %{$other->{'subitems'}})
         {
-        if (! (defined $this->{'subitems'}->{$key}))
-        {
-          $this->{'subitems'}->{$key} = 0;
-        }
+          if (! (defined $this->{'subitems'}->{$key}))
+          {
+            $this->{'subitems'}->{$key} = 0;
+	    push @{$this->{'list'}}, $key;
+          }
           $this->{'subitems'}->{$key} += $other->{'subitems'}->{$key};
         }
       },
@@ -2913,6 +2938,7 @@ sub statsList
           if (! (defined $this->{'subitems'}->{$key}))
           {
             $this->{'subitems'}->{$key} = 0;
+	    push @{$this->{'list'}}, $key;
           }
           my $num = $dynamic_mistakes_hash_ref->{$key};
           $this->{'total'}            += $num;

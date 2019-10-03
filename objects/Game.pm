@@ -618,7 +618,7 @@ sub getNumDynamicMistakes
     {
       my $comment = $move->{'comment'};
       
-      my @matches = ($comment =~ /#(\w+)/gi);
+      my @matches = ($comment =~ /#([a-z]+)/gi);
 
       outer: foreach my $match (@matches)
       {
@@ -672,13 +672,13 @@ sub getDynamicMistakes
     {
       my $comment = $move->{'comment'};
       
-      my @matches = ($comment =~ /#(\w+)/gi);
+      my @matches = ($comment =~ /#([a-z]+)/gi);
 
       outer: foreach my $match (@matches)
       {
         foreach my $cat (@categories)
 	{
-          if ($cat eq $match)
+          if (uc $cat eq uc $match)
 	  {
 	    next outer;
 	  }
