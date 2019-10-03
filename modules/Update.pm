@@ -443,17 +443,17 @@ TABSCRIPT
       push @xvalues, $win_percentage;
       push @yvalues, $average;
     }
-
+    printf "name: %s, length: %s, array_length: %s\n", $og_name, scalar @xvalues, $array_length;
     my $stattable = Utils::make_datatable(
-    0,
-    $table_id,
-    ['Player', 'Average'],
-    ['text-align: center', 'text-align: center'],
-    ['false', 'true'],
-    $statcontent,
-    'Average',
-    'dscclass'
-  );
+      0,
+      $table_id,
+      ['Player', 'Average'],
+      ['text-align: center', 'text-align: center'],
+      ['false', 'true'],
+      $statcontent,
+      'Average',
+      'dscclass'
+    );
 
     chop($chart_data);
     $chart_data .= '], ';

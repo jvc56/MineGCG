@@ -410,7 +410,6 @@ FINAL
 
   if ($cache_condition && $at_least_one && $statsdump)
   {
-    print "PRINTING TO THE CACHE\n";
     system "mkdir -p $cache_dir";
     open(my $fh, '>', $cache_filename);
     print $fh $final_output; 
