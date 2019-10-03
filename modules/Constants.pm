@@ -811,12 +811,12 @@ function toggleMaxHeight(divid, conid)
   if (div.className == 'scrollwindow')
   {
     div.className = 'noscrollwindow';
-    document.getElementById(conid).class = 'fas fa-angle-up rotate-icon';
+    document.getElementById(conid).className = 'fas fa-angle-up rotate-icon';
   }
   else
   {
     div.className = 'scrollwindow';
-    document.getElementById(conid).class = 'fas fa-angle-down rotate-icon';
+    document.getElementById(conid).className = 'fas fa-angle-down rotate-icon';
   }
 }
 
