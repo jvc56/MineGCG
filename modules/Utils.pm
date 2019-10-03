@@ -31,6 +31,7 @@ sub make_datatable
 
   my $title_row_id    = $table_id . '_title_row_id';
   my $moreid          = $table_id . '_toggle_show';
+  my $divid           = $table_id . '_scrollwindow';
   my $titlecontent = '';
   my $td_width = 100 / (scalar @{$titles});
   my $span_style = "style='border-radius: 10px; background-color: #555555; padding: 5px'";
@@ -78,7 +79,7 @@ sub make_datatable
       </tr>
       <tr>
         <td>
-          <div class='scrollwindow'>
+          <div class='scrollwindow' id='$divid'>
             <table class='display' id='$table_id'>
               <tbody>
                 $content
@@ -90,7 +91,7 @@ sub make_datatable
     </tbody>
   </table>
   <div style='text-align: center'>
-    <i class="fas fa-angle-down rotate-icon" id='$moreid' style='cursor: pointer' onclick="toggleMaxHeight('$table_id', '$moreid')"></i>
+    <i class="fas fa-angle-down rotate-icon" id='$moreid' style='cursor: pointer' onclick="toggleMaxHeight('$divid', '$moreid')"></i>
   </div>
   <div style='text-align: left; padding: 10px'>
     <table style='width: 100%'>

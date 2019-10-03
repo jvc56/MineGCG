@@ -618,6 +618,18 @@ use constant HTML_STYLES => <<HTMLSTYLES
       display: none;  /* Safari and Chrome */
   }
 
+  .noscrollwindow
+  {
+    max-height: none;
+    overflow: auto;
+    -ms-overflow-style: none;  /* IE 10+ */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .noscrollwindow::-webkit-scrollbar
+  { 
+      display: none;  /* Safari and Chrome */
+  }
+
   .dropdown-toggle::after
   {
       vertical-align: 0em;
@@ -793,18 +805,17 @@ use constant TABLE_SORT_FUNCTION => <<TABLESORT
 <script>
 
 
-function toggleMaxHeight(tableid, conid)
+function toggleMaxHeight(divid, conid)
 {
-  var table = document.getElementById(tableid);
-  var height = table.style.maxHeight;
-  if (height)
+  var div = document.getElementById(divid);
+  if (div.className == 'scrollwindow')
   {
-    table.style.maxHeight = 'none';
+    div.className = 'noscrollwindow';
     document.getElementById(conid).class = 'fas fa-angle-up rotate-icon';
   }
   else
   {
-    table.style.maxHeight = '500px';
+    div.className = 'scrollwindow';
     document.getElementById(conid).class = 'fas fa-angle-down rotate-icon';
   }
 }
