@@ -800,12 +800,12 @@ function toggleMaxHeight(tableid, conid)
   if (height)
   {
     table.style.maxHeight = 'none';
-    document.getElementById('conid').innerHTML = '<i class="fas fa-angle-up rotate-icon"></i>';
+    document.getElementById(conid).innerHTML = '<i class="fas fa-angle-up rotate-icon"></i>';
   }
   else
   {
     table.style.maxHeight = '500px';
-    document.getElementById('conid').innerHTML = '<i class="fas fa-angle-down rotate-icon"></i>';
+    document.getElementById(conid).innerHTML = '<i class="fas fa-angle-down rotate-icon"></i>';
   }
 }
 
