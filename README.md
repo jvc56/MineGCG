@@ -7,60 +7,59 @@ This is RandomRacer, a site that collects and presents statistics
 
 # Usage
 
+Simply enter a name in the 'Player Name' field on the main page and hit submit.
+There are other parameters you can use to narrow your search:
 
-      Simply enter a name in the 'Player Name' field on the main page and hit submit.
-      There are other parameters you can use to narrow your search:
 
-      
 
 <h5>Game Type</h5>
-      An optional parameter used to search for only casual and club games or only tournament games.
-      Games are considered tournament games if they are associated with a tournament and a round number.
-      Games tagged as 'Tournament Game' in cross-tables with no specific tournament are not considered tournament games.
+An optional parameter used to search for only casual and club games or only tournament games.
+Games are considered tournament games if they are associated with a tournament and a round number.
+Games tagged as 'Tournament Game' in cross-tables with no specific tournament are not considered tournament games.
 
-      
+
 
 <h5>Tournament ID</h5>
-      An optional parameter used to search for only games of a specific tournament.
-      To find a tournament's ID, go to that tournament's page on cross-tables.com
-      and look for the number in the address bar.
+An optional parameter used to search for only games of a specific tournament.
+To find a tournament's ID, go to that tournament's page on cross-tables.com
+and look for the number in the address bar.
 
-      For example, the address of the 29th National Championship Main Event is
+For example, the address of the 29th National Championship Main Event is
 
-      https://www.cross-tables.com/tourney.php?t=10353&div=1
+https://www.cross-tables.com/tourney.php?t=10353&div=1
 
-      which has a tournament ID of 10353.
+which has a tournament ID of 10353.
 
-      
+
 
 <h5>Lexicon</h5>
-      An optional parameter used to search for only games of a specific lexicon.
+An optional parameter used to search for only games of a specific lexicon.
 
-      
+
 
 <h5>Game ID</h5>
-      An optional parameter used to search for only one game. To find a game's ID,
-      go to that game's page on cross-tables.com and look for the number in the address bar.
-      For example, the following game:
+An optional parameter used to search for only one game. To find a game's ID,
+go to that game's page on cross-tables.com and look for the number in the address bar.
+For example, the following game:
 
-      https://www.cross-tables.com/annotated.php?u=31231#0#
+https://www.cross-tables.com/annotated.php?u=31231#0#
 
-      has a game ID of 31231.
+has a game ID of 31231.
 
-      
+
 
 <h5>Opponent Name</h5>
-      An optional parameter used to search for only games against a specific opponent.
+An optional parameter used to search for only games against a specific opponent.
 
-      
+
 
 <h5>Start Date</h5>
-      An optional parameter used to search for only games beyond a certain date.
+An optional parameter used to search for only games beyond a certain date.
 
-      
+
 
 <h5>End Date</h5>
-      An optional parameter used to search for only games before a certain date.
+An optional parameter used to search for only games before a certain date.
 
 # Statistics, Lists, and Notable Games
 
@@ -468,21 +467,19 @@ yeet
 
 # Leaderboards
 
-Leaderboards are updated every midnight (EST).
-       Only players with 50 or more games are included in the leaderboards.
+Leaderboards are updated every midnight (EST). Only players with 50 or more games are included in the leaderboards.
 
 # Omitted Games
 
-
-      You might notice that there are some annotated games that are
+You might notice that there are some annotated games that are
       not included in your statistics or in the leaderboards. Games
       are omitted if they meet any of the following criteria:
       
-      <ul>
-       <li>The game does not appear on your annotated games page on cross-tables.com</li>
-       <li>The game gives an error</li>
-       <li>The game does not have any associated lexicon</li>
-      </ul>
+      
+        - The game does not appear on your annotated games page on cross-tables.com
+        - The game gives an error
+        - The game does not have any associated lexicon
+      
 
       Games with no lexicons are omitted because the lexicons are necessary for
       computing several statistics and the resulting inaccuracies could be
@@ -495,22 +492,21 @@ RandomRacer is maintained by Joshua Castellano, but many people have suggested n
 
 # Contributions
 
-
-        The following lists the intellectual contributions made to RandomRacer
+The following lists the intellectual contributions made to RandomRacer
         in reverse chronological (roughly) order.
         
-	<ul>
-        <li>Win Correlations (James Curley)</li>
-        <li>Dynamic Mistakes (Kenji Matsumoto)</li>
-        <li>Vertical Play statistics (Matthew O'Connor)</li>
-        <li>Mistakeless Turns statistic (César Del Solar)</li>
-        <li>Saddest/Sadder/Sad mistake magnitudes aliases (Jackson Smylie)</li>
-        <li>Highest Scoring Play statistic (Will Anderson)</li>
-        <li>Discovery of a bug in the Full Rack per Turn statistic (Will Anderson)</li>
-        <li>Notable games (Matthew O'Connor)</li>
-        <li>Firsts statistic (Ben Schoenbrun)</li>
-        <li>Turns with a blank statistic (Marlon Hill)</li>
-        <li>Discovery of GCG mining bug in the preload script (Ben Schoenbrun)</li>
-        <li>Bingo lists, bingo probabilities, and various statistics (Joshua Sokol)</li>
-        <li>Initial idea (Matthew O'Connor)</li>
-	</ul>
+	
+         - Win Correlations (James Curley)
+         - Dynamic Mistakes (Kenji Matsumoto)
+         - Vertical Play statistics (Matthew O'Connor)
+         - Mistakeless Turns statistic (César Del Solar)
+         - Saddest/Sadder/Sad mistake magnitudes aliases (Jackson Smylie)
+         - Highest Scoring Play statistic (Will Anderson)
+         - Discovery of a bug in the Full Rack per Turn statistic (Will Anderson)
+         - Notable games (Matthew O'Connor)
+         - Firsts statistic (Ben Schoenbrun)
+         - Turns with a blank statistic (Marlon Hill)
+         - Discovery of GCG mining bug in the preload script (Ben Schoenbrun)
+         - Bingo lists, bingo probabilities, and various statistics (Joshua Sokol)
+         - Initial idea (Matthew O'Connor)
+	

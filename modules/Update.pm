@@ -1920,46 +1920,45 @@ sub update_readme_and_about
     ],
     [
       'Usage',
-      '
-      Simply enter a name in the \'Player Name\' field on the main page and hit submit.
-      There are other parameters you can use to narrow your search:
+'Simply enter a name in the \'Player Name\' field on the main page and hit submit.
+There are other parameters you can use to narrow your search:
 
-      <h5>Game Type</h5>
-      An optional parameter used to search for only casual and club games or only tournament games.
-      Games are considered tournament games if they are associated with a tournament and a round number.
-      Games tagged as \'Tournament Game\' in cross-tables with no specific tournament are not considered tournament games.
+<h5>Game Type</h5>
+An optional parameter used to search for only casual and club games or only tournament games.
+Games are considered tournament games if they are associated with a tournament and a round number.
+Games tagged as \'Tournament Game\' in cross-tables with no specific tournament are not considered tournament games.
 
-      <h5>Tournament ID</h5>
-      An optional parameter used to search for only games of a specific tournament.
-      To find a tournament\'s ID, go to that tournament\'s page on cross-tables.com
-      and look for the number in the address bar.
+<h5>Tournament ID</h5>
+An optional parameter used to search for only games of a specific tournament.
+To find a tournament\'s ID, go to that tournament\'s page on cross-tables.com
+and look for the number in the address bar.
 
-      For example, the address of the 29th National Championship Main Event is
+For example, the address of the 29th National Championship Main Event is
 
-      https://www.cross-tables.com/tourney.php?t=10353&div=1
+https://www.cross-tables.com/tourney.php?t=10353&div=1
 
-      which has a tournament ID of 10353.
+which has a tournament ID of 10353.
 
-      <h5>Lexicon</h5>
-      An optional parameter used to search for only games of a specific lexicon.
+<h5>Lexicon</h5>
+An optional parameter used to search for only games of a specific lexicon.
 
-      <h5>Game ID</h5>
-      An optional parameter used to search for only one game. To find a game\'s ID,
-      go to that game\'s page on cross-tables.com and look for the number in the address bar.
-      For example, the following game:
+<h5>Game ID</h5>
+An optional parameter used to search for only one game. To find a game\'s ID,
+go to that game\'s page on cross-tables.com and look for the number in the address bar.
+For example, the following game:
 
-      https://www.cross-tables.com/annotated.php?u=31231#0#
+https://www.cross-tables.com/annotated.php?u=31231#0#
 
-      has a game ID of 31231.
+has a game ID of 31231.
 
-      <h5>Opponent Name</h5>
-      An optional parameter used to search for only games against a specific opponent.
+<h5>Opponent Name</h5>
+An optional parameter used to search for only games against a specific opponent.
 
-      <h5>Start Date</h5>
-      An optional parameter used to search for only games beyond a certain date.
+<h5>Start Date</h5>
+An optional parameter used to search for only games beyond a certain date.
 
-      <h5>End Date</h5>
-      An optional parameter used to search for only games before a certain date.
+<h5>End Date</h5>
+An optional parameter used to search for only games before a certain date.
       '
     ],
     [
@@ -1968,8 +1967,7 @@ sub update_readme_and_about
     ],
     [
       'Leaderboards',
-      'Leaderboards are updated every midnight (EST).
-       Only players with 50 or more games are included in the leaderboards.'
+      'Leaderboards are updated every midnight (EST). Only players with 50 or more games are included in the leaderboards.'
     ],
 
     [
@@ -2064,9 +2062,11 @@ sub update_readme_and_about
     {
       $htmlcontent = "<div style='padding: 20px'>$htmlcontent</div>";
     }
-    $readmecontent =~ s/\s+$//g;
+    $readmecontent =~ s/^\s+|\s+$//g;
     chomp($readmecontent);
-   
+    
+    $readmecontent =~ s/(<ul>)|(<\/ul>)|(<\/li>)//g; 
+    $readmecontent =~ s/<li>/ - /g;
     $readmecontent =~ s/<br>//g; 
     $readmecontent =~ s/(<h.>)/\n\n$1/g;
     $htmlcontent   =~ s/(<h.>)/<br><br>\n$1/g;
