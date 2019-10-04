@@ -342,18 +342,18 @@ Leaderboards are updated every midnight (EST). Only players with 50 or more game
 # Omitted Games
 
 You might notice that there are some annotated games that are
-      not included in your statistics or in the leaderboards. Games
-      are omitted if they meet any of the following criteria:
-      
-      
-        - The game does not appear on your annotated games page on cross-tables.com
-        - The game gives an error
-        - The game does not have any associated lexicon
-      
+not included in your statistics or in the leaderboards. Games
+are omitted if they meet any of the following criteria:
 
-      Games with no lexicons are omitted because the lexicons are necessary for
-      computing several statistics and the resulting inaccuracies could be
-      misleading and introduce error (or more error anyway) into the leaderboards.
+
+ - The game does not appear on your annotated games page on cross-tables.com
+ - The game gives an error
+ - The game does not have any associated lexicon
+
+
+Games with no lexicons are omitted because the lexicons are necessary for
+computing several statistics and the resulting inaccuracies could be
+misleading and introduce error (or more error anyway) into the leaderboards.
 
 # Development Team
 
@@ -362,21 +362,19 @@ RandomRacer is maintained by Joshua Castellano, but many people have suggested n
 
 # Contributions
 
-The following lists the intellectual contributions made to RandomRacer
-        in reverse chronological (roughly) order.
-        
-	
-         - Win Correlations (James Curley)
-         - Dynamic Mistakes (Kenji Matsumoto)
-         - Vertical Play statistics (Matthew O'Connor)
-         - Mistakeless Turns statistic (César Del Solar)
-         - Saddest/Sadder/Sad mistake magnitudes aliases (Jackson Smylie)
-         - Highest Scoring Play statistic (Will Anderson)
-         - Discovery of a bug in the Full Rack per Turn statistic (Will Anderson)
-         - Notable games (Matthew O'Connor)
-         - Firsts statistic (Ben Schoenbrun)
-         - Turns with a blank statistic (Marlon Hill)
-         - Discovery of GCG mining bug in the preload script (Ben Schoenbrun)
-         - Bingo lists, bingo probabilities, and various statistics (Joshua Sokol)
-         - Initial idea (Matthew O'Connor)
-	
+The following lists the intellectual contributions made to RandomRacer in reverse chronological (roughly) order.
+
+
+ - Win Correlations (James Curley)
+ - Dynamic Mistakes (Kenji Matsumoto)
+ - Vertical Play statistics (Matthew O'Connor)
+ - Mistakeless Turns statistic (César Del Solar)
+ - Saddest/Sadder/Sad mistake magnitudes aliases (Jackson Smylie)
+ - Highest Scoring Play statistic (Will Anderson)
+ - Discovery of a bug in the Full Rack per Turn statistic (Will Anderson)
+ - Notable games (Matthew O'Connor)
+ - Firsts statistic (Ben Schoenbrun)
+ - Turns with a blank statistic (Marlon Hill)
+ - Discovery of GCG mining bug in the preload script (Ben Schoenbrun)
+ - Bingo lists, bingo probabilities, and various statistics (Joshua Sokol)
+ - Initial idea (Matthew O'Connor)

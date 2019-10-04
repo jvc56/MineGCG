@@ -1972,21 +1972,20 @@ An optional parameter used to search for only games before a certain date.
 
     [
       'Omitted Games',
-      '
-      You might notice that there are some annotated games that are
-      not included in your statistics or in the leaderboards. Games
-      are omitted if they meet any of the following criteria:
-      <br><br>
-      <ul>
-       <li>The game does not appear on your annotated games page on cross-tables.com</li>
-       <li>The game gives an error</li>
-       <li>The game does not have any associated lexicon</li>
-      </ul>
 
-      Games with no lexicons are omitted because the lexicons are necessary for
-      computing several statistics and the resulting inaccuracies could be
-      misleading and introduce error (or more error anyway) into the leaderboards.
-      '
+'You might notice that there are some annotated games that are
+not included in your statistics or in the leaderboards. Games
+are omitted if they meet any of the following criteria:
+<br><br>
+<ul>
+<li>The game does not appear on your annotated games page on cross-tables.com</li>
+<li>The game gives an error</li>
+<li>The game does not have any associated lexicon</li>
+</ul>
+
+Games with no lexicons are omitted because the lexicons are necessary for
+computing several statistics and the resulting inaccuracies could be
+misleading and introduce error (or more error anyway) into the leaderboards.'
     ],
     [
       'Development Team',
@@ -1995,26 +1994,23 @@ An optional parameter used to search for only games before a certain date.
     ],
     [
       'Contributions',
-      '
-        The following lists the intellectual contributions made to RandomRacer
-        in reverse chronological (roughly) order.
-        <br><br>
-	<ul>
-        <li>Win Correlations (James Curley)</li>
-        <li>Dynamic Mistakes (Kenji Matsumoto)</li>
-        <li>Vertical Play statistics (Matthew O\'Connor)</li>
-        <li>Mistakeless Turns statistic (César Del Solar)</li>
-        <li>Saddest/Sadder/Sad mistake magnitudes aliases (Jackson Smylie)</li>
-        <li>Highest Scoring Play statistic (Will Anderson)</li>
-        <li>Discovery of a bug in the Full Rack per Turn statistic (Will Anderson)</li>
-        <li>Notable games (Matthew O\'Connor)</li>
-        <li>Firsts statistic (Ben Schoenbrun)</li>
-        <li>Turns with a blank statistic (Marlon Hill)</li>
-        <li>Discovery of GCG mining bug in the preload script (Ben Schoenbrun)</li>
-        <li>Bingo lists, bingo probabilities, and various statistics (Joshua Sokol)</li>
-        <li>Initial idea (Matthew O\'Connor)</li>
-	</ul>
-      '
+'The following lists the intellectual contributions made to RandomRacer in reverse chronological (roughly) order.
+<br><br>
+<ul>
+<li>Win Correlations (James Curley)</li>
+<li>Dynamic Mistakes (Kenji Matsumoto)</li>
+<li>Vertical Play statistics (Matthew O\'Connor)</li>
+<li>Mistakeless Turns statistic (César Del Solar)</li>
+<li>Saddest/Sadder/Sad mistake magnitudes aliases (Jackson Smylie)</li>
+<li>Highest Scoring Play statistic (Will Anderson)</li>
+<li>Discovery of a bug in the Full Rack per Turn statistic (Will Anderson)</li>
+<li>Notable games (Matthew O\'Connor)</li>
+<li>Firsts statistic (Ben Schoenbrun)</li>
+<li>Turns with a blank statistic (Marlon Hill)</li>
+<li>Discovery of GCG mining bug in the preload script (Ben Schoenbrun)</li>
+<li>Bingo lists, bingo probabilities, and various statistics (Joshua Sokol)</li>
+<li>Initial idea (Matthew O\'Connor)</li>
+</ul>'
     ]
   );
 
