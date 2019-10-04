@@ -29,6 +29,8 @@ sub make_datatable
   my $initcol     = shift;
   my $initclass   = shift;
 
+  my $aboutpage       = Constants::ABOUT_PAGE_NAME;
+  my $learnlink       = "<a href='/$aboutpage'>Learn More</a>";
   my $title_row_id    = $table_id . '_title_row_id';
   my $moreid          = $table_id . '_toggle_show';
   my $divid           = $table_id . '_scrollwindow';
@@ -93,7 +95,7 @@ sub make_datatable
   <div style='text-align: center'>
     <i class="fas fa-angle-down rotate-icon" id='$moreid' style='cursor: pointer' onclick="toggleMaxHeight('$divid', '$moreid')"></i>
   </div>
-  <div style='text-align: left; padding: 10px'>
+  <div style='padding: 10px ; text-align: center'>
     <table style='width: 100%'>
       <tbody>
         <td style='width: 50%; text-align: center'>
@@ -104,6 +106,7 @@ sub make_datatable
         </td>
       </tbody>
     </table>
+    $learnlink
   </div>
 TABLE
 ;

@@ -20,7 +20,6 @@ sub mine
 {
   my $stats_dir               = Constants::STATS_DIRECTORY_NAME;
   my $notable_dir             = Constants::NOTABLE_DIRECTORY_NAME;
-  my $blacklisted_tournaments = Constants::BLACKLISTED_TOURNAMENTS;
   my $cache_dir               = Constants::CACHE_DIRECTORY_NAME;
   my $names_to_info_hashref   = NameConversion::NAMES_TO_IDS;
 

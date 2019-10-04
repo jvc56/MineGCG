@@ -2,8 +2,21 @@
 
 # RandomRacer
 
-This is RandomRacer, a site that collects and presents statistics
-       and comments from annotated scrabble games on cross-tables.com.
+This is <a href="randomracer.com">RandomRacer.com</a>, a site that collects and presents statistics and comments from annotated scrabble games on <a href="cross-tables.com">cross-tables.com</a>. Initial development began August 2018 and in February 2019 the first version was released.
+
+In October 2019, the site underwent major updates which include:
+
+
+ - Mobile-friendly bootstrap reskin.
+ - Front page quote, mistake, and notable games carousels.
+ - Player pictures on player results pages.
+ - Sortable, filterable, and downloadable datatables for all results.
+ - Win Correlation graphs for every statistic on the leaderboard.
+ - Confidence intervals for all Tiles Played statistics.
+ - Dynamic mistake tagging.
+
+
+You can learn more about some of these features in later sections.
 
 # Usage
 
@@ -335,9 +348,29 @@ More on this later.
 
 The listing of the player's dynamic mistakes.
 
+# Confidence Intervals
+
+All confidence levels are calculated with 99% confidence. The equations used to calculate the probability and confidence levels for a tile \(t\) are as follows:
+
+<div style="text-align: center">
+First establish a confidence level, given by \( c \):
+\[c = 0.99\]
+Using the confidence level, calculate a normally distributed \(z\)-score where \(a\) is the error and \(K\) is the percentile:
+\[a = 1 - c\]
+\[K = 1 - {a \over 2} \]
+\[z = \mathrm{cdf}(K) \]
+Let \(P\) be the percentage of all tiles played by the player. For example, if the player averages playing 49 tiles a game, since there are 100 tiles in the bag, \(P\) would take a value of \(0.49\). Let \(n\) be the maximum possible number of that tile which the player could have played in all of their games. For example, if the player played 100 games and there are f tiles  of type \(t\) in the bag, \(n\) would take a value of \(100 * f = 900 \). Now we can calculate the upper and lower bounds of the confidence interval, where :
+\[I = z * \sqrt{P * ( 1 - P ) \over n} \]
+\[l = P - I \]
+\[u = P + I \]
+The observed probability is simply the average number of times that the player plays tile \(t\) per game, divided by how many tiles \(t\) are in the bag.
+</div>
+
+Please note that probabilities that fall outside the confidence interval are in no way suspect. The sample of games analyzed by RandomRacer is subject to a heavy selection bias. Sometimes people tend to only post their good or their bad games. This can cause more probabilities than expected to fall outside the confidence interval. Also, with 26 tiles and about 200 players on the leaderboard and a 99% confidence interval, we can reasonably expect that about 26 * 200 * .01 = 52 probabilities will fall outside the given confidence interval. This is exactly in line with the approximately 50 probabilities that have done so in reality.
+
 # Leaderboards
 
-Leaderboards are updated every midnight (EST). Only players with 50 or more games are included in the leaderboards.
+Leaderboards are updated every midnight (EST). Only players with 50 or more games are included in the leaderboards. More information about the statistics on the leaderboards can be found under 'Statistics, Lists, and Notable Games'.
 
 # Omitted Games
 
@@ -355,6 +388,8 @@ Games with no lexicons are omitted because the lexicons are necessary for
 computing several statistics and the resulting inaccuracies could be
 misleading and introduce error (or more error anyway) into the leaderboards.
 
+Contact joshuacastellano7@gmail.com if you think a game was omitted by mistake.
+
 # Development Team
 
 RandomRacer is maintained by Joshua Castellano, but many people have suggested new features. Contributors
@@ -365,6 +400,7 @@ RandomRacer is maintained by Joshua Castellano, but many people have suggested n
 The following lists the intellectual contributions made to RandomRacer in reverse chronological (roughly) order.
 
 
+ - Tiles Played Confidence Intervals (James Curley)
  - Win Correlations (James Curley)
  - Dynamic Mistakes (Kenji Matsumoto)
  - Vertical Play statistics (Matthew O'Connor)

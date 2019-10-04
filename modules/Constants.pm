@@ -746,6 +746,9 @@ use constant HTML_NAV => <<NAV
           <a class="dropdown-item" href="/legacy/leaderboard.html">Leaderboards</a>
         </div>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/about.html" >About</a>
+      </li>
     </ul>
     <!-- Links -->
   </div>

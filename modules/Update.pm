@@ -22,7 +22,6 @@ use Stats;
 unless (caller)
 {
   update_readme_and_about();
-  exit(0);
   my $validation        = update_search_data();
   my $featured_mistakes = update_leaderboard_legacy();
   my $featured_notable  = update_notable_legacy();
@@ -132,7 +131,8 @@ DATEPICKER
       $html .= '<div class="collapse" id="collapseOptions">';
     }
   }
-
+      my $aboutpage = Constants::ABOUT_PAGE_NAME;
+      my $learnlink = "<a href='$aboutpage'>Learn More</a>";
 
       $html .=
 <<BUTTON
@@ -146,6 +146,7 @@ DATEPICKER
       </div>
       <div style="text-align: center">
         <button class="btn" type="submit">Submit</button>
+	$learnlink
       </div>
 BUTTON
 ;
@@ -1915,8 +1916,21 @@ sub update_readme_and_about
   (
     [
       'RandomRacer',
-      'This is RandomRacer, a site that collects and presents statistics
-       and comments from annotated scrabble games on cross-tables.com.'
+      'This is <a href="randomracer.com">RandomRacer.com</a>, a site that collects and presents statistics and comments from annotated scrabble games on <a href="cross-tables.com">cross-tables.com</a>. Initial development began August 2018 and in February 2019 the first version was released.
+<br><br>
+In October 2019, the site underwent major updates which include:
+<br><br>
+<ul>
+<li>Mobile-friendly bootstrap reskin.</li>
+<li>Front page quote, mistake, and notable games carousels.</li>
+<li>Player pictures on player results pages.</li>
+<li>Sortable, filterable, and downloadable datatables for all results.</li>
+<li>Win Correlation graphs for every statistic on the leaderboard.</li>
+<li>Confidence intervals for all Tiles Played statistics.</li>
+<li>Dynamic mistake tagging.</li>
+</ul>
+
+You can learn more about some of these features in later sections.'
     ],
     [
       'Usage',
@@ -1966,13 +1980,33 @@ An optional parameter used to search for only games before a certain date.
       \@statcomments
     ],
     [
+      'Confidence Intervals',
+'
+All confidence levels are calculated with 99% confidence. The equations used to calculate the probability and confidence levels for a tile \(t\) are as follows:
+<br><br>
+<div style="text-align: center">
+First establish a confidence level, given by \( c \):
+\[c = 0.99\]
+Using the confidence level, calculate a normally distributed \(z\)-score where \(a\) is the error and \(K\) is the percentile:
+\[a = 1 - c\]
+\[K = 1 - {a \over 2} \]
+\[z = \mathrm{cdf}(K) \]
+Let \(P\) be the percentage of all tiles played by the player. For example, if the player averages playing 49 tiles a game, since there are 100 tiles in the bag, \(P\) would take a value of \(0.49\). Let \(n\) be the maximum possible number of that tile which the player could have played in all of their games. For example, if the player played 100 games and there are f tiles  of type \(t\) in the bag, \(n\) would take a value of \(100 * f = 900 \). Now we can calculate the upper and lower bounds of the confidence interval, where :
+\[I = z * \sqrt{P * ( 1 - P ) \over n} \]
+\[l = P - I \]
+\[u = P + I \]
+The observed probability is simply the average number of times that the player plays tile \(t\) per game, divided by how many tiles \(t\) are in the bag.
+</div>
+<br><br>
+Please note that probabilities that fall outside the confidence interval are in no way suspect. The sample of games analyzed by RandomRacer is subject to a heavy selection bias. Sometimes people tend to only post their good or their bad games. This can cause more probabilities than expected to fall outside the confidence interval. Also, with 26 tiles and about 200 players on the leaderboard and a 99% confidence interval, we can reasonably expect that about 26 * 200 * .01 = 52 probabilities will fall outside the given confidence interval. This is exactly in line with the approximately 50 probabilities that have done so in reality.'
+    ],
+    [
       'Leaderboards',
-      'Leaderboards are updated every midnight (EST). Only players with 50 or more games are included in the leaderboards.'
+      'Leaderboards are updated every midnight (EST). Only players with 50 or more games are included in the leaderboards. More information about the statistics on the leaderboards can be found under \'Statistics, Lists, and Notable Games\'.'
     ],
 
     [
       'Omitted Games',
-
 'You might notice that there are some annotated games that are
 not included in your statistics or in the leaderboards. Games
 are omitted if they meet any of the following criteria:
@@ -1985,7 +2019,9 @@ are omitted if they meet any of the following criteria:
 
 Games with no lexicons are omitted because the lexicons are necessary for
 computing several statistics and the resulting inaccuracies could be
-misleading and introduce error (or more error anyway) into the leaderboards.'
+misleading and introduce error (or more error anyway) into the leaderboards.
+
+Contact joshuacastellano7@gmail.com if you think a game was omitted by mistake.'
     ],
     [
       'Development Team',
@@ -1997,6 +2033,7 @@ misleading and introduce error (or more error anyway) into the leaderboards.'
 'The following lists the intellectual contributions made to RandomRacer in reverse chronological (roughly) order.
 <br><br>
 <ul>
+<li>Tiles Played Confidence Intervals (James Curley)</li>
 <li>Win Correlations (James Curley)</li>
 <li>Dynamic Mistakes (Kenji Matsumoto)</li>
 <li>Vertical Play statistics (Matthew O\'Connor)</li>
@@ -2099,6 +2136,8 @@ misleading and introduce error (or more error anyway) into the leaderboards.'
   <head>
   $head_content
   $html_styles
+  <script src=\"https://polyfill.io/v3/polyfill.min.js?features=es6\"></script>
+  <script id=\"MathJax-script\" async src=\"https://cdn.jsdelivr.net/npm/mathjax\@3/es5/tex-mml-chtml.js\"></script>
   </head>
   <body $body_style>
   $nav
