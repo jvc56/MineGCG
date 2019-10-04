@@ -2066,8 +2066,9 @@ sub update_readme_and_about
     }
     $readmecontent =~ s/\s+$//g;
     chomp($readmecontent);
-    
-    $readmecontent =~ s/(<h.>)/<br><br>\n$1/g;
+   
+    $readmecontent =~ s/<br>//g; 
+    $readmecontent =~ s/(<h.>)/\n\n$1/g;
     $htmlcontent   =~ s/(<h.>)/<br><br>\n$1/g;
 
     $readme .= $readmecontent;
