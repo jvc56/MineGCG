@@ -2049,7 +2049,7 @@ misleading and introduce error (or more error anyway) into the leaderboards.'
         my $subexpander = Utils::make_expander($subid);
 	$subexpander =~ s/\n//g;
 	$subtitle    =~ s/\n//g;
-        $readmecontent .= "<h5>$subtitle</h5>\n\n$subcontent";
+        $readmecontent .= "<h3>$subtitle</h3>\n\n$subcontent";
         $htmlcontent .=
         "<div style='text-align: left'>$subexpander $subtitle<div class='collapse' id='$subid'><div style='padding: 20px'>$subcontent</div></div></div>";
       }

@@ -65,7 +65,7 @@ An optional parameter used to search for only games before a certain date.
 
 
 
-<h5>Errors</h5>
+<h3>Errors</h3>
 
 Errors are (most likely) the result of malformed GCG files.
 Common errors are described below:
@@ -100,7 +100,7 @@ Any other errors that appear are rare and likely due to a bug.
 If you see an error or warning that was not described above,
 please email them to joshuacastellano7@gmail.com.
 
-<h5>Warnings</h5>
+<h3>Warnings</h3>
 
 Warnings are for letting players know that they
 might want to correct certain GCG files. The complete
@@ -123,215 +123,215 @@ Notes that appear before moves are not associated with
 either player, so mistakes tagged in these notes will
 not be recorded.
 
-<h5>Games</h5>
+<h3>Games</h3>
 
 The number of valid games RandomRacer retrieved from cross-tables.com.
 
-<h5>Invalid Games</h5>
+<h3>Invalid Games</h3>
 
 The number of games that threw an error when being processed by RandomRacer.
 
-<h5>Total Turns</h5>
+<h3>Total Turns</h3>
 
 The total number of turns of the player and the opponent.
 
-<h5>Bingos</h5>
+<h3>Bingos</h3>
 
 The number of bingos played by the player that were not challenged off.
 
-<h5>Triple Triples</h5>
+<h3>Triple Triples</h3>
 
 Triple triples played by the player that were not challenged off. They do not have to be bingos.
 
-<h5>Bingo Nines or Above</h5>
+<h3>Bingo Nines or Above</h3>
 
 Bingos played by the player that were nine letters or longer and were not challenged off.
 
-<h5>Challenged Phonies</h5>
+<h3>Challenged Phonies</h3>
 
 Plays made by the player that formed at least one phony and were challenged off by an opponent.
 
-<h5>Unchallenged Phonies</h5>
+<h3>Unchallenged Phonies</h3>
 
 Plays made by the player that formed at least one phony and were not challenged by an opponent.
 
-<h5>Plays That Were Challenged</h5>
+<h3>Plays That Were Challenged</h3>
 
 Plays made by the player that were challenged by an opponent.
 
-<h5>Wins</h5>
+<h3>Wins</h3>
 
 The number of wins of the player.
 
-<h5>Score</h5>
+<h3>Score</h3>
 
 The game score of the player.
 
-<h5>Score per Turn</h5>
+<h3>Score per Turn</h3>
 
 The average score per turn of the player based on all of their games.
 
-<h5>Turns</h5>
+<h3>Turns</h3>
 
 The number of turns made by the player.
 
-<h5>Firsts</h5>
+<h3>Firsts</h3>
 
 The number of times the player went first.
 
-<h5>Vertical Openings per First</h5>
+<h3>Vertical Openings per First</h3>
 
 The number of times the player went first and opened vertically. Vertical openings that were challenged off do not count.
 
-<h5>Full Rack per Turn</h5>
+<h3>Full Rack per Turn</h3>
 
 The percentage of fully annotated racks out of all of the players racks for every game.
 
-<h5>Exchanges</h5>
+<h3>Exchanges</h3>
 
 The number of exchanges made by the player.
 
-<h5>High Game</h5>
+<h3>High Game</h3>
 
 The player's highest game.
 
-<h5>Low Game</h5>
+<h3>Low Game</h3>
 
 The player's lowest game.
 
-<h5>Highest Scoring Turn</h5>
+<h3>Highest Scoring Turn</h3>
 
 The player\s highest scoring turn.
 
-<h5>Bingos Played</h5>
+<h3>Bingos Played</h3>
 
 The number of bingos played by the player that were not challenged off, shown as a total and broken down by length.
 
-<h5>Bingo Probabilities</h5>
+<h3>Bingo Probabilities</h3>
 
 The average probabilities of the bingos played by the player. These are the probabilities as listed in the Zyzzyva word study program, so higher values are less probable.
 
-<h5>Tiles Played</h5>
+<h3>Tiles Played</h3>
 
 The number of tiles played by the player.
 
-<h5>Power Tiles Played</h5>
+<h3>Power Tiles Played</h3>
 
 The power number of tiles played by the player. This includes J, Q, X, Z, S, and the blank.
 
-<h5>Power Tiles Stuck With</h5>
+<h3>Power Tiles Stuck With</h3>
 
 The number of power tiles left on the player's rack after the opponent went out.
 
-<h5>Turns With a Blank</h5>
+<h3>Turns With a Blank</h3>
 
 The number turns that the play had a blank on their rack. This statistic is only meaningful for players with a significant portion of the full racks recorded.
 
-<h5>Triple Triples Played</h5>
+<h3>Triple Triples Played</h3>
 
 The number of triple triples played by the player. The triple triples do not have to be bingos.
 
-<h5>Bingoless Games</h5>
+<h3>Bingoless Games</h3>
 
 The number of games where the player does not bingo.
 
-<h5>Bonus Square Coverage</h5>
+<h3>Bonus Square Coverage</h3>
 
 The number of bonus squares that the player covered.
 
-<h5>Phony Plays</h5>
+<h3>Phony Plays</h3>
 
 The number of phony plays made by the player, both challenged and unchalleged.
 
-<h5>Challenges</h5>
+<h3>Challenges</h3>
 
 The number of challenges made by both the player and the opponent, broken down by challenges that the player made against opponent's plays and challenges that the opponent made against the player's plays.
 
-<h5>Challenge Percentage</h5>
+<h3>Challenge Percentage</h3>
 
 The percentage of challenges that the player made against an opponent's play which were successful.
 
-<h5>Defending Challenge Percentage</h5>
+<h3>Defending Challenge Percentage</h3>
 
 The percentage of challenges made by opponents against the player's plays that were unsuccessful.
 
-<h5>Percentage Phonies Unchallenged</h5>
+<h3>Percentage Phonies Unchallenged</h3>
 
 The percentage of plays that formed a phony and were not challenged off by an opponent.
 
-<h5>Comments</h5>
+<h3>Comments</h3>
 
 The number of comments made in the GCG file. This stat counts comments that appear on both the player and the opponent's turn.
 
-<h5>Comments Word Length</h5>
+<h3>Comments Word Length</h3>
 
 The number words in all the comments of the GCG file of the game. This stat counts comments that appear on the player's turn and the opponent's turn.
 
-<h5>Many Double Letters Covered</h5>
+<h3>Many Double Letters Covered</h3>
 
 Games in which at least 20 double letter bonus squares were covered.
 
-<h5>Many Double Words Covered</h5>
+<h3>Many Double Words Covered</h3>
 
 Games in which at least 15 double word bonus squares were covered.
 
-<h5>All Triple Letters Covered</h5>
+<h3>All Triple Letters Covered</h3>
 
 Games in which every triple letter bonus square was covered.
 
-<h5>All Triple Words Covered</h5>
+<h3>All Triple Words Covered</h3>
 
 Games in which every triple word bonus square was covered.
 
-<h5>High Scoring</h5>
+<h3>High Scoring</h3>
 
 Games in which at least one player scores at least 700 points.
 
-<h5>Combined High Scoring</h5>
+<h3>Combined High Scoring</h3>
 
 Games in which the combined score is at least 1100 points.
 
-<h5>Combined Low Scoring</h5>
+<h3>Combined Low Scoring</h3>
 
 Games in which the combined score is no greater than 200 points. Many games on cross-tables.com end before a combined score of 200 points but are considered incomplete and are not counted. Many valid six pass games are not included because they are malformed.
 
-<h5>Ties</h5>
+<h3>Ties</h3>
 
 Games that end in ties.
 
-<h5>One Player Plays Every Power Tile</h5>
+<h3>One Player Plays Every Power Tile</h3>
 
 Games in which one player plays the Z, X, Q, J, every blank, and every S.
 
-<h5>One Player Plays Every E</h5>
+<h3>One Player Plays Every E</h3>
 
 Games in which one player plays every E.
 
-<h5>Many Challenges</h5>
+<h3>Many Challenges</h3>
 
 Games in which there are at least 5 challenges made.
 
-<h5>Mistakeless Turns</h5>
+<h3>Mistakeless Turns</h3>
 
 The number of turns the player made that are not tagged with a mistake. Dynamic mistakes do not count for this statistic.
 
-<h5>Mistakes per Turn</h5>
+<h3>Mistakes per Turn</h3>
 
 The number of mistakes that the player makes per turn.
 
-<h5>Mistakes</h5>
+<h3>Mistakes</h3>
 
 yeet
 
-<h5>Mistakes List</h5>
+<h3>Mistakes List</h3>
 
 The listing of all of the player's mistakes.
 
-<h5>Dynamic Mistakes</h5>
+<h3>Dynamic Mistakes</h3>
 
 More on this later.
 
-<h5>Dynamic Mistakes List</h5>
+<h3>Dynamic Mistakes List</h3>
 
 The listing of the player's dynamic mistakes.
 
