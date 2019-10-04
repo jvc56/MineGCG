@@ -2648,6 +2648,11 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Many Double Letters Covered',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The number words in all the comments of the GCG file of the game.
+      This stat counts comments that appear on the player\'s turn and the opponent\'s turn.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {'list' => [], 'ids' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,

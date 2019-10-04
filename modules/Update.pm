@@ -6,7 +6,7 @@ use warnings;
 use strict;
 use Data::Dumper;
 use Cwd;
-use List::Util qw(shuffle);
+use List::Util qw(shuffle min max);
 use Scalar::Util qw(looks_like_number reftype);
 use Statistics::LineFit;
 use Statistics::Standard_Normal;
@@ -21,6 +21,8 @@ use Stats;
 
 unless (caller)
 {
+  update_readme_and_about();
+  exit(0);
   my $validation        = update_search_data();
   my $featured_mistakes = update_leaderboard_legacy();
   my $featured_notable  = update_notable_legacy();
@@ -373,7 +375,7 @@ sub update_leaderboard
 <script>
 function $function_name(evt, tabName, tabContentClass, tableid, n)
 {
-  changeSelector(tableid, 'dscclass', n);
+  changeSelector(tableid, 'dscclass', n + 1);
 
   var i, tabcontent, tablinks;
   tabcontent = document.getElementsByClassName(tabContentClass);
@@ -392,6 +394,8 @@ TABSCRIPT
   my $even_style = Constants::DIV_STYLE_EVEN;
   my $odd_style  = Constants::DIV_STYLE_ODD;
   my $color_counter = 0;
+  my $violations_content = '';
+  my $num_violations = 0;
   for (my $i = 0; $i < scalar @name_order; $i++)
   {
     my $name = $name_order[$i];
@@ -437,6 +441,10 @@ TABSCRIPT
     my $chart_data = "['Correlation of $fullname to Win Percentage', '$fullname', 'Win Percentage', [";
     my @xvalues = ();
     my @yvalues = ();
+    my $minx = 10000000;
+    my $maxx = -1;
+    my $miny = 10000000;
+    my $maxy = -1;
     my $statcontent = '';
     for (my $j = 0; $j < $array_length; $j++)
     {
@@ -451,9 +459,13 @@ TABSCRIPT
 
       my $win_percentage = $player_win_percentages{$player};
       $player =~ s/'/\\'/g;
-      $chart_data .= "{'y': $average, 'x': $win_percentage, 'name': '$player'},";
-      push @xvalues, $win_percentage;
-      push @yvalues, $average;
+      $chart_data .= "{'x': $average, 'y': $win_percentage, 'name': '$player'},";
+      push @xvalues, $average;
+      push @yvalues, $win_percentage;
+      $minx = min($minx, $average);
+      $maxx = max($maxx, $average);
+      $miny = min($miny, $win_percentage);
+      $maxy = max($maxy, $win_percentage);
     }
     my $stattable = Utils::make_datatable(
       0,
@@ -473,35 +485,53 @@ TABSCRIPT
     if ($array_length > 1)
     {
     
-      chop($chart_data);
-      $chart_data .= '], ';
-
-      my $rsquared  = '';
-      my @p1        = (0, 0);
-      my @p2        = (0, 0);
-      my $info      = '';
-
-      my $lineFit = Statistics::LineFit->new();
-      $lineFit->setData(\@xvalues, \@yvalues);
-      if (defined $lineFit->rSquared())
+      my $xcheck = $xvalues[0];
+      my $xdiff  = 0;
+      for (my $i = 1; $i < $array_length; $i++)
       {
-        my ($intercept, $slope) = $lineFit->coefficients();
-        @p1 = (0, $intercept);
-        @p2 = (1, $intercept + $slope);
-        $rsquared = $lineFit->rSquared();
-
-        my $increase = $slope / 10;
-        my $info_style = "style='text-align: center;'";
-        $info = "<div $info_style>A 10% increase in win percentage correlates to an increase of $increase in $fullname</div>";
+        if ($xcheck != $xvalues[$i])
+	{
+          $xdiff = 1;
+	}
       }
+      if ($xdiff)
+      {
+        chop($chart_data);
+        $chart_data .= '], ';
+  
+        my $r         = '';
+        my @p1        = (0, 0);
+        my @p2        = (0, 0);
+        my $info      = '';
+  
+        my $lineFit = Statistics::LineFit->new();
+        $lineFit->setData(\@xvalues, \@yvalues);
+        if (defined $lineFit->rSquared())
+        {
+          my ($intercept, $slope) = $lineFit->coefficients();
 
-      $chart_data .= "'$rsquared', [$p1[0], $p1[1]], [$p2[0], $p2[1]]]";
 
+	  @p1 = ($minx, $minx * $slope  + $intercept);
+          @p2 = ($maxx, $maxx * $slope  + $intercept);
 
-      my $chart = "<div style='width: 100%; height: 600px' id='$chart_id'></div>$info";
-
-      push @tab_titles, Constants::CHART_TAB_NAME; 
-      push @tab_content, $chart;
+          $r = sqrt($lineFit->rSquared());
+  
+          my $increase = (sprintf "%.2f", $slope * 100) . '%';
+          my $info_style = "style='text-align: center;'";
+          $info =
+  	"<div $info_style>
+  	  An increase of 1 in $fullname is associated with an increase of $increase in win percentage points.
+  	 </div>
+  	";
+          $chart_data .= "'$r', [$p1[0], $p1[1]], [$p2[0], $p2[1]]]";
+  
+  
+          my $chart = "<div style='width: 100%; height: 600px' id='$chart_id'></div>$info";
+  
+          push @tab_titles, Constants::CHART_TAB_NAME; 
+          push @tab_content, $chart;
+        }
+      }
     }
 
     if (length $name == 1 && ($og_name =~ /Tiles Played/ || $parent_name =~ /Tiles Played/))
@@ -522,7 +552,8 @@ TABSCRIPT
 	my $alpha       = 1 - $confidence;
 	my $pct         = (1 - ($alpha/2)) * 100;
 	my $z           = Statistics::Standard_Normal::pct_to_z($pct);
-        my $P           = $player_tiles_played_percentages{$player};
+	my $P           = $player_tiles_played_percentages{$player};
+	#my $P           = $average / $tile_frequencies->{$name};
 	my $total_games = $player_total_games{$player};
         my $n           = $tile_frequencies->{$name} * $total_games;
 	my $prob        = sprintf "%.4f", $average / $tile_frequencies->{$name};
@@ -532,23 +563,47 @@ TABSCRIPT
 
 	my $confidence_interval = "$lower < p < $upper";
 
-	my $row_style = '';
-	if ($prob < $lower || $prob > $upper)
+	my $row_color = '';
+	my $add_to_violations = 0;
+	if ($prob > $upper)
 	{
-          $row_style = 'style="background-color: #bb0000"';
+          $row_color = '#6c131c';
+	  $add_to_violations = 1;
+	}
+	elsif ($prob < $lower)
+	{
+          $row_color = '#0f3e1a';
+	  $add_to_violations = 1;
 	}
         #printf "%s,  %s,  %s,  %s,  %s,  %s,  %s,  %s,  %s, %s, %s  \n", $P, $total_games,
         #$n, $mean, $sigma, $outcome, $z, $actual_deviation, $pct, $name, $tile_frequencies->{$name};
 
 	# $prob = (sprintf "%.2f", $prob) . '%';
-        my $td_style = "style='width: 33.333333%; text-align: center'";
-        $overtable_content .=
+        my $td_style = "style='width: 33.333333%; text-align: center; background-color: $row_color'";
+
+	my $overrow =
 	"
-	<tr $download $row_style >
+	<tr $download>
 	  <td $td_style>$link</td>
 	  <td $td_style>$prob</td>
 	  <td $td_style>$confidence_interval</td>
 	</tr>\n";
+
+	$overtable_content .= $overrow;
+	if ($add_to_violations && $parent_name eq 'Tiles Played')
+	{
+          my $v_td_style = "style='width: 25%; text-align: center; background-color: $row_color'";
+          $violations_content .=
+        "
+	<tr $download>
+	  <td $v_td_style>$link</td>
+	  <td $v_td_style>$name</td>
+	  <td $v_td_style>$prob</td>
+	  <td $v_td_style>$confidence_interval</td>
+	</tr>
+	";
+	$num_violations++;
+        }
       }
 
       my $overtable = Utils::make_datatable(
@@ -561,7 +616,7 @@ TABSCRIPT
       );
 
  
-      push @tab_titles, 'Probability of Averages';
+      push @tab_titles, 'Confidence Intervals';
       push @tab_content, $overtable;
     }
 
@@ -571,7 +626,8 @@ TABSCRIPT
          $chart_id,
          $chart_data,
          $function_name,
-         $og_name);
+         $og_name,
+         $average);
 
     if (!$is_substat)
     {
@@ -588,6 +644,49 @@ TABSCRIPT
     if ($previous_was_substat && !$is_substat)
     {
       $leaderboard_string .= "</div>\n";
+      if ($parent_name eq 'Power Tiles Stuck With')
+      {
+        my $violations_table = Utils::make_datatable(
+          0,
+          'confidence_interval_violations_datatable',
+          ['Player', 'Tile', 'Probability (p)', 'Confidence Interval'],
+          ['text-align: center', 'text-align: center', 'text-align: center', 'text-align: center'],
+          ['false', 'false', 'true', 'disable'],
+          $violations_content
+        );
+       my $tabbed_violations = make_tabbed_content(
+         ["Confidence Interval Violations ($num_violations)"],
+         [$violations_table],
+         'violations_no_chart',
+         '',
+         $function_name,
+         'confidence_interval_violations',
+         undef);
+       my $violation_expander_id = 'violations_expander';
+       my $vexpander = Utils::make_expander($violation_expander_id);
+      $tabbed_violations = <<TABBED
+      <div class='collapse' id ='$violation_expander_id'>
+        $tabbed_violations
+      </div>
+TABBED
+;
+       $leaderboard_string .= Utils::make_content_item(
+	       $vexpander,
+	       'Confidence Interval Violations',
+	       $tabbed_violations,
+	       $div_style);
+
+      $color_counter++;
+      if ($color_counter % 2 == 1)
+      {
+        $div_style = $even_style;
+      }
+      else
+      {
+        $div_style = $odd_style;
+      }
+
+      }
     }
 
     if ($has_substats)
@@ -661,10 +760,10 @@ TABBED
     }
 
     var title = chart_data[0];
-    var yaxis = chart_data[1];
-    var xaxis = chart_data[2];
+    var xaxis = chart_data[1];
+    var yaxis = chart_data[2];
     var data  = chart_data[3];
-    var rsquared  = chart_data[4];
+    var r     = chart_data[4];
     var p1    = chart_data[5];
     var p2    = chart_data[6];
 
@@ -678,18 +777,23 @@ TABBED
     chart.data = data;
 
     var chart_title = chart.titles.create();
-    chart_title.text = title + '\\n(R[baseline-shift: super; font-size: 9px]2[/b] = ' + rsquared + ')';
+    chart_title.text = title;
     
+    chart.legend = new am4charts.Legend();
+    var xrange = p2[0] - p1[0];
     // Create axes
     var valueAxisX = chart.xAxes.push(new am4charts.ValueAxis());
     valueAxisX.title.text = xaxis;
-    valueAxisX.min = 0;
-    valueAxisX.max = 1;
+    valueAxisX.min = p1[0] - xrange/100;
+    valueAxisX.max = p2[0] + xrange/100;
     valueAxisX.strictMinMax = true;
     //valueAxisX.renderer.minGridDistance = 40;
     
     // Create value axis
     var valueAxisY = chart.yAxes.push(new am4charts.ValueAxis());
+    //valueAxisY.min = 0;
+    //valueAxisY.max = 1;
+    //valueAxisY.strictMinMax = true;
     valueAxisY.title.text = yaxis;
     
     // Create series
@@ -697,7 +801,7 @@ TABBED
     lineSeries.dataFields.valueY = "y";
     lineSeries.dataFields.valueX = "x";
     lineSeries.strokeOpacity = 0;
-   
+    lineSeries.legendSettings.labelText = "Players";   
     // Add a bullet
     var bullet = lineSeries.bullets.push(new am4charts.CircleBullet());
     bullet.circle.radius        = 4;
@@ -717,6 +821,7 @@ TABBED
       { "value": p1[0], "value2": p1[1] },
       { "value": p2[0], "value2": p2[1] }
     ];
+    trend.legendSettings.labelText = "r = " + r;
     
     //scrollbars
     chart.scrollbarX = new am4core.Scrollbar();
@@ -760,6 +865,7 @@ sub make_tabbed_content
   my $chart_data    = shift;
   my $func_name     = shift;
   my $stat_name     = shift;
+  my $average       = shift;
   my $num_tabs      = scalar @{$titles_ref};
   my $width         = 100 / $num_tabs;
 
@@ -770,7 +876,20 @@ sub make_tabbed_content
   $link_class =~ s/\s//g;
   $content_class =~ s/\s//g;
 
-  my $tab_div     = "<div><table class='titledisplay' id='$tableid'><tbody><tr>\n";
+  my $average_text = '';
+  if ($average)
+  {
+    $average_text = "Average: $average";
+  }
+
+  my $tab_div     =
+  "
+  <div>
+    <table class='titledisplay' id='$tableid'>
+      <tbody>
+        <tr><th style='width: 100%; cursor: inherit' colspan='$num_tabs'>$average_text</th></tr>
+        <tr>
+  ";
   my $tab_content = '';
   for (my $i = 0; $i < $num_tabs; $i++)
   {
@@ -1789,7 +1908,7 @@ sub update_readme_and_about
 
   for (my $i = 0; $i < scalar @{$statslist}; $i++)
   {
-    push @statcomments, [$statslist->{Constants::STAT_NAME}, $statslist->{Constants::STAT_DESCRIPTION_NAME}];
+    push @statcomments, [$statslist->[$i]->{Constants::STAT_NAME}, $statslist->[$i]->{Constants::STAT_DESCRIPTION_NAME}];
   }
 
   my @about =
@@ -1805,12 +1924,12 @@ sub update_readme_and_about
       Simply enter a name in the \'Player Name\' field on the main page and hit submit.
       There are other parameters you can use to narrow your search:
 
-      Game Type
+      <h5>Game Type</h5>
       An optional parameter used to search for only casual and club games or only tournament games.
       Games are considered tournament games if they are associated with a tournament and a round number.
       Games tagged as \'Tournament Game\' in cross-tables with no specific tournament are not considered tournament games.
 
-      Tournament ID
+      <h5>Tournament ID</h5>
       An optional parameter used to search for only games of a specific tournament.
       To find a tournament\'s ID, go to that tournament\'s page on cross-tables.com
       and look for the number in the address bar.
@@ -1821,10 +1940,10 @@ sub update_readme_and_about
 
       which has a tournament ID of 10353.
 
-      Lexicon
+      <h5>Lexicon</h5>
       An optional parameter used to search for only games of a specific lexicon.
 
-      Game ID
+      <h5>Game ID</h5>
       An optional parameter used to search for only one game. To find a game\'s ID,
       go to that game\'s page on cross-tables.com and look for the number in the address bar.
       For example, the following game:
@@ -1833,13 +1952,13 @@ sub update_readme_and_about
 
       has a game ID of 31231.
 
-      Opponent Name
+      <h5>Opponent Name</h5>
       An optional parameter used to search for only games against a specific opponent.
 
-      Start Date
+      <h5>Start Date</h5>
       An optional parameter used to search for only games beyond a certain date.
 
-      End Date
+      <h5>End Date</h5>
       An optional parameter used to search for only games before a certain date.
       '
     ],
@@ -1859,11 +1978,12 @@ sub update_readme_and_about
       You might notice that there are some annotated games that are
       not included in your statistics or in the leaderboards. Games
       are omitted if they meet any of the following criteria:
-
-       - The game does not appear on your annotated games page on cross-tables.com
-       - The game gives an error
-       - The game does not have any associated lexicon
-
+      <br><br>
+      <ul>
+       <li>The game does not appear on your annotated games page on cross-tables.com</li>
+       <li>The game gives an error</li>
+       <li>The game does not have any associated lexicon</li>
+      </ul>
 
       Games with no lexicons are omitted because the lexicons are necessary for
       computing several statistics and the resulting inaccuracies could be
@@ -1872,7 +1992,7 @@ sub update_readme_and_about
     ],
     [
       'Development Team',
-      'RandomRacer is maintained by Joshua Castellano. Various contributors
+      'RandomRacer is maintained by Joshua Castellano, but many people have suggested new features. Contributors
       are listed in the Contributions section.'
     ],
     [
@@ -1880,20 +2000,22 @@ sub update_readme_and_about
       '
         The following lists the intellectual contributions made to RandomRacer
         in reverse chronological (roughly) order.
-
-        Win Correlations (James Curley)
-        Dynamic Mistakes (Kenji Matsumoto)
-        Vertical Play statistics (Matthew O\'Connor)
-        Mistakeless Turns statistic (César Del Solar)
-        Saddest/Sadder/Sad mistake magnitudes aliases (Jackson Smylie)
-        Highest Scoring Play statistic (Will Anderson)
-        Discovery of a bug in the Full Rack per Turn statistic (Will Anderson)
-        Notable games (Matthew O\'Connor)
-        Firsts statistic (Ben Schoenbrun)
-        Turns with a blank statistic (Marlon Hill)
-        Discovery of GCG mining bug in the preload script (Ben Schoenbrun)
-        Bingo lists, bingo probabilities, and various statistics (Joshua Sokol)
-        Initial idea (Matthew O\'Connor)
+        <br><br>
+	<ul>
+        <li>Win Correlations (James Curley)</li>
+        <li>Dynamic Mistakes (Kenji Matsumoto)</li>
+        <li>Vertical Play statistics (Matthew O\'Connor)</li>
+        <li>Mistakeless Turns statistic (César Del Solar)</li>
+        <li>Saddest/Sadder/Sad mistake magnitudes aliases (Jackson Smylie)</li>
+        <li>Highest Scoring Play statistic (Will Anderson)</li>
+        <li>Discovery of a bug in the Full Rack per Turn statistic (Will Anderson)</li>
+        <li>Notable games (Matthew O\'Connor)</li>
+        <li>Firsts statistic (Ben Schoenbrun)</li>
+        <li>Turns with a blank statistic (Marlon Hill)</li>
+        <li>Discovery of GCG mining bug in the preload script (Ben Schoenbrun)</li>
+        <li>Bingo lists, bingo probabilities, and various statistics (Joshua Sokol)</li>
+        <li>Initial idea (Matthew O\'Connor)</li>
+	</ul>
       '
     ]
   );
@@ -1910,45 +2032,53 @@ sub update_readme_and_about
     my $content = $item->[1];
     my $style = $styles[$scount];
     my $id = $title;
-    $id =~ s/\s//g;
     $id =~ s/\?/blank/g;
+    $id =~ s/\W//g;
     $id .= '_about';
 
-    if (reftype $content eq 'ARRAY')
+    $readme .= "\n\n# $title\n\n";
+    my $htmlcontent   = $content;
+    my $readmecontent = $content;
+    if (ref($content) eq 'ARRAY')
     {
-      my $newhtmlcontent = '';
+      $htmlcontent   = '';
+      $readmecontent = '';
       for (my $k = 0; $k < scalar @{$content}; $k++)
       {
         my $subitem = $content->[$k];
-        my $subtitle = $subitem->[$k];
-        my $subcontent = $subitem->[$k];
+        my $subtitle = $subitem->[0];
+        my $subcontent = $subitem->[1];
         my $nospacesubtitle = $subtitle;
         $nospacesubtitle =~ s/\s//g;
         $nospacesubtitle =~ s/\?/blank/g;
         my $subid = $id . '_' . $nospacesubtitle;
-
-        my $subexpander = make_expander($subid);
-        $readme .= '<h5>$subtitle</h5>\n\n$subcontent';
-        $newhtmlcontent .=
-        "
-        <div>
-          $subexpander $subtitle
-          <div class='collapse'>
-            $subcontent
-          </div>
-        </div>
-        ";
+        my $subexpander = Utils::make_expander($subid);
+	$subexpander =~ s/\n//g;
+	$subtitle    =~ s/\n//g;
+        $readmecontent .= "<h5>$subtitle</h5>\n\n$subcontent";
+        $htmlcontent .=
+        "<div style='text-align: left'>$subexpander $subtitle<div class='collapse' id='$subid'><div style='padding: 20px'>$subcontent</div></div></div>";
       }
-      $content = $newhtmlcontent;
     }
+    else
+    {
+      $htmlcontent = "<div style='padding: 20px'>$htmlcontent</div>";
+    }
+    $readmecontent =~ s/\s+$//g;
+    chomp($readmecontent);
+    
+    $readmecontent =~ s/(<h.>)/<br><br>\n$1/g;
+    $htmlcontent   =~ s/(<h.>)/<br><br>\n$1/g;
 
-    my $expander = make_expander($id);
-    $readme .= "# $title\n\n$content";
+    $readme .= $readmecontent;
+    my $expander = Utils::make_expander($id);
     $abouthtml .=
     "
     <div $style>
     $expander $title
-    $content
+      <div class='collapse' id='$id'>
+         $htmlcontent
+      </div>
     </div>
     ";
     $scount = 1 - $scount;
@@ -1962,6 +2092,7 @@ sub update_readme_and_about
   my $html_styles                     = Constants::HTML_STYLES;
   my $body_style                      = Constants::HTML_BODY_STYLE;
   my $nav                             = Constants::HTML_NAV;
+  my $collapse_scripts                = Constants::HTML_TABLE_AND_COLLAPSE_SCRIPTS;
   my $default_scripts                 = Constants::HTML_SCRIPTS;
   my $footer                          = Constants::HTML_FOOTER;
   $abouthtml =
@@ -1981,13 +2112,14 @@ sub update_readme_and_about
   </div>
   $abouthtml
   $default_scripts
+  $collapse_scripts
   $footer
   </body>
 </html>
   "
 ;
   open(my $aboutfh, '>', Constants::HTML_DIRECTORY_NAME . '/' . Constants::ABOUT_PAGE_NAME);
-  print $aboutfh $readme;
+  print $aboutfh $abouthtml;
   close $aboutfh;
 }
 

@@ -633,6 +633,10 @@ use constant HTML_STYLES => <<HTMLSTYLES
   {
       vertical-align: 0em;
   }
+  .info
+  {
+    text-align: center;
+  }
   </style>
 
 
