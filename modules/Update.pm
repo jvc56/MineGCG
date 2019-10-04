@@ -10,6 +10,7 @@ use List::Util qw(shuffle);
 use Scalar::Util qw(looks_like_number reftype);
 use Statistics::LineFit;
 use Statistics::Standard_Normal;
+use Math::Gauss;
 
 use lib './objects';
 use lib './modules';
@@ -306,6 +307,7 @@ sub update_leaderboard
 
   my @player_data = @{$dbh->selectall_arrayref("SELECT * FROM $playerstable WHERE $total_games_name >= $min_games", {Slice => {}, "RaiseError" => 1})};
 
+  my %player_tiles_played_percentages = ();
   my %player_win_percentages = ();
   my %player_total_games     = ();
 
@@ -329,13 +331,17 @@ sub update_leaderboard
           my $statname = $statlist->[$i]->{Constants::STAT_NAME};
 
           my $statval      = $statitem->{'total'};
-    my $display_type = $statitem->{Constants::STAT_OBJECT_DISPLAY_NAME};
+          my $display_type = $statitem->{Constants::STAT_OBJECT_DISPLAY_NAME};
           my $is_int       = $statitem->{'int'};
 
-    if ($statname eq 'Wins')
-    {
-      $player_win_percentages{$name} = $statval / $total_games;
-    }
+          if ($statname eq 'Wins')
+          {
+            $player_win_percentages{$name} = $statval / $total_games;
+          }
+	  elsif ($statname eq 'Tiles Played')
+	  {
+            $player_tiles_played_percentages{$name} = ($statval / $total_games) / 100;
+	  }
           add_stat(\%leaderboards, $name, $statname, $statval, $total_games, $display_type, $is_int,\@name_order);
 
           my $subitems = $statitem->{'subitems'};
@@ -512,31 +518,45 @@ TABSCRIPT
         my $link = "<a href='/$cache_dir/$name_with_underscores.html' target='_blank'>$player</a>";
  
         # Calculate binomial stuff
-        my $P = 0.5; # Approximation for now
-        my $total_games = $player_total_games{$player};
-        my $n = $tile_frequencies->{$name} * $total_games;
-        my $mean = $P * $n;
-        my $sigma = sqrt($n) / 2;
-        my $outcome = $average * $total_games;
-        my $z = ($outcome - $mean) / $sigma;
-        my $actual_deviation = $z - ($mean / $n);
-        my $pct = Statistics::Standard_Normal::z_to_pct($actual_deviation);
-        my $prob = $pct;
+	my $confidence  = Constants::CONFIDENCE_LEVEL;
+	my $alpha       = 1 - $confidence;
+	my $pct         = (1 - ($alpha/2)) * 100;
+	my $z           = Statistics::Standard_Normal::pct_to_z($pct);
+        my $P           = $player_tiles_played_percentages{$player};
+	my $total_games = $player_total_games{$player};
+        my $n           = $tile_frequencies->{$name} * $total_games;
+	my $prob        = sprintf "%.4f", $average / $tile_frequencies->{$name};
+	my $interval    = $z * sqrt( ( $P * ( 1 - $P ) ) / $n);
+	my $lower       = sprintf "%.4f", $P - $interval;
+	my $upper       = sprintf "%.4f", $P + $interval;
 
+	my $confidence_interval = "$lower < p < $upper";
+
+	my $row_style = '';
+	if ($prob < $lower || $prob > $upper)
+	{
+          $row_style = 'style="background-color: #bb0000"';
+	}
         #printf "%s,  %s,  %s,  %s,  %s,  %s,  %s,  %s,  %s, %s, %s  \n", $P, $total_games,
         #$n, $mean, $sigma, $outcome, $z, $actual_deviation, $pct, $name, $tile_frequencies->{$name};
 
-        $prob = (sprintf "%.2f", $prob) . '%';
-        my $td_style = "style='width: 50%; text-align: center'";
-        $overtable_content .= "<tr $download ><td $td_style>$link</td><td $td_style>$prob</td></tr>\n";
+	# $prob = (sprintf "%.2f", $prob) . '%';
+        my $td_style = "style='width: 33.333333%; text-align: center'";
+        $overtable_content .=
+	"
+	<tr $download $row_style >
+	  <td $td_style>$link</td>
+	  <td $td_style>$prob</td>
+	  <td $td_style>$confidence_interval</td>
+	</tr>\n";
       }
 
       my $overtable = Utils::make_datatable(
         0,
         $over_table_id,
-        ['Player', 'I Dunno'],
-        ['text-align: center', 'text-align: center'],
-        ['false', 'true'],
+        ['Player', 'Probability (p)', 'Confidence Interval'],
+        ['text-align: center', 'text-align: center', 'text-align: center'],
+        ['false', 'true', 'disable'],
         $overtable_content
       );
 
@@ -1822,13 +1842,13 @@ sub update_readme_and_about
       End Date
       An optional parameter used to search for only games before a certain date.
       '
-    ]
-    [
-      'Statistics, Lists, and Notable Games',
-      $stats_explanation
     ],
     [
-      'Leaderboards'
+      'Statistics, Lists, and Notable Games',
+      \@statcomments
+    ],
+    [
+      'Leaderboards',
       'Leaderboards are updated every midnight (EST).
        Only players with 50 or more games are included in the leaderboards.'
     ],
@@ -1851,7 +1871,7 @@ sub update_readme_and_about
       '
     ],
     [
-      'Development Team'
+      'Development Team',
       'RandomRacer is maintained by Joshua Castellano. Various contributors
       are listed in the Contributions section.'
     ],
@@ -1881,7 +1901,7 @@ sub update_readme_and_about
   my $abouthtml = '';
   my $readme    = '';
 
-  my @styles = (Constants::ODD_DIV_STYLE, Constants::EVEN_DIV_STYLE);
+  my @styles = (Constants::DIV_STYLE_ODD, Constants::DIV_STYLE_EVEN);
   my $scount = 0;
   for (my $i = 0; $i < scalar @about; $i++)
   {
@@ -1905,7 +1925,7 @@ sub update_readme_and_about
         my $nospacesubtitle = $subtitle;
         $nospacesubtitle =~ s/\s//g;
         $nospacesubtitle =~ s/\?/blank/g;
-        my $subid = $id . '_' , $nospacesubtitle;
+        my $subid = $id . '_' . $nospacesubtitle;
 
         my $subexpander = make_expander($subid);
         $readme .= '<h5>$subtitle</h5>\n\n$subcontent';
@@ -1926,7 +1946,7 @@ sub update_readme_and_about
     $readme .= "# $title\n\n$content";
     $abouthtml .=
     "
-    <div $div_style>
+    <div $style>
     $expander $title
     $content
     </div>
@@ -1947,7 +1967,7 @@ sub update_readme_and_about
   $abouthtml =
   "
 <!DOCTYPE html>
-<html lang="en">
+<html lang=\"en\">
   <head>
   $head_content
   $html_styles

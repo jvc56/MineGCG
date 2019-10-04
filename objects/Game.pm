@@ -589,7 +589,7 @@ sub getNumMistakes
       my $comment = $move->{'comment'};
       foreach my $cat (@categories)
       {
-        my @matches = ($comment =~ /#$cat/gi);
+        my @matches = ($comment =~ /[^#]#$cat/gi);
         $mistakes{$cat} += scalar @matches;
       }
     }
@@ -618,7 +618,7 @@ sub getNumDynamicMistakes
     {
       my $comment = $move->{'comment'};
       
-      my @matches = ($comment =~ /#([a-z]+)/gi);
+      my @matches = ($comment =~ /##(\w+)/gi);
 
       outer: foreach my $match (@matches)
       {
@@ -672,7 +672,7 @@ sub getDynamicMistakes
     {
       my $comment = $move->{'comment'};
       
-      my @matches = ($comment =~ /#([a-z]+)/gi);
+      my @matches = ($comment =~ /##(\w+)/gi);
 
       outer: foreach my $match (@matches)
       {
@@ -695,7 +695,9 @@ sub getDynamicMistakes
 	 'Dynamic',
 	 $this->{'id'},
 	 $move->toString($this->readableMove($move)),
-	 $comment];
+	 $comment,
+         $this->getReadableName()
+        ];
       }
     }
   }
@@ -724,7 +726,7 @@ sub getMistakes
       my $comment = $move->{'comment'};
       foreach my $cat (@categories)
       {
-        my @matches = ($comment =~ /#($cat\w*)/gi);
+        my @matches = ($comment =~ /[^#]#($cat\w*)/gi);
         foreach my $m (@matches)
         {
           my $mistake_mag;
@@ -739,7 +741,15 @@ sub getMistakes
           {
             $mistake_mag = Constants::UNSPECIFIED_MISTAKE_NAME;
           }
-          push @mistakes_list, [$cat, $mistake_mag, $this->{'id'}, $move->toString($this->readableMove($move)), $comment];
+          push @mistakes_list,
+	  [
+            $cat,
+            $mistake_mag,
+	    $this->{'id'},
+	    $move->toString($this->readableMove($move)),
+	    $comment,
+            $this->getReadableName()
+          ];
         }
       }
     }
@@ -749,7 +759,7 @@ sub getMistakes
 
 sub getNumTurns
 {
-	my $this = shift;
+  my $this = shift;
 
   my $player = shift;
 

@@ -1057,7 +1057,6 @@ sub statsList
       Any other errors that appear are rare and likely due to a bug.
       If you see an error or warning that was not described above,
       please email them to joshuacastellano7@gmail.com.
-
       ',
       Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
@@ -1226,11 +1225,7 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Triple Triples',
-      Constants::STAT_DESCRIPTION_NAME =>
-      '
-      Triple triples played by the player that were not challenged off.
-      They do not have to be bingos.
-      ',
+      Constants::STAT_DESCRIPTION_NAME =>'Triple triples played by the player that were not challenged off. They do not have to be bingos.',
       Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -1280,6 +1275,7 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Challenged Phonies',
+      Constants::STAT_DESCRIPTION_NAME =>
       '
       Plays made by the player that
       formed at least one phony and were challenged off by an opponent.
@@ -1362,7 +1358,7 @@ sub statsList
       Constants::STAT_DESCRIPTION_NAME =>
       '
       The number of wins of the player.
-      '
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {'total' => 0},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -3099,23 +3095,7 @@ sub statsList
       Constants::STAT_NAME => 'Mistakes',
       Constants::STAT_DESCRIPTION_NAME =>
       "
-The mistakes statistic if a self-reported statistic that is divided into 7 categories (knowledge, finding, vision, tactics, strategy, time, endgame, and focus). To mark a move as a mistake in your annotated game, include the tag of the mistake in the comment of the move. You can also tag the magnitude (large, medium, or small) of the mistake which will organize your mistakes by magnitude in the mistakes table. For example, if you missed a bingo because you haven't studied it yet, that would probably be a large mistake due to word knowledge (called 'knowledge' in this case) which you can tag by adding the following in your comment of the move:
-
-#knowledgelarge
-
-The large, medium, and small magnitudes can also be denoted by 'saddest', 'sadder', and 'sad' respecitvely. For example, to tag a mistake as a large time mistake, you can write:
-
-#timeSADDEST
-
-If you do not want to specify the magnitude of the mistake you can omit the magnitude part of the tag:
-
-#knowledge
-
-If you tag the mistake like this the mistake will appear under the 'Unspecified' category in the mistakes table. You can also mark a move with more than one mistake:
-
-#findingmedium blah blah blah #tacticslarge
-
-The tags are case insensitive and can appear anywhere in any order in the comment. Keep in mind that mistakes are associated with moves, and moves are associated with players, so be sure to tag your mistakes on your moves only. For example, if you don't challenge a phony play, you can write the commentary on your opponent's move, but include the tags on your succeeding move to make sure they appear as your mistakes and not your opponents'.
+yeet
       ",
       Constants::STAT_ITEM_OBJECT_NAME =>
       {

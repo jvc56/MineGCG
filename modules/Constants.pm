@@ -54,7 +54,7 @@ use constant TOURNAMENT_OPTION                => 'Tournament';
 use constant CASUAL_OPTION                    => 'Casual';
 
 use constant CHART_TAB_NAME                   => 'Win Correlation';
-
+use constant CONFIDENCE_LEVEL                 => 0.99;
 use constant ANNOTATED_GAMES_API_CALL         => 'http://cross-tables.com/rest/allanno.php';
 use constant PLAYER_INFO_API_CALL             => 'http://cross-tables.com/rest/player.php?player=';
 use constant TOURNAMENT_INFO_API_CALL         => 'http://cross-tables.com/rest/tourney.php?tourney=';
