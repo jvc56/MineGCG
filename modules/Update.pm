@@ -7,7 +7,7 @@ use strict;
 use Data::Dumper;
 use Cwd;
 use List::Util qw(shuffle);
-use Scalar::Util qw(looks_like_number);
+use Scalar::Util qw(looks_like_number reftype);
 use Statistics::LineFit;
 use Statistics::Standard_Normal;
 
@@ -521,7 +521,7 @@ TABSCRIPT
         my $z = ($outcome - $mean) / $sigma;
         my $actual_deviation = $z - ($mean / $n);
         my $pct = Statistics::Standard_Normal::z_to_pct($actual_deviation);
-        my $prob = 2 * abs($pct - 50);
+        my $prob = $pct;
 
         #printf "%s,  %s,  %s,  %s,  %s,  %s,  %s,  %s,  %s, %s, %s  \n", $P, $total_games,
         #$n, $mean, $sigma, $outcome, $z, $actual_deviation, $pct, $name, $tile_frequencies->{$name};
@@ -1764,9 +1764,16 @@ NOTABLE
 
 sub update_readme_and_about
 {
+  my $statslist = Stats::statsList();
+  my @statcomments = ();
 
-  my $about =
-  [
+  for (my $i = 0; $i < scalar @{$statslist}; $i++)
+  {
+    push @statcomments, [$statslist->{Constants::STAT_NAME}, $statslist->{Constants::STAT_DESCRIPTION_NAME}];
+  }
+
+  my @about =
+  (
     [
       'RandomRacer',
       'This is RandomRacer, a site that collects and presents statistics
@@ -1817,7 +1824,7 @@ sub update_readme_and_about
       '
     ]
     [
-      'Statistics and Lists',
+      'Statistics, Lists, and Notable Games',
       $stats_explanation
     ],
     [
@@ -1869,7 +1876,99 @@ sub update_readme_and_about
         Initial idea (Matthew O\'Connor)
       '
     ]
-  ];
+  );
+
+  my $abouthtml = '';
+  my $readme    = '';
+
+  my @styles = (Constants::ODD_DIV_STYLE, Constants::EVEN_DIV_STYLE);
+  my $scount = 0;
+  for (my $i = 0; $i < scalar @about; $i++)
+  {
+    my $item = $about[$i];
+    my $title = $item->[0];
+    my $content = $item->[1];
+    my $style = $styles[$scount];
+    my $id = $title;
+    $id =~ s/\s//g;
+    $id =~ s/\?/blank/g;
+    $id .= '_about';
+
+    if (reftype $content eq 'ARRAY')
+    {
+      my $newhtmlcontent = '';
+      for (my $k = 0; $k < scalar @{$content}; $k++)
+      {
+        my $subitem = $content->[$k];
+        my $subtitle = $subitem->[$k];
+        my $subcontent = $subitem->[$k];
+        my $nospacesubtitle = $subtitle;
+        $nospacesubtitle =~ s/\s//g;
+        $nospacesubtitle =~ s/\?/blank/g;
+        my $subid = $id . '_' , $nospacesubtitle;
+
+        my $subexpander = make_expander($subid);
+        $readme .= '<h5>$subtitle</h5>\n\n$subcontent';
+        $newhtmlcontent .=
+        "
+        <div>
+          $subexpander $subtitle
+          <div class='collapse'>
+            $subcontent
+          </div>
+        </div>
+        ";
+      }
+      $content = $newhtmlcontent;
+    }
+
+    my $expander = make_expander($id);
+    $readme .= "# $title\n\n$content";
+    $abouthtml .=
+    "
+    <div $div_style>
+    $expander $title
+    $content
+    </div>
+    ";
+    $scount = 1 - $scount;
+  }
+
+  open(my $readmefh, '>', 'README.md');
+  print $readmefh $readme;
+  close $readmefh;
+
+  my $head_content                    = Constants::HTML_HEAD_CONTENT;
+  my $html_styles                     = Constants::HTML_STYLES;
+  my $body_style                      = Constants::HTML_BODY_STYLE;
+  my $nav                             = Constants::HTML_NAV;
+  my $default_scripts                 = Constants::HTML_SCRIPTS;
+  my $footer                          = Constants::HTML_FOOTER;
+  $abouthtml =
+  "
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  $head_content
+  $html_styles
+  </head>
+  <body $body_style>
+  $nav
+  <div style='text-align: center; vertical-align: middle; padding: 2%'>
+    <h1>
+      About
+    </h1>
+  </div>
+  $abouthtml
+  $default_scripts
+  $footer
+  </body>
+</html>
+  "
+;
+  open(my $aboutfh, '>', Constants::HTML_DIRECTORY_NAME . '/' . Constants::ABOUT_PAGE_NAME);
+  print $aboutfh $readme;
+  close $aboutfh;
 }
 
 1;

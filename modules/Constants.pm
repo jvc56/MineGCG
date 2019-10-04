@@ -49,10 +49,7 @@ use constant HTML_STATIC_DIRECTORY_NAME       => './html_static';
 use constant LEGACY_DIRECTORY_NAME            => './legacy';
 use constant NAME_ID_DATA_FILENAME            => 'NameConversion.pm';
 use constant NAME_ID_VARIABLE_NAME            => 'NAMES_TO_IDS';
-use constant BLACKLISTED_TOURNAMENTS          => {
-                                                    '9194' => 1 # Can-Am Match 08/29/15
-                                                 };
-
+use constant ABOUT_PAGE_NAME                  => 'about.html';
 use constant TOURNAMENT_OPTION                => 'Tournament';
 use constant CASUAL_OPTION                    => 'Casual';
 
@@ -459,6 +456,8 @@ use constant GAMEERROR_OTHER         => 'Other';
 use constant STAT_OBJECT_DISPLAY_NAME   => 'display';
 use constant STAT_OBJECT_DISPLAY_TOTAL  => 'total';
 use constant STAT_OBJECT_DISPLAY_PCAVG  => 'pcavg';
+
+use constant STAT_DESCRIPTION_NAME      => 'description';
 
 use constant DATATYPE_LIST => 'list';
 use constant DATATYPE_ITEM => 'item';

@@ -1031,6 +1031,34 @@ sub statsList
   [
     {
       Constants::STAT_NAME => 'Errors',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      Errors are (most likely) the result of malformed GCG files.
+      Common errors are described below:
+
+      <h5>No moves found</h5>
+      This error appears when an empty GCG file is detected.
+      <h5>Disconnected play detected</h5>
+      This error appears when a play is made that does not connect to other tiles on the board.
+      <h5>Both players have the same name</h5>
+      This error appears when both players have the exact same name. In this case the program cannot distinguish who is making which plays.
+      <h5>No valid lexicon found</h5>
+      This error appears when the game is not tagged with a lexicon or the game uses an unrecognized lexicon, such as THTWL85.
+      <h5>Game is incomplete</h5>
+      This error appears when the GCG file is incomplete.
+
+
+      The errors above are relatively common and well-tested.
+      If you encounter any of these errors, it probably means
+      that the GCG file of the game is somehow malformed or tagged incorrectly.
+      To correct these errors, update the game on cross-tables.com and
+      the corrected version should appear in your stats the next day.
+
+      Any other errors that appear are rare and likely due to a bug.
+      If you see an error or warning that was not described above,
+      please email them to joshuacastellano7@gmail.com.
+
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_ERROR,
@@ -1047,6 +1075,25 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Warnings',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      Warnings are for letting players know that they
+      might want to correct certain GCG files. The complete
+      list of warnings is below:
+      
+      <h5>Duplicate game detected</h5>
+      This appears when two games with the same tournament
+      and round number are detected. The duplicate game is
+      not included in statistics or leaderboards. It probably
+      means that both you and your opponent uploaded the same
+      game. In this case the racks that you recorded might
+      have been overwritten when you opponent uploaded their game.
+
+      <h5>Note before moves detected</h5>
+      Notes that appear before moves are not associated with
+      either player, so mistakes tagged in these notes will
+      not be recorded.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_ERROR,
@@ -1063,6 +1110,11 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Games',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The number of valid games RandomRacer retrieved
+      from cross-tables.com.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME =>  {'total' => 0, Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_TOTAL, 'int' => 1},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_GAME,
@@ -1084,6 +1136,11 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Invalid Games',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The number of games that threw an error
+      when being processed by RandomRacer.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME =>
       {
         'total' => 0,
@@ -1118,6 +1175,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Total Turns',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The total number of turns of the player and the opponent.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME =>  {'total' => 0},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_GAME,
@@ -1139,6 +1200,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Bingos',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The number of bingos played by the player that were not challenged off.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -1161,6 +1226,11 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Triple Triples',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      Triple triples played by the player that were not challenged off.
+      They do not have to be bingos.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -1183,6 +1253,11 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Bingo Nines or Above',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      Bingos played by the player that were nine
+      letters or longer and were not challenged off.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -1205,6 +1280,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Challenged Phonies',
+      '
+      Plays made by the player that
+      formed at least one phony and were challenged off by an opponent.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME =>  {'list' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -1227,6 +1306,11 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Unchallenged Phonies',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      Plays made by the player that formed
+      at least one phony and were not challenged by an opponent.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME =>  {'list' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -1249,6 +1333,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Plays That Were Challenged',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      Plays made by the player that were challenged by an opponent.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME =>  {'list' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -1271,6 +1359,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Wins',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The number of wins of the player.
+      '
       Constants::STAT_ITEM_OBJECT_NAME => {'total' => 0},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -1293,6 +1385,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Score',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The game score of the player.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME =>  {'total' => 0},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -1315,6 +1411,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Score per Turn',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The average score per turn of the player based on all of their games.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME =>  {Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG, 'total' => 0, 'total_score' => 0, 'total_turns' => 0},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -1341,6 +1441,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Turns',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The number of turns made by the player.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME =>
       {
         'total' => 0,
@@ -1388,6 +1492,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Firsts',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The number of times the player went first.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {'total' => 0},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -1410,6 +1518,11 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Vertical Openings per First',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The number of times the player went first and opened vertically.
+      Vertical openings that were challenged off do not count.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG, 'total' => 0, 'total_firsts' => 0, 'total_verticals' => 0},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -1444,6 +1557,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Full Rack per Turn',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The percentage of fully annotated racks out of all of the players racks for every game.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG, 'total' => 0, 'total_full_racks' => 0, 'total_turns' => 0},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -1470,6 +1587,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Exchanges',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The number of exchanges made by the player.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME =>  {'total' => 0},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -1492,6 +1613,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'High Game',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The player\'s highest game.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME =>  {'total' => -10000, Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG, 'int' => 1},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -1527,6 +1652,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Low Game',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The player\'s lowest game.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {'total' => 100000, Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG, 'int' => 1},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -1562,6 +1691,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Highest Scoring Turn',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The player\s highest scoring turn.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME =>  {'total' => -1, Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG, 'int' => 1},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -1597,6 +1730,11 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Bingos Played',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The number of bingos played by the player that were not challenged off, shown
+      as a total and broken down by length.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME =>
       {
         'total' => 0,
@@ -1661,6 +1799,12 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Bingo Probabilities',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The average probabilities of the bingos played by the player.
+      These are the probabilities as listed in the Zyzzyva word study program, so higher
+      values are less probable.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME =>
       {
           Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG,
@@ -1835,6 +1979,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Tiles Played',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The number of tiles played by the player.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME =>
       {
           'subitems' => 
@@ -1932,6 +2080,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Power Tiles Played',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The power number of tiles played by the player. This includes J, Q, X, Z, S, and the blank.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME =>
       {
           'subitems' =>
@@ -1993,6 +2145,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Power Tiles Stuck With',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The number of power tiles left on the player\'s rack after the opponent went out.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME =>
       {
           'subitems' =>
@@ -2054,6 +2210,12 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Turns With a Blank',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The number turns that the play had a blank on their rack.
+      This statistic is only meaningful for players with a significant
+      portion of the full racks recorded.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {'total' => 0},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -2076,6 +2238,11 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Triple Triples Played',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The number of triple triples played by the player.
+      The triple triples do not have to be bingos.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {'total' => 0},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -2098,6 +2265,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Bingoless Games',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The number of games where the player does not bingo.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {'total' => 0},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -2120,6 +2291,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Bonus Square Coverage',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The number of bonus squares that the player covered.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME =>
       {
           'subitems' =>
@@ -2173,6 +2348,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Phony Plays',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The number of phony plays made by the player, both challenged and unchalleged.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME =>
       {
           'subitems' =>
@@ -2218,6 +2397,12 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Challenges',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The number of challenges made by both the player and the opponent, broken down
+      by challenges that the player made against opponent\'s plays and challenges
+      that the opponent made against the player\'s plays.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME =>
       {
         'total' => 0,
@@ -2273,6 +2458,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Challenge Percentage',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The percentage of challenges that the player made against an opponent\'s play which were successful.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG, 'total' => 0, 'challenges' => 0, 'successful_challenges' => 0},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -2316,6 +2505,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Defending Challenge Percentage',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The percentage of challenges made by opponents against the player\'s plays that were unsuccessful.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG, 'total' => 0, 'challenges' => 0, 'successful_challenges' => 0},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -2359,6 +2552,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Percentage Phonies Unchallenged',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The percentage of plays that formed a phony and were not challenged off by an opponent.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG, 'total' => 0, 'num_phonies' => 0, 'num_phonies_unchal' => 0},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -2401,6 +2598,11 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Comments',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The number of comments made in the GCG file.
+      This stat counts comments that appear on both the player and the opponent\'s turn.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {'total' => 0},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -2423,6 +2625,11 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Comments Word Length',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The number words in all the comments of the GCG file of the game.
+      This stat counts comments that appear on the player\'s turn and the opponent\'s turn.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME =>  {'total' => 0},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -2472,6 +2679,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Many Double Words Covered',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      Games in which at least 15 double word bonus squares were covered.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {'list' => [], 'ids' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
@@ -2509,6 +2720,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'All Triple Letters Covered',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      Games in which every triple letter bonus square was covered.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {'list' => [], 'ids' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
@@ -2535,6 +2750,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'All Triple Words Covered',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      Games in which every triple word bonus square was covered.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {'list' => [], 'ids' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
@@ -2561,6 +2780,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'High Scoring',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      Games in which at least one player scores at least 700 points.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {'list' => [], 'ids' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
@@ -2587,6 +2810,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Combined High Scoring',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      Games in which the combined score is at least 1100 points.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {'list' => [], 'ids' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
@@ -2613,6 +2840,13 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Combined Low Scoring',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      Games in which the combined score is no greater than 200 points.
+      Many games on cross-tables.com end before a combined score of 200 points
+      but are considered incomplete and are not counted. Many valid six pass games
+      are not included because they are malformed.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {'list' => [], 'ids' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
@@ -2639,6 +2873,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Ties',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      Games that end in ties.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {'list' => [], 'ids' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
@@ -2665,6 +2903,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'One Player Plays Every Power Tile',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      Games in which one player plays the Z, X, Q, J, every blank, and every S.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {'list' => [], 'ids' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
@@ -2705,6 +2947,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'One Player Plays Every E',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      Games in which one player plays every E.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {'list' => [], 'ids' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
@@ -2736,6 +2982,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Many Challenges',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      Games in which there are at least 5 challenges by either player.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {'list' => [], 'ids' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
@@ -2769,6 +3019,11 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Mistakeless Turns',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The number of turns the player made that are not tagged with a mistake.
+      Dynamic mistakes do not count for this statistic.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {'total' => 0},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -2790,6 +3045,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Mistakes per Turn',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The number of mistakes that the player makes per turn.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME =>
       {
         Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG,
@@ -2838,6 +3097,26 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Mistakes',
+      Constants::STAT_DESCRIPTION_NAME =>
+      "
+The mistakes statistic if a self-reported statistic that is divided into 7 categories (knowledge, finding, vision, tactics, strategy, time, endgame, and focus). To mark a move as a mistake in your annotated game, include the tag of the mistake in the comment of the move. You can also tag the magnitude (large, medium, or small) of the mistake which will organize your mistakes by magnitude in the mistakes table. For example, if you missed a bingo because you haven't studied it yet, that would probably be a large mistake due to word knowledge (called 'knowledge' in this case) which you can tag by adding the following in your comment of the move:
+
+#knowledgelarge
+
+The large, medium, and small magnitudes can also be denoted by 'saddest', 'sadder', and 'sad' respecitvely. For example, to tag a mistake as a large time mistake, you can write:
+
+#timeSADDEST
+
+If you do not want to specify the magnitude of the mistake you can omit the magnitude part of the tag:
+
+#knowledge
+
+If you tag the mistake like this the mistake will appear under the 'Unspecified' category in the mistakes table. You can also mark a move with more than one mistake:
+
+#findingmedium blah blah blah #tacticslarge
+
+The tags are case insensitive and can appear anywhere in any order in the comment. Keep in mind that mistakes are associated with moves, and moves are associated with players, so be sure to tag your mistakes on your moves only. For example, if you don't challenge a phony play, you can write the commentary on your opponent's move, but include the tags on your succeeding move to make sure they appear as your mistakes and not your opponents'.
+      ",
       Constants::STAT_ITEM_OBJECT_NAME =>
       {
         'total'    => 0,
@@ -2878,6 +3157,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Mistakes List',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The listing of all of the player\'s mistakes.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -2900,6 +3183,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Dynamic Mistakes',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      More on this later.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME =>
       {
         'total'    => 0,
@@ -2948,6 +3235,10 @@ sub statsList
     },
     {
       Constants::STAT_NAME => 'Dynamic Mistakes List',
+      Constants::STAT_DESCRIPTION_NAME =>
+      '
+      The listing of the player\'s dynamic mistakes.
+      ',
       Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
