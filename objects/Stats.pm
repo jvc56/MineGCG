@@ -347,10 +347,10 @@ sub toString
   if ($stmp){$stylebit = 1 - $stylebit;}
   $s .= $stmp; 
   $stmp = statItemsToHTML(\@player_item_stats, $num, 'Player Stats', 'player_stats_expander', $styles[$stylebit]);
-  if ($stmp){$stylebit = 1 - $stylebit;}
+  #if ($stmp){$stylebit = 1 - $stylebit;}
   $s .= $stmp; 
   $stmp = statItemsToHTML(\@opp_item_stats,    $num, 'Opponent Stats', 'opp_stats_expander', $styles[$stylebit]);
-  if ($stmp){$stylebit = 1 - $stylebit;}
+  #if ($stmp){$stylebit = 1 - $stylebit;}
   $s .= $stmp; 
   $stmp = mistakesToHTML($player_mistake_list, 'Player Mistakes', 'player_mistakes_expander', $styles[$stylebit]);
   if ($stmp){$stylebit = 1 - $stylebit;}
@@ -543,6 +543,8 @@ sub statItemsToHTML
   my $width_style = "style='$width_style_part'";
   my $also_centered = "style='$width_style_part text-align: center'";
 
+  my @confidence_array = ();
+
   for(my $i = 0; $i < scalar @{$listref}; $i++)
   {
     my $statitem     = $listref->[$i];
@@ -615,6 +617,24 @@ sub statItemsToHTML
           <td $also_centered>$subtotal</td>
         </tr>
         ";
+        if ($title eq 'Tiles Played' && length $subtitle == 1)
+        {
+          my $tile_frequencies = Constants::TILE_FREQUENCIES; 
+          my $P           = $average;
+          my $total_games = $numgames;
+          my $f           = $tile_frequencies->{$subtitle};
+          my $n           = $f * $total_games;
+          my ($lower, $upper) = get_confidence_interval($P, $n);
+          my $prob        = sprintf "%.4f", $average / $f;
+
+          my $confidence_interval = "$lower < p < $upper";
+          push @confidence_array,
+          [
+            $subtitle,
+            $prob,
+            $confidence_interval
+          ];
+        }
       }
       $content .=
       "
@@ -642,7 +662,64 @@ sub statItemsToHTML
   );
 
   my $group_expander = Utils::make_expander($group_expander_id);
-  return make_group($group_expander, $grouptitle, $group_expander_id, $div_style, $content);
+  my $statslist_string = make_group($group_expander, $grouptitle, $group_expander_id, $div_style, $content);
+  if (@confidence_array)
+  {
+    my $cilearntext   = 'To learn more about these statistics, check the \'Confidence Intervals\' section on the <a href="/about.html">about page</a>.';
+    my $cititle       = 'Player Confidence Intervals';
+    if ($grouptitle =~ /Opponent/i)
+    {
+      $cititle = 'Opponent Confidence Intervals';
+    }
+    my $ciexpander_id = 'confidence_intervals';
+    my $citable_id    = $ciexpander_id . '_table_id';
+    my $citable_content = '';
+
+    for (my $i = 0; $i < @confidence_array; $i++)
+    {
+      my $item  = shift @confidence_array;
+      my $tile   = $item->[0];
+      my $prob   = $item->[1];
+      my $intv   = $item->[2];
+
+      my $width = 100 / 3;
+      my $width_style_part = "width: $width%;";
+      my $width_style = "style='$width_style_part'";
+
+      $citable_content .=
+      "
+        <tr $download >
+          <td style='text-align: center; $width_style_part' >$tile</td>
+          <td style='text-align: center; $width_style_part' >$prob</td>
+          <td style='text-align: center; $width_style_part' >$intv</td>
+        </tr>\n";
+    }  
+
+    my $cilist_table = Utils::make_datatable(
+      $ciexpander_id,
+      $citable_id,
+      ['Tile', 'Probability', 'CI'],
+      ['text-align: center', 'text-align: center', 'text-align: center'],
+      ['false', 'true', 'disable'],
+      $citable_content,
+      0,
+      0,
+      $cilearntext
+    );
+
+    my $ciexpander = Utils::make_expander($ciexpander_id);
+  
+    my $cicontent = Utils::make_content_item($ciexpander, $cititle, $cilist_table);
+    my $cigroup_expander_id = 'group_confidence_interval_expander';
+    my $group_expander = Utils::make_expander($group_expander_id);
+    my @styles = (Constants::DIV_STYLE_ODD, Constants::DIV_STYLE_EVEN);
+    if ($div_style eq $styles[0])
+    {
+      $div_style = $styles[1];
+    }
+    $statslist_string .= make_group($group_expander, $grouptitle, $group_expander_id, $div_style, $cicontent);
+  }
+  return $statslist_string;
 }
 
 sub statListToHTML

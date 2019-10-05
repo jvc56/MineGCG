@@ -9,6 +9,7 @@ use DBI;
 use utf8;
 use Encode;
 use Cwd;
+use Statistics::Standard_Normal;
 
 use lib "./objects"; 
 use lib "./lexicons";
@@ -17,6 +18,21 @@ use lib "./modules";
 use Constants;
 use Game;
 use JSON::XS;
+
+sub get_confidence_interval
+{
+  my $P           = shift;
+  my $n           = shift;
+
+  my $alpha       = 1 - Constants::CONFIDENCE_LEVEL;
+  my $pct         = (1 - ($alpha/2)) * 100;
+  my $z           = Statistics::Standard_Normal::pct_to_z($pct);
+  my $interval    = $z * sqrt( ( $P * ( 1 - $P ) ) / $n);
+  my $lower       = sprintf "%.4f", $P - $interval;
+  my $upper       = sprintf "%.4f", $P + $interval;
+
+  return ($lower, $upper);
+}
 
 sub make_datatable
 {

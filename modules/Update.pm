@@ -10,7 +10,6 @@ use List::Util qw(shuffle min max);
 use Scalar::Util qw(looks_like_number reftype);
 use Statistics::LineFit;
 use Statistics::Standard_Normal;
-use Math::Gauss;
 
 use lib './objects';
 use lib './modules';
@@ -564,18 +563,12 @@ TABSCRIPT
         my $link = "<a href='/$cache_dir/$name_with_underscores.html' target='_blank'>$player</a>";
  
         # Calculate binomial stuff
-	my $confidence  = Constants::CONFIDENCE_LEVEL;
-	my $alpha       = 1 - $confidence;
-	my $pct         = (1 - ($alpha/2)) * 100;
-	my $z           = Statistics::Standard_Normal::pct_to_z($pct);
-	my $P           = $player_tiles_played_percentages{$player};
-	#my $P           = $average / $tile_frequencies->{$name};
-	my $total_games = $player_total_games{$player};
-        my $n           = $tile_frequencies->{$name} * $total_games;
-	my $prob        = sprintf "%.4f", $average / $tile_frequencies->{$name};
-	my $interval    = $z * sqrt( ( $P * ( 1 - $P ) ) / $n);
-	my $lower       = sprintf "%.4f", $P - $interval;
-	my $upper       = sprintf "%.4f", $P + $interval;
+  my $P           = $player_tiles_played_percentages{$player};
+  my $total_games = $player_total_games{$player};
+  my $n           = $tile_frequencies->{$name} * $total_games;
+  my ($lower, $upper) = get_confidence_interval($P, $n);
+
+  my $prob        = sprintf "%.4f", $average / $tile_frequencies->{$name};
 
 	my $confidence_interval = "$lower < p < $upper";
 
@@ -2139,7 +2132,7 @@ Let \(P\) be the percentage of all tiles played by the player. For example, if t
 \[I = z * \sqrt{P * ( 1 - P ) \over n} \]
 \[l = P - I \]
 \[u = P + I \]
-As mentioned above, the observed probability, which we will denote as \(p\), is simply the average number of times that the player plays tile \(t\) per game, divided by how many tiles \(t\) are in the bag. If the observed probability \(p\) is less than \(l\), it is considered below the confidence interval and the row will be highlighted green. If the observed probability \(p\) is greater than \(u\), it is considered above the confidence interval and the row will be highlighted green. If the distribution of tiles played is completely random, as our observations of the random variable \(p\) increases, we should expect to see \(p\) fall within the confidence interval for 99% of those observations. Keep in mind that the leaderboards only give a single observation for \(p\).
+As mentioned above, the observed probability, which we will denote as \(p\), is simply the average number of times that the player plays tile \(t\) per game, divided by how many tiles \(t\) are in the bag. If the observed probability \(p\) is less than \(l\), it is considered below the confidence interval and the row will be highlighted green. If the observed probability \(p\) is greater than \(u\), it is considered above the confidence interval and the row will be highlighted green. If the distribution of tiles played is completely random, as our observations of the random variable \(p\) increases, we should expect to see \(p\) fall within the confidence interval for 99% of those observations. Keep in mind that the leaderboards only give a single observation of \(p\) for a given tile and player.
 </div>
 <br><br>
 Please note that probabilities that fall outside the confidence interval are in no way suspect. The sample of games analyzed by RandomRacer is subject to a heavy selection bias. Sometimes people tend to only post their good or their bad games. This can cause more probabilities than expected to fall outside the confidence interval. Also, with 26 tiles and about 200 players on the leaderboard and a 99% confidence interval, we can reasonably expect that about 26 * 200 * .01 = 52 probabilities will fall outside the given confidence interval. This is exactly in line with the approximately 50 probabilities that have done so in reality.'
