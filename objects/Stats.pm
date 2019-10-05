@@ -208,239 +208,10 @@ sub addError
   my @items = split /;/, $error;
   push @{$error_stat->{'list'}}, \@items;
 }
-sub makeTitleRow
-{
-  my $tiw = shift;
-  my $aw  = shift;
-  my $tow = shift;
-  my $a   = shift;
-  my $b   = shift;
-  my $c   = shift;
-
-  return "|" . (sprintf "%-$tiw"."s", $a) .
-               (sprintf "%-$aw"."s", $b)  .
-               (sprintf "%-$tow"."s", $c) . "|\n";
-}
-
-sub makeRow
-{
-  my $this = shift;
-  my $tiw = Constants::TITLE_WIDTH;
-  my $aw =  Constants::AVERAGE_WIDTH;
-  my $tow = Constants::TOTAL_WIDTH;
-  my $name = shift;
-  my $total = shift;
-  my $num_games = shift;
-
-  $name =~ /^(\s*)/;
-
-  my $average = sprintf "%.2f", $total/$num_games;
-
-  if ($this->{Constants::STAT_OBJECT_DISPLAY_NAME} && $this->{Constants::STAT_OBJECT_DISPLAY_NAME} eq Constants::STAT_OBJECT_DISPLAY_PCAVG)
-  {
-    $average = $total;
-    $total = '-';
-  }
-
-  if ($this->{'link'})
-  {
-    my $link = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX . $this->{'link'};
-    $tiw -= length $name;
-    $name = "<a href='$link' target='_blank'>$name</a>";
-    $tiw += length $name;
-  }
-
-  my $spaces = $1;
-  $tow = $tow - (length $spaces);
-
-  my $s = "";
-
-  $s .= "|" .  (sprintf "%-$tiw"."s", "  ".$name) . 
-               (sprintf $spaces."%-$aw"."s", $average) . 
-               (sprintf "%-$tow"."s", $total) . "|\n";
-  return $s;
-}
-sub makeItem
-{
-  my $this = shift;
-  my $name = shift;
-  my $total = shift;
-  my $num_games = shift;
-
-  my $r = makeRow($this, $name, $total, $num_games);
-
-  if ($this->{'subitems'})
-  {
-    my %subs  = %{$this->{'subitems'}};
-    my @order = @{$this->{'list'}};
-    for (my $i = 0; $i < scalar @order; $i++)
-    {
-      my $key = $order[$i];
-      $r .= makeRow($this, "  " . $key, $subs{$key}, $num_games);
-    }
-  }
-  return $r;
-}
-
-sub makeMistakeItem
-{
-  my $this         = shift;
-  my $html         = shift;
-  my $mistake_item = shift;
-  my $is_title_row = shift;
-  my $num_mistakes = shift;
-
-  my $s = "";
-
-  if ($is_title_row)
-  {
-    if ($html)
-    {
-      $s .= "<tr>\n";
-      $s .= "<td colspan='$is_title_row' align='center'><b>$mistake_item Mistakes ($num_mistakes)</b></td>\n";
-      $s .= "</tr>\n";
-    }
-    else
-    {
-      $s .= "\n$mistake_item Mistakes\n";
-    }
-    return $s;
-  }
-
-  my @mistake_array = @{$mistake_item};
-  my $mm = $mistake_array[1];
-  if ($html)
-  {
-    my $color_hash = Constants::MISTAKE_COLORS;
-    my $color = $color_hash->{$mistake_array[0]};
-
-    $s .= "<tr style='background-color: $color'>\n";
-    $s .= "<td>$mistake_array[0]</td>\n";
-    $s .= "<td>$mm</td>\n";
-    $s .= "<td>$mistake_array[2]</td>\n";
-    $s .= "<td>$mistake_array[3]</td>\n";
-    $s .= "<td>$mistake_array[4]</td>\n";
-    $s .= "</tr>\n";
-  }
-  else
-  {
-    $s .= "Mistake:   $mistake_array[0]\n";
-    $s .= "Magnitude: $mm              \n";
-    $s .= "Game:      $mistake_array[2]\n";
-    $s .= "Play:      $mistake_array[3]\n";
-    $s .= "Comment:   $mistake_array[4]\n";
-  }
-  return $s;
-}
-
-sub statItemToString
-{
-  my $this        = shift;
-  my $total_games = shift;
-  my $type        = shift;
-  my $html        = shift;
-
-  my $tiw = Constants::TITLE_WIDTH;
-  my $aw =  Constants::AVERAGE_WIDTH;
-  my $tow = Constants::TOTAL_WIDTH;
-  my $tot = $tiw + $aw + $tow;
-
-  my $s = "";
-  if ($type && $type eq Constants::STAT_ITEM_LIST)
-  {
-    $s .= "\n".$this->{Constants::STAT_NAME} . ": ";
-    my @list = @{$this->{'list'}};
-    for (my $i = 0; $i < scalar @list; $i++)
-    {
-      my $commaspace = ", ";
-      if ($i == (scalar @list) - 1)
-      {
-        $commaspace = "\n";
-      }
-      $s .= $list[$i] . $commaspace;
-    }
-    $s .= "\n";
-  }
-  elsif ($type && $type eq Constants::MISTAKE_ITEM_LIST)
-  {
-    $s .= "\n";
-    my @list = @{$this->{'list'}};
-
-
-    if ($html && scalar @list > 0)
-    {
-      $s .= "<table>\n<tbody>\n";
-    }
-
-    my @mistakes_magnitude = Constants::MISTAKES_ORDER;
-
-    my %magnitude_strings = ();
-
-    my %mistakes_magnitude_count = ();
-
-    foreach my $mag (@mistakes_magnitude)
-    {
-      $magnitude_strings{$mag} = "";
-      $mistakes_magnitude_count{$mag} = 0;
-    }
-
-    my $mistake_elements_length;
-
-    for (my $i = 0; $i < scalar @list; $i++)
-    {
-      my @mistake_elements = @{$list[$i]};
-      $mistake_elements_length = scalar @mistake_elements;
-      $magnitude_strings{$mistake_elements[1]} .= makeMistakeItem($this, $html, $list[$i], 0);
-      $mistakes_magnitude_count{$mistake_elements[1]}++;
-    }
-
-    for (my $i = 0; $i < scalar @mistakes_magnitude; $i++)
-    {
-      my $mag = $mistakes_magnitude[$i];
-      if ($magnitude_strings{$mag})
-      {
-        if ($html)
-        {
-          $s .= "<tr><td style='height: 50px'></td></tr>\n";
-        }
-        $s .= makeMistakeItem($this, $html, $mag, $mistake_elements_length, $mistakes_magnitude_count{$mag});
-        if ($html)
-        {
-          $s .= "<tr>\n";
-          $s .= "<th>Mistake</th>\n";
-          $s .= "<th>Magnitude</th>\n";
-          $s .= "<th>Game</th>\n";
-          $s .= "<th>Play</th>\n";
-          $s .= "<th>Comment</th>\n";
-          $s .= "</tr>\n";
-        }
-        else
-        {
-          $s .= "\n\n\n";
-        }
-        $s .= $magnitude_strings{$mag};
-      }
-    }
-
-    if ($html && scalar @list > 0)
-    {
-      $s .= "</tbody>\n</table>\n";
-    }
-
-    $s .= "\n";
-  }
-  else
-  {
-    $s .= makeItem($this, $this->{Constants::STAT_NAME}, $this->{'total'}, $total_games);
-  }
-
-  return $s;  
-}
 
 sub toString
 {
   my $this = shift;
-  my $html = shift;
 
   my $num;
 
@@ -466,12 +237,14 @@ sub toString
   {
     my $object = $notable_ref->[$i]->{Constants::STAT_ITEM_OBJECT_NAME};
     $object->{Constants::STAT_NAME} = $notable_ref->[$i]->{Constants::STAT_NAME};
+    $object->{Constants::STAT_DESCRIPTION_NAME} = $notable_ref->[$i]->{Constants::STAT_DESCRIPTION_NAME};
     push @notable_stats, $object;
   }
   for (my $i = 0; $i < scalar @{$game_ref}; $i++) 
   {
     my $object = $game_ref->[$i]->{Constants::STAT_ITEM_OBJECT_NAME};
     $object->{Constants::STAT_NAME} = $game_ref->[$i]->{Constants::STAT_NAME};
+    $object->{Constants::STAT_DESCRIPTION_NAME} = $game_ref->[$i]->{Constants::STAT_DESCRIPTION_NAME};
     push @game_stats, $object;
   }
 
@@ -492,6 +265,7 @@ sub toString
     my $stat   = $player1_ref->[$i];
     my $object = $stat->{Constants::STAT_ITEM_OBJECT_NAME};
     $object->{Constants::STAT_NAME} = $stat->{Constants::STAT_NAME};
+    $object->{Constants::STAT_DESCRIPTION_NAME} = $stat->{Constants::STAT_DESCRIPTION_NAME};
     if ($stat->{Constants::STAT_NAME} eq "Mistakes List")
     {
       $player_mistake_list = $object;
@@ -515,6 +289,7 @@ sub toString
     my $stat   = $player2_ref->[$i];
     my $object = $stat->{Constants::STAT_ITEM_OBJECT_NAME};
     $object->{Constants::STAT_NAME} = $stat->{Constants::STAT_NAME};
+    $object->{Constants::STAT_DESCRIPTION_NAME} = $stat->{Constants::STAT_DESCRIPTION_NAME};
     if ($stat->{Constants::STAT_NAME} eq "Mistakes List")
     {
       $opp_mistake_list = $object;
@@ -541,6 +316,7 @@ sub toString
     my $stat   = $error_ref->[$i];
     my $object = $stat->{Constants::STAT_ITEM_OBJECT_NAME};
     $object->{Constants::STAT_NAME} = $stat->{Constants::STAT_NAME};
+    $object->{Constants::STAT_DESCRIPTION_NAME} = $stat->{Constants::STAT_DESCRIPTION_NAME};
     if ($stat->{Constants::STAT_NAME} eq 'Errors')
     {
       $error_list = $object;
@@ -608,7 +384,7 @@ sub errorsToHTML
   my $download   = Constants::DATA_DOWNLOAD_ATTRIBUTE;
 
   my @error_list = @{$error_list->{'list'}};
-
+  my $learntext  = $error_list->{Constants::STAT_DESCRIPTION_NAME};
   if (scalar @error_list == 0)
   {
     return '';
@@ -642,7 +418,10 @@ sub errorsToHTML
     ['Game', 'Line', 'Error'],
     ['text-align: center', 'text-align: center', 'text-align: center'],
     ['false', 'false', 'false'],
-    $content
+    $content,
+    0,
+    0,
+    $learntext
   );
 
 
@@ -669,6 +448,7 @@ sub mistakesToHTML
   my $download      = Constants::DATA_DOWNLOAD_ATTRIBUTE;
 
   my $list = $mistakes_list->{'list'};
+  my $learntext  = $mistakes_list->{Constants::STAT_DESCRIPTION_NAME};
   my @list = @{$list};
 
   if (scalar @list == 0)
@@ -727,7 +507,10 @@ sub mistakesToHTML
     ['Play', 'Type', 'Size', 'Comment'],
     ['text-align: center',  'text-align: center', 'text-align: center', 'text-align: center'],
     ['false', 'false', 'false', 'false'],
-    $content
+    $content,
+    0,
+    0,
+    $learntext
   );
 
   my $mistake_expander = Utils::make_expander($expander_id);
@@ -852,7 +635,10 @@ sub statItemsToHTML
     ['Stat', 'Average', 'Total'],
     ['text-align: center',  'text-align: center', 'text-align: center'],
     ['false', 'disable', 'disable'],
-    $content
+    $content,
+    0,
+    0,
+    'To learn more about these stats, check the \'Statistics, Lists, and Notable Games\' section in the <a href="/about.html">about page</a>.'
   );
 
   my $group_expander = Utils::make_expander($group_expander_id);
@@ -886,6 +672,7 @@ sub statListToHTML
   {
     my $statitem = $listref->[$i];
     my $playlist = $statitem->{'list'};
+    my $learntext  = $statitem->{Constants::STAT_DESCRIPTION_NAME};
     if (scalar @{$playlist} == 0)
     {
       next;
@@ -929,13 +716,15 @@ sub statListToHTML
     }  
 
     my $list_table = Utils::make_datatable(
-    
       $expander_id,
       $table_id,
       ['Type', 'Play', 'Probability', 'Score'],
       ['text-align: center', '', '', ''],
       ['false', 'false', 'true', 'true'],
-      $table_content
+      $table_content,
+      0,
+      0,
+      $learntext
     );
 
     my $expander = Utils::make_expander($expander_id);
@@ -966,6 +755,7 @@ sub notableListToHTML
   {
     my $statitem = $listref->[$i];
     my $gamelist = $statitem->{'list'};
+    my $learntext  = $statitem->{Constants::STAT_DESCRIPTION_NAME};
     if (scalar @{$gamelist} == 0)
     {
       next;
@@ -990,7 +780,10 @@ sub notableListToHTML
       ['Game'],
       ['text-align: center'],
       ['false'],
-      $notable_list
+      $notable_list,
+      0,
+      0,
+      $learntext
     );
 
     my $expander = Utils::make_expander($expander_id);
@@ -1144,6 +937,12 @@ not be recorded.',
           Constants::GAMEERROR_DISCONNECTED,
           Constants::GAMEERROR_OTHER
         ],
+	'subitem_descriptions' =>
+	[
+          'Games that have incomplete GCG files. To learn more, check the \'Statistics, Lists, and Notable Games\' section of the <a href="\about.html">about page</a>.',
+          'Games in which there is a disconnected play. To learn more, check the \'Statistics, Lists, and Notable Games\' section of the <a href="\about.html">about page</a>.',
+          'Games in which there is an error that is not a disconnected play or incomplete. To learn more, check the \'Statistics, Lists, and Notable Games\' section of the <a href="\about.html">about page</a>.'
+	],
         Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_TOTAL,
         'int' => 1
       },
@@ -1423,7 +1222,7 @@ not be recorded.',
           'Horizontal Plays',
           'One Tile Plays'  ,
           'Other Plays'
-        ]
+        ],
       },
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -2336,7 +2135,14 @@ not be recorded.',
            Constants::OPP_CHALLENGE_LOST,   
            Constants::PLAYER_CHALLENGE_LOST,
            Constants::OPP_CHALLENGE_WON
-        ]        
+        ],
+        'subitem_descriptions'=>
+        [
+	'Challenges where the player challenged off an opponent\'s phony play.',
+	'Challenges where the opponent challenged the player\'s valid play.',
+	'Challenges where the player challenged an opponent\'s valid play.',
+	'Challenges where the opponent challenged off the player\'s phony play.',
+	]	
       },
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,

@@ -35,7 +35,6 @@ sub mine
   my $verbose           = shift;
   my $tourney_id        = shift;
   my $statsdump         = shift;
-  my $html              = shift;
   my $missingracks      = shift;
 
 
@@ -60,8 +59,7 @@ sub mine
                         !$startdate &&
                         !$enddate &&
                         !$lexicon &&
-                        !$tourney_id &&
-                        $html;
+                        !$tourney_id;
 
   if (!$statsdump && $cache_condition && -e $cache_filename)
   {
@@ -257,7 +255,7 @@ sub mine
   my $html_string = '';
   if ($at_least_one)
   {
-    $html_string .= $all_stats->toString($html);
+    $html_string .= $all_stats->toString();
   }
   else
   {

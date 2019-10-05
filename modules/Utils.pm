@@ -28,9 +28,14 @@ sub make_datatable
   my $content     = shift;
   my $initcol     = shift;
   my $initclass   = shift;
+  my $learntext   = shift;
 
-  my $aboutpage       = Constants::ABOUT_PAGE_NAME;
-  my $learnlink       = "<a href='/$aboutpage'>Learn More</a>";
+  if (!$learntext)
+  {
+    printf "%s %s %s %s", $expander_id, $table_id, Dumper($titles), Dumper($sortvalues);
+    exit(0);
+  }
+
   my $title_row_id    = $table_id . '_title_row_id';
   my $moreid          = $table_id . '_toggle_show';
   my $divid           = $table_id . '_scrollwindow';
@@ -106,7 +111,7 @@ sub make_datatable
         </td>
       </tbody>
     </table>
-    $learnlink
+    $learntext
   </div>
 TABLE
 ;

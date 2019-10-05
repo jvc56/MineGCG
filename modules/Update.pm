@@ -146,6 +146,8 @@ DATEPICKER
       </div>
       <div style="text-align: center">
         <button class="btn" type="submit">Submit</button>
+      </div>
+      <div style='text-align: center'>
 	$learnlink
       </div>
 BUTTON
@@ -313,6 +315,7 @@ sub update_leaderboard
   my %player_tiles_played_percentages = ();
   my %player_win_percentages = ();
   my %player_total_games     = ();
+  my %stat_descriptions      = ();
 
   foreach my $player_item (@player_data)
   {
@@ -332,7 +335,6 @@ sub update_leaderboard
         {
           my $statitem = $statlist->[$i]->{Constants::STAT_ITEM_OBJECT_NAME};
           my $statname = $statlist->[$i]->{Constants::STAT_NAME};
-
           my $statval      = $statitem->{'total'};
           my $display_type = $statitem->{Constants::STAT_OBJECT_DISPLAY_NAME};
           my $is_int       = $statitem->{'int'};
@@ -345,20 +347,28 @@ sub update_leaderboard
 	  {
             $player_tiles_played_percentages{$name} = ($statval / $total_games) / 100;
 	  }
+          $stat_descriptions{$statname} = $statlist->[$i]->{Constants::STAT_DESCRIPTION_NAME};
           add_stat(\%leaderboards, $name, $statname, $statval, $total_games, $display_type, $is_int,\@name_order);
-
           my $subitems = $statitem->{'subitems'};
           if ($subitems)
           {
             my $order = $statitem->{'list'};
-            for (my $i = 0; $i < scalar @{$order}; $i++)
+	    my $subdescriptions = $statitem->{'subitem_descriptions'};
+            for (my $k = 0; $k < scalar @{$order}; $k++)
             {
-              my $subitemname = $order->[$i];
+              my $subitemname = $order->[$k];
 
               my $substatname = "$statname-$subitemname";
 
               my $substatval  = $subitems->{$subitemname};
-
+	      if ($subdescriptions)
+	      {
+                $stat_descriptions{$substatname} = $subdescriptions->[$k];
+	      }
+	      else
+	      {
+                $stat_descriptions{$substatname} = ' ';
+	      }
               add_stat(\%leaderboards, $name, $substatname, $substatval, $total_games, $display_type, $is_int,  \@name_order);
             }
           }
@@ -401,6 +411,7 @@ TABSCRIPT
   {
     my $name = $name_order[$i];
     my $og_name = $name;
+    my $learntext = $stat_descriptions{$name};
     my $expander_id = $name . '_expander_id';
     my $chart_id    = $name . '_chart_id';
     my $table_id    = $name . '_table_id';
@@ -476,7 +487,8 @@ TABSCRIPT
       ['false', 'true'],
       $statcontent,
       'Average',
-      'dscclass'
+      'dscclass',
+      $learntext
     );
 
 
@@ -516,15 +528,18 @@ TABSCRIPT
           @p2 = ($maxx, $maxx * $slope  + $intercept);
 
           $r = sqrt($lineFit->rSquared());
-  
-          my $increase = (sprintf "%.2f", $slope * 100) . '%';
+          if ($slope < 0)
+	  {
+	    $r = -$r;
+	  }  
+	  my $short_slope = sprintf "%.6f", $slope;
           my $info_style = "style='text-align: center;'";
           $info =
   	"<div $info_style>
-  	  An increase of 1 in $fullname is associated with an increase of $increase in win percentage points.
+  	   The slope of the least squares line of best fit shown on the graph is $short_slope. To learn more about this graph, check the 'Win Correlation Graphs' section of the <a href='/about.html'>about page</a>. 
   	 </div>
   	";
-          $chart_data .= "'$r', [$p1[0], $p1[1]], [$p2[0], $p2[1]]]";
+          $chart_data .= "$r, [$p1[0], $p1[1]], [$p2[0], $p2[1]], $slope]";
   
   
           my $chart = "<div style='width: 100%; height: 600px' id='$chart_id'></div>$info";
@@ -613,7 +628,10 @@ TABSCRIPT
         ['Player', 'Probability (p)', 'Confidence Interval'],
         ['text-align: center', 'text-align: center', 'text-align: center'],
         ['false', 'true', 'disable'],
-        $overtable_content
+        $overtable_content,
+	0,
+	0,
+	'To learn more about these statistics, check the \'Confidence Intervals\' section on the <a href="/about.html">about page</a>.'
       );
 
  
@@ -653,8 +671,10 @@ TABSCRIPT
           ['Player', 'Tile', 'Probability (p)', 'Confidence Interval'],
           ['text-align: center', 'text-align: center', 'text-align: center', 'text-align: center'],
           ['false', 'false', 'true', 'disable'],
-          $violations_content
-        );
+          $violations_content,
+	  0,
+	  0,
+	  'To learn more about these statistics, check the \'Confidence Intervals\' section on the <a href="/about.html">about page</a>.');
        my $tabbed_violations = make_tabbed_content(
          ["Confidence Interval Violations ($num_violations)"],
          [$violations_table],
@@ -767,6 +787,7 @@ TABBED
     var r     = chart_data[4];
     var p1    = chart_data[5];
     var p2    = chart_data[6];
+    var slope = chart_data[7];
 
     // Themes begin
     am4core.useTheme(am4themes_dark);
@@ -1165,7 +1186,7 @@ sub update_notable
   my @ordering = ();
 
   my @player_data = @{$dbh->selectall_arrayref("SELECT * FROM $playerstable", {Slice => {}, "RaiseError" => 1})};
-  
+  my %stat_descriptions = (); 
   foreach my $player_item (@player_data)
   {
     my $player_stats = Stats->new(1, $player_item->{Constants::PLAYER_STATS_COLUMN_NAME});
@@ -1181,7 +1202,7 @@ sub update_notable
       {
         my $statitem = $statlist->[$i]->{Constants::STAT_ITEM_OBJECT_NAME};
         my $statname = $statlist->[$i]->{Constants::STAT_NAME};
-
+        $stat_descriptions{$statname} = $statlist->[$i]->{Constants::STAT_DESCRIPTION_NAME};
         if (!$notable_hash{$statname})
         {
           push @ordering, $statname;
@@ -1209,6 +1230,7 @@ sub update_notable
   for (my $i = 0; $i < scalar @ordering; $i++)
   {
     my $key             = $ordering[$i];
+    my $learntext       = $stat_descriptions{$key};
     my $notables        = $notable_hash{$key};
     my $expander_id     = $key . '_expander';
     $expander_id =~ s/\s//g;
@@ -1237,7 +1259,10 @@ sub update_notable
       ['Game'],
       ['text-align: center'],
       ['false'],
-      $content
+      $content,
+      0,
+      0,
+      $learntext
     );
 
     my $expander = Utils::make_expander($expander_id);
@@ -1916,7 +1941,7 @@ sub update_readme_and_about
   (
     [
       'RandomRacer',
-      'This is <a href="randomracer.com">RandomRacer.com</a>, a site that collects and presents statistics and comments from annotated scrabble games on <a href="cross-tables.com">cross-tables.com</a>. Initial development began August 2018 and in February 2019 the first version was released.
+      '<a href="randomracer.com">RandomRacer.com</a> is a site that collects and presents statistics and comments from annotated scrabble games on <a href="cross-tables.com">cross-tables.com</a>. Initial development began August 2018 and in February 2019 the first version was released.
 <br><br>
 In October 2019, the site underwent major updates which include:
 <br><br>
@@ -1945,32 +1970,25 @@ Games tagged as \'Tournament Game\' in cross-tables with no specific tournament 
 <h5>Tournament ID</h5>
 An optional parameter used to search for only games of a specific tournament.
 To find a tournament\'s ID, go to that tournament\'s page on cross-tables.com
-and look for the number in the address bar.
-
-For example, the address of the 29th National Championship Main Event is
-
+and look for the number in the address bar. For example, the address of the 29th National Championship Main Event is
+<br><br>
 https://www.cross-tables.com/tourney.php?t=10353&div=1
-
+<br><br>
 which has a tournament ID of 10353.
-
 <h5>Lexicon</h5>
 An optional parameter used to search for only games of a specific lexicon.
-
 <h5>Game ID</h5>
 An optional parameter used to search for only one game. To find a game\'s ID,
 go to that game\'s page on cross-tables.com and look for the number in the address bar.
 For example, the following game:
-
+<br><br>
 https://www.cross-tables.com/annotated.php?u=31231#0#
-
+<br><br>
 has a game ID of 31231.
-
 <h5>Opponent Name</h5>
 An optional parameter used to search for only games against a specific opponent.
-
 <h5>Start Date</h5>
 An optional parameter used to search for only games beyond a certain date.
-
 <h5>End Date</h5>
 An optional parameter used to search for only games before a certain date.
       '
@@ -1995,56 +2013,67 @@ If you think you can improve these heuristics, please contact joshuacastellano7@
     [
       'Mistakes',
 'There are two kinds of mistakes: standard mistakes (simply called \'mistakes\' on the stats pages and leaderboards) and dynamic mistakes.
-<br><br>
+<br>
 <h5>Standard Mistakes</h5>
-<br>
-The Standard mistakes statistic if a self-reported statistic that is divided into 6 categories (knowledge, finding, vision, tactics, strategy, time, and endgame). To mark a move as a standard mistake in your annotated game, include the tag of the standard mistake in the comment of the move. You can also tag the magnitude (large, medium, or small) of the standard mistake which will organize your standard mistakes by magnitude in the standard mistakes table. For example, if you missed a bingo because you haven\'t studied it yet, that would probably be a large mistake due to word knowledge (called \'knowledge\' in this case) which you can tag by adding the following in your comment of the move:
-<br>
+The Standard mistakes statistic is a self-reported statistic that is divided into 7 categories (knowledge, finding, vision, tactics, strategy, time, and endgame). To mark a move as a standard mistake in your annotated game, include the tag of the standard mistake in the comment of the move. You can also tag the magnitude (large, medium, or small) of the standard mistake which will organize your standard mistakes by magnitude in the standard mistakes table. For example, if you missed a bingo because you haven\'t studied it yet, that would probably be a large mistake due to word knowledge (called \'knowledge\' in this case) which you can tag by adding the following in your comment of the move:
+<br><br>
 #knowledgelarge
-<br>
+<br><br>
 The large, medium, and small magnitudes can also be denoted by \'saddest\', \'sadder\', and \'sad\' respecitvely. For example, to tag a standard mistake as a large time mistake, you can write:
-<br>
+<br><br>
 #timeSADDEST
-<br>
+<br><br>
 If you do not want to specify the magnitude of the standard mistake you can omit the magnitude part of the tag:
-<br>
+<br><br>
 #knowledge
-<br>
+<br><br>
 If you tag the standard mistake like this the mistake will appear under the \'Unspecified\' category in the mistakes table. Standard mistakes are case insensitive so the following standard mistake tags would be equivalent:
-<br>
+<br><br>
 #findingSMALL
 #FiNdINsmAlL
-<br>
+<br><br>
 <h5>Dynamic Mistakes</h5>
 The dynamic mistakes statistic is a self-reported statistic for which the player can create their own categories. To mark a move as a dynamic mistake use two hashtags instead of just one, for example:
-<br>
+<br><br>
 ##thisisaveryverbosedynamicmistakecategory
-<br>
+<br><br>
 Dynamic mistakes can be any alphanumeric string that the player places after \'##\'. Dynamic mistakes cannot contain anything other than numbers or letters.
 <br><br>
-There are some key differences between dynamic mistakes and standard mistakes.
-<br>
-Dynamic mistakes do not have magnitudes, so if you tagged a move with these dynamic mistakes:
-<br>
-##findingparallelsmall
+There are some key differences between dynamic mistakes and standard mistakes. Dynamic mistakes do not have magnitudes, so if you tagged a move with these dynamic mistakes:
+<br><br>
+##findingparallelsmall<br>
 ##findingparallellarge
-<br>
+<br><br>
 They would count as completely distinct categories and would not be grouped together in any way.
-<br>
+<br><br>
 Unlike mistakes, dynamic mistakes are case sensitive, so if you tagged a move with these dynamic mistakes:
-##Yikes
+<br><br>
+##Yikes<br>
 ##yikes
-<br>
+<br><br>
 They would count as separate dynamic mistake categories.
 <br><br>
-<br>Notes on Both Standard and Dynamic Mistakes</h5>
+Dynamic mistake tags that are identical to standard mistake tags are completely valid, but are only counted as dynamic mistakes, not standard mistakes. For example, the following tags are dynamic mistakes:
+<br><br>
+##finding<br>
+##strategylarge<br>
+##timeSaddest
+<br><br>
+While confusing, you are completely free to make these dynamic tags, which will not appear in the standard mistakes section.
+<br><br>
+<h5>Notes on Both Standard and Dynamic Mistakes</h5>
 The tags for all mistakes can appear anywhere in any order in the comment. Keep in mind that all mistakes are associated with moves, and moves are associated with players, so be sure to tag your mistakes on your moves only. For example, if you don\'t challenge a phony play, you can write the commentary on your opponent\'s move, but include the tags on your succeeding move to make sure they appear as your mistakes and not your opponents\'.
 You can also mark a move with more than one mistake:
-<br>
+<br><br>
 #findingmedium blah blah blah #tacticslarge ##dynamicsomething ##moredynamic
-<br>
+<br><br>
 Mistakes and dynamic mistakes are completely distinct categories. Standard mistakes are never counted as dynamic mistakes and dynamic mistakes are never counted as standard mistakes. If you see this happen on RandomRacer, please contact joshuacastellano7#gmail.com.
 '
+    ],
+    [
+      'Win Correlation Graphs',
+'For each statistic on the leaderboard there is an associated scatter plot of the win correlation for that statistic.
+The statistic is plotted on the X axis and the win percentage is plotted on the Y axis. Each dot represents a player. You can hover over the dot to see which player it is. The \'r\' in the legend is the coefficient of correlation. An r value of 1 means that the statistic and win percentage are directly correlated. An r value of -1 means that the statistic and win percentage are inversely correlated. An r value of 0 means that there is no correlation. The slope is the rate of change of win percentage proportional to the statistic. So if the graph has a slope of m, an increase of x in the statistic is proportional to an increase of m*x in win percentage.'
     ],
     [
       'Confidence Intervals',
@@ -2210,7 +2239,7 @@ Contact joshuacastellano7@gmail.com if you think a game was omitted by mistake.'
   $nav
   <div style='text-align: center; vertical-align: middle; padding: 2%'>
     <h1>
-      About
+      About RandomRacer
     </h1>
   </div>
   $abouthtml

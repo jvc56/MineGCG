@@ -2,7 +2,7 @@
 
 # RandomRacer
 
-This is <a href="randomracer.com">RandomRacer.com</a>, a site that collects and presents statistics and comments from annotated scrabble games on <a href="cross-tables.com">cross-tables.com</a>. Initial development began August 2018 and in February 2019 the first version was released.
+<a href="randomracer.com">RandomRacer.com</a> is a site that collects and presents statistics and comments from annotated scrabble games on <a href="cross-tables.com">cross-tables.com</a>. Initial development began August 2018 and in February 2019 the first version was released.
 
 In October 2019, the site underwent major updates which include:
 
@@ -35,19 +35,15 @@ Games tagged as 'Tournament Game' in cross-tables with no specific tournament ar
 <h5>Tournament ID</h5>
 An optional parameter used to search for only games of a specific tournament.
 To find a tournament's ID, go to that tournament's page on cross-tables.com
-and look for the number in the address bar.
-
-For example, the address of the 29th National Championship Main Event is
+and look for the number in the address bar. For example, the address of the 29th National Championship Main Event is
 
 https://www.cross-tables.com/tourney.php?t=10353&div=1
 
 which has a tournament ID of 10353.
 
 
-
 <h5>Lexicon</h5>
 An optional parameter used to search for only games of a specific lexicon.
-
 
 
 <h5>Game ID</h5>
@@ -60,15 +56,12 @@ https://www.cross-tables.com/annotated.php?u=31231#0#
 has a game ID of 31231.
 
 
-
 <h5>Opponent Name</h5>
 An optional parameter used to search for only games against a specific opponent.
 
 
-
 <h5>Start Date</h5>
 An optional parameter used to search for only games beyond a certain date.
-
 
 
 <h5>End Date</h5>
@@ -170,7 +163,7 @@ Plays made by the player that formed at least one phony and were not challenged 
 
 <h3>Plays That Were Challenged</h3>
 
-Plays made by the player that were challenged by an opponent.
+Plays made by the player that were challenged by an opponent.  This list may not be completely accurate. Check the 'Challenge Heuristics' section of the <a href="/about.html">about page</a> for more information.
 
 <h3>Wins</h3>
 
@@ -214,7 +207,7 @@ The player's lowest game.
 
 <h3>Highest Scoring Turn</h3>
 
-The player\s highest scoring turn.
+The player's highest scoring turn.
 
 <h3>Bingos Played</h3>
 
@@ -222,7 +215,7 @@ The number of bingos played by the player that were not challenged off, shown as
 
 <h3>Bingo Probabilities</h3>
 
-The average probabilities of the bingos played by the player. These are the probabilities as listed in the Zyzzyva word study program, so higher values are less probable.
+The average probabilities of the bingos played by the player. These are the probabilities as listed in the Zyzzyva word study program, so higher values are less probable. Keep in mind that comparing across lexicons not completely accurate due to the varying amounts of words in each lexicon.
 
 <h3>Tiles Played</h3>
 
@@ -258,7 +251,7 @@ The number of phony plays made by the player, both challenged and unchalleged.
 
 <h3>Challenges</h3>
 
-The number of challenges made by both the player and the opponent, broken down by challenges that the player made against opponent's plays and challenges that the opponent made against the player's plays.
+The number of challenges made by both the player and the opponent, broken down by challenges that the player made against opponent's plays and challenges that the opponent made against the player's plays.  This stat may not be completely accurate. Check the 'Challenge Heuristics' section of the <a href="/about.html">about page</a> for more information.
 
 <h3>Challenge Percentage</h3>
 
@@ -266,7 +259,7 @@ The percentage of challenges that the player made against an opponent's play whi
 
 <h3>Defending Challenge Percentage</h3>
 
-The percentage of challenges made by opponents against the player's plays that were unsuccessful.
+The percentage of challenges made by opponents against the player's plays that were unsuccessful. This stat may not be completely accurate. Check the 'Challenge Heuristics' section of the <a href="/about.html">about page</a> for more information.
 
 <h3>Percentage Phonies Unchallenged</h3>
 
@@ -278,7 +271,7 @@ The number of comments made in the GCG file. This stat counts comments that appe
 
 <h3>Comments Word Length</h3>
 
-The number words in all the comments of the GCG file of the game. This stat counts comments that appear on the player's turn and the opponent's turn.
+The number of words in all the comments of the GCG file of the game. This stat counts comments that appear on the player's turn and the opponent's turn.
 
 <h3>Many Double Letters Covered</h3>
 
@@ -322,31 +315,114 @@ Games in which one player plays every E.
 
 <h3>Many Challenges</h3>
 
-Games in which there are at least 5 challenges made.
+Games in which there are at least 5 challenges made. This list may not be completely accurate. Check the 'Challenge Heuristics' section of the <a href="/about.html">about page</a> for more information.
 
 <h3>Mistakeless Turns</h3>
 
-The number of turns the player made that are not tagged with a mistake. Dynamic mistakes do not count for this statistic.
+The number of turns the player made that are not tagged with a standard mistake. For more information about mistakes, check the 'Mistakes' section of the <a href="/about.html">about page</a>.
 
 <h3>Mistakes per Turn</h3>
 
-The number of mistakes that the player makes per turn.
+The number of mistakes that the player makes per turn. For more information about mistakes, check the 'Mistakes' section of the <a href="/about.html">about page</a>.
 
 <h3>Mistakes</h3>
 
-yeet
+The number of mistakes the player made. For more information about mistakes, check the 'Mistakes' section of the <a href="/about.html">about page</a>.
 
 <h3>Mistakes List</h3>
 
-The listing of all of the player's mistakes.
+The listing of all of the player's mistakes. For more information about mistakes, check the 'Mistakes' section of the <a href="/about.html">about page</a>.
 
 <h3>Dynamic Mistakes</h3>
 
-More on this later.
+The dynamic mistakes made by the player. For more information about mistakes, check the 'Mistakes' section of the <a href="/about.html">about page</a>.
 
 <h3>Dynamic Mistakes List</h3>
 
-The listing of the player's dynamic mistakes.
+The listing of the player's dynamic mistakes. For more information about mistakes, check the 'Mistakes' section of the <a href="/about.html">about page</a>.
+
+# Challenge Heuristics
+
+The Challenge statistics may not be completely accurate for games using a double challenge rule (TWL or NSW games) as passes and lost challenges in a double challenge game are indistinguishable in the GCG file. If the following criteria are met, the play is considered a lost challenge:
+
+
+ - The play is a pass
+ - The previous play formed at least one word
+ - The game is played with a TWL or NSW lexicon
+ - The game has less than 20 turns
+
+
+If you think you can improve these heuristics, please contact joshuacastellano7@gmail.com.
+
+# Mistakes
+
+There are two kinds of mistakes: standard mistakes (simply called 'mistakes' on the stats pages and leaderboards) and dynamic mistakes.
+
+
+
+<h5>Standard Mistakes</h5>
+The Standard mistakes statistic is a self-reported statistic that is divided into 7 categories (knowledge, finding, vision, tactics, strategy, time, and endgame). To mark a move as a standard mistake in your annotated game, include the tag of the standard mistake in the comment of the move. You can also tag the magnitude (large, medium, or small) of the standard mistake which will organize your standard mistakes by magnitude in the standard mistakes table. For example, if you missed a bingo because you haven't studied it yet, that would probably be a large mistake due to word knowledge (called 'knowledge' in this case) which you can tag by adding the following in your comment of the move:
+
+#knowledgelarge
+
+The large, medium, and small magnitudes can also be denoted by 'saddest', 'sadder', and 'sad' respecitvely. For example, to tag a standard mistake as a large time mistake, you can write:
+
+#timeSADDEST
+
+If you do not want to specify the magnitude of the standard mistake you can omit the magnitude part of the tag:
+
+#knowledge
+
+If you tag the standard mistake like this the mistake will appear under the 'Unspecified' category in the mistakes table. Standard mistakes are case insensitive so the following standard mistake tags would be equivalent:
+
+#findingSMALL
+#FiNdINsmAlL
+
+
+
+<h5>Dynamic Mistakes</h5>
+The dynamic mistakes statistic is a self-reported statistic for which the player can create their own categories. To mark a move as a dynamic mistake use two hashtags instead of just one, for example:
+
+##thisisaveryverbosedynamicmistakecategory
+
+Dynamic mistakes can be any alphanumeric string that the player places after '##'. Dynamic mistakes cannot contain anything other than numbers or letters.
+
+There are some key differences between dynamic mistakes and standard mistakes. Dynamic mistakes do not have magnitudes, so if you tagged a move with these dynamic mistakes:
+
+##findingparallelsmall
+##findingparallellarge
+
+They would count as completely distinct categories and would not be grouped together in any way.
+
+Unlike mistakes, dynamic mistakes are case sensitive, so if you tagged a move with these dynamic mistakes:
+
+##Yikes
+##yikes
+
+They would count as separate dynamic mistake categories.
+
+Dynamic mistake tags that are identical to standard mistake tags are completely valid, but are only counted as dynamic mistakes, not standard mistakes. For example, the following tags are dynamic mistakes:
+
+##finding
+##strategylarge
+##timeSaddest
+
+While confusing, you are completely free to make these dynamic tags, which will not appear in the standard mistakes section.
+
+
+
+<h5>Notes on Both Standard and Dynamic Mistakes</h5>
+The tags for all mistakes can appear anywhere in any order in the comment. Keep in mind that all mistakes are associated with moves, and moves are associated with players, so be sure to tag your mistakes on your moves only. For example, if you don't challenge a phony play, you can write the commentary on your opponent's move, but include the tags on your succeeding move to make sure they appear as your mistakes and not your opponents'.
+You can also mark a move with more than one mistake:
+
+#findingmedium blah blah blah #tacticslarge ##dynamicsomething ##moredynamic
+
+Mistakes and dynamic mistakes are completely distinct categories. Standard mistakes are never counted as dynamic mistakes and dynamic mistakes are never counted as standard mistakes. If you see this happen on RandomRacer, please contact joshuacastellano7#gmail.com.
+
+# Win Correlation Graphs
+
+For each statistic on the leaderboard there is an associated scatter plot of the win correlation for that statistic.
+The statistic is plotted on the X axis and the win percentage is plotted on the Y axis. Each dot represents a player. You can hover over the dot to see which player it is. The 'r' in the legend is the coefficient of correlation. An r value of 1 means that the statistic and win percentage are directly correlated. An r value of -1 means that the statistic and win percentage are inversely correlated. An r value of 0 means that there is no correlation. The slope is the rate of change of win percentage proportional to the statistic. So if the graph has a slope of m, an increase of x in the statistic is proportional to an increase of m*x in win percentage.
 
 # Confidence Intervals
 

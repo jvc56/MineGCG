@@ -15,7 +15,6 @@ use Constants;
 my $verbose        = '';
 my $cort           = '';
 my $tid            = '';
-my $html           = '';
 my $game           = '';
 my $opponent       = '';
 my $opponent_sanitized;
@@ -50,7 +49,6 @@ GetOptions (
             "$end_option:s"    => \$enddate,
             "$lex_option:s"    => \$lexicon,
             "statsdump"        => \$statsdump,
-            "html"             => \$html,
             "missingracks"     => \$missingracks,
             "name=s"           => \$name,
             "help|?"           => \$help
@@ -58,7 +56,7 @@ GetOptions (
 
 pod2usage(1) if $help || !$name;
 
-Mine::mine($name, $cort, $game, $opponent_sanitized, $startdate, $enddate, $lexicon, $verbose, $tid, $statsdump, $html, $missingracks);
+Mine::mine($name, $cort, $game, $opponent_sanitized, $startdate, $enddate, $lexicon, $verbose, $tid, $statsdump, $missingracks);
 
 
 __END__
