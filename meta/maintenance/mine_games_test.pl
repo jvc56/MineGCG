@@ -29,7 +29,7 @@ print $log "\n\n$count names tested\n\n";
 
 foreach my $name (@names)
 {
-  system "./scripts/main.pl --name '$name' --html --statsdump >/dev/null 2>> $log_name";
+  system "./scripts/main.pl --name '$name' --statsdump >/dev/null 2>> $log_name";
 }
 
 

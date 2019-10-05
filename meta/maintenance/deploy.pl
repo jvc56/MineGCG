@@ -32,9 +32,10 @@ my $dbh = Utils::connect_to_database;
 $dbh->do("DROP DATABASE IF EXISTS $database");
 $dbh->do("CREATE DATABASE $database WITH TEMPLATE $dev_database");
 
-chdir($target);
+system "rm -rf $target/cache";
+system "rm -rf $target/data && cp -r data $target";
 
-system "git pull origin master";
+system "git -C $target pull origin master";
 
 
 

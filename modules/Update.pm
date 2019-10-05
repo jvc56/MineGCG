@@ -625,7 +625,7 @@ TABSCRIPT
       my $overtable = Utils::make_datatable(
         0,
         $over_table_id,
-        ['Player', 'Probability (p)', 'Confidence Interval'],
+        ['Player', 'p', 'CI'],
         ['text-align: center', 'text-align: center', 'text-align: center'],
         ['false', 'true', 'disable'],
         $overtable_content,
@@ -1576,6 +1576,7 @@ sub update_html
   my $notable_carousel_content  = make_notable_carousel($featured_notable);
 
   my $head_content = Constants::HTML_HEAD_CONTENT;
+  my $html_styles  = Constants::HTML_STYLES;
   my $nav          = Constants::HTML_NAV;
   my $default_scripts = Constants::HTML_SCRIPTS;
   my $footer          = Constants::HTML_FOOTER;
@@ -1593,6 +1594,7 @@ sub update_html
 
 <head>
 $head_content
+$html_styles
 </head>
 
 <body $body_style>
@@ -1821,7 +1823,6 @@ sub make_quotes_carousel
     ['Is that that sad acrodont.ru site?', 'Tim Weiss'],
     ['The sun is setting on this game.', 'Tim Weiss'],
     ['Don\'t mosey now, lest ye mosey to the grave.', 'Tim Weiss'],
-    ['Are they splitsville?', 'Tim Weiss'],
     ['...', 'Karl Higby'],
     ['Whelp, can\'t complain about this start to the tournament!', 'Daniel Milton'],
     ['Whelp, I think that\'ll do it!', 'Daniel Milton', ', after being stuck with over 40 points on his rack'],
@@ -1883,10 +1884,11 @@ sub make_mistakes_carousel
     my $item = $mistakes_ref->[$i];
     my $type    = $item->[0];
     my $size    = $item->[1];
-    my $link    = $item->[2];
+    #my $id     = $item->[2];
     my $play    = $item->[3];
     my $comment = $item->[4];
-
+    my $link    = $item->[5];
+ 
     my $div = <<MISTAKE
       <div class="carousel-item $active" style="$mistake_style">
         $type $size<br><br>$play<br><br>$comment<br><br>$link
@@ -1941,7 +1943,7 @@ sub update_readme_and_about
   (
     [
       'RandomRacer',
-      '<a href="randomracer.com">RandomRacer.com</a> is a site that collects and presents statistics and comments from annotated scrabble games on <a href="cross-tables.com">cross-tables.com</a>. Initial development began August 2018 and in February 2019 the first version was released.
+      '<a href="randomracer.com">RandomRacer.com</a> is a site that collects and presents statistics and comments from annotated scrabble games on <a href="cross-tables.com">cross-tables.com</a>. All content is updated daily starting at midnight (EST). Updates usually finish in 3.5 hours. Initial development began August 2018 and in February 2019 the first version was released.
 <br><br>
 In October 2019, the site underwent major updates which include:
 <br><br>
@@ -1955,7 +1957,7 @@ In October 2019, the site underwent major updates which include:
 <li>Dynamic mistake tagging.</li>
 </ul>
 
-You can learn more about some of these features in later sections.'
+You can learn more about some of these features in later sections. Please report any bugs to joshuacastellano7@gmail.com'
     ],
     [
       'Usage',
@@ -1998,6 +2000,52 @@ An optional parameter used to search for only games before a certain date.
       \@statcomments
     ],
     [
+      'Errors and Warnings',
+'
+Errors are (most likely) the result of malformed GCG files.
+Common errors are described below:
+
+<h5>No moves found</h5>
+This error appears when an empty GCG file is detected.
+<h5>Disconnected play detected</h5>
+This error appears when a play is made that does not connect to other tiles on the board.
+<h5>Both players have the same name</h5>
+This error appears when both players have the exact same name. In this case the program cannot distinguish who is making which plays.
+<h5>No valid lexicon found</h5>
+This error appears when the game is not tagged with a lexicon or the game uses an unrecognized lexicon, such as THTWL85.
+<h5>Game is incomplete</h5>
+This error appears when the GCG file is incomplete.
+The errors above are relatively common and well-tested.
+If you encounter any of these errors, it probably means
+that the GCG file of the game is somehow malformed or tagged incorrectly.
+To correct these errors, update the game on cross-tables.com and
+the corrected version should appear in your stats the next day.
+
+Any other errors that appear are rare and likely due to a bug.
+If you see an error or warning that was not described above,
+please email them to joshuacastellano7@gmail.com.
+<br><br><br><br>
+Warnings are for letting players know that they
+might want to correct certain GCG files. The complete
+list of warnings is below:
+
+<h5>Duplicate game detected</h5>
+This appears when two games with the same tournament
+and round number are detected. The duplicate game is
+not included in statistics or leaderboards. It probably
+means that both you and your opponent uploaded the same
+game. In this case the racks that you recorded might
+have been overwritten when you opponent uploaded their game.
+
+<h5>Note before moves detected</h5>
+Notes that appear before moves are not associated with
+either player, so mistakes tagged in these notes will
+not be recorded.
+<br><br><br><br>
+To correct any errors or warnings, simply update the game with the corrected GCG file on cross-tables.com. Your new game will be retrieved by RandomRacer in the daily midnight updates.
+'
+    ],
+    [
       'Challenge Heuristics',
 'The Challenge statistics may not be completely accurate for games using a double challenge rule (TWL or NSW games) as passes and lost challenges in a double challenge game are indistinguishable in the GCG file. If the following criteria are met, the play is considered a lost challenge:
 <br><br>
@@ -2029,8 +2077,8 @@ If you do not want to specify the magnitude of the standard mistake you can omit
 <br><br>
 If you tag the standard mistake like this the mistake will appear under the \'Unspecified\' category in the mistakes table. Standard mistakes are case insensitive so the following standard mistake tags would be equivalent:
 <br><br>
-#findingSMALL
-#FiNdINsmAlL
+#findingSMALL<br>
+#FiNdINGsmAlL
 <br><br>
 <h5>Dynamic Mistakes</h5>
 The dynamic mistakes statistic is a self-reported statistic for which the player can create their own categories. To mark a move as a dynamic mistake use two hashtags instead of just one, for example:
@@ -2078,20 +2126,20 @@ The statistic is plotted on the X axis and the win percentage is plotted on the 
     [
       'Confidence Intervals',
 '
-All confidence levels are calculated with 99% confidence. The equations used to calculate the probability and confidence levels for a tile \(t\) are as follows:
+All confidence intervals are calculated with a 99% confidence level. If a player\'s observed probability of drawing a given tile exceeds the upper bound of the confidence interval, their row is highlighted red. If a player\'s observed probability of drawing a given tile is below the lower bound of the confidence interval, their row is highlighted green. Observed probabilities are calculated by dividing the average number of tiles played per game by the tile frequency. The equations used to calculate the confidence intervals for a tile \(t\) are as follows:
 <br><br>
 <div style="text-align: center">
-First establish a confidence level, given by \( c \):
+First establish a confidence level, given by \( c \). This is always 99%.
 \[c = 0.99\]
-Using the confidence level, calculate a normally distributed \(z\)-score where \(a\) is the error and \(K\) is the percentile:
+Using the confidence level, calculate a normally distributed \(z\)-score where \(a\) is the error, \(K\) is the percentile, and CDF() is the cumulative distribution function of the normal distribution:
 \[a = 1 - c\]
 \[K = 1 - {a \over 2} \]
-\[z = \mathrm{cdf}(K) \]
-Let \(P\) be the percentage of all tiles played by the player. For example, if the player averages playing 49 tiles a game, since there are 100 tiles in the bag, \(P\) would take a value of \(0.49\). Let \(n\) be the maximum possible number of that tile which the player could have played in all of their games. For example, if the player played 100 games and there are f tiles  of type \(t\) in the bag, \(n\) would take a value of \(100 * f = 900 \). Now we can calculate the upper and lower bounds of the confidence interval, where :
+\[z = \mathrm{CDF}(K) \]
+Let \(P\) be the percentage of all tiles played by the player. For example, if the player averages playing 49 tiles a game, \(P\) would take a value of \(0.49\), since there are 100 tiles in the bag. Let \(n\) be the maximum possible number of tile \(t\) which the player could have played in all of their games. For example, if the player played 100 games and there are \(f\) tiles  of type \(t\) in the bag, \(n\) would take a value of \(100 * f \). Now we can calculate the upper and lower bounds of the confidence interval, where \(l\) is the lower bound and \(u\) is the upper bound:
 \[I = z * \sqrt{P * ( 1 - P ) \over n} \]
 \[l = P - I \]
 \[u = P + I \]
-The observed probability is simply the average number of times that the player plays tile \(t\) per game, divided by how many tiles \(t\) are in the bag.
+As mentioned above, the observed probability, which we will denote as \(p\), is simply the average number of times that the player plays tile \(t\) per game, divided by how many tiles \(t\) are in the bag. If the observed probability \(p\) is less than \(l\), it is considered below the confidence interval and the row will be highlighted green. If the observed probability \(p\) is greater than \(u\), it is considered above the confidence interval and the row will be highlighted green. If the distribution of tiles played is completely random, as our observations of the random variable \(p\) increases, we should expect to see \(p\) fall within the confidence interval for 99% of those observations. Keep in mind that the leaderboards only give a single observation for \(p\).
 </div>
 <br><br>
 Please note that probabilities that fall outside the confidence interval are in no way suspect. The sample of games analyzed by RandomRacer is subject to a heavy selection bias. Sometimes people tend to only post their good or their bad games. This can cause more probabilities than expected to fall outside the confidence interval. Also, with 26 tiles and about 200 players on the leaderboard and a 99% confidence interval, we can reasonably expect that about 26 * 200 * .01 = 52 probabilities will fall outside the given confidence interval. This is exactly in line with the approximately 50 probabilities that have done so in reality.'

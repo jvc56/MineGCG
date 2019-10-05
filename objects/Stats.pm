@@ -825,28 +825,7 @@ sub statsList
     {
       Constants::STAT_NAME => 'Errors',
       Constants::STAT_DESCRIPTION_NAME =>
-'Errors are (most likely) the result of malformed GCG files.
-Common errors are described below:
-
-<h5>No moves found</h5>
-This error appears when an empty GCG file is detected.
-<h5>Disconnected play detected</h5>
-This error appears when a play is made that does not connect to other tiles on the board.
-<h5>Both players have the same name</h5>
-This error appears when both players have the exact same name. In this case the program cannot distinguish who is making which plays.
-<h5>No valid lexicon found</h5>
-This error appears when the game is not tagged with a lexicon or the game uses an unrecognized lexicon, such as THTWL85.
-<h5>Game is incomplete</h5>
-This error appears when the GCG file is incomplete.
-The errors above are relatively common and well-tested.
-If you encounter any of these errors, it probably means
-that the GCG file of the game is somehow malformed or tagged incorrectly.
-To correct these errors, update the game on cross-tables.com and
-the corrected version should appear in your stats the next day.
-
-Any other errors that appear are rare and likely due to a bug.
-If you see an error or warning that was not described above,
-please email them to joshuacastellano7@gmail.com.',
+'Errors are (most likely) the result of malformed GCG files. To learn more, check the \'Errors and Warnings\' section in the <a href="/about.html">about page</a>.',
       Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_ERROR,
@@ -864,23 +843,7 @@ please email them to joshuacastellano7@gmail.com.',
     {
       Constants::STAT_NAME => 'Warnings',
       Constants::STAT_DESCRIPTION_NAME =>
-
-'Warnings are for letting players know that they
-might want to correct certain GCG files. The complete
-list of warnings is below:
-      
-<h5>Duplicate game detected</h5>
-This appears when two games with the same tournament
-and round number are detected. The duplicate game is
-not included in statistics or leaderboards. It probably
-means that both you and your opponent uploaded the same
-game. In this case the racks that you recorded might
-have been overwritten when you opponent uploaded their game.
-
-<h5>Note before moves detected</h5>
-Notes that appear before moves are not associated with
-either player, so mistakes tagged in these notes will
-not be recorded.',
+      'Warnings are notifications to players that they might want to update some of their GCG files. To learn more, check the \'Errors and Warnings\' section in the <a href="/about.html">about page</a>.',
       Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_ERROR,
@@ -939,9 +902,9 @@ not be recorded.',
         ],
 	'subitem_descriptions' =>
 	[
-          'Games that have incomplete GCG files. To learn more, check the \'Statistics, Lists, and Notable Games\' section of the <a href="\about.html">about page</a>.',
-          'Games in which there is a disconnected play. To learn more, check the \'Statistics, Lists, and Notable Games\' section of the <a href="\about.html">about page</a>.',
-          'Games in which there is an error that is not a disconnected play or incomplete. To learn more, check the \'Statistics, Lists, and Notable Games\' section of the <a href="\about.html">about page</a>.'
+          'Games that have incomplete GCG files. To learn more, check the \'Errors and Warnings\' section of the <a href="\about.html">about page</a>.',
+          'Games in which there is a disconnected play. To learn more, check the \'Errors and Warnings\' section of the <a href="\about.html">about page</a>.',
+          'Games in which there is an error that is not a disconnected play or incomplete. To learn more, check the \'Errors and Warnings\' section of the <a href="\about.html">about page</a>.'
 	],
         Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_TOTAL,
         'int' => 1
