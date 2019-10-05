@@ -1306,7 +1306,7 @@ not be recorded.',
     {
       Constants::STAT_NAME => 'Plays That Were Challenged',
       Constants::STAT_DESCRIPTION_NAME =>
-      'Plays made by the player that were challenged by an opponent.',
+      'Plays made by the player that were challenged by an opponent.  This list may not be completely accurate. Check the \'Challenge Heuristics\' section of the <a href="/about.html">about page</a> for more information.',
       Constants::STAT_ITEM_OBJECT_NAME =>  {'list' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -1641,7 +1641,7 @@ not be recorded.',
     {
       Constants::STAT_NAME => 'Highest Scoring Turn',
       Constants::STAT_DESCRIPTION_NAME =>
-      'The player\s highest scoring turn.',
+      'The player\'s highest scoring turn.',
       Constants::STAT_ITEM_OBJECT_NAME =>  {'total' => -1, Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG, 'int' => 1},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -1744,7 +1744,7 @@ not be recorded.',
     {
       Constants::STAT_NAME => 'Bingo Probabilities',
       Constants::STAT_DESCRIPTION_NAME =>
-      'The average probabilities of the bingos played by the player. These are the probabilities as listed in the Zyzzyva word study program, so higher values are less probable.',
+      'The average probabilities of the bingos played by the player. These are the probabilities as listed in the Zyzzyva word study program, so higher values are less probable. Keep in mind that comparing across lexicons not completely accurate due to the varying amounts of words in each lexicon.',
       Constants::STAT_ITEM_OBJECT_NAME =>
       {
           Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG,
@@ -2319,7 +2319,7 @@ not be recorded.',
     {
       Constants::STAT_NAME => 'Challenges',
       Constants::STAT_DESCRIPTION_NAME =>
-      'The number of challenges made by both the player and the opponent, broken down by challenges that the player made against opponent\'s plays and challenges that the opponent made against the player\'s plays.',
+      'The number of challenges made by both the player and the opponent, broken down by challenges that the player made against opponent\'s plays and challenges that the opponent made against the player\'s plays.  This stat may not be completely accurate. Check the \'Challenge Heuristics\' section of the <a href="/about.html">about page</a> for more information.',
       Constants::STAT_ITEM_OBJECT_NAME =>
       {
         'total' => 0,
@@ -2421,7 +2421,7 @@ not be recorded.',
     {
       Constants::STAT_NAME => 'Defending Challenge Percentage',
       Constants::STAT_DESCRIPTION_NAME =>
-      'The percentage of challenges made by opponents against the player\'s plays that were unsuccessful.',
+      'The percentage of challenges made by opponents against the player\'s plays that were unsuccessful. This stat may not be completely accurate. Check the \'Challenge Heuristics\' section of the <a href="/about.html">about page</a> for more information.',
       Constants::STAT_ITEM_OBJECT_NAME => {Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG, 'total' => 0, 'challenges' => 0, 'successful_challenges' => 0},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -2534,7 +2534,7 @@ not be recorded.',
     {
       Constants::STAT_NAME => 'Comments Word Length',
       Constants::STAT_DESCRIPTION_NAME =>
-      'The number words in all the comments of the GCG file of the game. This stat counts comments that appear on the player\'s turn and the opponent\'s turn.',
+      'The number of words in all the comments of the GCG file of the game. This stat counts comments that appear on the player\'s turn and the opponent\'s turn.',
       Constants::STAT_ITEM_OBJECT_NAME =>  {'total' => 0},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -2869,7 +2869,7 @@ not be recorded.',
     {
       Constants::STAT_NAME => 'Many Challenges',
       Constants::STAT_DESCRIPTION_NAME =>
-      'Games in which there are at least 5 challenges made.',
+      'Games in which there are at least 5 challenges made. This list may not be completely accurate. Check the \'Challenge Heuristics\' section of the <a href="/about.html">about page</a> for more information.',
       Constants::STAT_ITEM_OBJECT_NAME => {'list' => [], 'ids' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
@@ -2904,7 +2904,7 @@ not be recorded.',
     {
       Constants::STAT_NAME => 'Mistakeless Turns',
       Constants::STAT_DESCRIPTION_NAME =>
-      'The number of turns the player made that are not tagged with a mistake. Dynamic mistakes do not count for this statistic.',
+      'The number of turns the player made that are not tagged with a standard mistake. For more information about mistakes, check the \'Mistakes\' section of the <a href="/about.html">about page</a>.',
       Constants::STAT_ITEM_OBJECT_NAME => {'total' => 0},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -2927,7 +2927,7 @@ not be recorded.',
     {
       Constants::STAT_NAME => 'Mistakes per Turn',
       Constants::STAT_DESCRIPTION_NAME =>
-      'The number of mistakes that the player makes per turn.',
+      'The number of mistakes that the player makes per turn. For more information about mistakes, check the \'Mistakes\' section of the <a href="/about.html">about page</a>.',
       Constants::STAT_ITEM_OBJECT_NAME =>
       {
         Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG,
@@ -2977,7 +2977,7 @@ not be recorded.',
     {
       Constants::STAT_NAME => 'Mistakes',
       Constants::STAT_DESCRIPTION_NAME =>
-      'yeet',
+      'The number of mistakes the player made. For more information about mistakes, check the \'Mistakes\' section of the <a href="/about.html">about page</a>.',
       Constants::STAT_ITEM_OBJECT_NAME =>
       {
         'total'    => 0,
@@ -3019,7 +3019,7 @@ not be recorded.',
     {
       Constants::STAT_NAME => 'Mistakes List',
       Constants::STAT_DESCRIPTION_NAME =>
-      'The listing of all of the player\'s mistakes.',
+      'The listing of all of the player\'s mistakes. For more information about mistakes, check the \'Mistakes\' section of the <a href="/about.html">about page</a>.',
       Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -3043,7 +3043,7 @@ not be recorded.',
     {
       Constants::STAT_NAME => 'Dynamic Mistakes',
       Constants::STAT_DESCRIPTION_NAME =>
-      'More on this later.',
+      'The dynamic mistakes made by the player. For more information about mistakes, check the \'Mistakes\' section of the <a href="/about.html">about page</a>.',
       Constants::STAT_ITEM_OBJECT_NAME =>
       {
         'total'    => 0,
@@ -3093,7 +3093,7 @@ not be recorded.',
     {
       Constants::STAT_NAME => 'Dynamic Mistakes List',
       Constants::STAT_DESCRIPTION_NAME =>
-      'The listing of the player\'s dynamic mistakes.',
+      'The listing of the player\'s dynamic mistakes. For more information about mistakes, check the \'Mistakes\' section of the <a href="/about.html">about page</a>.',
       Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,

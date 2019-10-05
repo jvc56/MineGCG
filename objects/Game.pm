@@ -73,7 +73,7 @@ sub new
 
       if ($player_one_name eq $player_two_name)
       {
-	return format_game_error("Both players have the same name.",$filename, $line_number, $line);
+  return format_game_error("Both players have the same name.",$filename, $line_number, $line);
       }
 
       next;
@@ -495,8 +495,8 @@ sub new
     id              => $game_id,
     lexicon         => $lexicon_ref,
     tourney_game    => $is_tourney_game,
-  	player_one_name => $player_one_real_name,
-  	player_two_name => $player_two_real_name,
+    player_one_name => $player_one_real_name,
+    player_two_name => $player_two_real_name,
     board           => $board,
     moves           => \@moves,
     warnings        => $warning,
@@ -620,30 +620,16 @@ sub getNumDynamicMistakes
       
       my @matches = ($comment =~ /##(\w+)/gi);
 
-      outer: foreach my $match (@matches)
+      foreach my $match (@matches)
       {
-        foreach my $cat (@categories)
-	{
-          if (uc $cat eq uc $match)
-	  {
-	    next outer;
-	  }
-          foreach my $mag (keys %{$mistake_magnitudes})
-          {
-            if (uc ($cat . $mag) eq uc $match)
-            {
-              next outer;
-            }
-          }
+        if ($mistakes{$match})
+        {
+          $mistakes{$match}++;
         }
-	if ($mistakes{$match})
-	{
-	  $mistakes{$match}++;
-	}
-	else
-	{
+        else
+        {
           $mistakes{$match} = 1;
-	}
+        }
       }
     }
   }
@@ -658,11 +644,6 @@ sub getDynamicMistakes
 
   my @moves = @{$this->{'moves'}};
 
-  my @categories = Constants::MISTAKES;
-
-  my $mistake_magnitudes = Constants::MISTAKES_MAGNITUDE;
-  push @categories, 'note';
-
   my @mistakes_list = ();
 
   foreach my $move (@moves)
@@ -674,28 +655,14 @@ sub getDynamicMistakes
       
       my @matches = ($comment =~ /##(\w+)/gi);
 
-      outer: foreach my $match (@matches)
+      foreach my $match (@matches)
       {
-        foreach my $cat (@categories)
-	{
-          if (uc $cat eq uc $match)
-	  {
-	    next outer;
-	  }
-          foreach my $mag (keys %{$mistake_magnitudes})
-          {
-            if (uc ($cat . $mag) eq uc $match)
-            {
-              next outer;
-            }
-          }
-        }
         push @mistakes_list,
-	[$match,
-	 'Dynamic',
-	 $this->{'id'},
-	 $move->toString($this->readableMove($move)),
-	 $comment,
+  [$match,
+   'Dynamic',
+   $this->{'id'},
+   $move->toString($this->readableMove($move)),
+   $comment,
          $this->getReadableName()
         ];
       }
@@ -742,12 +709,12 @@ sub getMistakes
             $mistake_mag = Constants::UNSPECIFIED_MISTAKE_NAME;
           }
           push @mistakes_list,
-	  [
+    [
             $cat,
             $mistake_mag,
-	    $this->{'id'},
-	    $move->toString($this->readableMove($move)),
-	    $comment,
+      $this->{'id'},
+      $move->toString($this->readableMove($move)),
+      $comment,
             $this->getReadableName()
           ];
         }
@@ -854,7 +821,7 @@ sub getNumOtherPlays
   foreach my $move (@moves)
   {
     if (
-	$move->{'turn'} == $player &&
+  $move->{'turn'} == $player &&
         $move->{'num_tiles_played'}->{$player} == 0 
        )
     {
@@ -924,10 +891,10 @@ sub getNumWins
   }
   if ($p1s < $p2s)
   {
-  	if ($player)
-  	{
-  	  return 0;
-  	}
+    if ($player)
+    {
+      return 0;
+    }
     return 1;
   }
   return 0.1;
@@ -1252,7 +1219,7 @@ sub getNumWordsPlayed
   my @sums = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
   foreach my $move (@moves)
   {
-  	my $bingo = $move->isBingo($player);
+    my $bingo = $move->isBingo($player);
     my $bingo_cap = $this->readableMoveCapitalized($move);
     my $l = $move->{'length'}->{$player};
     if (
@@ -1845,7 +1812,7 @@ sub toString
     {
       $s .= sprintf "%-".$number_column."s", ( (int ($i / 2)) + 1);
     }
-  	$s .= sprintf "%-".$c1."s", $this->{'moves'}[$i]->toString($this->readableMove($this->{'moves'}[$i]));
+    $s .= sprintf "%-".$c1."s", $this->{'moves'}[$i]->toString($this->readableMove($this->{'moves'}[$i]));
     if ($i % 2 == 1)
     {
       $s .= "\n";

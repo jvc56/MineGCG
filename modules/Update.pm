@@ -1980,6 +1980,73 @@ An optional parameter used to search for only games before a certain date.
       \@statcomments
     ],
     [
+      'Challenge Heuristics',
+'The Challenge statistics may not be completely accurate for games using a double challenge rule (TWL or NSW games) as passes and lost challenges in a double challenge game are indistinguishable in the GCG file. If the following criteria are met, the play is considered a lost challenge:
+<br><br>
+<ul>
+<li>The play is a pass</li>
+<li>The previous play formed at least one word</li>
+<li>The game is played with a TWL or NSW lexicon</li>
+<li>The game has less than 20 turns</li>
+</ul>
+<br>
+If you think you can improve these heuristics, please contact joshuacastellano7@gmail.com.'
+    ],
+    [
+      'Mistakes',
+'There are two kinds of mistakes: standard mistakes (simply called \'mistakes\' on the stats pages and leaderboards) and dynamic mistakes.
+<br><br>
+<h5>Standard Mistakes</h5>
+<br>
+The Standard mistakes statistic if a self-reported statistic that is divided into 6 categories (knowledge, finding, vision, tactics, strategy, time, and endgame). To mark a move as a standard mistake in your annotated game, include the tag of the standard mistake in the comment of the move. You can also tag the magnitude (large, medium, or small) of the standard mistake which will organize your standard mistakes by magnitude in the standard mistakes table. For example, if you missed a bingo because you haven\'t studied it yet, that would probably be a large mistake due to word knowledge (called \'knowledge\' in this case) which you can tag by adding the following in your comment of the move:
+<br>
+#knowledgelarge
+<br>
+The large, medium, and small magnitudes can also be denoted by \'saddest\', \'sadder\', and \'sad\' respecitvely. For example, to tag a standard mistake as a large time mistake, you can write:
+<br>
+#timeSADDEST
+<br>
+If you do not want to specify the magnitude of the standard mistake you can omit the magnitude part of the tag:
+<br>
+#knowledge
+<br>
+If you tag the standard mistake like this the mistake will appear under the \'Unspecified\' category in the mistakes table. Standard mistakes are case insensitive so the following standard mistake tags would be equivalent:
+<br>
+#findingSMALL
+#FiNdINsmAlL
+<br>
+<h5>Dynamic Mistakes</h5>
+The dynamic mistakes statistic is a self-reported statistic for which the player can create their own categories. To mark a move as a dynamic mistake use two hashtags instead of just one, for example:
+<br>
+##thisisaveryverbosedynamicmistakecategory
+<br>
+Dynamic mistakes can be any alphanumeric string that the player places after \'##\'. Dynamic mistakes cannot contain anything other than numbers or letters.
+<br><br>
+There are some key differences between dynamic mistakes and standard mistakes.
+<br>
+Dynamic mistakes do not have magnitudes, so if you tagged a move with these dynamic mistakes:
+<br>
+##findingparallelsmall
+##findingparallellarge
+<br>
+They would count as completely distinct categories and would not be grouped together in any way.
+<br>
+Unlike mistakes, dynamic mistakes are case sensitive, so if you tagged a move with these dynamic mistakes:
+##Yikes
+##yikes
+<br>
+They would count as separate dynamic mistake categories.
+<br><br>
+<br>Notes on Both Standard and Dynamic Mistakes</h5>
+The tags for all mistakes can appear anywhere in any order in the comment. Keep in mind that all mistakes are associated with moves, and moves are associated with players, so be sure to tag your mistakes on your moves only. For example, if you don\'t challenge a phony play, you can write the commentary on your opponent\'s move, but include the tags on your succeeding move to make sure they appear as your mistakes and not your opponents\'.
+You can also mark a move with more than one mistake:
+<br>
+#findingmedium blah blah blah #tacticslarge ##dynamicsomething ##moredynamic
+<br>
+Mistakes and dynamic mistakes are completely distinct categories. Standard mistakes are never counted as dynamic mistakes and dynamic mistakes are never counted as standard mistakes. If you see this happen on RandomRacer, please contact joshuacastellano7#gmail.com.
+'
+    ],
+    [
       'Confidence Intervals',
 '
 All confidence levels are calculated with 99% confidence. The equations used to calculate the probability and confidence levels for a tile \(t\) are as follows:
