@@ -316,6 +316,7 @@ This error appears when the game is not tagged with a lexicon or the game uses a
 
 <h5>Game is incomplete</h5>
 This error appears when the GCG file is incomplete.
+
 The errors above are relatively common and well-tested.
 If you encounter any of these errors, it probably means
 that the GCG file of the game is somehow malformed or tagged incorrectly.
@@ -381,7 +382,7 @@ If you do not want to specify the magnitude of the standard mistake you can omit
 
 #knowledge
 
-If you tag the standard mistake like this the mistake will appear under the 'Unspecified' category in the mistakes table. Standard mistakes are case insensitive so the following standard mistake tags would be equivalent:
+If you tag the standard mistake like this the mistake will appear under the 'Unspecified' category in the mistakes table. Standard mistakes are case insensitive, so the following standard mistake tags would be equivalent:
 
 #findingSMALL
 #FiNdINGsmAlL
@@ -434,7 +435,7 @@ The statistic is plotted on the X axis and the win percentage is plotted on the 
 
 # Confidence Intervals
 
-All confidence intervals are calculated with a 99% confidence level. If a player's observed probability of drawing a given tile exceeds the upper bound of the confidence interval, their row is highlighted red. If a player's observed probability of drawing a given tile is below the lower bound of the confidence interval, their row is highlighted green. Observed probabilities are calculated by dividing the average number of tiles played per game by the tile frequency. The equations used to calculate the confidence intervals for a tile \(t\) are as follows:
+Confidence intervals are a bounded estimation of the probability that a player will play a particular tile. The p and CI on the confidence interval tables are the observed probability and the confidence interval, respecitvely. All confidence intervals are calculated with a 99% confidence level. If a player's observed probability of drawing a given tile exceeds the upper bound of the confidence interval, their row is highlighted red. If a player's observed probability of drawing a given tile is below the lower bound of the confidence interval, their row is highlighted green. Observed probabilities are calculated by dividing the average number of tiles played per game by the tile frequency. The equations used to calculate the confidence intervals for a tile \(t\) are as follows:
 
 <div style="text-align: center">
 First establish a confidence level, given by \( c \). This is always 99%.
@@ -447,7 +448,7 @@ Let \(P\) be the percentage of all tiles played by the player. For example, if t
 \[I = z * \sqrt{P * ( 1 - P ) \over n} \]
 \[l = P - I \]
 \[u = P + I \]
-As mentioned above, the observed probability, which we will denote as \(p\), is simply the average number of times that the player plays tile \(t\) per game, divided by how many tiles \(t\) are in the bag. If the observed probability \(p\) is less than \(l\), it is considered below the confidence interval and the row will be highlighted green. If the observed probability \(p\) is greater than \(u\), it is considered above the confidence interval and the row will be highlighted green. If the distribution of tiles played is completely random, as our observations of the random variable \(p\) increases, we should expect to see \(p\) fall within the confidence interval for 99% of those observations. Keep in mind that the leaderboards only give a single observation for \(p\).
+As mentioned above, the observed probability, which we will denote as \(p\), is simply the average number of times that the player plays tile \(t\) per game, divided by how many tiles \(t\) are in the bag. If the observed probability \(p\) is less than \(l\), it is considered below the confidence interval and the row will be highlighted green. If the observed probability \(p\) is greater than \(u\), it is considered above the confidence interval and the row will be highlighted green. If the distribution of tiles played is completely random, as our observations of the random variable \(p\) increases, we should expect to see \(p\) fall within the confidence interval for 99% of those observations. Keep in mind that the leaderboards only give a single observation of \(p\) for a given tile and player.
 </div>
 
 Please note that probabilities that fall outside the confidence interval are in no way suspect. The sample of games analyzed by RandomRacer is subject to a heavy selection bias. Sometimes people tend to only post their good or their bad games. This can cause more probabilities than expected to fall outside the confidence interval. Also, with 26 tiles and about 200 players on the leaderboard and a 99% confidence interval, we can reasonably expect that about 26 * 200 * .01 = 52 probabilities will fall outside the given confidence interval. This is exactly in line with the approximately 50 probabilities that have done so in reality.

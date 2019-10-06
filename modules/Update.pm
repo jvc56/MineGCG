@@ -566,7 +566,7 @@ TABSCRIPT
   my $P           = $player_tiles_played_percentages{$player};
   my $total_games = $player_total_games{$player};
   my $n           = $tile_frequencies->{$name} * $total_games;
-  my ($lower, $upper) = get_confidence_interval($P, $n);
+  my ($lower, $upper) = Utils::get_confidence_interval($P, $n);
 
   my $prob        = sprintf "%.4f", $average / $tile_frequencies->{$name};
 
@@ -576,12 +576,12 @@ TABSCRIPT
 	my $add_to_violations = 0;
 	if ($prob > $upper)
 	{
-          $row_color = '#6c131c';
+          $row_color = Constants::OVER_CONFIDENCE_COLOR;
 	  $add_to_violations = 1;
 	}
 	elsif ($prob < $lower)
 	{
-          $row_color = '#0f3e1a';
+          $row_color = Constants::UNDER_CONFIDENCE_COLOR;
 	  $add_to_violations = 1;
 	}
         #printf "%s,  %s,  %s,  %s,  %s,  %s,  %s,  %s,  %s, %s, %s  \n", $P, $total_games,
@@ -661,7 +661,7 @@ TABSCRIPT
         my $violations_table = Utils::make_datatable(
           0,
           'confidence_interval_violations_datatable',
-          ['Player', 'Tile', 'Probability (p)', 'Confidence Interval'],
+          ['Player', 'Tile', 'p', 'CI'],
           ['text-align: center', 'text-align: center', 'text-align: center', 'text-align: center'],
           ['false', 'false', 'true', 'disable'],
           $violations_content,
@@ -1113,7 +1113,7 @@ sub update_leaderboard_legacy
 
   my $logs = Constants::LOGS_DIRECTORY_NAME;
 
-  my $leaderboard_name = "$logs/" . Constants::LEADERBOARD_NAME . "legacy.log";
+  my $leaderboard_name = "$logs/" . Constants::LEADERBOARD_NAME . ".legacy.log";
   my $leaderboard_html = Constants::LEGACY_DIRECTORY_NAME . '/' . Constants::RR_LEADERBOARD_NAME;
 
   open(my $log_leaderboard, '>', $leaderboard_name);
@@ -2008,12 +2008,13 @@ This error appears when both players have the exact same name. In this case the 
 This error appears when the game is not tagged with a lexicon or the game uses an unrecognized lexicon, such as THTWL85.
 <h5>Game is incomplete</h5>
 This error appears when the GCG file is incomplete.
+<br><br>
 The errors above are relatively common and well-tested.
 If you encounter any of these errors, it probably means
 that the GCG file of the game is somehow malformed or tagged incorrectly.
 To correct these errors, update the game on cross-tables.com and
 the corrected version should appear in your stats the next day.
-
+<br><br>
 Any other errors that appear are rare and likely due to a bug.
 If you see an error or warning that was not described above,
 please email them to joshuacastellano7@gmail.com.
@@ -2068,7 +2069,7 @@ If you do not want to specify the magnitude of the standard mistake you can omit
 <br><br>
 #knowledge
 <br><br>
-If you tag the standard mistake like this the mistake will appear under the \'Unspecified\' category in the mistakes table. Standard mistakes are case insensitive so the following standard mistake tags would be equivalent:
+If you tag the standard mistake like this the mistake will appear under the \'Unspecified\' category in the mistakes table. Standard mistakes are case insensitive, so the following standard mistake tags would be equivalent:
 <br><br>
 #findingSMALL<br>
 #FiNdINGsmAlL
@@ -2119,7 +2120,7 @@ The statistic is plotted on the X axis and the win percentage is plotted on the 
     [
       'Confidence Intervals',
 '
-All confidence intervals are calculated with a 99% confidence level. If a player\'s observed probability of drawing a given tile exceeds the upper bound of the confidence interval, their row is highlighted red. If a player\'s observed probability of drawing a given tile is below the lower bound of the confidence interval, their row is highlighted green. Observed probabilities are calculated by dividing the average number of tiles played per game by the tile frequency. The equations used to calculate the confidence intervals for a tile \(t\) are as follows:
+Confidence intervals are a bounded estimation of the probability that a player will play a particular tile. The p and CI on the confidence interval tables are the observed probability and the confidence interval, respecitvely. All confidence intervals are calculated with a 99% confidence level. If a player\'s observed probability of drawing a given tile exceeds the upper bound of the confidence interval, their row is highlighted red. If a player\'s observed probability of drawing a given tile is below the lower bound of the confidence interval, their row is highlighted green. Observed probabilities are calculated by dividing the average number of tiles played per game by the tile frequency. The equations used to calculate the confidence intervals for a tile \(t\) are as follows:
 <br><br>
 <div style="text-align: center">
 First establish a confidence level, given by \( c \). This is always 99%.

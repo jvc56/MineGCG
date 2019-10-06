@@ -620,19 +620,28 @@ sub statItemsToHTML
         if ($title eq 'Tiles Played' && length $subtitle == 1)
         {
           my $tile_frequencies = Constants::TILE_FREQUENCIES; 
-          my $P           = $average;
-          my $total_games = $numgames;
           my $f           = $tile_frequencies->{$subtitle};
-          my $n           = $f * $total_games;
-          my ($lower, $upper) = get_confidence_interval($P, $n);
-          my $prob        = sprintf "%.4f", $average / $f;
+          my $P           = $average / 100;
+          my $n           = $f * $numgames;
+          my ($lower, $upper) = Utils::get_confidence_interval($P, $n);
+          my $prob        = sprintf "%.4f", $subaverage / $f;
 
+          my $color;
+          if ($prob > $upper)   
+          {
+            $color = Constants::OVER_CONFIDENCE_COLOR;
+          }
+          elsif ($prob < $lower)
+          {
+            $color = Constants::UNDER_CONFIDENCE_COLOR;
+          }
           my $confidence_interval = "$lower < p < $upper";
           push @confidence_array,
           [
             $subtitle,
             $prob,
-            $confidence_interval
+            $confidence_interval,
+            $color
           ];
         }
       }
@@ -667,28 +676,36 @@ sub statItemsToHTML
   {
     my $cilearntext   = 'To learn more about these statistics, check the \'Confidence Intervals\' section on the <a href="/about.html">about page</a>.';
     my $cititle       = 'Player Confidence Intervals';
+    my $player_or_opp = 'player';
     if ($grouptitle =~ /Opponent/i)
     {
       $cititle = 'Opponent Confidence Intervals';
+      $player_or_opp = 'opp'
     }
-    my $ciexpander_id = 'confidence_intervals';
-    my $citable_id    = $ciexpander_id . '_table_id';
+    my $ciexpander_id = $player_or_opp . 'confidence_intervals';
+    my $citable_id    = $player_or_opp . $ciexpander_id . '_table_id';
     my $citable_content = '';
 
     for (my $i = 0; $i < @confidence_array; $i++)
     {
-      my $item  = shift @confidence_array;
+      my $item   = $confidence_array[$i];
       my $tile   = $item->[0];
       my $prob   = $item->[1];
       my $intv   = $item->[2];
+      my $color  = $item->[3];
 
+      my $style = '';
+      if ($color)
+      {
+        $style = "style='background-color: $color'";
+      }
       my $width = 100 / 3;
       my $width_style_part = "width: $width%;";
       my $width_style = "style='$width_style_part'";
 
       $citable_content .=
       "
-        <tr $download >
+        <tr $download $style >
           <td style='text-align: center; $width_style_part' >$tile</td>
           <td style='text-align: center; $width_style_part' >$prob</td>
           <td style='text-align: center; $width_style_part' >$intv</td>
@@ -696,9 +713,9 @@ sub statItemsToHTML
     }  
 
     my $cilist_table = Utils::make_datatable(
-      $ciexpander_id,
+      0,
       $citable_id,
-      ['Tile', 'Probability', 'CI'],
+      ['Tile', 'p', 'CI'],
       ['text-align: center', 'text-align: center', 'text-align: center'],
       ['false', 'true', 'disable'],
       $citable_content,
@@ -707,17 +724,21 @@ sub statItemsToHTML
       $cilearntext
     );
 
-    my $ciexpander = Utils::make_expander($ciexpander_id);
+    #my $ciexpander = Utils::make_expander($ciexpander_id);
   
-    my $cicontent = Utils::make_content_item($ciexpander, $cititle, $cilist_table);
-    my $cigroup_expander_id = 'group_confidence_interval_expander';
-    my $group_expander = Utils::make_expander($group_expander_id);
+    #my $cicontent = Utils::make_content_item($ciexpander, $cititle, $cilist_table);
+    my $cigroup_expander_id = $player_or_opp . 'group_confidence_interval_expander';
+    my $cigroup_expander = Utils::make_expander($cigroup_expander_id);
     my @styles = (Constants::DIV_STYLE_ODD, Constants::DIV_STYLE_EVEN);
     if ($div_style eq $styles[0])
     {
       $div_style = $styles[1];
     }
-    $statslist_string .= make_group($group_expander, $grouptitle, $group_expander_id, $div_style, $cicontent);
+    else
+    {
+      $div_style = $styles[0];
+    }
+    $statslist_string .= make_group($cigroup_expander, $cititle, $cigroup_expander_id, $div_style, $cilist_table);
   }
   return $statslist_string;
 }
