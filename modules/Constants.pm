@@ -569,7 +569,7 @@ use constant HTML_STYLES => <<HTMLSTYLES
     border-spacing: 0;
     border-radius: 5px;
     background-color: black;
-    padding: 10px;
+    /* padding: 10px; */
   }
   .titledisplay th
   {
