@@ -694,10 +694,10 @@ sub statItemsToHTML
       my $intv   = $item->[2];
       my $color  = $item->[3];
 
-      my $style = '';
+      my $color_style = '';
       if ($color)
       {
-        $style = "style='background-color: $color'";
+        $color_style = "background-color: $color";
       }
       my $width = 100 / 3;
       my $width_style_part = "width: $width%;";
@@ -705,10 +705,10 @@ sub statItemsToHTML
 
       $citable_content .=
       "
-        <tr $download $style >
-          <td style='text-align: center; $width_style_part' >$tile</td>
-          <td style='text-align: center; $width_style_part' >$prob</td>
-          <td style='text-align: center; $width_style_part' >$intv</td>
+        <tr $download>
+          <td style='text-align: center; $width_style_part  $color_style' >$tile</td>
+          <td style='text-align: center; $width_style_part  $color_style' >$prob</td>
+          <td style='text-align: center; $width_style_part  $color_style' >$intv</td>
         </tr>\n";
     }  
 
