@@ -567,7 +567,7 @@ use constant HTML_STYLES => <<HTMLSTYLES
     margin: auto;
     border-collapse: separate;
     border-spacing: 0;
-    border-radius: 5px;
+    border-radius: 10px;
     background-color: black;
     /* padding: 10px; */
   }
