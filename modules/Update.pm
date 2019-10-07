@@ -462,11 +462,12 @@ TABSCRIPT
       my $player  = $ranked_array[$j][1];
       my $name_with_underscores = Utils::sanitize($player);
       
+      my $rank = $j + 1;
       my $link = "<a href='/$cache_dir/$name_with_underscores.html' target='_blank'>$player</a>";
       my $average = $ranked_array[$j][0];
 
-      my $td_style = "style='width: 50%; text-align: center'";
-      $statcontent .= "<tr $download ><td $td_style>$link</td><td $td_style>$average</td></tr>\n";
+      my $td_style = "style='width: 33.333333333%; text-align: center'";
+      $statcontent .= "<tr $download ><td $td_style>$rank</td><td $td_style>$link</td><td $td_style>$average</td></tr>\n";
 
       my $win_percentage = $player_win_percentages{$player};
       $player =~ s/'/\\'/g;
@@ -481,9 +482,9 @@ TABSCRIPT
     my $stattable = Utils::make_datatable(
       0,
       $table_id,
-      ['Player', 'Average'],
-      ['text-align: center', 'text-align: center'],
-      ['false', 'true'],
+      ['Rank', 'Player', 'Average'],
+      ['text-align: center', 'text-align: center', 'text-align: center'],
+      ['true', 'false', 'true'],
       $statcontent,
       'Average',
       'dscclass',
@@ -1235,8 +1236,9 @@ sub update_notable
       $div_style = $even_style;
     }
 
+    my $notable_length = scalar @{$notables};
     my $content = '';
-    for (my $k = 0; $k < scalar @{$notables}; $k++)
+    for (my $k = 0; $k < $notable_length; $k++)
     {
       my $game = $notables->[$k];
       $content .= "<tr $download ><td style='text-align: center'>$game</td></tr>\n";
@@ -1249,7 +1251,7 @@ sub update_notable
     my $notable_table = Utils::make_datatable(
       $expander_id,
       $key . '_table_id',
-      ['Game'],
+      ["Game ($notable_length)"],
       ['text-align: center'],
       ['false'],
       $content,
