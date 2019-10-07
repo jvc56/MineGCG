@@ -482,7 +482,7 @@ sub mistakesToHTML
     $content .=
     "
     <tr>
-      <td style='text-align: center'>
+      <th style='text-align: center' data-notdatacolumn='true'>
         <table style='width: 100%'>
     <tbody>
       <tr style='background-color: inherit'  $download >
@@ -510,7 +510,8 @@ sub mistakesToHTML
     $content,
     0,
     0,
-    $learntext
+    $learntext,
+    1 # the offset
   );
 
   my $mistake_expander = Utils::make_expander($expander_id);
@@ -567,7 +568,7 @@ sub statItemsToHTML
     if ($statitem->{'link'})
     {
       my $link = Constants::SINGLE_ANNOTATED_GAME_URL_PREFIX . $statitem->{'link'};
-      $title = "<a data-sort='$title' href='$link' target='_blank'>$title</a>";
+      $title = "<a href='$link' target='_blank'>$title</a>";
     }
 
     $content .=
@@ -806,7 +807,7 @@ sub statListToHTML
       $table_content .=
       "
         <tr $download >
-          <td style='text-align: center; $width_style_part'  data-downloadtext='$texttype'><span $span_style></span></td>
+          <td style='text-align: center; $width_style_part'  data-downloadtext='$texttype'><span data-alpha='$texttype' $span_style></span></td>
           <td style='text-align: center; $width_style_part' ><a data-alpha='$alphaplay' href='$prefix$id' target='_blank'>$play</a></td>
           <td style='text-align: center; $width_style_part' >$prob</td>
           <td style='text-align: center; $width_style_part' >$score</td>
@@ -2767,6 +2768,33 @@ sub statsList
           push @{$this->{'list'}}, $game->getReadableName();
         }
       }
+    },
+    {
+      Constants::STAT_NAME => 'No Blanks Played',
+      Constants::STAT_DESCRIPTION_NAME => 'Games in which no blank is played. Blanks in words that are challenged off do not count.',
+      Constants::STAT_ITEM_OBJECT_NAME => {'list' => [], 'ids' => []},
+      Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
+      Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        push @{$this->{'ids'}}, @{$other->{'ids'}};
+        push @{$this->{'list'}}, @{$other->{'list'}};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
+      sub
+      {
+        my $this = shift;
+        my $game = shift;
+
+        if ($game->{'tiles_played'}->{0}->{'?'} + $game->{'tiles_played'}->{1}->{'?'} == 0)
+        {
+          push @{$this->{'ids'}},  $game->{'id'};
+          push @{$this->{'list'}}, $game->getReadableName();
+        }
+     }
     },
     {
       Constants::STAT_NAME => 'Mistakeless Turns',

@@ -925,6 +925,10 @@ function sortTable(n, tableid, numeric)
     {
       val = Number(val);
     }
+    else if (!val)
+    {
+      val = rows[i].getElementsByTagName("TD")[n].innerHTML;
+    }
     values.push([val , i]);
     content.push(rows[i].innerHTML);
   }

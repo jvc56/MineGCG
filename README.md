@@ -2,7 +2,7 @@
 
 # RandomRacer
 
-<a href="randomracer.com">RandomRacer.com</a> is a site that collects and presents statistics and comments from annotated scrabble games on <a href="cross-tables.com">cross-tables.com</a>. All content is updated daily starting at midnight (EST). Updates usually finish in 3.5 hours. Initial development began August 2018 and in February 2019 the first version was released.
+<a href="/">RandomRacer.com</a> is a site that collects and presents statistics and comments from annotated scrabble games on <a href="http://cross-tables.com">cross-tables.com</a>. All content is updated daily starting at midnight (EST). Updates usually finish in 3.5 hours. Initial development began August 2018 and in February 2019 the first version was released.
 
 In October 2019, the site underwent major updates which include:
 
