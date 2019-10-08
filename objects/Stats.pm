@@ -369,6 +369,7 @@ sub toString
   $s .= $stmp; 
   $stmp = errorsToHTML($warning_list, 'Warnings', 'warning_list_expander', $styles[$stylebit]);
 
+  $s .= $stmp;
   return $s;
 }
 
