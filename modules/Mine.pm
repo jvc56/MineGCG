@@ -225,14 +225,13 @@ sub mine
       $num_warnings++;
     }
     
-    my $not_duplicate = 1;
     if ($dupkey)
     {
       if ($duplicates{$dupkey})
       {
         $all_stats->addError("$game_id;0;Duplicate game detected (Tournament $tournament, Round $round).", 1);
         $num_warnings++;
-        $not_duplicate = 0;
+        next;
       }
       else
       {
@@ -243,7 +242,7 @@ sub mine
     my $game_stat = Stats->new($player_is_first, $game->{$game_stats_column_name});
 
     $all_stats->addStat($game_stat);
-    $num_games += $not_duplicate;
+    $num_games++;
     $at_least_one = 1;
   }
 
