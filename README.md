@@ -267,6 +267,10 @@ Games in which one player plays every E.
 
 Games in which there are at least 5 challenges made. This list may not be completely accurate. Check the 'Challenge Heuristics' section of the <a href="/about.html">about page</a> for more information.
 
+<h3>No Blanks Played</h3>
+
+Games in which no blank is played. Blanks in words that are challenged off do not count.
+
 <h3>Mistakeless Turns</h3>
 
 The number of turns the player made that are not tagged with a standard mistake. For more information about mistakes, check the 'Mistakes' section of the <a href="/about.html">about page</a>.

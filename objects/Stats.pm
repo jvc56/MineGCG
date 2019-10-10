@@ -637,7 +637,7 @@ sub statItemsToHTML
           {
             $color = Constants::UNDER_CONFIDENCE_COLOR;
           }
-          my $confidence_interval = "$lower < p < $upper";
+          my $confidence_interval = "($lower, $upper)";
           push @confidence_array,
           [
             $subtitle,

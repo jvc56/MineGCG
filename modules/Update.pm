@@ -571,7 +571,7 @@ TABSCRIPT
 
   my $prob        = sprintf "%.4f", $average / $tile_frequencies->{$name};
 
-	my $confidence_interval = "$lower < p < $upper";
+	my $confidence_interval = "($lower, $upper)";
 
 	my $row_color = '';
 	my $add_to_violations = 0;
