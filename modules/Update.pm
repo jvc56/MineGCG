@@ -385,7 +385,7 @@ sub update_leaderboard
 <script>
 function $function_name(evt, tabName, tabContentClass, tableid, n)
 {
-  changeSelector(tableid, 'dscclass', n + 1);
+  changeSelector(tableid, 'dscclass', n);
 
   var i, tabcontent, tablinks;
   tabcontent = document.getElementsByClassName(tabContentClass);
@@ -895,13 +895,13 @@ sub make_tabbed_content
   my $average_text = '';
   if ($average)
   {
-    $average_text = "Average: $average";
+    $average_text = "Overall Average: $average";
   }
 
   my $tab_div     =
   "
   <div style='text-align: center'>
-    $average_text
+    <div>$average_text</div>div>
     <table class='titledisplay' id='$tableid'>
       <tbody>
         <tr>
