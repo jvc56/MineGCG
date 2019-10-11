@@ -168,6 +168,26 @@ use constant DATABASE_TABLES =>
   ]
 };
 
+
+use constant TYPING_DATABASE_NAME    => 'typing';
+use constant WORDS_TABLE_NAME        => 'words';
+use constant WORD_COLUMN_NAME        => 'word';
+use constant WORD_LENGTH_COLUMN_NAME => 'word_length';
+
+use constant TYPING_DATABASE_TABLES =>
+{
+  Constants::WORDS_TABLE_NAME =>
+  [
+    Constants::WORD_COLUMN_NAME                     . " INT NOT NULL",
+    Constants::WORD_LENGTH_COLUMN_NAME              . " VARCHAR(15)"
+  ]
+};
+
+use constant TYPING_TABLE_CREATION_ORDER =>
+[
+  Constants::WORDS_TABLE_NAME
+];
+
 use constant UNSPECIFIED_MISTAKE_NAME => 'Unspecified';
 
 use constant MISTAKES =>
@@ -569,7 +589,7 @@ use constant HTML_STYLES => <<HTMLSTYLES
     border-spacing: 0;
     border-radius: 10px;
     background-color: black;
-    /* padding: 10px; */
+    padding: 5px; 
   }
   .titledisplay th
   {

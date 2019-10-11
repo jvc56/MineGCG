@@ -900,10 +900,10 @@ sub make_tabbed_content
 
   my $tab_div     =
   "
-  <div>
+  <div style='text-align: center'>
+    $average_text
     <table class='titledisplay' id='$tableid'>
       <tbody>
-        <tr><th style='width: 100%; cursor: inherit' colspan='$num_tabs'>$average_text</th></tr>
         <tr>
   ";
   my $tab_content = '';

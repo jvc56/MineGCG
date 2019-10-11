@@ -242,6 +242,33 @@ sub connect_to_database
   return $dbh;
 }
 
+sub connect_to_typedatabase
+{
+  my $driver        = Constants::DATABASE_DRIVER;
+  my $database_name = get_environment_name(Constants::TYPING_DATABASE_NAME);
+  my $hostname      = Constants::DATABASE_HOSTNAME;
+  my $username      = Constants::DATABASE_USERNAME;
+  my $password      = Constants::DATABASE_PASSWORD;
+
+  my $dbh = DBI->connect("DBI:$driver:dbname = $database_name;host=$hostname",
+                         $username, $password) or die $DBI::errstr;
+
+  $dbh->do("SET client_min_messages TO WARNING");
+
+  my $tables_hashref = Constants::TYPING_DATABASE_TABLES;
+  my $creation_order = Constants::TYPING_TABLE_CREATION_ORDER;
+
+  for(my $i = 0; $i < scalar @{$creation_order}; $i++)
+  {
+    my $key = $creation_order->[$i];
+    my @columns = @{$tables_hashref->{$key}};
+    my $columns_string = join ", ", @columns;
+    my $statement = "CREATE TABLE IF NOT EXISTS $key ($columns_string);";
+    $dbh->do($statement);
+  }   
+  return $dbh;
+}
+
 sub query_table
 {
   my $dbh       = shift;
