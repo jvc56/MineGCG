@@ -895,26 +895,27 @@ sub make_tabbed_content
   my $average_text = '';
   if ($average)
   {
-    $average_text = "Overall Average: $average";
+    my $average_style =
+    "
+    style=
+    '
+      font-size: 20px;
+      background-color: black;
+      margin: 1px auto;
+      padding: 5px;
+      border-radius: 10px;
+      display: inline-block;
+    '
+    ";
+    $average_text = "<div $average_style ><b>Overall Average: $average</b></div>";
   }
 
-  my $average_style =
-  "
-  style=
-  '
-    font-size: 20px;
-    background-color: black;
-    margin: 1px auto;
-    padding: 5px;
-    border-radius: 10px;
-    display: inline-block;
-  '
-  ";
+
 
   my $tab_div     =
   "
   <div style='text-align: center'>
-    <div $average_style ><b>$average_text</b></div>
+    $average_text
     <table class='titledisplay' id='$tableid'>
       <tbody>
         <tr>
