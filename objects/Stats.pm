@@ -808,8 +808,8 @@ sub statListToHTML
       $table_content .=
       "
         <tr $download >
-          <td style='text-align: center; $width_style_part'  data-downloadtext='$texttype'><span data-alpha='$texttype' $span_style></span></td>
-          <td style='text-align: center; $width_style_part' ><a data-alpha='$alphaplay' href='$prefix$id' target='_blank'>$play</a></td>
+          <td style='text-align: center; $width_style_part' data-alpha='$texttype'  data-downloadtext='$texttype'><span  $span_style></span></td>
+          <td style='text-align: center; $width_style_part' data-alpha='$alphaplay'><a  href='$prefix$id' target='_blank'>$play</a></td>
           <td style='text-align: center; $width_style_part' >$prob</td>
           <td style='text-align: center; $width_style_part' >$score</td>
         </tr>\n";

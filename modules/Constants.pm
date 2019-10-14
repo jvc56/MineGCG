@@ -940,7 +940,17 @@ function sortTable(n, tableid, numeric)
   var values   = [];
   for (i = 0; i < rows.length; i++)
   {
-    var val = rows[i].getElementsByTagName("TD")[n].innerText;
+    var val_obj = rows[i].getElementsByTagName("TD")[n];
+    var val_alpha = val_obj.getAttribute('data-alpha');
+    var val;
+    if (val_alpha)
+    {
+      val = val_alpha;
+    }
+    else
+    {
+      val = val_obj.innerText;
+    }
     if (numeric)
     {
       val = Number(val);
