@@ -121,7 +121,10 @@ sub get_qualifier_html
   my $wget_flags = Constants::WGET_FLAGS; 
   my $downloads_dir = Constants::DOWNLOADS_DIRECTORY_NAME;
   my $name_to_id_hash = NameConversion::NAMES_TO_IDS;
-  my $qualifier_id = $name_to_id_hash->{Utils::sanitize($qualifier)};
+  my $sanitized_qualifier = Utils::sanitize($qualifier);
+  print "qu: $qualifier\n";
+  print "san: $sanitized_qualifier\n";
+  my $qualifier_id = $name_to_id_hash->{$sanitized_qualifier};
 
   my $results_call = Constants::PLAYER_RESULTS_API_CALL . $qualifier_id;
   my $filename     = $downloads_dir . "/qualifier_results_$qualifier_id.txt";
