@@ -81,12 +81,11 @@ sub update_qualifiers
       my $qualifier = $qualifiers_list->[$j];
       my ($qaverage, $qresults) = get_qualifier_data($qualifier);
       push @qualifier_data, [$qualifier, $qaverage, $qresults];
-      push @sortdata, [$qualifying_value, $j];
     }
 
-    @sortdata = sort {$b->[0] <=> $a->[0]} @sortdata;
+    @qualifier_data = sort {$b->[1] <=> $a->[1]} @qualifier_data;
 
-    for (my $j = 0; $j < scalar @sortdata; $j++)
+    for (my $j = 0; $j < scalar @qualifier_data; $j++)
     {
       my $qname    = $qualifier_data[$sortdata[$j][0]];
       my $qaverage = $qualifier_data[$sortdata[$j][1]];
