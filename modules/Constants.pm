@@ -173,13 +173,15 @@ use constant TYPING_DATABASE_NAME    => 'typing';
 use constant WORDS_TABLE_NAME        => 'words';
 use constant WORD_COLUMN_NAME        => 'word';
 use constant WORD_LENGTH_COLUMN_NAME => 'word_length';
-
+use constant WORD_PROBABILITY_COLUMN_NAME => 'word_probability';
+use constant DEFAULT_NUMBER_OF_PASSAGE_WORDS => 20;
 use constant TYPING_DATABASE_TABLES =>
 {
   Constants::WORDS_TABLE_NAME =>
   [
-    Constants::WORD_COLUMN_NAME                     . " INT NOT NULL",
-    Constants::WORD_LENGTH_COLUMN_NAME              . " VARCHAR(15)"
+    Constants::WORD_COLUMN_NAME                     . " VARCHAR(15) NOT NULL",
+    Constants::WORD_LENGTH_COLUMN_NAME              . " INT NOT NULL",
+    Constants::WORD_PROBABILITY_COLUMN_NAME         . " INT NOT NULL",
   ]
 };
 
@@ -187,6 +189,14 @@ use constant TYPING_TABLE_CREATION_ORDER =>
 [
   Constants::WORDS_TABLE_NAME
 ];
+
+use constant TYPING_MIN_LENGTH_FIELD_NAME => 'min_length';
+use constant TYPING_MAX_LENGTH_FIELD_NAME => 'max_length';
+use constant TYPING_MIN_PROB_FIELD_NAME   => 'min_prob';
+use constant TYPING_MAX_PROB_FIELD_NAME   => 'max_prob';
+use constant TYPING_NUM_WORDS_FIELD_NAME  => 'num_words';
+use constant TYPING_CGI_SCRIPT            => 'typingapp_main.pl';
+use constant TYPING_HTML_FILENAME         => 'typing.html';
 
 use constant UNSPECIFIED_MISTAKE_NAME => 'Unspecified';
 

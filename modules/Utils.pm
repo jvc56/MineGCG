@@ -242,7 +242,7 @@ sub connect_to_database
   return $dbh;
 }
 
-sub connect_to_typedatabase
+sub connect_to_typing_database
 {
   my $driver        = Constants::DATABASE_DRIVER;
   my $database_name = get_environment_name(Constants::TYPING_DATABASE_NAME);

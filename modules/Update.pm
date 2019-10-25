@@ -20,6 +20,9 @@ use Stats;
 
 unless (caller)
 {
+  update_typing_html();
+  update_remote_typing_cgi();
+  exit(0);
   update_readme_and_about();
   my $validation        = update_search_data();
   my $featured_mistakes = update_leaderboard_legacy();
@@ -1562,6 +1565,223 @@ SCRIPT
 ;
    
   open(my $fh, '>', Constants::CGIBIN_DIRECTORY_NAME . '/' . Constants::CGI_SCRIPT_FILENAME);
+  print $fh $cgi_script;
+  close $fh;
+}
+
+sub update_typing_html
+{
+  my $cgibin_name = Constants::CGIBIN_DIRECTORY_NAME;
+  $cgibin_name = substr $cgibin_name, 2;
+  $cgibin_name = Utils::get_environment_name($cgibin_name);
+
+  my $head_content          = Constants::HTML_HEAD_CONTENT;
+  my $html_styles           = Constants::HTML_STYLES;
+  my $nav                   = Constants::HTML_NAV;
+  my $default_scripts       = Constants::HTML_SCRIPTS;
+  my $footer                =  Constants::HTML_FOOTER;
+  my $toggle_icon_script    = Constants::TOGGLE_ICON_SCRIPT;
+  my $odd_div_style         = Constants::DIV_STYLE_ODD; 
+  my $even_div_style        = Constants::DIV_STYLE_EVEN; 
+  my $inner_content_padding = '5%';
+  my $title_style           = "style='font-size: 20px;'";
+  my $title_div_style       = "style='text-align: center'";
+  my $body_style            = Constants::HTML_BODY_STYLE;
+  my $typing_script         = Constants::TYPING_CGI_SCRIPT;
+
+  my $min_length_option = Constants::TYPING_MIN_LENGTH_FIELD_NAME;
+  my $max_length_option = Constants::TYPING_MAX_LENGTH_FIELD_NAME;
+  my $min_prob_option   = Constants::TYPING_MIN_PROB_FIELD_NAME;
+  my $max_prob_option   = Constants::TYPING_MAX_PROB_FIELD_NAME;
+  my $num_words_option  = Constants::TYPING_NUM_WORDS_FIELD_NAME;
+
+
+  my $formid     = 'typing_form_id';
+  my $typingid   = 'typing_content_id';
+  my $typinghtml =
+  "
+<!DOCTYPE html>
+<html lang=\"en\">
+  <head>
+  $head_content
+  $html_styles
+  </head>
+  <body $body_style>
+  $nav
+  <div style='text-align: center; vertical-align: middle; padding: 2%'>
+    <h1>
+      Typing Practice
+    </h1>
+  </div>
+  <div>
+    <form onsubmit='return retrievePassage()' id='$formid'>
+     Min word length: <input name='$min_length_option' type='text' value=''><br>
+     Max word length: <input name='$max_length_option' type='text' value=''><br>
+     Number of words: <input name='$num_words_option'  type='number' value=''><br>
+     <input type='submit'>
+    </form>
+    <div id='$typingid'>
+    </div>
+  </div>
+
+  <script>
+  function retrievePassage()
+  {
+    var XHR = new XMLHttpRequest();
+    var formData = new FormData(document.getElementById('$formid'));
+    var args = '';
+    for (var [key, value] of formData.entries())
+    { 
+      args += key + '=' + value + '&';
+      console.log(key, value);
+    }
+    if (args)
+    {
+      args = args.substring(0, args.length - 1);
+    }
+    XHR.addEventListener('load', function(event)
+    {
+      document.getElementById('$typingid').innerHTML = event.target.responseText;
+    });
+    var gettarget = '/$cgibin_name/$typing_script?' + args;
+    console.log(gettarget);
+    XHR.open('GET', gettarget);
+    XHR.send(formData);
+    return false;
+  }
+  </script>
+  </body>
+</html>
+  "
+;
+  open(my $fh, '>', Constants::HTML_DIRECTORY_NAME . '/' . Constants::TYPING_HTML_FILENAME);
+  print $fh $typinghtml;
+  close $fh;
+}
+
+sub update_remote_typing_cgi
+{
+  my $vm_ip_address = Constants::VM_IP_ADDRESS;
+  my $vm_username   = Constants::VM_USERNAME;
+  my $vm_ssh_args   = Constants::VM_SSH_ARGS;
+  my $dirname       = cwd();
+
+  $dirname =~ s/.*\///g;
+
+  my $target = $vm_username . '\@' . $vm_ip_address;
+
+  my $min_length  = Constants::TYPING_MIN_LENGTH_FIELD_NAME;
+  my $max_length  = Constants::TYPING_MAX_LENGTH_FIELD_NAME;
+  my $min_prob    = Constants::TYPING_MIN_PROB_FIELD_NAME;
+  my $max_prob    = Constants::TYPING_MAX_PROB_FIELD_NAME;
+  my $num_words   = Constants::TYPING_NUM_WORDS_FIELD_NAME;
+  my $dir   = Constants::DIRECTORY_FIELD_NAME      ;
+  my $script_name = Constants::TYPING_CGI_SCRIPT;
+
+
+  my $cgi_script = <<SCRIPT
+#!/usr/bin/perl
+ 
+  use warnings;
+  use strict;
+  use CGI;
+  
+  sub sanitize_name
+  {
+    my \$string = shift;
+  
+    \$string = substr( \$string, 0, 256);
+  
+    # Remove trailing and leading whitespace
+    \$string =~ s/^\\s+|\\s+\$//g;
+  
+    # Replace spaces with underscores
+    \$string =~ s/ /_/g;
+  
+    # Remove anything that is not an
+    # underscore, dash, letter, or number
+    \$string =~ s/[^\\w\-]//g;
+  
+    # Capitalize
+    \$string = uc \$string;
+  
+    return \$string;
+  }
+  
+  sub sanitize_number
+  {
+    my \$string = shift;
+  
+    \$string = substr( \$string, 0, 256);
+  
+    # Remove trailing and leading whitespace
+    \$string =~ s/^\\s+|\\s+\$//g;
+  
+    # Remove anything that is not a number
+    \$string =~ s/[^\\d]//g;
+  
+    return \$string;
+  }
+  
+  my \$query = new CGI;
+  
+  my \$min_length = \$query->param('$min_length'); 
+  my \$max_length = \$query->param('$max_length');
+  my \$min_prob   = \$query->param('$min_prob');
+  my \$max_prob   = \$query->param('$max_prob');
+  my \$num_words  = \$query->param('$num_words');
+
+  my \$min_length_arg = "";
+  my \$max_length_arg = "";
+  my \$min_prob_arg   = "";
+  my \$max_prob_arg   = "";
+  my \$num_words_arg  = "";
+  
+  if (\$min_length)
+  {
+    \$min_length_arg = "--$min_length ". sanitize_name(\$min_length);
+  }
+  
+  if (\$max_length)
+  {
+    \$max_length_arg = "--$max_length " . sanitize_number(\$max_length);
+  }
+  
+  if (\$min_prob)
+  {
+    \$min_prob_arg = "--$min_prob ". sanitize_number(\$min_prob);
+  }
+  
+  if (\$max_prob)
+  {
+    \$max_prob_arg = "--$max_prob " . sanitize_name(\$max_prob);
+  }
+  
+  if (\$num_words)
+  {
+    \$num_words_arg = "--$num_words " . sanitize_number(\$num_words);
+  }
+
+  my \$dir_arg = " --$dir $dirname ";
+
+  my \$output = "";
+  my \$cmd = "LANG=C ssh $vm_ssh_args -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $target /home/jvc/typing_wrapper.pl \$min_length_arg \$max_length_arg \$min_prob_arg \$max_prob_arg \$num_words_arg \$dir_arg |";
+  open(SSH, \$cmd) or die "\$!\n";
+  while (<SSH>)
+  {
+    \$output .= \$_;
+  }
+  close SSH;
+  print "Content-type: text/html\n\n";
+  #print \$cmd;
+  #print CGI::header();
+  print \$output;
+  
+  
+SCRIPT
+;
+   
+  open(my $fh, '>', Constants::CGIBIN_DIRECTORY_NAME . "/$script_name");
   print $fh $cgi_script;
   close $fh;
 }
