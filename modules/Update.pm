@@ -90,7 +90,7 @@ sub update_qualifiers
       my $qname    = $qualifier_data[$j][0];
       my $qaverage = $qualifier_data[$j][1];
       my $qresults = $qualifier_data[$j][2];
-      $qualifierhtml .= get_qualifier_html($qname, $qaverage, $qresults, $styles[$j % 2]);
+      $qualifierhtml .= get_qualifier_html($qname, $qaverage, $qresults, $styles[$j % 2], $j + 1);
     }
   }
 
@@ -150,7 +150,7 @@ sub get_qualifier_data
   close $fh;
   $json = JSON::XS::decode_json($json);
   my @results = @{$json->{'results'}};
-  @results = grep {$_->{'date'} ge '2018-06-18' && $_->{'lexicon'}} @results;
+  @results = grep {$_->{'date'} ge '2018-06-01' && $_->{'lexicon'}} @results;
   @results = sort {$a->{'date'} cmp $b->{'date'}} @results;
 
   my $num_results = scalar @results;
@@ -167,9 +167,10 @@ sub get_qualifier_data
 sub get_qualifier_html
 {
   my $qualifier = shift;
-  my $average = shift;
-  my $results = shift;
+  my $average   = shift;
+  my $results   = shift;
   my $div_style = shift;
+  my $rank      = shift;
 
   my $sanitized_qualifier = Utils::sanitize($qualifier);
   my $id = $sanitized_qualifier;
@@ -178,12 +179,12 @@ sub get_qualifier_html
 
   my $content =
   "
-  <div id='$id'>
+  <div id='$id' class='collapse'>
     This person is $qualifier
   </div>
   ";
-  my $expander = Utils::make_expander($id);
-  return Utils::make_content_item($expander, "$qualifier ($average)", $content, $div_style);
+  my $expander = "<button type='button' id='button_$id'  class='btn btn-sm' data-toggle='collapse' data-target='#$id' onclick='alert($id)'>+</button>";
+  return Utils::make_content_item($expander, $rank . ". $qualifier ($average)", $content, $div_style);
 }
 
 sub update_search_data
