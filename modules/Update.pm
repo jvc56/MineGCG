@@ -69,7 +69,7 @@ sub update_qualifiers
 
     $qualifierhtml .=
     "
-    <div style='text-align: center'>
+    <div style='text-align: center; margin-top: 30px'>
       <h3>Qualifiers for $country</h3>
     </div>
     ";
@@ -150,7 +150,7 @@ sub get_qualifier_data
   close $fh;
   $json = JSON::XS::decode_json($json);
   my @results = @{$json->{'results'}};
-  @results = grep {$_->{'date'} ge '2018-06-18' } @results;
+  @results = grep {$_->{'date'} ge '2018-06-18' && $_->{'lexicon'}} @results;
   @results = sort {$a->{'date'} cmp $b->{'date'}} @results;
 
   my $num_results = scalar @results;
@@ -162,14 +162,6 @@ sub get_qualifier_data
   my $average = sprintf "%.2f", $sum / $num_results;
 
   return ($average, \@results);
-
-  my $qhtml =
-  "
-    <div $div_style>
-      $qualifier ($average)
-    </div>
-  ";
-  return ($average, $qhtml);
 }
 
 sub get_qualifier_html
@@ -179,13 +171,19 @@ sub get_qualifier_html
   my $results = shift;
   my $div_style = shift;
 
+  my $sanitized_qualifier = Utils::sanitize($qualifier);
+  my $id = $sanitized_qualifier;
+
   my @results = @{$results};
-  return
+
+  my $content =
   "
-    <div $div_style>
-      $qualifier ($average)
-    </div>
+  <div id='$id'>
+    This person is $qualifier
+  </div>
   ";
+  my $expander = Utils::make_expander($id);
+  return Utils::make_content_item($expander, "$qualifier ($average)", $content, $div_style);
 }
 
 sub update_search_data
