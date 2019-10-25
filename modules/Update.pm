@@ -182,8 +182,8 @@ sub update_qualifiers
     trend.stroke = chart.colors.getIndex(0);
     trend.strokeOpacity = 0.7;
     trend.data = [
-      { 'value': chartdata[0]['date'],                    'value2': average },
-      { 'value': chartdata[chartdata.length - 1]['date'], 'value2': average }
+      { 'value': data[0]['date'],               'value2': average },
+      { 'value': data[data.length - 1]['date'], 'value2': average }
     ];
     
     //scrollbars
