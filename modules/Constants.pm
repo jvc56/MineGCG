@@ -50,6 +50,7 @@ use constant LEGACY_DIRECTORY_NAME            => './legacy';
 use constant NAME_ID_DATA_FILENAME            => 'NameConversion.pm';
 use constant NAME_ID_VARIABLE_NAME            => 'NAMES_TO_IDS';
 use constant ABOUT_PAGE_NAME                  => 'about.html';
+use constant QUALIFIERS_PAGE_NAME             => 'alchemist_qualifiers.html';
 use constant TOURNAMENT_OPTION                => 'Tournament';
 use constant CASUAL_OPTION                    => 'Casual';
 
@@ -61,6 +62,7 @@ use constant UNDER_CONFIDENCE_COLOR           => '#0f3e1a';
 use constant ANNOTATED_GAMES_API_CALL         => 'http://cross-tables.com/rest/allanno.php';
 use constant PLAYER_INFO_API_CALL             => 'http://cross-tables.com/rest/player.php?player=';
 use constant TOURNAMENT_INFO_API_CALL         => 'http://cross-tables.com/rest/tourney.php?tourney=';
+use constant PLAYER_RESULTS_API_CALL          => 'http://cross-tables.com/rest/results.php?player=';
 
 use constant CGI_SCRIPT_FILENAME              => 'mine_webapp.pl';
 use constant INDEX_HTML_FILENAME              => 'index.html';
@@ -79,6 +81,22 @@ use constant LEXICON_FIELD_NAME               => 'lexicon';
 use constant DIRECTORY_FIELD_NAME             => 'directory';
 
 use constant SEARCH_DATA_FILENAME             => 'search_data.html';
+
+use constant CANADA_QUALIFIERS                =>
+[
+  'Adam Logan',
+  'Jackson Smylie',
+  'Joshua Sokol',
+  'Evan Berofsky',
+  'Joshua Castellano'
+];
+
+use constant US_QUALIFIERS                    =>
+[
+  'Dave Wiegand',
+  'Austin Shin',
+  'Jesse Day'
+];
 
 use constant INACTIVE_PLAYERS =>
 (
@@ -769,7 +787,9 @@ use constant HTML_NAV => <<NAV
       <li class="nav-item">
         <a class="nav-link" href="/notable.html" >Notable</a>
       </li>
-
+      <li class="nav-item">
+        <a class="nav-link" href="/alchemist_qualifiers.html" >AC Qualifiers</a>
+      </li>
       <!-- Dropdown -->
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown"

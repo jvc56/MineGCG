@@ -13,16 +13,20 @@ use Statistics::Standard_Normal;
 
 use lib './objects';
 use lib './modules';
+use lib './data';
 
 use Constants;
 use Utils;
 use Stats;
+use NameConversion;
+use JSON::XS;
 
 unless (caller)
 {
+  update_qualifiers();
+  exit(0);
   update_typing_html();
   update_remote_typing_cgi();
-  exit(0);
   update_readme_and_about();
   my $validation        = update_search_data();
   my $featured_mistakes = update_leaderboard_legacy();
@@ -31,6 +35,119 @@ unless (caller)
   update_notable();
   update_remote_cgi();
   update_html($validation, $featured_mistakes, $featured_notable);
+}
+
+sub update_qualifiers
+{
+
+  my $head_content                    = Constants::HTML_HEAD_CONTENT;
+  my $html_styles                     = Constants::HTML_STYLES;
+  my $body_style                      = Constants::HTML_BODY_STYLE;
+  my $nav                             = Constants::HTML_NAV;
+  my $collapse_scripts                = Constants::HTML_TABLE_AND_COLLAPSE_SCRIPTS;
+  my $default_scripts                 = Constants::HTML_SCRIPTS;
+  my $footer                          = Constants::HTML_FOOTER;
+
+
+
+  my $canada_qualifiers = Constants::CANADA_QUALIFIERS;
+  my $us_qualifiers     = Constants::US_QUALIFIERS;
+  my @qualifying_countries =
+  (
+    ['Canada', $canada_qualifiers],
+    ['United States', $us_qualifiers]
+  );
+  
+  my $qualifierhtml = '';
+
+  for (my $i = 0; $i < scalar @qualifying_countries; $i++)
+  {
+    my $country = $qualifying_countries[0];
+    my $qualifiers_list = $qualifying_countries[1];
+
+    $qualifierhtml .= "\n\n<div>Qualifiers for $country</div>\n\n";
+    my @qualifier_data = ();
+    my @sortdata = ();
+
+    for (my $j = 0; $j < scalar @{$qualifiers_list}; $j++)
+    {
+      my $qualifier = $qualifiers_list->[$j];
+      my ($qualifying_value, $qualifier_html) = get_qualifier_html($qualifier);
+      push @qualifier_data, $qualifier_html;
+      push @sortdata, [$qualifying_value, $j];
+    }
+
+    @sortdata = sort {$b->[0] <=> $a->[0]} @sortdata;
+
+    for (my $j = 0; $j < expression; $j++)
+    {
+      $qualifierhtml .= $qualifier_data[$sortdata[$j][1]];
+    }
+  }
+
+  my $qualifierpage =
+  "
+<!DOCTYPE html>
+<html lang=\"en\">
+  <head>
+  $head_content
+  $html_styles
+  </head>
+  <body $body_style>
+  $nav
+  <div style='text-align: center; vertical-align: middle; padding: 2%'>
+    <h1>
+      Alchemist Cup Qualifiers
+    </h1>
+  </div>
+  $qualifierhtml
+  $default_scripts
+  $collapse_scripts
+  $footer
+  </body>
+</html>
+  "
+;
+
+  open(my $qfh, '>', Constants::HTML_DIRECTORY_NAME . '/' . Constants::QUALIFIERS_PAGE_NAME);
+  print $qfh $qualifierpage;
+  close $qfh;
+}
+
+sub get_qualifier_html
+{
+  my $qualifier = shift;
+
+  my $wget_flags = Constants::WGET_FLAGS; 
+  my $downloads_dir = Constants::DOWNLOADS_DIRECTORY_NAME;
+  my $name_to_id_hash = Constants::NAME_ID_VARIABLE_NAME;
+  my $qualifier_id = $name_to_id_hash->{Utils::sanitize($qualifier)};
+
+  my $results_call = Constants::PLAYERS_RESULTS_API_CALL . $qualifier_id;
+  my $filename     = $downloads_dir . "/qualifier_results_$qualifier_id.txt";
+
+  my $json = '';
+
+  system "wget $wget_flags $results_call -O $filename  >/dev/null 2>&1";
+
+  open(INFO, "<", $filename);
+  while (<INFO>)
+  {
+    $json .= $_;
+  }
+  $json = JSON::XS::decode_json($json);
+  my @results = @{$json->{'results'}};
+  @results = grep {$_->{'date'} ge '2018-06-18' } @results;
+  @results = sort {$a->{'date'} cmp $b->{'date'}} @results;
+
+  my $num_results = scalar @results;
+  my $sum = 0;
+  foreach my $res (@results)
+  {
+    $sum += $res->{'newrating'};
+  }
+  my $average = sprintf "%.2f", $sum / $num_results;
+  return "$qualifer ($average)";
 }
 
 sub update_search_data
