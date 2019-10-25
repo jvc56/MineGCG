@@ -264,7 +264,7 @@ sub get_qualifier_html
 
   for (my $i = 0; $i < scalar @results; $i++)
   {
-    my $item = $result[$i];
+    my $item = $results[$i];
     my $rating  = $item->{'newrating'};
     my $date    = $item->{'date'};
     my $tourney = $item->{'tourneyname'};
@@ -285,7 +285,7 @@ sub get_qualifier_html
   my $onclick =
   "
   onclick='make_qchart('$chartid', \'$qualifier\', $average, $chartdata)'
-  "
+  ";
   my $expander = "<button type='button' id='button_$id'  class='btn btn-sm' data-toggle='collapse' data-target='#$id' $onclick>+</button>";
   return Utils::make_content_item($expander, $rank . ". $qualifier ($average)", $content, $div_style);
 }
