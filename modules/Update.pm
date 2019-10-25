@@ -60,19 +60,26 @@ sub update_qualifiers
   
   my $qualifierhtml = '';
 
+  my @styles = (Constants::DIV_STYLE_EVEN, Constants::DIV_STYLE_ODD);
+
   for (my $i = 0; $i < scalar @qualifying_countries; $i++)
   {
     my $country = $qualifying_countries[$i][0];
     my $qualifiers_list = $qualifying_countries[$i][1];
 
-    $qualifierhtml .= "\n\n<div>Qualifiers for $country</div>\n\n";
+    $qualifierhtml .=
+    "
+    <div style='text-align: center'>
+      <h3>Qualifiers for $country</h3>
+    </div>
+    ";
     my @qualifier_data = ();
     my @sortdata = ();
 
     for (my $j = 0; $j < scalar @{$qualifiers_list}; $j++)
     {
       my $qualifier = $qualifiers_list->[$j];
-      my ($qualifying_value, $qualifier_html) = get_qualifier_html($qualifier);
+      my ($qualifying_value, $qualifier_html) = get_qualifier_html($qualifier, $styles[$j % 2]);
       push @qualifier_data, $qualifier_html;
       push @sortdata, [$qualifying_value, $j];
     }
@@ -117,6 +124,7 @@ sub update_qualifiers
 sub get_qualifier_html
 {
   my $qualifier = shift;
+  my $div_style = shift;
 
   my $wget_flags = Constants::WGET_FLAGS; 
   my $downloads_dir = Constants::DOWNLOADS_DIRECTORY_NAME;
@@ -150,7 +158,13 @@ sub get_qualifier_html
     $sum += $res->{'newrating'};
   }
   my $average = sprintf "%.2f", $sum / $num_results;
-  return ($average, "$qualifier ($average)");
+  my $qhtml =
+  "
+    <div $div_style>
+      $qualifier ($average)
+    </div>
+  ";
+  return ($average, $qhtml);
 }
 
 sub update_search_data
