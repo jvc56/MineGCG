@@ -163,7 +163,7 @@ sub update_qualifiers
     // Create series
     var lineSeries = chart.series.push(new am4charts.LineSeries());
     lineSeries.dataFields.valueY = 'rating';
-    lineSeries.dataFields.valueX = 'date';
+    lineSeries.dataFields.dateX  = 'date';
     lineSeries.strokeOpacity = 1;
     lineSeries.legendSettings.labelText = 'Rating';   
     // Add a bullet
