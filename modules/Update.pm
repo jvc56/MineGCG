@@ -162,8 +162,9 @@ sub update_qualifiers
     
     // Create series
     var lineSeries = chart.series.push(new am4charts.LineSeries());
-    lineSeries.dataFields.valueY = 'value';
+    lineSeries.dataFields.valueY = 'rating';
     lineSeries.dataFields.dateX  = 'date';
+    lineSeries.dataFields.value  = 'rating';
     lineSeries.strokeOpacity = 1;
     lineSeries.legendSettings.labelText = 'Rating';   
     // Add a bullet
@@ -272,7 +273,7 @@ sub get_qualifier_html
     my $rating  = $item->{'newrating'};
     my $date    = $item->{'date'};
     my $tourney = $item->{'tourneyname'};
-    $chartdata .= "{'value': $rating, 'date': '$date', 'tourney': '$tourney'},";
+    $chartdata .= "{'rating': $rating, 'date': '$date', 'tourney': '$tourney'},";
   }
   
   chop($chartdata);
