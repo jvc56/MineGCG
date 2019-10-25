@@ -150,7 +150,7 @@ sub get_qualifier_html
     $sum += $res->{'newrating'};
   }
   my $average = sprintf "%.2f", $sum / $num_results;
-  return "$qualifier ($average)";
+  return [$average, "$qualifier ($average)"];
 }
 
 sub update_search_data
