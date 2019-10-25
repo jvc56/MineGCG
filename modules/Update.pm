@@ -133,11 +133,12 @@ sub get_qualifier_html
   print "cmd: $cmd\n\n";
   system $cmd;
 
-  open(INFO, "<", $filename);
-  while (<INFO>)
+  open(my $fh, "<", $filename);
+  while (<$fh>)
   {
     $json .= $_;
   }
+  close $fh;
   $json = JSON::XS::decode_json($json);
   my @results = @{$json->{'results'}};
   @results = grep {$_->{'date'} ge '2018-06-18' } @results;
