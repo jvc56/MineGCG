@@ -46,6 +46,7 @@ sub update_qualifiers
   my $nav                             = Constants::HTML_NAV;
   my $collapse_scripts                = Constants::HTML_TABLE_AND_COLLAPSE_SCRIPTS;
   my $default_scripts                 = Constants::HTML_SCRIPTS;
+  my $amchart_scripts                 = Constants::AMCHART_SCRIPTS;
   my $footer                          = Constants::HTML_FOOTER;
 
 
@@ -112,7 +113,8 @@ sub update_qualifiers
   $qualifierhtml
   $default_scripts
   $collapse_scripts
-
+  $amchart_scripts
+  
   <script>
   function make_qchart(chartid, name, average, data)
   {
@@ -997,6 +999,7 @@ TABBED
   my $html_table_and_collapse_scripts = Constants::HTML_TABLE_AND_COLLAPSE_SCRIPTS;
   my $table_sort_function             = Constants::TABLE_SORT_FUNCTION;
   my $csv_download_scripts            = Constants::CSV_DOWNLOAD_SCRIPTS;
+  my $amchart_scripts                 = Constants::AMCHART_SCRIPTS;
   my $footer                          = Constants::HTML_FOOTER;
 
   $leaderboard_string = <<HTMLPAGE
@@ -1018,11 +1021,7 @@ TABBED
   $default_scripts
   $table_sort_function
   $csv_download_scripts
-  <!-- Amchart JavaScript -->
-  <script src="https://www.amcharts.com/lib/4/core.js"></script>
-  <script src="https://www.amcharts.com/lib/4/charts.js"></script>
-  <script src="https://www.amcharts.com/lib/4/themes/dark.js"></script>
-  <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
+  $amchart_scripts
 
   <script>
   function make_chart(chart_id, chart_data)

@@ -832,6 +832,16 @@ use constant HTML_SCRIPTS => <<SCRIPTS
 SCRIPTS
 ;
 
+use constant AMCHART_SCRIPTS => <<AMCHARTS
+  <!-- Amchart JavaScript -->
+  <script src="https://www.amcharts.com/lib/4/core.js"></script>
+  <script src="https://www.amcharts.com/lib/4/charts.js"></script>
+  <script src="https://www.amcharts.com/lib/4/themes/dark.js"></script>
+  <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
+
+AMCHARTS
+;
+
 use constant TOGGLE_ICON_SCRIPT => <<TOGGLEICON
 <script>
     function toggle_icon(el, key, showtext)
