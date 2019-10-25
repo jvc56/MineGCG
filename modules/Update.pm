@@ -134,9 +134,11 @@ sub update_qualifiers
     am4core.useTheme(am4themes_animated);
     // Themes end
 
-    var chart = am4core.create(chart_id, am4charts.XYChart);
+    var chart = am4core.create(chartid, am4charts.XYChart);
 
     chart.data = data;
+
+    chart.dateFormatter.inputDateFormat = 'yyyy-MM-dd';
 
     var chart_title = chart.titles.create();
     chart_title.text = title;
@@ -144,7 +146,7 @@ sub update_qualifiers
     chart.legend = new am4charts.Legend();
     // var xrange = p2[0] - p1[0];
     // Create axes
-    var valueAxisX = chart.xAxes.push(new am4charts.ValueAxis());
+    var valueAxisX = chart.xAxes.push(new am4charts.DateAxis());
     valueAxisX.title.text = xaxis;
     // valueAxisX.min = p1[0] - xrange/100;
     // valueAxisX.max = p2[0] + xrange/100;
