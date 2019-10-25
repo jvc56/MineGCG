@@ -130,7 +130,6 @@ sub get_qualifier_html
   my $json = '';
 
   my $cmd = "wget $wget_flags $results_call -O $filename  >/dev/null 2>&1";
-  print "cmd: $cmd\n\n";
   system $cmd;
 
   open(my $fh, "<", $filename);
@@ -151,7 +150,7 @@ sub get_qualifier_html
     $sum += $res->{'newrating'};
   }
   my $average = sprintf "%.2f", $sum / $num_results;
-  return [$average, "$qualifier ($average)"];
+  return ($average, "$qualifier ($average)");
 }
 
 sub update_search_data
