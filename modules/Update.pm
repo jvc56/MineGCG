@@ -162,7 +162,7 @@ sub update_qualifiers
     
     // Create series
     var lineSeries = chart.series.push(new am4charts.LineSeries());
-    lineSeries.dataFields.valueY = 'rating';
+    lineSeries.dataFields.valueY = 'value';
     lineSeries.dataFields.dateX  = 'date';
     lineSeries.strokeOpacity = 1;
     lineSeries.legendSettings.labelText = 'Rating';   
@@ -172,7 +172,7 @@ sub update_qualifiers
     //bullet.circle.fill        = am4core.color('blue');
     //bullet.circle.stroke      = am4core.color('blue');
     //bullet.circle.fillOpacity = 1;
-    bullet.tooltipText          = '{name}';
+    //bullet.tooltipText          = '{name}';
     
     //add the trendlines
     var trend = chart.series.push(new am4charts.LineSeries());
@@ -272,7 +272,7 @@ sub get_qualifier_html
     my $rating  = $item->{'newrating'};
     my $date    = $item->{'date'};
     my $tourney = $item->{'tourneyname'};
-    $chartdata .= "{'rating': $rating, 'date': '$date', 'tourney': '$tourney'},";
+    $chartdata .= "{'value': $rating, 'date': '$date', 'tourney': '$tourney'},";
   }
   
   chop($chartdata);
