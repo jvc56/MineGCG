@@ -116,7 +116,7 @@ sub update_qualifiers
   <script>
   function make_qchart(chartid, name, average, data)
   {
-    my chartdiv = document.getElementById(chartid);
+    var chartdiv = document.getElementById(chartid);
     if (chartdiv.innerHTML)
     {
       return;
@@ -284,7 +284,7 @@ sub get_qualifier_html
   ";
   my $onclick =
   "
-  onclick='make_qchart('$chartid', \'$qualifier\', $average, $chartdata)'
+  onclick=\"make_qchart('$chartid', '$qualifier', $average, $chartdata)\"
   ";
   my $expander = "<button type='button' id='button_$id'  class='btn btn-sm' data-toggle='collapse' data-target='#$id' $onclick>+</button>";
   return Utils::make_content_item($expander, $rank . ". $qualifier ($average)", $content, $div_style);
