@@ -62,8 +62,8 @@ sub update_qualifiers
 
   for (my $i = 0; $i < scalar @qualifying_countries; $i++)
   {
-    my $country = $qualifying_countries[0];
-    my $qualifiers_list = $qualifying_countries[1];
+    my $country = $qualifying_countries[$i][0];
+    my $qualifiers_list = $qualifying_countries[$i][1];
 
     $qualifierhtml .= "\n\n<div>Qualifiers for $country</div>\n\n";
     my @qualifier_data = ();
