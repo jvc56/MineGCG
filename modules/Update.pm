@@ -278,8 +278,7 @@ sub get_qualifier_html
   "
   <div id='$id' class='collapse'>
     This person is $qualifier
-    <div id='$chartid'>
-    </div>
+    <div id='$chartid'></div>
   </div>
   ";
   my $onclick =
