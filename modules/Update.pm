@@ -79,7 +79,7 @@ sub update_qualifiers
 
     @sortdata = sort {$b->[0] <=> $a->[0]} @sortdata;
 
-    for (my $j = 0; $j < expression; $j++)
+    for (my $j = 0; $j < scalar @sortdata; $j++)
     {
       $qualifierhtml .= $qualifier_data[$sortdata[$j][1]];
     }
@@ -147,7 +147,7 @@ sub get_qualifier_html
     $sum += $res->{'newrating'};
   }
   my $average = sprintf "%.2f", $sum / $num_results;
-  return "$qualifer ($average)";
+  return "$qualifier ($average)";
 }
 
 sub update_search_data
