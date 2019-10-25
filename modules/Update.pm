@@ -120,7 +120,7 @@ sub get_qualifier_html
 
   my $wget_flags = Constants::WGET_FLAGS; 
   my $downloads_dir = Constants::DOWNLOADS_DIRECTORY_NAME;
-  my $name_to_id_hash = Constants::NAME_ID_VARIABLE_NAME;
+  my $name_to_id_hash = NameConversion::NAMES_TO_IDS;
   my $qualifier_id = $name_to_id_hash->{Utils::sanitize($qualifier)};
 
   my $results_call = Constants::PLAYER_RESULTS_API_CALL . $qualifier_id;
