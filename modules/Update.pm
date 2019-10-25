@@ -123,7 +123,7 @@ sub get_qualifier_html
   my $name_to_id_hash = Constants::NAME_ID_VARIABLE_NAME;
   my $qualifier_id = $name_to_id_hash->{Utils::sanitize($qualifier)};
 
-  my $results_call = Constants::PLAYERS_RESULTS_API_CALL . $qualifier_id;
+  my $results_call = Constants::PLAYER_RESULTS_API_CALL . $qualifier_id;
   my $filename     = $downloads_dir . "/qualifier_results_$qualifier_id.txt";
 
   my $json = '';
