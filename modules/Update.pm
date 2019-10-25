@@ -112,6 +112,89 @@ sub update_qualifiers
   $qualifierhtml
   $default_scripts
   $collapse_scripts
+
+  <script>
+  function make_qchart(chartid, name, average, data)
+  {
+    my chartdiv = document.getElementById(chartid);
+    if (chartdiv.innerHTML)
+    {
+      return;
+    }
+
+    var title = name;
+    var xaxis = 'Date';
+    var yaxis = 'Rating';
+
+
+    // Themes begin
+    am4core.useTheme(am4themes_dark);
+    am4core.useTheme(am4themes_animated);
+    // Themes end
+
+    var chart = am4core.create(chart_id, am4charts.XYChart);
+
+    chart.data = data;
+
+    var chart_title = chart.titles.create();
+    chart_title.text = title;
+    
+    chart.legend = new am4charts.Legend();
+    // var xrange = p2[0] - p1[0];
+    // Create axes
+    var valueAxisX = chart.xAxes.push(new am4charts.ValueAxis());
+    valueAxisX.title.text = xaxis;
+    // valueAxisX.min = p1[0] - xrange/100;
+    // valueAxisX.max = p2[0] + xrange/100;
+    // valueAxisX.strictMinMax = true;
+    //valueAxisX.renderer.minGridDistance = 40;
+    
+    // Create value axis
+    var valueAxisY = chart.yAxes.push(new am4charts.ValueAxis());
+    //valueAxisY.min = 0;
+    //valueAxisY.max = 1;
+    //valueAxisY.strictMinMax = true;
+    valueAxisY.title.text = yaxis;
+    
+    // Create series
+    var lineSeries = chart.series.push(new am4charts.LineSeries());
+    lineSeries.dataFields.valueY = 'rating';
+    lineSeries.dataFields.valueX = 'date';
+    lineSeries.strokeOpacity = 1;
+    lineSeries.legendSettings.labelText = 'Rating';   
+    // Add a bullet
+    var bullet = lineSeries.bullets.push(new am4charts.CircleBullet());
+    bullet.circle.radius        = 4;
+    //bullet.circle.fill        = am4core.color('blue');
+    //bullet.circle.stroke      = am4core.color('blue');
+    //bullet.circle.fillOpacity = 1;
+    bullet.tooltipText          = '{name}';
+    
+    //add the trendlines
+    var trend = chart.series.push(new am4charts.LineSeries());
+    trend.dataFields.valueY = 'value2';
+    trend.dataFields.valueX = 'value';
+    trend.strokeWidth = 2
+    trend.stroke = chart.colors.getIndex(0);
+    trend.strokeOpacity = 0.7;
+    trend.data = [
+      { 'value': chartdata[0]['date'],                    'value2': average },
+      { 'value': chartdata[chartdata.length - 1]['date'], 'value2': average }
+    ];
+    
+    //scrollbars
+    chart.scrollbarX = new am4core.Scrollbar();
+    chart.scrollbarY = new am4core.Scrollbar();    
+    
+    // Make info downloadable
+    chart.exporting.menu               = new am4core.ExportMenu();
+    chart.exporting.menu.align         = 'left';
+    chart.exporting.menu.verticalAlign = 'top'; 
+
+
+  }
+  </script>
+
   $footer
   </body>
 </html>
@@ -174,16 +257,36 @@ sub get_qualifier_html
 
   my $sanitized_qualifier = Utils::sanitize($qualifier);
   my $id = $sanitized_qualifier;
+  my $chartid = $id . '_chart';
 
   my @results = @{$results};
+  my $chartdata = '[';
+
+  for (my $i = 0; $i < scalar @results; $i++)
+  {
+    my $item = $result[$i];
+    my $rating  = $item->{'newrating'};
+    my $date    = $item->{'date'};
+    my $tourney = $item->{'tourneyname'};
+    $chartdata .= "{'rating': $rating, 'date': '$date', 'tourney': '$tourney'},";
+  }
+  
+  chop($chartdata);
+  $chartdata .= ']';
 
   my $content =
   "
   <div id='$id' class='collapse'>
     This person is $qualifier
+    <div id='$chartid'>
+    </div>
   </div>
   ";
-  my $expander = "<button type='button' id='button_$id'  class='btn btn-sm' data-toggle='collapse' data-target='#$id' onclick='alert($id)'>+</button>";
+  my $onclick =
+  "
+  onclick='make_qchart('$chartid', \'$qualifier\', $average, $chartdata)'
+  "
+  my $expander = "<button type='button' id='button_$id'  class='btn btn-sm' data-toggle='collapse' data-target='#$id' $onclick>+</button>";
   return Utils::make_content_item($expander, $rank . ". $qualifier ($average)", $content, $div_style);
 }
 
