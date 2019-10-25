@@ -79,8 +79,8 @@ sub update_qualifiers
     for (my $j = 0; $j < scalar @{$qualifiers_list}; $j++)
     {
       my $qualifier = $qualifiers_list->[$j];
-      my ($qualifying_value, $qualifier_html) = get_qualifier_html($qualifier, $styles[$j % 2]);
-      push @qualifier_data, $qualifier_html;
+      my ($qaverage, $qresults) = get_qualifier_data($qualifier);
+      push @qualifier_data, [$qualifier, $qaverage, $qresults];
       push @sortdata, [$qualifying_value, $j];
     }
 
@@ -88,7 +88,10 @@ sub update_qualifiers
 
     for (my $j = 0; $j < scalar @sortdata; $j++)
     {
-      $qualifierhtml .= $qualifier_data[$sortdata[$j][1]];
+      my $qname    = $qualifier_data[$sortdata[$j][0]];
+      my $qaverage = $qualifier_data[$sortdata[$j][1]];
+      my $qresults = $qualifier_data[$sortdata[$j][2]];
+      $qualifierhtml .= get_qualifier_html($qname, $qaverage, $qresults, , $styles[$j % 2])
     }
   }
 
@@ -121,7 +124,7 @@ sub update_qualifiers
   close $qfh;
 }
 
-sub get_qualifier_html
+sub get_qualifier_data
 {
   my $qualifier = shift;
   my $div_style = shift;
@@ -158,6 +161,9 @@ sub get_qualifier_html
     $sum += $res->{'newrating'};
   }
   my $average = sprintf "%.2f", $sum / $num_results;
+
+  return ($average, \@results);
+
   my $qhtml =
   "
     <div $div_style>
@@ -165,6 +171,22 @@ sub get_qualifier_html
     </div>
   ";
   return ($average, $qhtml);
+}
+
+sub get_qualifier_html
+{
+  my $qualifier = shift;
+  my $average = shift;
+  my $results = shift;
+  my $div_style = shift;
+
+  my @results = @{$results};
+  return
+  "
+    <div $div_style>
+      $qualifier ($average)
+    </div>
+  ";
 }
 
 sub update_search_data
