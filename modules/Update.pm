@@ -122,8 +122,6 @@ sub get_qualifier_html
   my $downloads_dir = Constants::DOWNLOADS_DIRECTORY_NAME;
   my $name_to_id_hash = NameConversion::NAMES_TO_IDS;
   my $sanitized_qualifier = Utils::sanitize($qualifier);
-  print "qu: $qualifier\n";
-  print "san: $sanitized_qualifier\n";
   my $qualifier_id = $name_to_id_hash->{$sanitized_qualifier};
 
   my $results_call = Constants::PLAYER_RESULTS_API_CALL . $qualifier_id;
@@ -131,7 +129,9 @@ sub get_qualifier_html
 
   my $json = '';
 
-  system "wget $wget_flags $results_call -O $filename  >/dev/null 2>&1";
+  my $cmd = "wget $wget_flags $results_call -O $filename  >/dev/null 2>&1";
+  print "cmd: $cmd\n\n";
+  system $cmd;
 
   open(INFO, "<", $filename);
   while (<INFO>)
