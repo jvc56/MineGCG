@@ -157,8 +157,8 @@ sub update_qualifiers
     var valueAxisY = chart.yAxes.push(new am4charts.ValueAxis());
     //valueAxisY.min = 0;
     //valueAxisY.max = 1;
-    //valueAxisY.strictMinMax = true;
-    valueAxisY.title.text = yaxis;
+    valueAxisY.strictMinMax = true;
+    // valueAxisY.title.text = yaxis;
     
     // Create series
     var lineSeries = chart.series.push(new am4charts.LineSeries());
