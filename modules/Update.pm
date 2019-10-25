@@ -87,9 +87,9 @@ sub update_qualifiers
 
     for (my $j = 0; $j < scalar @qualifier_data; $j++)
     {
-      my $qname    = $qualifier_data[$sortdata[$j][0]];
-      my $qaverage = $qualifier_data[$sortdata[$j][1]];
-      my $qresults = $qualifier_data[$sortdata[$j][2]];
+      my $qname    = $qualifier_data[$qualifier_data[$j][0]];
+      my $qaverage = $qualifier_data[$qualifier_data[$j][1]];
+      my $qresults = $qualifier_data[$qualifier_data[$j][2]];
       $qualifierhtml .= get_qualifier_html($qname, $qaverage, $qresults, , $styles[$j % 2])
     }
   }
