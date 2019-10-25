@@ -122,7 +122,7 @@ sub get_qualifier_html
   my $downloads_dir = Constants::DOWNLOADS_DIRECTORY_NAME;
   my $name_to_id_hash = NameConversion::NAMES_TO_IDS;
   my $sanitized_qualifier = Utils::sanitize($qualifier);
-  my $qualifier_id = $name_to_id_hash->{$sanitized_qualifier};
+  my $qualifier_id = $name_to_id_hash->{$sanitized_qualifier}->[0];
 
   my $results_call = Constants::PLAYER_RESULTS_API_CALL . $qualifier_id;
   my $filename     = $downloads_dir . "/qualifier_results_$qualifier_id.txt";
