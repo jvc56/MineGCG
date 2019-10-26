@@ -71,7 +71,7 @@ sub update_qualifiers
     $qualifierhtml .=
     "
     <div style='text-align: center; margin-top: 30px'>
-      <h3>Qualifiers for $country</h3>
+      <h3>Registered Players for $country</h3>
     </div>
     ";
     my @qualifier_data = ();
