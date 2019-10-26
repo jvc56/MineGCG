@@ -46,6 +46,7 @@ sub update_qualifiers
   my $collapse_scripts                = Constants::HTML_TABLE_AND_COLLAPSE_SCRIPTS;
   my $default_scripts                 = Constants::HTML_SCRIPTS;
   my $amchart_scripts                 = Constants::AMCHART_SCRIPTS;
+  my $math_scripts                    = Constants::MATH_SCRIPTS;
   my $footer                          = Constants::HTML_FOOTER;
 
 
@@ -102,6 +103,7 @@ sub update_qualifiers
   <head>
   $head_content
   $html_styles
+  $math_scripts
   </head>
   <body $body_style>
   $nav
@@ -235,7 +237,7 @@ sub get_qualifier_data
   close $fh;
   $json = JSON::XS::decode_json($json);
   my @results = @{$json->{'results'}};
-  @results = grep {$_->{'date'} ge '2018-06-01' && $_->{'lexicon'}} @results;
+  @results = grep {$_->{'date'} ge '2018-06-01' && $_->{'date'} le '2020-05-31' && $_->{'lexicon'}} @results;
   @results = sort {$a->{'date'} cmp $b->{'date'}} @results;
 
   my $num_results = scalar @results;
@@ -254,7 +256,7 @@ sub get_qualifier_html
   my $qualifier = shift;
   my $average   = shift;
   my $results   = shift;
-  my $rating    = shift;
+  my $current_rating    = shift;
   my $div_style = shift;
   my $rank      = shift;
 
@@ -266,7 +268,7 @@ sub get_qualifier_html
   my $num_games = 0;
   my $num_tourneys = scalar @results;
   my $chartdata = '[';
-
+  my $sum = 0;
   for (my $i = 0; $i < $num_tourneys; $i++)
   {
     my $item = $results[$i];
@@ -274,6 +276,7 @@ sub get_qualifier_html
     my $date    = $item->{'date'};
     my $tourney = $item->{'tourneyname'};
     $num_games += $item->{'w'} + $item->{'l'} + $item->{'t'};
+    $sum += $rating;
     $chartdata .= "{'rating': $rating, 'date': '$date', 'tourney': '$tourney'},";
   }
  
@@ -296,7 +299,7 @@ sub get_qualifier_html
     ";
   }
 
-  my $diff = sprintf "%.2f", $rating - $average;
+  my $diff = sprintf "%.2f", $current_rating - $average;
   my $diff_color = '#00cc00';
   my $diff_sign  = '+';
   if ($diff > 0)
@@ -306,12 +309,53 @@ sub get_qualifier_html
   }
   $diff = abs($diff);
   my $diff_html = "<b style='color: $diff_color'><b>$diff_sign$diff</b></b>";
+
+  my $margin = 10;
+  my $max_tourneys = 1000;
+  my $future_average = $average;
+  my $future_tourneys = 0;
+  my $future_sum = $sum;
+  my $future_num_tourneys = $num_tourneys;
+  my $add_num_tourneys = 0;
+  my $add_sum = 0;
+  my $future_diff = $future_average - $current_rating;
+  while($add_num_tourneys < $max_tourneys)
+  {
+    if (abs($future_diff) < $margin)
+    {
+      last;
+    }
+    $future_sum += $current_rating;
+    $add_num_tourneys++;
+    $add_sum    += $current_rating;
+    $future_num_tourneys++;
+    $future_average = sprintf "%.2f", ($future_sum / $future_num_tourneys);
+    $future_diff = $future_average - $current_rating;
+  }
+  $future_diff = sprintf "%.2f", $future_diff;
+  my $math_stmt =
+    "
+      Their current qualifying average is \\[ { $sum \\over $num_tourneys } = $average \\]
+      After <b><b>$add_num_tourneys</b></b> additional tournament(s) with an end rating of <b><b>$current_rating</b></b>, their new qualifying average will be
+      \\[ { $sum + $add_num_tourneys($current_rating) \\over $num_tourneys + $add_num_tourneys} = { $future_sum \\over $future_num_tourneys } =  $future_average\\] 
+      which is a difference of <b><b>$future_diff</b></b> compared to their current rating. 
+    ";
+
+  my $future_cmp;
+  if ($add_num_tourneys == $max_tourneys)
+  {
+    $future_cmp = 'more than';
+  }
+  else
+  {
+    $future_cmp = 'exactly';
+  }
+
   my $content =
   "
   <div id='$id' class='collapse'>
-    <div style='text-align: center'>
-      $qualifier has a qualifying rating of <b><b>$average</b></b>, which is a difference of $diff_html compared to their current rating of <b><b>$rating</b></b>.<br> 
-      $qualifier has played <b><b>$num_games</b></b> Collins games in <b><b>$num_tourneys</b></b> tournaments during the qualification period.
+    <div style='text-align: center; padding: 15px'>
+      $qualifier has a qualifying average of <b><b>$average</b></b>, which is a difference of $diff_html compared to their current rating of <b><b>$current_rating</b></b>. They have played <b><b>$num_games</b></b> Collins games in <b><b>$num_tourneys</b></b> tournaments during the qualification period. If they maintain their current rating for all future tournaments in the qualification period, it will take <b><b>$future_cmp $add_num_tourneys</b></b> tournament(s) to bring their qualifying average within <b><b>$margin</b></b> rating points of their current rating. $math_stmt
     </div>
     $under_div
     <div id='$chartid' style='height: 500px'></div>
@@ -322,11 +366,12 @@ sub get_qualifier_html
   onclick=\"make_qchart('$chartid', '$qualifier', $average, $chartdata)\"
   ";
   my $expander = "<button type='button' id='button_$id'  class='btn btn-sm' data-toggle='collapse' data-target='#$id' $onclick>+</button>";
+  my $link = "<a href='/cache/$sanitized_qualifier.html'>$qualifier</a>";
   my $title = 
   "
   <table style='width: 100%'>
    <tbody>
-    <tr><td style='width: 1px; font-size: inherit'>$expander</td><td style='width: 300px; font-size: inherit '>$rank . $qualifier$asterisk</td><td style='font-size: inherit'><b><b>$average</b></b>&nbsp;&nbsp;&nbsp;$diff_html</td></tr>
+    <tr><td style='width: 1px; font-size: inherit'>$expander</td><td style='width: 300px; font-size: inherit '>$rank . $link$asterisk</td><td style='font-size: inherit'><b><b>$average</b></b>&nbsp;&nbsp;&nbsp;$diff_html</td></tr>
    </tbody>
   </table>
   ";
@@ -2799,6 +2844,7 @@ Contact joshuacastellano7@gmail.com if you think a game was omitted by mistake.'
   my $nav                             = Constants::HTML_NAV;
   my $collapse_scripts                = Constants::HTML_TABLE_AND_COLLAPSE_SCRIPTS;
   my $default_scripts                 = Constants::HTML_SCRIPTS;
+  my $math_scripts                    = Constants::MATH_SCRIPTS;
   my $footer                          = Constants::HTML_FOOTER;
   $abouthtml =
   "
@@ -2807,8 +2853,7 @@ Contact joshuacastellano7@gmail.com if you think a game was omitted by mistake.'
   <head>
   $head_content
   $html_styles
-  <script src=\"https://polyfill.io/v3/polyfill.min.js?features=es6\"></script>
-  <script id=\"MathJax-script\" async src=\"https://cdn.jsdelivr.net/npm/mathjax\@3/es5/tex-mml-chtml.js\"></script>
+  $math_scripts
   </head>
   <body $body_style>
   $nav
