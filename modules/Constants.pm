@@ -88,14 +88,28 @@ use constant CANADA_QUALIFIERS                =>
   'Jackson Smylie',
   'Joshua Sokol',
   'Evan Berofsky',
-  'Joshua Castellano'
+  'Joshua Castellano',
+  'Jesse Matthews',
+  'Tony Leah'
 ];
 
 use constant US_QUALIFIERS                    =>
 [
   'Dave Wiegand',
   'Austin Shin',
-  'Jesse Day'
+  'Will Anderson',
+  'Evans Clinchy',
+  'David Koenig',
+  'Jesse Day',
+  'Jason Keller',
+  'Conrad Bassett-Bouchard',
+  'Rob Robinsky',
+  'Chris Lipe',
+  'Ben Schoenbrun',
+  'Rasheed Balogun',
+  'Cesar Del Solar',
+  'Lucas Freeman',
+  'Puneet Sharma'
 ];
 
 use constant INACTIVE_PLAYERS =>

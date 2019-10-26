@@ -24,9 +24,8 @@ use JSON::XS;
 unless (caller)
 {
   update_qualifiers();
-  exit(0);
-  update_typing_html();
-  update_remote_typing_cgi();
+  #update_typing_html();
+  #update_remote_typing_cgi();
   update_readme_and_about();
   my $validation        = update_search_data();
   my $featured_mistakes = update_leaderboard_legacy();
@@ -80,8 +79,8 @@ sub update_qualifiers
     for (my $j = 0; $j < scalar @{$qualifiers_list}; $j++)
     {
       my $qualifier = $qualifiers_list->[$j];
-      my ($qaverage, $qresults) = get_qualifier_data($qualifier);
-      push @qualifier_data, [$qualifier, $qaverage, $qresults];
+      my ($qaverage, $qresults, $qrating) = get_qualifier_data($qualifier);
+      push @qualifier_data, [$qualifier, $qaverage, $qresults, $qrating];
     }
 
     @qualifier_data = sort {$b->[1] <=> $a->[1]} @qualifier_data;
@@ -91,7 +90,8 @@ sub update_qualifiers
       my $qname    = $qualifier_data[$j][0];
       my $qaverage = $qualifier_data[$j][1];
       my $qresults = $qualifier_data[$j][2];
-      $qualifierhtml .= get_qualifier_html($qname, $qaverage, $qresults, $styles[$j % 2], $j + 1);
+      my $qrating  = $qualifier_data[$j][3];
+      $qualifierhtml .= get_qualifier_html($qname, $qaverage, $qresults, $qrating, $styles[$j % 2], $j + 1);
     }
   }
 
@@ -124,7 +124,6 @@ sub update_qualifiers
       return;
     }
 
-    var title = name;
     var xaxis = 'Date';
     var yaxis = 'Rating';
 
@@ -140,9 +139,6 @@ sub update_qualifiers
 
     chart.dateFormatter.inputDateFormat = 'yyyy-MM-dd';
 
-    var chart_title = chart.titles.create();
-    chart_title.text = title;
-    
     chart.legend = new am4charts.Legend();
     // var xrange = p2[0] - p1[0];
     // Create axes
@@ -157,14 +153,14 @@ sub update_qualifiers
     var valueAxisY = chart.yAxes.push(new am4charts.ValueAxis());
     //valueAxisY.min = 0;
     //valueAxisY.max = 1;
-    valueAxisY.strictMinMax = true;
-    // valueAxisY.title.text = yaxis;
+    //valueAxisY.strictMinMax = true;
+    valueAxisY.title.text = 'Rating';
     
     // Create series
     var lineSeries = chart.series.push(new am4charts.LineSeries());
     lineSeries.dataFields.valueY = 'rating';
     lineSeries.dataFields.dateX  = 'date';
-    lineSeries.dataFields.value  = 'rating';
+    //lineSeries.dataFields.value  = 'rating';
     lineSeries.strokeOpacity = 1;
     lineSeries.legendSettings.labelText = 'Rating';   
     // Add a bullet
@@ -173,12 +169,12 @@ sub update_qualifiers
     //bullet.circle.fill        = am4core.color('blue');
     //bullet.circle.stroke      = am4core.color('blue');
     //bullet.circle.fillOpacity = 1;
-    //bullet.tooltipText          = '{name}';
+    bullet.tooltipText          = \"Tournament: {tourney}\\nEnd Rating: {rating}\\nDate: {date}\";
     
     //add the trendlines
     var trend = chart.series.push(new am4charts.LineSeries());
     trend.dataFields.valueY = 'value2';
-    trend.dataFields.valueX = 'value';
+    trend.dataFields.dateX = 'value';
     trend.strokeWidth = 2
     trend.stroke = chart.colors.getIndex(0);
     trend.strokeOpacity = 0.7;
@@ -186,6 +182,7 @@ sub update_qualifiers
       { 'value': data[0]['date'],               'value2': average },
       { 'value': data[data.length - 1]['date'], 'value2': average }
     ];
+    trend.legendSettings.labelText = 'Qualifying Average';
     
     //scrollbars
     chart.scrollbarX = new am4core.Scrollbar();
@@ -249,7 +246,7 @@ sub get_qualifier_data
   }
   my $average = sprintf "%.2f", $sum / $num_results;
 
-  return ($average, \@results);
+  return ($average, \@results, $results[-1]->{'newrating'});
 }
 
 sub get_qualifier_html
@@ -257,6 +254,7 @@ sub get_qualifier_html
   my $qualifier = shift;
   my $average   = shift;
   my $results   = shift;
+  my $rating    = shift;
   my $div_style = shift;
   my $rank      = shift;
 
@@ -265,25 +263,58 @@ sub get_qualifier_html
   my $chartid = $id . '_chart';
 
   my @results = @{$results};
+  my $num_games = 0;
+  my $num_tourneys = scalar @results;
   my $chartdata = '[';
 
-  for (my $i = 0; $i < scalar @results; $i++)
+  for (my $i = 0; $i < $num_tourneys; $i++)
   {
     my $item = $results[$i];
     my $rating  = $item->{'newrating'};
     my $date    = $item->{'date'};
     my $tourney = $item->{'tourneyname'};
+    $num_games += $item->{'w'} + $item->{'l'} + $item->{'t'};
     $chartdata .= "{'rating': $rating, 'date': '$date', 'tourney': '$tourney'},";
   }
-  
+ 
+
   chop($chartdata);
   $chartdata .= ']';
 
+  my $under_div = '';
+  my $asterisk  = '';
+
+
+  if ($num_games < 30)
+  {
+    $asterisk = '<b><b>*</b></b>';
+    $under_div =
+    "
+      <div style='text-align: center'>
+        $asterisk$qualifier has played fewer than the minimum 30 games required to qualify.
+      </div>
+    ";
+  }
+
+  my $diff = sprintf "%.2f", $rating - $average;
+  my $diff_color = '#00cc00';
+  my $diff_sign  = '+';
+  if ($diff > 0)
+  {
+    $diff_color = '#e70d18'; 
+    $diff_sign  = '-';
+  }
+  $diff = abs($diff);
+  my $diff_html = "<b style='color: $diff_color'><b>$diff_sign$diff</b></b>";
   my $content =
   "
   <div id='$id' class='collapse'>
-    This person is $qualifier
-    <div id='$chartid'></div>
+    <div style='text-align: center'>
+      $qualifier has a qualifying rating of <b><b>$average</b></b>, which is a difference of $diff_html compared to their current rating of <b><b>$rating</b></b>.<br> 
+      $qualifier has played <b><b>$num_games</b></b> Collins games in <b><b>$num_tourneys</b></b> tournaments during the qualification period.
+    </div>
+    $under_div
+    <div id='$chartid' style='height: 500px'></div>
   </div>
   ";
   my $onclick =
@@ -291,7 +322,15 @@ sub get_qualifier_html
   onclick=\"make_qchart('$chartid', '$qualifier', $average, $chartdata)\"
   ";
   my $expander = "<button type='button' id='button_$id'  class='btn btn-sm' data-toggle='collapse' data-target='#$id' $onclick>+</button>";
-  return Utils::make_content_item($expander, $rank . ". $qualifier ($average)", $content, $div_style);
+  my $title = 
+  "
+  <table style='width: 100%'>
+   <tbody>
+    <tr><td style='width: 1px; font-size: inherit'>$expander</td><td style='width: 300px; font-size: inherit '>$rank . $qualifier$asterisk</td><td style='font-size: inherit'><b><b>$average</b></b>&nbsp;&nbsp;&nbsp;$diff_html</td></tr>
+   </tbody>
+  </table>
+  ";
+  return Utils::make_content_item('', $title, $content, $div_style);
 }
 
 sub update_search_data
