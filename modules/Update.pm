@@ -238,7 +238,7 @@ sub get_qualifier_data
   $json = JSON::XS::decode_json($json);
   my @results = @{$json->{'results'}};
   @results = grep {$_->{'date'} ge '2018-06-01' && $_->{'date'} le '2020-05-31' && $_->{'lexicon'}} @results;
-  @results = sort {$a->{'date'} cmp $b->{'date'}} @results;
+  @results = sort {$a->{'date'} cmp $b->{'date'} || $b->{'isearlybird'}} @results;
 
   my $num_results = scalar @results;
   my $sum = 0;
