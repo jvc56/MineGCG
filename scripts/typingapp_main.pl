@@ -27,7 +27,7 @@ GetOptions (
             "$min_length_option:s" => \$min_length,
             "$max_length_option:s" => \$max_length,
             "$min_prob_option:s"   => \$min_prob,
-            "$max_prob_option:s"   => \$min_prob,
+            "$max_prob_option:s"   => \$max_prob,
             "$num_words_option:s"  => \$num_words,
             "$dir_option:s"        => \$dir
            );

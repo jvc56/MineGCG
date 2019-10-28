@@ -802,7 +802,10 @@ use constant HTML_NAV => <<NAV
         <a class="nav-link" href="/notable.html" >Notable</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/alchemist_qualifiers.html" >AC Qualifiers</a>
+        <a class="nav-link" href="/alchemist_qualifiers.html" >Alchemist Cup Qualifiers</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/typing.html">RandomRacer 2.0</a>
       </li>
       <!-- Dropdown -->
       <li class="nav-item dropdown">

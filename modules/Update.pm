@@ -18,14 +18,15 @@ use lib './data';
 use Constants;
 use Utils;
 use Stats;
+use Passage;
 use NameConversion;
 use JSON::XS;
 
 unless (caller)
 {
+  update_typing_html();
+  update_remote_typing_cgi();
   update_qualifiers();
-  #update_typing_html();
-  #update_remote_typing_cgi();
   update_readme_and_about();
   my $validation        = update_search_data();
   my $featured_mistakes = update_leaderboard_legacy();
@@ -1921,6 +1922,7 @@ sub update_typing_html
   my $html_styles           = Constants::HTML_STYLES;
   my $nav                   = Constants::HTML_NAV;
   my $default_scripts       = Constants::HTML_SCRIPTS;
+  my $collapse_scripts      = Constants::HTML_TABLE_AND_COLLAPSE_SCRIPTS;
   my $footer                =  Constants::HTML_FOOTER;
   my $toggle_icon_script    = Constants::TOGGLE_ICON_SCRIPT;
   my $odd_div_style         = Constants::DIV_STYLE_ODD; 
@@ -1937,9 +1939,57 @@ sub update_typing_html
   my $max_prob_option   = Constants::TYPING_MAX_PROB_FIELD_NAME;
   my $num_words_option  = Constants::TYPING_NUM_WORDS_FIELD_NAME;
 
+  my $challenges_string = '[';
 
+  for (my $i = 2; $i <= 15; $i++)
+  {
+    my $passage = Passage::passage($i, $i, undef, undef, undef, 1);
+    $challenges_string .= "'$passage',";
+  }
+  chop($challenges_string);
+  $challenges_string .= ']';
+
+  my $td_style =
+  "
+  style=
+  '
+  font-size: 1rem;
+  font-weight: bolder;
+  height: 60px;
+  text-align: left;
+  '
+  ";
+  my $typing_div_info_style =
+  "
+  style=
+  '
+    font-size: 25px;
+    font-weight: bolder;
+    padding: 1%;
+  '
+  ";
+  my $typing_div_style =
+  "
+  style=
+  '
+    font-size: 25px;
+    font-weight: bolder;
+    padding: 1%;
+    background-color: black;
+    border-radius: 15px;
+    margin: 10px 5px;
+    display: none;
+  '
+  ";
+  my $td_info_style = 'style="font-size: 25px;font-weight: bolder; text-align: right"'; 
+  my $type_here_text = 'Type the text above here';
+  my $typing_header_style = "style='width: 33.3333333%;text-align: center;font-size: 20px; font-weight: bold'";
+  my $input_class = 'class="form-control"';
   my $formid     = 'typing_form_id';
   my $typingid   = 'typing_content_id';
+  my $typinginputid = 'typing_input_id';
+  my $wpmid      = 'wpm_id';
+  my $htag       = 'span';
   my $typinghtml =
   "
 <!DOCTYPE html>
@@ -1947,35 +1997,207 @@ sub update_typing_html
   <head>
   $head_content
   $html_styles
+
+  <style>
+    .loader
+    {
+      border: 16px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 16px solid #3498db;
+      width: 120px;
+      height: 120px;
+      -webkit-animation: spin 2s linear infinite; /* Safari */
+      animation: spin 2s linear infinite;
+    }
+    
+    /* Safari */
+    \@-webkit-keyframes spin
+    {
+      0% { -webkit-transform: rotate(0deg); }
+      100% { -webkit-transform: rotate(360deg); }
+    }
+    
+    \@keyframes spin
+    {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
   </head>
   <body $body_style>
+
   $nav
+
   <div style='text-align: center; vertical-align: middle; padding: 2%'>
     <h1>
-      Typing Practice
+      RandomRacer 2.0 
     </h1>
   </div>
   <div>
-    <form onsubmit='return retrievePassage()' id='$formid'>
-     Min word length: <input name='$min_length_option' type='text' value=''><br>
-     Max word length: <input name='$max_length_option' type='text' value=''><br>
-     Number of words: <input name='$num_words_option'  type='number' value=''><br>
-     <input type='submit'>
-    </form>
-    <div id='$typingid'>
-    </div>
+    <table class='titledisplay' >
+      <tbody>
+        <tr id='titlerow'>
+          <th style='width: 50%' class='dscclass' onclick='switchTabs(true)' id='practice_th'>Practice</th>
+          <th style='width: 50%' onclick='switchTabs(false)' id='challenge_th'  >Daily Challenges</th>
+        </tr>
+      </tbody>
+    </table>
   </div>
+  <div id='practice_div' style='text-align: center; margin-top: 20px'>
+    <form onsubmit='return retrievePassage()' id='$formid'>
+      <table style='margin: auto'>
+        <tbody>
+          <tr>
+             <td $td_style >Word Length:</td>
+             <td><input $input_class  name='$min_length_option' type='number' value='' placeholder='Minimum'></td>
+             <td><input  $input_class  name='$max_length_option' type='number' value='' placeholder='Maximum'></td>
+          </tr>
+          <tr>
+            <td $td_style >Word Probability:</td>
+            <td><input  $input_class  name='$min_prob_option' type='number' value='' placeholder='Minimum' ></td>
+            <td><input  $input_class  name='$max_prob_option' type='number' value='' placeholder='Maximum' ></td>
+          </tr>
+          <tr>
+            <td $td_style >Passage Length:</td>
+            <td colspan='2'><input  $input_class  name='$num_words_option' type='number' value=''></td>
+          </tr>
+        </tbody>
+      </table>
+     <input class='btn' type='submit'>
+    </form>
+  </div>
+  <div style='display: none; padding: 10px' id='challenge_div'>
+    <select  class='browser-default custom-select mb-4' onchange='getChallenge(this)'>
+      <option disabled selected='selected'>Daily Challenge</option>
+      <option value='2'>Twos</option>
+      <option value='3'>Threes</option>
+      <option value='4'>Fours</option>
+      <option value='5'>Fives</option>
+      <option value='6'>Sixes</option>
+      <option value='7'>Sevens</option>
+      <option value='8'>Eights</option>
+      <option value='9'>Nines</option>
+      <option value='10'>Tens</option>
+      <option value='11'>Elevens</option>
+      <option value='12'>Twelves</option>
+      <option value='13'>Thirteens</option>
+      <option value='14'>Fourteens</option>
+      <option value='15'>Fifteens</option>
+    </select>
+  </div>
+    <div $typing_div_info_style  id='$wpmid'></div>
+    <div $typing_div_style  id='$typingid'></div>
+    <div style='text-align: center'>
+      <input $input_class style='width: 50%; margin: auto; font-size: 25px' type='text' id='$typinginputid' oninput='typingInputChanged(this)' placeholder='$type_here_text' onfocus=\"this.placeholder = ''\" onblur=\"this.placeholder = '$type_here_text'\">
+    </div>
+
+  $default_scripts
+  $collapse_scripts
 
   <script>
+
+  // Global Typing variables
+  var current_word;
+  var start_time;
+  var chars_typed_correctly;
+  var chars_typed_incorrectly;
+  var incorrect_color = '#cc0000';
+  var timer;
+  var completed_index;
+  var local_index;
+  var passage;
+  var original_passage;
+  var wpm;
+  var accur;
+  var elapsed_time;
+  var started;
+  var passage_shown = 0;
+
+  var challenges = $challenges_string;
+
+  function finishedPassage()
+  {
+    clearInterval(timer);
+    updateWPM();
+    var finish_text = '<table style=\"margin: auto\"><tbody>';
+    finish_text += '<tr><td $td_info_style ><b><b>Speed: &nbsp;&nbsp;&nbsp;</b></b></td><td $td_info_style >' + wpm + ' WPM<br></td></tr>';
+    finish_text += '<tr><td $td_info_style ><b><b>Time: &nbsp;&nbsp;&nbsp;</b></b></td><td $td_info_style >' + elapsed_time + 's<br></td></tr>';
+    finish_text += '<tr><td $td_info_style ><b><b>Accuracy: &nbsp;&nbsp;&nbsp;</b></b></td><td $td_info_style >' + accur + '%<br></td></tr>';
+    finish_text += '<tr><td colspan=\"2\" style=\"text-align: center; \"><button onclick=retryPassage() style=\"background-color: #666666\" class=\"btn\">Retry</button></td></tr>';
+
+    document.getElementById('$typingid').innerHTML = finish_text;
+    passage_shown = 0;
+    started       = 0;
+  }
+
+  function retryPassage()
+  {
+    passage = original_passage;
+    showPassage();
+  }
+
+  function showPassage()
+  {
+    var div = document.getElementById('$typingid');
+    div.style.display = 'block';
+    div.innerHTML = passage;
+
+    // Set the global variables
+
+    original_passage = passage;
+    current_word = passage.substring(0, passage.indexOf(' ') + 1);
+    chars_typed_correctly = 0;
+    chars_typed = 0;
+    completed_index = 0;
+    local_index     = 0;
+    started         = 0;
+    start_time      = 0;
+    wpm             = 0;
+    accur           = 0;
+    elapsed_time    = 0;
+    passage_shown   = 1;
+    updateWPM();
+  }
+
+  function getChallenge(challenge_selector)
+  {
+    var opt = challenge_selector.value;
+    passage = challenges[opt - 2];
+    showPassage();
+  }
+
+  function switchTabs(practice) 
+  {
+    var practice_style = 'block';
+    var practice_class = 'dscclass';
+    var challenge_style = 'none';
+    var challenge_class = '';
+
+    if (!practice)
+    {
+      practice_style = 'none';
+      practice_class = '';
+      challenge_style = 'block';
+      challenge_class = 'dscclass';
+    }    
+    document.getElementById('practice_th').className = practice_class;
+    document.getElementById('practice_div').style.display = practice_style;
+    document.getElementById('challenge_th').className = challenge_class;
+    document.getElementById('challenge_div').style.display = challenge_style;
+  }
+
   function retrievePassage()
   {
+    var div = document.getElementById('$typingid');
+    div.style.display = 'block';
+    div.innerHTML = '<div style=\"text-align: center\"><div class=\"spinner-border text-primary\" role=\"status\"><span class=\"sr-only\">Loading...</span></div></div>';
+
     var XHR = new XMLHttpRequest();
     var formData = new FormData(document.getElementById('$formid'));
     var args = '';
     for (var [key, value] of formData.entries())
     { 
       args += key + '=' + value + '&';
-      console.log(key, value);
     }
     if (args)
     {
@@ -1983,13 +2205,94 @@ sub update_typing_html
     }
     XHR.addEventListener('load', function(event)
     {
-      document.getElementById('$typingid').innerHTML = event.target.responseText;
+      // Set the passage
+      passage = event.target.responseText;
+      showPassage();
     });
     var gettarget = '/$cgibin_name/$typing_script?' + args;
-    console.log(gettarget);
     XHR.open('GET', gettarget);
     XHR.send(formData);
     return false;
+  }
+  function typingInputChanged(inp)
+  {
+    if (!passage_shown)
+    {
+      inp.value = '';
+      return;
+    }
+    if (!started)
+    {
+      startTyping();
+    }
+    var text = inp.value;
+    chars_typed++;
+    passage = passage.replace(/<$htag.*\">/g, '').replace(/<\\/$htag>/g, ''); 
+    if (text.toUpperCase() == current_word.substring(0, text.length).toUpperCase())
+    {
+      chars_typed_correctly++;
+      inp.style.backgroundColor = '';
+      local_index = text.length;
+      if (text.toUpperCase() == current_word.toUpperCase())
+      {
+        inp.value = '';
+        completed_index += local_index;
+        local_index = 0;
+        var rest_of_passage = passage.substring(completed_index);
+        if (rest_of_passage == '')
+        {
+          finishedPassage();
+          return;
+        }
+        var space_index = rest_of_passage.indexOf(' ');
+        if (space_index == -1)
+        {
+          space_index = rest_of_passage.length;
+        }
+        else
+        {
+          space_index++;
+        }
+        current_word = rest_of_passage.substring(0, space_index);
+      }
+    }
+    else
+    {
+      inp.style.backgroundColor = incorrect_color;      
+    }
+    var real_index = completed_index + local_index;
+    passage = '<$htag style=\"background-color: #00cc00\">' + passage.substring(0, real_index) + '</$htag>' + passage.substring(real_index);
+    document.getElementById('$typingid').innerHTML = passage;
+  }
+  function updateWPM()
+  {
+    var date = new Date();
+    current_time = date.getTime();
+    elapsed_time = (current_time - start_time) / 1000;
+    if (started == 0)
+    {
+      wpm = 0;
+      elapsed_time = 0;
+      accur = 100;
+    }
+    else
+    {
+      wpm = Math.round( (chars_typed_correctly / 5) / (elapsed_time/60) );
+      accur = Math.round(100 * (chars_typed_correctly / chars_typed));
+    }
+    document.getElementById('$wpmid').innerHTML = \"<table style='width: 100%'><tbody><tr><td $typing_header_style>WPM: \" + wpm + \"</td><td $typing_header_style>Accuracy: \" + accur + \"%</td><td $typing_header_style>Time: \" + elapsed_time + \"s</td></tr></tbody></table>\";
+
+  }
+  function startTyping()
+  {
+    var date = new Date();
+    start_time = date.getTime();
+    timer = setInterval(updateWPM, 500);
+    started = 1;
+  }
+  window.onload = function ()
+  {
+    retrievePassage();
   }
   </script>
   </body>
@@ -2526,8 +2829,9 @@ In October 2019, the site underwent major updates which include:
 <li>Win Correlation graphs for every statistic on the leaderboard.</li>
 <li>Confidence intervals for all Tiles Played statistics.</li>
 <li>Dynamic mistake tagging.</li>
+<li>Alchemist Cup registrants list.</li>
+<li>RandomRacer 2.0, a new version of the original typing practice feature of RandomRacer.</li>
 </ul>
-
 You can learn more about some of these features in later sections. Please report any bugs to joshuacastellano7@gmail.com'
     ],
     [

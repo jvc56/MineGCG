@@ -14,7 +14,8 @@ In October 2019, the site underwent major updates which include:
  - Win Correlation graphs for every statistic on the leaderboard.
  - Confidence intervals for all Tiles Played statistics.
  - Dynamic mistake tagging.
-
+ - Alchemist Cup registrants list.
+ - RandomRacer 2.0, a new version of the original typing practice feature of RandomRacer.
 
 You can learn more about some of these features in later sections. Please report any bugs to joshuacastellano7@gmail.com
 

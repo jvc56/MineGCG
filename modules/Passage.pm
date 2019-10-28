@@ -18,6 +18,7 @@ sub passage
   my $min_prob   = shift;
   my $max_prob   = shift;
   my $num_words  = shift;
+  my $as_string  = shift;
 
   my $dbh = Utils::connect_to_typing_database();
 
@@ -54,12 +55,12 @@ sub passage
     }
     if ($min_prob)
     {
-      $query .= "$and $word_length_column_name >= $min_prob";
+      $query .= "$and $word_prob_column_name >= $min_prob";
       $and = ' AND ';
     }
     if ($max_prob)
     {
-      $query .= "$and $word_length_column_name <= $max_prob";
+      $query .= "$and $word_prob_column_name <= $max_prob";
     }
   }
   if (!$num_words)
@@ -68,7 +69,16 @@ sub passage
   } 
   $query .= " ORDER BY random() LIMIT $num_words ";
   my @passage = @{$dbh->selectall_arrayref($query, {"RaiseError" => 1})};
+  my $l = scalar @passage;
+  while (scalar @passage < $num_words)
+  {
+    push @passage, $passage[int(rand($l))];
+  }
   my $result = join (" ", map {$_->[0]} @passage);
+  if ($as_string)
+  {
+    return $result;
+  }
   print $result;
 }
 
