@@ -1957,7 +1957,6 @@ sub update_typing_html
   '
   font-size: 1rem;
   font-weight: bolder;
-  height: 60px;
   text-align: left;
   '
   ";
@@ -2025,7 +2024,7 @@ sub update_typing_html
     <div style='text-align: center'>
       <input $input_class style='width: 50%; margin: auto; font-size: 25px' type='text' id='$typinginputid' oninput='typingInputChanged(this)' placeholder='$type_here_text' onfocus=\"this.placeholder = ''\" onblur=\"this.placeholder = '$type_here_text'\">
     </div>
-  
+
   <div id='practice_div' style='text-align: center; margin-top: 20px'>
     <form onsubmit='return retrievePassage()' id='$formid'>
       <table style='margin: auto'>
@@ -2049,7 +2048,7 @@ sub update_typing_html
      <input class='btn' type='submit'>
     </form>
   </div>
-  <div style='display: none; padding: 10px; text-align: center' id='challenge_div'>
+  <div style='display: none; margin-top: 20px; text-align: center' id='challenge_div'>
     <select  class='browser-default custom-select mb-4' style='width: 50%' onchange='getChallenge(this)'>
       <option disabled selected='selected'>Daily Challenge</option>
       <option value='2'>Twos</option>
