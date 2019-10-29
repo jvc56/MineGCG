@@ -2090,6 +2090,7 @@ sub update_typing_html
   var elapsed_time;
   var started;
   var passage_shown = 0;
+  var previous_input = '';
 
   var challenges = $challenges_string;
 
@@ -2197,6 +2198,7 @@ sub update_typing_html
     if (!passage_shown)
     {
       inp.value = '';
+      previous_input = '';
       return;
     }
     if (!started)
@@ -2204,11 +2206,16 @@ sub update_typing_html
       startTyping();
     }
     var text = inp.value;
-    chars_typed++;
+    var not_delete = 1;
+    if (previous_input.length > inp.value)
+    {
+      not_delete = 0;
+    }
+    chars_typed += not_delete;
     passage = passage.replace(/<$htag.*\">/g, '').replace(/<\\/$htag>/g, ''); 
     if (text.toUpperCase() == current_word.substring(0, text.length).toUpperCase())
     {
-      chars_typed_correctly++;
+      chars_typed_correctly += not_delete;
       inp.style.backgroundColor = '';
       local_index = text.length;
       if (text.toUpperCase() == current_word.toUpperCase())
@@ -2241,6 +2248,7 @@ sub update_typing_html
     var real_index = completed_index + local_index;
     passage = '<$htag style=\"background-color: #00cc00\">' + passage.substring(0, real_index) + '</$htag>' + passage.substring(real_index);
     document.getElementById('$typingid').innerHTML = passage;
+    previous_input = inp.value;
   }
   function updateWPM()
   {
