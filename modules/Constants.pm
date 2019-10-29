@@ -733,11 +733,7 @@ use constant HTML_STYLES => <<HTMLSTYLES
 HTMLSTYLES
 ;
 
-use constant HTML_CONTENT_LOADER => <<LOADER
-<div style=\"text-align: center\"><div class=\"spinner-border text-primary\" role=\"status\"><span class=\"sr-only\">Loading...</span></div></div>
-
-LOADER
-;
+use constant HTML_CONTENT_LOADER => '<div style=\"text-align: center\"><div class=\"spinner-border text-primary\" role=\"status\"><span class=\"sr-only\">Loading...</span></div></div>';
 
 use constant HTML_TABLE_AND_COLLAPSE_SCRIPTS => <<TCSCRIPTS
 
