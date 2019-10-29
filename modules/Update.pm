@@ -1089,6 +1089,7 @@ TABBED
   my $csv_download_scripts            = Constants::CSV_DOWNLOAD_SCRIPTS;
   my $amchart_scripts                 = Constants::AMCHART_SCRIPTS;
   my $footer                          = Constants::HTML_FOOTER;
+  my $content_loader                  = Constants::HTML_CONTENT_LOADER;
 
   $leaderboard_string = <<HTMLPAGE
 
@@ -1932,6 +1933,7 @@ sub update_typing_html
   my $title_div_style       = "style='text-align: center'";
   my $body_style            = Constants::HTML_BODY_STYLE;
   my $typing_script         = Constants::TYPING_CGI_SCRIPT;
+  my $content_loader        = Constants::HTML_CONTENT_LOADER;
 
   my $min_length_option = Constants::TYPING_MIN_LENGTH_FIELD_NAME;
   my $max_length_option = Constants::TYPING_MAX_LENGTH_FIELD_NAME;
@@ -1997,32 +1999,6 @@ sub update_typing_html
   <head>
   $head_content
   $html_styles
-
-  <style>
-    .loader
-    {
-      border: 16px solid #f3f3f3;
-      border-radius: 50%;
-      border-top: 16px solid #3498db;
-      width: 120px;
-      height: 120px;
-      -webkit-animation: spin 2s linear infinite; /* Safari */
-      animation: spin 2s linear infinite;
-    }
-    
-    /* Safari */
-    \@-webkit-keyframes spin
-    {
-      0% { -webkit-transform: rotate(0deg); }
-      100% { -webkit-transform: rotate(360deg); }
-    }
-    
-    \@keyframes spin
-    {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-  </style>
   </head>
   <body $body_style>
 
@@ -2043,6 +2019,13 @@ sub update_typing_html
       </tbody>
     </table>
   </div>
+
+    <div $typing_div_info_style  id='$wpmid'></div>
+    <div $typing_div_style  id='$typingid'></div>
+    <div style='text-align: center'>
+      <input $input_class style='width: 50%; margin: auto; font-size: 25px' type='text' id='$typinginputid' oninput='typingInputChanged(this)' placeholder='$type_here_text' onfocus=\"this.placeholder = ''\" onblur=\"this.placeholder = '$type_here_text'\">
+    </div>
+  
   <div id='practice_div' style='text-align: center; margin-top: 20px'>
     <form onsubmit='return retrievePassage()' id='$formid'>
       <table style='margin: auto'>
@@ -2085,11 +2068,7 @@ sub update_typing_html
       <option value='15'>Fifteens</option>
     </select>
   </div>
-    <div $typing_div_info_style  id='$wpmid'></div>
-    <div $typing_div_style  id='$typingid'></div>
-    <div style='text-align: center'>
-      <input $input_class style='width: 50%; margin: auto; font-size: 25px' type='text' id='$typinginputid' oninput='typingInputChanged(this)' placeholder='$type_here_text' onfocus=\"this.placeholder = ''\" onblur=\"this.placeholder = '$type_here_text'\">
-    </div>
+
 
   $default_scripts
   $collapse_scripts
@@ -2190,7 +2169,7 @@ sub update_typing_html
   {
     var div = document.getElementById('$typingid');
     div.style.display = 'block';
-    div.innerHTML = '<div style=\"text-align: center\"><div class=\"spinner-border text-primary\" role=\"status\"><span class=\"sr-only\">Loading...</span></div></div>';
+    div.innerHTML = '$content_loader';
 
     var XHR = new XMLHttpRequest();
     var formData = new FormData(document.getElementById('$formid'));

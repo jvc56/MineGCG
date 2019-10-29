@@ -702,10 +702,41 @@ use constant HTML_STYLES => <<HTMLSTYLES
   {
     text-align: center;
   }
+
+  .loader
+  {
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid #3498db;
+    width: 120px;
+    height: 120px;
+    -webkit-animation: spin 2s linear infinite; /* Safari */
+    animation: spin 2s linear infinite;
+  }
+  
+  /* Safari */
+  @-webkit-keyframes spin
+  {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+  }
+  
+  @keyframes spin
+  {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
   </style>
 
 
 HTMLSTYLES
+;
+
+use constant HTML_CONTENT_LOADER => <<LOADER
+<div style=\"text-align: center\"><div class=\"spinner-border text-primary\" role=\"status\"><span class=\"sr-only\">Loading...</span></div></div>
+
+LOADER
 ;
 
 use constant HTML_TABLE_AND_COLLAPSE_SCRIPTS => <<TCSCRIPTS
