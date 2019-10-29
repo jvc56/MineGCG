@@ -206,7 +206,7 @@ use constant WORDS_TABLE_NAME        => 'words';
 use constant WORD_COLUMN_NAME        => 'word';
 use constant WORD_LENGTH_COLUMN_NAME => 'word_length';
 use constant WORD_PROBABILITY_COLUMN_NAME => 'word_probability';
-use constant DEFAULT_NUMBER_OF_PASSAGE_WORDS => 20;
+use constant DEFAULT_NUMBER_OF_PASSAGE_WORDS => 30;
 use constant TYPING_DATABASE_TABLES =>
 {
   Constants::WORDS_TABLE_NAME =>

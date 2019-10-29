@@ -2066,8 +2066,8 @@ sub update_typing_html
      <input class='btn' type='submit'>
     </form>
   </div>
-  <div style='display: none; padding: 10px' id='challenge_div'>
-    <select  class='browser-default custom-select mb-4' onchange='getChallenge(this)'>
+  <div style='display: none; padding: 10px; text-align: center' id='challenge_div'>
+    <select  class='browser-default custom-select mb-4' style='width: 50%' onchange='getChallenge(this)'>
       <option disabled selected='selected'>Daily Challenge</option>
       <option value='2'>Twos</option>
       <option value='3'>Threes</option>
