@@ -2090,8 +2090,8 @@ sub update_typing_html
   var elapsed_time;
   var started;
   var passage_shown = 0;
-  var previous_input = '';
-
+  var max_index;
+  var previous_input;
   var challenges = $challenges_string;
 
   function finishedPassage()
@@ -2134,6 +2134,8 @@ sub update_typing_html
     wpm             = 0;
     accur           = 0;
     elapsed_time    = 0;
+    max_index       = 0;
+    previous_input  = '';
     passage_shown   = 1;
     updateWPM();
   }
@@ -2201,21 +2203,26 @@ sub update_typing_html
       previous_input = '';
       return;
     }
+    var text = inp.value;
+    if (text.length - previous_input.length > 1)
+    {
+      inp.value = previous_input;
+      return;
+    }
     if (!started)
     {
       startTyping();
     }
-    var text = inp.value;
-    var not_delete = 1;
-    if (previous_input.length > inp.value)
-    {
-      not_delete = 0;
-    }
-    chars_typed += not_delete;
+    previous_input = text;
+    chars_typed++;
     passage = passage.replace(/<$htag.*\">/g, '').replace(/<\\/$htag>/g, ''); 
     if (text.toUpperCase() == current_word.substring(0, text.length).toUpperCase())
     {
-      chars_typed_correctly += not_delete;
+      if (completed_index + local_index > max_index)
+      {
+        chars_typed_correctly++;
+        max_index = completed_index + local_index;
+      }
       inp.style.backgroundColor = '';
       local_index = text.length;
       if (text.toUpperCase() == current_word.toUpperCase())
@@ -2255,10 +2262,12 @@ sub update_typing_html
     var date = new Date();
     current_time = date.getTime();
     elapsed_time = (current_time - start_time) / 1000;
+    var shown_time = Math.round(elapsed_time);
     if (started == 0)
     {
       wpm = 0;
       elapsed_time = 0;
+      shown_time   = 0;
       accur = 100;
     }
     else
@@ -2266,7 +2275,7 @@ sub update_typing_html
       wpm = Math.round( (chars_typed_correctly / 5) / (elapsed_time/60) );
       accur = Math.round(100 * (chars_typed_correctly / chars_typed));
     }
-    document.getElementById('$wpmid').innerHTML = \"<table style='width: 100%'><tbody><tr><td $typing_header_style>WPM: \" + wpm + \"</td><td $typing_header_style>Accuracy: \" + accur + \"%</td><td $typing_header_style>Time: \" + elapsed_time + \"s</td></tr></tbody></table>\";
+    document.getElementById('$wpmid').innerHTML = \"<table style='width: 100%'><tbody><tr><td $typing_header_style>WPM: \" + wpm + \"</td><td $typing_header_style>Accuracy: \" + accur + \"%</td><td $typing_header_style>Time: \" + shown_time + \"s</td></tr></tbody></table>\";
 
   }
   function startTyping()
