@@ -1120,6 +1120,7 @@ TABBED
     {
       return;
     }
+    chart_div.innerHTML = '$content_loader';
 
     var title = chart_data[0];
     var xaxis = chart_data[1];
@@ -1941,6 +1942,8 @@ sub update_typing_html
   my $max_prob_option   = Constants::TYPING_MAX_PROB_FIELD_NAME;
   my $num_words_option  = Constants::TYPING_NUM_WORDS_FIELD_NAME;
 
+  my $passage_length    = Constants::DEFAULT_NUMBER_OF_PASSAGE_WORDS;
+
   my $challenges_string = '[';
 
   for (my $i = 2; $i <= 15; $i++)
@@ -2041,7 +2044,7 @@ sub update_typing_html
           </tr>
           <tr>
             <td $td_style >Passage Length:</td>
-            <td colspan='2'><input  $input_class  name='$num_words_option' type='number' value=''></td>
+            <td colspan='2'><input  $input_class  name='$num_words_option' type='number' value='' placeholder='$passage_length'></td>
           </tr>
         </tbody>
       </table>
