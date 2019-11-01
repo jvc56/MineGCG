@@ -137,8 +137,8 @@ sub addStat
       my $other_stat = $other_stats->{$other_key}->[$i];
 
       if (
-           $this_stat->{Constants::STAT_NAME}          ne $other_stat->{Constants::STAT_NAME} || 
-           $this_stat->{Constants::STAT_DATATYPE_NAME} ne $other_stat->{Constants::STAT_DATATYPE_NAME} || 
+           $this_stat->{Constants::STAT_NAME}          ne $other_stat->{Constants::STAT_NAME} ||
+           $this_stat->{Constants::STAT_DATATYPE_NAME} ne $other_stat->{Constants::STAT_DATATYPE_NAME} ||
            $this_stat->{Constants::STAT_METATYPE_NAME} ne $other_stat->{Constants::STAT_METATYPE_NAME}
          )
       {
@@ -230,17 +230,17 @@ sub toString
     }
   }
 
-  my @notable_stats = ();    
+  my @notable_stats = ();
   my @game_stats = ();
 
-  for (my $i = 0; $i < scalar @{$notable_ref}; $i++) 
+  for (my $i = 0; $i < scalar @{$notable_ref}; $i++)
   {
     my $object = $notable_ref->[$i]->{Constants::STAT_ITEM_OBJECT_NAME};
     $object->{Constants::STAT_NAME} = $notable_ref->[$i]->{Constants::STAT_NAME};
     $object->{Constants::STAT_DESCRIPTION_NAME} = $notable_ref->[$i]->{Constants::STAT_DESCRIPTION_NAME};
     push @notable_stats, $object;
   }
-  for (my $i = 0; $i < scalar @{$game_ref}; $i++) 
+  for (my $i = 0; $i < scalar @{$game_ref}; $i++)
   {
     my $object = $game_ref->[$i]->{Constants::STAT_ITEM_OBJECT_NAME};
     $object->{Constants::STAT_NAME} = $game_ref->[$i]->{Constants::STAT_NAME};
@@ -336,37 +336,37 @@ sub toString
 
   $stmp = statListToHTML(\@player_list_stats, 'Player Lists','player_list_stats_expander', $styles[$stylebit]);
   if ($stmp){$stylebit = 1 - $stylebit;}
-  $s .= $stmp; 
+  $s .= $stmp;
   $stmp = statListToHTML(\@opp_list_stats,    'Opponent Lists', 'opponent_list_stats_expander', $styles[$stylebit]);
   if ($stmp){$stylebit = 1 - $stylebit;}
-  $s .= $stmp; 
+  $s .= $stmp;
   $stmp = notableListToHTML(\@notable_stats,     'Notable Lists', 'notable_stats_expander', $styles[$stylebit]);
   if ($stmp){$stylebit = 1 - $stylebit;}
-  $s .= $stmp; 
+  $s .= $stmp;
   $stmp = statItemsToHTML(\@game_stats,        $num, 'Game Stats', 'game_stats_expander', $styles[$stylebit]);
   if ($stmp){$stylebit = 1 - $stylebit;}
-  $s .= $stmp; 
+  $s .= $stmp;
   $stmp = statItemsToHTML(\@player_item_stats, $num, 'Player Stats', 'player_stats_expander', $styles[$stylebit]);
   #if ($stmp){$stylebit = 1 - $stylebit;}
-  $s .= $stmp; 
+  $s .= $stmp;
   $stmp = statItemsToHTML(\@opp_item_stats,    $num, 'Opponent Stats', 'opp_stats_expander', $styles[$stylebit]);
   #if ($stmp){$stylebit = 1 - $stylebit;}
-  $s .= $stmp; 
+  $s .= $stmp;
   $stmp = mistakesToHTML($player_mistake_list, 'Player Mistakes', 'player_mistakes_expander', $styles[$stylebit]);
   if ($stmp){$stylebit = 1 - $stylebit;}
-  $s .= $stmp; 
+  $s .= $stmp;
   $stmp = mistakesToHTML($player_dynamic_list, 'Player Dynamic Mistakes', 'player_dynamics_expander', $styles[$stylebit]);
   if ($stmp){$stylebit = 1 - $stylebit;}
-  $s .= $stmp; 
+  $s .= $stmp;
   $stmp = mistakesToHTML($opp_mistake_list, 'Opponent Mistakes',     'opponent_mistake_expander', $styles[$stylebit]);
   if ($stmp){$stylebit = 1 - $stylebit;}
-  $s .= $stmp; 
+  $s .= $stmp;
   $stmp = mistakesToHTML($opp_dynamic_list,'Opponent Dynamic Mistakes', 'opponent_dynamics_expander', $styles[$stylebit]);
   if ($stmp){$stylebit = 1 - $stylebit;}
-  $s .= $stmp; 
+  $s .= $stmp;
   $stmp = errorsToHTML($error_list,   'Errors', 'error_list_expander', $styles[$stylebit]);
   if ($stmp){$stylebit = 1 - $stylebit;}
-  $s .= $stmp; 
+  $s .= $stmp;
   $stmp = errorsToHTML($warning_list, 'Warnings', 'warning_list_expander', $styles[$stylebit]);
 
   $s .= $stmp;
@@ -554,7 +554,7 @@ sub statItemsToHTML
     my $subitems     = $statitem->{'subitems'};
     my $display_name = $statitem->{Constants::STAT_OBJECT_DISPLAY_NAME};
     my $nototal_cond = $display_name && $display_name eq Constants::STAT_OBJECT_DISPLAY_PCAVG;
-    my $stat_expander = '';  
+    my $stat_expander = '';
     my $subtable      = '';
 
     my $total    = $statitem->{'total'};
@@ -605,7 +605,7 @@ sub statItemsToHTML
       {
         my $subtitle = $order->[$i];
         my $subtotal = $subitems->{$subtitle};
-        my $subaverage = sprintf "%.2f", $subtotal/$numgames; 
+        my $subaverage = sprintf "%.2f", $subtotal/$numgames;
         if ($nototal_cond)
         {
           $subaverage = $subtotal;
@@ -621,7 +621,7 @@ sub statItemsToHTML
         ";
         if ($title eq 'Tiles Played' && length $subtitle == 1)
         {
-          my $tile_frequencies = Constants::TILE_FREQUENCIES; 
+          my $tile_frequencies = Constants::TILE_FREQUENCIES;
           my $f           = $tile_frequencies->{$subtitle};
           my $P           = $average / 100;
           my $n           = $f * $numgames;
@@ -629,7 +629,7 @@ sub statItemsToHTML
           my $prob        = sprintf "%.4f", $subaverage / $f;
 
           my $color;
-          if ($prob > $upper)   
+          if ($prob > $upper)
           {
             $color = Constants::OVER_CONFIDENCE_COLOR;
           }
@@ -712,7 +712,7 @@ sub statItemsToHTML
           <td style='text-align: center; $width_style_part  $color_style' >$prob</td>
           <td style='text-align: center; $width_style_part  $color_style' >$intv</td>
         </tr>\n";
-    }  
+    }
 
     my $cilist_table = Utils::make_datatable(
       0,
@@ -727,7 +727,7 @@ sub statItemsToHTML
     );
 
     #my $ciexpander = Utils::make_expander($ciexpander_id);
-  
+
     #my $cicontent = Utils::make_content_item($ciexpander, $cititle, $cilist_table);
     my $cigroup_expander_id = $player_or_opp . 'group_confidence_interval_expander';
     my $cigroup_expander = Utils::make_expander($cigroup_expander_id);
@@ -813,7 +813,7 @@ sub statListToHTML
           <td style='text-align: center; $width_style_part' >$prob</td>
           <td style='text-align: center; $width_style_part' >$score</td>
         </tr>\n";
-    }  
+    }
 
     my $list_table = Utils::make_datatable(
       $expander_id,
@@ -828,7 +828,7 @@ sub statListToHTML
     );
 
     my $expander = Utils::make_expander($expander_id);
-  
+
     $content .= Utils::make_content_item($expander, $title, $list_table);
   }
   if (!$content)
@@ -870,10 +870,10 @@ sub notableListToHTML
     {
       my $gamename  = $gamelist->[$i];
       my $gameid    = $idslist->[$i];
-  
+
       $notable_list .= "<tr $download ><td style='text-align: center'><a href='$prefix$gameid' target='_blank'>$gamename</a></td></tr>\n";
     }
-  
+
     my $notable_table = Utils::make_datatable(
       $expander_id,
       $table_id,
@@ -887,7 +887,7 @@ sub notableListToHTML
     );
 
     my $expander = Utils::make_expander($expander_id);
-  
+
     $content .= Utils::make_content_item($expander, $title, $notable_table);
   }
   if (!$content)
@@ -932,7 +932,7 @@ sub statsList
       Constants::STAT_COMBINE_FUNCTION_NAME =>
       sub
       {
-        # Do nothing, errors added elsewhere        
+        # Do nothing, errors added elsewhere
       },
       Constants::STAT_ADD_FUNCTION_NAME =>
       sub
@@ -950,7 +950,7 @@ sub statsList
       Constants::STAT_COMBINE_FUNCTION_NAME =>
       sub
       {
-        # Do nothing, warnings added elsewhere        
+        # Do nothing, warnings added elsewhere
       },
       Constants::STAT_ADD_FUNCTION_NAME =>
       sub
@@ -1366,12 +1366,48 @@ sub statsList
         my $this_player = shift;
 
         $this->{'total_verticals'}   += $game->getNumVerticalOpeningPlays($this_player);
-        $this->{'total_firsts'}      += $game->getNumFirsts($this_player);
-  if ($this->{'total_firsts'} == 0)
-  {
+        $this->{'total_firsts'}      += $game->getNumOpeningPlays($this_player);
+        if ($this->{'total_firsts'} == 0)
+        {
           return;
-  }
+        }
         $this->{'total'} = sprintf "%.4f", $this->{'total_verticals'} / $this->{'total_firsts'};
+      }
+    },
+    {
+      Constants::STAT_NAME => 'Horizontal Openings per First',
+      Constants::STAT_DESCRIPTION_NAME =>
+      'The number of times the player went first and opened Horizontally. Horizontal openings that were challenged off do not count.',
+      Constants::STAT_ITEM_OBJECT_NAME => {Constants::STAT_OBJECT_DISPLAY_NAME => Constants::STAT_OBJECT_DISPLAY_PCAVG, 'total' => 0, 'total_firsts' => 0, 'total_horizontals' => 0},
+      Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
+      Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        $this->{'total_horizontals'} += $other->{'total_horizontals'};
+        $this->{'total_firsts'}      += $other->{'total_firsts'};
+        if ($this->{'total_firsts'} == 0)
+        {
+          return;
+        }
+        $this->{'total'} = sprintf "%.4f", $this->{'total_horizontals'} / $this->{'total_firsts'};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
+      sub
+      {
+        my $this = shift;
+        my $game = shift;
+        my $this_player = shift;
+
+        $this->{'total_horizontals'}   += $game->getNumHorizontalOpeningPlays($this_player);
+        $this->{'total_firsts'}      += $game->getNumOpeningPlays($this_player);
+        if ($this->{'total_firsts'} == 0)
+        {
+          return;
+        }
+        $this->{'total'} = sprintf "%.4f", $this->{'total_horizontals'} / $this->{'total_firsts'};
       }
     },
     {
@@ -1512,7 +1548,7 @@ sub statsList
       {
         my $this  = shift;
         my $other = shift;
-        
+
         if ($other->{'total'} > $this->{'total'})
         {
           $this->{'total'} = $other->{'total'};
@@ -1544,7 +1580,7 @@ sub statsList
       Constants::STAT_ITEM_OBJECT_NAME =>
       {
         'total' => 0,
-        'subitems' => 
+        'subitems' =>
         {
             Constants::SEVENS_TITLE    => 0,
             Constants::EIGHTS_TITLE    => 0,
@@ -1556,7 +1592,7 @@ sub statsList
             Constants::FOURTEENS_TITLE => 0,
             Constants::FIFTEENS_TITLE  => 0
         },
-        'list' => 
+        'list' =>
         [
             Constants::SEVENS_TITLE    ,
             Constants::EIGHTS_TITLE    ,
@@ -1777,7 +1813,7 @@ sub statsList
         $this->{'subitems'}->{Constants::THIRTEENS_TITLE} = sprintf "%.2f", ($this->{'prob_totals'}->{Constants::THIRTEENS_TITLE} / $dems[6]);
         $this->{'subitems'}->{Constants::FOURTEENS_TITLE} = sprintf "%.2f", ($this->{'prob_totals'}->{Constants::FOURTEENS_TITLE} / $dems[7]);
         $this->{'subitems'}->{Constants::FIFTEENS_TITLE}  = sprintf "%.2f", ($this->{'prob_totals'}->{Constants::FIFTEENS_TITLE}  / $dems[8]);
-      }  
+      }
     },
     {
       Constants::STAT_NAME => 'Tiles Played',
@@ -1785,7 +1821,7 @@ sub statsList
       'The number of tiles played by the player.',
       Constants::STAT_ITEM_OBJECT_NAME =>
       {
-          'subitems' => 
+          'subitems' =>
           {
               'A' => 0,
               'B' => 0,
@@ -2140,12 +2176,12 @@ sub statsList
           'subitems' =>
           {
              Constants::UNCHALLENGED  => 0,
-             Constants::CHALLENGED_OFF => 0,   
+             Constants::CHALLENGED_OFF => 0,
           },
           'list' =>
           [
              Constants::UNCHALLENGED,
-             Constants::CHALLENGED_OFF, 
+             Constants::CHALLENGED_OFF,
           ],
           'total' => 0
       },
@@ -2190,12 +2226,12 @@ sub statsList
            Constants::PLAYER_CHALLENGE_WON  => 0,
            Constants::PLAYER_CHALLENGE_LOST => 0,
            Constants::OPP_CHALLENGE_WON     => 0,
-           Constants::OPP_CHALLENGE_LOST    => 0    
+           Constants::OPP_CHALLENGE_LOST    => 0
         },
         'list' =>
         [
            Constants::PLAYER_CHALLENGE_WON,
-           Constants::OPP_CHALLENGE_LOST,   
+           Constants::OPP_CHALLENGE_LOST,
            Constants::PLAYER_CHALLENGE_LOST,
            Constants::OPP_CHALLENGE_WON
         ],
@@ -2205,7 +2241,7 @@ sub statsList
 	'Challenges where the opponent challenged the player\'s valid play.',
 	'Challenges where the player challenged an opponent\'s valid play.',
 	'Challenges where the opponent challenged off the player\'s phony play.',
-	]	
+	]
       },
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -2681,18 +2717,18 @@ sub statsList
         my $this = shift;
         my $game = shift;
 
-        my $sum1 =  $game->{'tiles_played'}->{0}->{'?'} + 
-                    $game->{'tiles_played'}->{0}->{'Z'} + 
-                    $game->{'tiles_played'}->{0}->{'X'} + 
-                    $game->{'tiles_played'}->{0}->{'Q'} + 
-                    $game->{'tiles_played'}->{0}->{'J'} + 
+        my $sum1 =  $game->{'tiles_played'}->{0}->{'?'} +
+                    $game->{'tiles_played'}->{0}->{'Z'} +
+                    $game->{'tiles_played'}->{0}->{'X'} +
+                    $game->{'tiles_played'}->{0}->{'Q'} +
+                    $game->{'tiles_played'}->{0}->{'J'} +
                     $game->{'tiles_played'}->{0}->{'S'};
 
-        my $sum2 =  $game->{'tiles_played'}->{1}->{'?'} + 
-                    $game->{'tiles_played'}->{1}->{'Z'} + 
-                    $game->{'tiles_played'}->{1}->{'X'} + 
-                    $game->{'tiles_played'}->{1}->{'Q'} + 
-                    $game->{'tiles_played'}->{1}->{'J'} + 
+        my $sum2 =  $game->{'tiles_played'}->{1}->{'?'} +
+                    $game->{'tiles_played'}->{1}->{'Z'} +
+                    $game->{'tiles_played'}->{1}->{'X'} +
+                    $game->{'tiles_played'}->{1}->{'Q'} +
+                    $game->{'tiles_played'}->{1}->{'J'} +
                     $game->{'tiles_played'}->{1}->{'S'};
 
         if ($sum1 == 10 || $sum2 == 10)
@@ -2899,7 +2935,7 @@ sub statsList
         my $this   = shift;
         my $game   = shift;
         my $player = shift;
-        
+
         my @categories = Constants::MISTAKES;
 
         my $mistakes_hash_ref = $game->getNumMistakes($player);
@@ -2944,7 +2980,7 @@ sub statsList
       {
         'total'    => 0,
         'list'     => [],
-        'subitems' => {} 
+        'subitems' => {}
       },
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_ITEM,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
@@ -2970,7 +3006,7 @@ sub statsList
         my $this   = shift;
         my $game   = shift;
         my $player = shift;
-        
+
         my $dynamic_mistakes_hash_ref = $game->getNumDynamicMistakes($player);
 
         foreach my $key (keys %{$dynamic_mistakes_hash_ref})
@@ -3022,7 +3058,6 @@ sub get_mistakes_hash
 {
   my @a = Constants::MISTAKES;
   my %b = map {$_ => 0} @a;
-  return \%b; 
+  return \%b;
 }
 1;
-
