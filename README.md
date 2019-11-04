@@ -140,6 +140,10 @@ The number of times the player went first.
 
 The number of times the player went first and opened vertically. Vertical openings that were challenged off do not count.
 
+<h3>Horizontal Openings per First</h3>
+
+The number of times the player went first and opened Horizontally. Horizontal openings that were challenged off do not count.
+
 <h3>Full Rack per Turn</h3>
 
 The percentage of fully annotated racks out of all of the players racks for every game.

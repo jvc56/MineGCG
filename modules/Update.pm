@@ -1948,7 +1948,7 @@ sub update_typing_html
 
   for (my $i = 2; $i <= 15; $i++)
   {
-    my $passage = Passage::passage($i, $i, undef, undef, undef, 1);
+    my $passage = lc(Passage::passage($i, $i, undef, undef, undef, 1));
     $challenges_string .= "'$passage',";
   }
   chop($challenges_string);
@@ -2190,7 +2190,7 @@ sub update_typing_html
     XHR.addEventListener('load', function(event)
     {
       // Set the passage
-      passage = event.target.responseText;
+      passage = event.target.responseText.toLowerCase();
       showPassage();
     });
     var gettarget = '/$cgibin_name/$typing_script?' + args;
@@ -2219,7 +2219,7 @@ sub update_typing_html
     previous_input = text;
     chars_typed++;
     passage = passage.replace(/<$htag.*\">/g, '').replace(/<\\/$htag>/g, ''); 
-    if (text.toUpperCase() == current_word.substring(0, text.length).toUpperCase())
+    if (text.toLowerCase() == current_word.substring(0, text.length).toLowerCase())
     {
       if (completed_index + local_index > max_index)
       {
@@ -2228,7 +2228,7 @@ sub update_typing_html
       }
       inp.style.backgroundColor = '';
       local_index = text.length;
-      if (text.toUpperCase() == current_word.toUpperCase())
+      if (text.toLowerCase() == current_word.toLowerCase())
       {
         inp.value = '';
         completed_index += local_index;
