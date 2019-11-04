@@ -2137,7 +2137,7 @@ sub update_typing_html
     wpm             = 0;
     accur           = 0;
     elapsed_time    = 0;
-    max_index       = 0;
+    max_index       = -1;
     previous_input  = '';
     passage_shown   = 1;
     updateWPM();
