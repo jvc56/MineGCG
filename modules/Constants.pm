@@ -90,7 +90,8 @@ use constant CANADA_QUALIFIERS                =>
   'Evan Berofsky',
   'Joshua Castellano',
   'Jesse Matthews',
-  'Tony Leah'
+  'Tony Leah',
+  'Shan Abbasi'
 ];
 
 use constant US_QUALIFIERS                    =>
