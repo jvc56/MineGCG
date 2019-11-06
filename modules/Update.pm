@@ -2013,7 +2013,7 @@ sub update_typing_html
     </h1>
   </div>
   <div>
-    The original RandomRacer typing feature is back and better than ever. <a href="/about.html">Learn more</a>.
+    The original RandomRacer typing feature is back and better than ever. <a href='/about.html'>Learn more</a>.
     <table class='titledisplay' >
       <tbody>
         <tr id='titlerow'>
