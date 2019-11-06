@@ -112,7 +112,7 @@ sub update_qualifiers
     <h1>
       Alchemist Cup Qualifiers
     </h1>
-    This page updates daily at midnight (EST). <a href="/about.html">Learn more</a>.
+    This page updates daily at midnight (EST). <a href='/about.html'>Learn more</a>.
   </div>
   $qualifierhtml
   $default_scripts
