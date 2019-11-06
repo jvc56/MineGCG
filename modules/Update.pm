@@ -2011,11 +2011,9 @@ sub update_typing_html
     <h1>
       RandomRacer 2.0 
     </h1>
+     The original RandomRacer typing feature is back and better than ever.<br><a href='/about.html'>Learn more</a>
   </div>
   <div>
-    <div style='text-align: center'>
-     The original RandomRacer typing feature is back and better than ever.<br><a href='/about.html'>Learn more</a>
-    </div>
     <table class='titledisplay' >
       <tbody>
         <tr id='titlerow'>
