@@ -112,7 +112,7 @@ sub update_qualifiers
     <h1>
       Alchemist Cup Qualifiers
     </h1>
-    This page updates daily at midnight (EST). <a href='/about.html'>Learn more</a>.
+    This page updates daily at midnight (EST).<br><a href='/about.html'>Learn more</a>
   </div>
   $qualifierhtml
   $default_scripts
@@ -2013,7 +2013,9 @@ sub update_typing_html
     </h1>
   </div>
   <div>
-    The original RandomRacer typing feature is back and better than ever. <a href='/about.html'>Learn more</a>.
+    <div style='text-align: center'>
+     The original RandomRacer typing feature is back and better than ever.<br><a href='/about.html'>Learn more</a>
+    </div>
     <table class='titledisplay' >
       <tbody>
         <tr id='titlerow'>
@@ -3049,7 +3051,7 @@ Contact joshuacastellano7@gmail.com if you think a game was omitted by mistake.'
     [
       'Alchemist Cup Qualifiers',
 'The Alchemist Cup Qualifiers page is a list of the registered NASPA players for the Alchemist Cup.
-Registrants are listed by country and order by qualifying rating. Players\' qualifying ratings are
+Registrants are listed by country and ordered by qualifying rating. Players\' qualifying ratings are
 in white and the difference between their qualifying rating and their current rating is in red or green.
 You can learn more <a href="https://www.scrabbleplayers.org/w/2020_Alchemist_Cup_Qualification_System">here</a>.
 '
