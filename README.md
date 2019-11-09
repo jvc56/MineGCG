@@ -484,6 +484,18 @@ misleading and introduce error (or more error anyway) into the leaderboards.
 
 Contact joshuacastellano7@gmail.com if you think a game was omitted by mistake.
 
+# Alchemist Cup Qualifiers
+
+The Alchemist Cup Qualifiers page is a list of the registered NASPA players for the Alchemist Cup.
+Registrants are listed by country and ordered by qualifying rating. Players' qualifying ratings are
+in white and the difference between their qualifying rating and their current rating is in red or green.
+You can learn more <a href="https://www.scrabbleplayers.org/w/2020_Alchemist_Cup_Qualification_System">here</a>.
+
+# RandomRacer 2.0
+
+RandomRacer 2.0 is a revamped version of the original RandomRacer typing practice that was released sometime
+in 2016. All words are from the Collins CSW19 lexicon.
+
 # Development Team
 
 RandomRacer is maintained by Joshua Castellano, but many people have suggested new features. Contributors

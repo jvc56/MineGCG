@@ -169,7 +169,28 @@ sub mine
   }
   if ($lexicon)
   {
-    $games_query .= " AND g.$game_lexicon_column_name = '$lexicon'";
+    if ($lexicon eq Utils::sanitize(Constants::COLLINS_OPTION))
+    {
+      $games_query .= " AND (
+                             g.$game_lexicon_column_name = 'CSW19' OR 
+                             g.$game_lexicon_column_name = 'CSW15' OR 
+                             g.$game_lexicon_column_name = 'CSW12' OR 
+                             g.$game_lexicon_column_name = 'CSW07'
+                            )";
+    }
+    elsif ($lexicon eq Utils::sanitize(Constants::TWL_OPTION))
+    {
+      $games_query .= " AND (
+                             g.$game_lexicon_column_name = 'NSW18' OR 
+                             g.$game_lexicon_column_name = 'TWL15' OR 
+                             g.$game_lexicon_column_name = 'TWL06' OR 
+                             g.$game_lexicon_column_name = 'TWL98'
+                            )";
+    }
+    else
+    {
+      $games_query .= " AND g.$game_lexicon_column_name = '$lexicon'";
+    }
   }
   if ($cort eq Constants::TOURNAMENT_OPTION)
   {

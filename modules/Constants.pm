@@ -80,6 +80,9 @@ use constant END_DATE_FIELD_NAME              => 'end-date';
 use constant LEXICON_FIELD_NAME               => 'lexicon';
 use constant DIRECTORY_FIELD_NAME             => 'directory';
 
+use constant COLLINS_OPTION                   => 'Collins';
+use constant TWL_OPTION                       => 'TWL/NSW';
+
 use constant SEARCH_DATA_FILENAME             => 'search_data.html';
 
 use constant CANADA_QUALIFIERS                =>
