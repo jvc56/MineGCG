@@ -1236,6 +1236,57 @@ use constant HTML_FOOTER => <<FOOTER
 FOOTER
 ;
 
+
+use constant TOURNAMENT_RESET_ROUND       => 'Starting Round';
+use constant TOURNAMENT_NUMBER_OF_ROUNDS  => 'Final Round';
+use constant TOURNAMENT_PLAYERS           => 'Players';
+use constant TOURNAMENT_NUMBER_OF_PLAYERS => 'Number of Players';
+use constant TOURNAMENT_PAIRING_METHOD    => 'Pairing Method';
+use constant TOURNAMENT_SCORING_METHOD    => 'Scoring Method';
+
+use constant TOURNAMENT_CURRENT_ROUND                 => 'Current Round';
+use constant TOURNAMENT_CURRENT_NUMBER_OF_SIMULATIONS => 'Current Number of Simulations';
+use constant TOURNAMENT_MAXIMUM_NUMBER_OF_SIMULATIONS => 'Total Number of Simulations';
+
+use constant PAIRING_METHOD_KOTH        => 'King of the Hill';
+use constant PAIRING_METHOD_RANK_PAIR   => 'Rank Pair';
+use constant PAIRING_METHOD_RANDOM_PAIR => 'Random Pair';
+
+use constant SCORING_METHOD_RATING          => 'Rating';
+use constant SCORING_METHOD_RANDOM_UNIFORM  => 'Random Uniform';
+use constant SCORING_METHOD_RANDOM_BLOWOUTS => 'Random Blowouts';
+
+use constant PLAYER_NAME         => 'Name';
+use constant PLAYER_NUMBER       => 'Number';
+use constant PLAYER_RATING       => 'Rating';
+use constant PLAYER_OPPONENTS    => 'Opponents';
+use constant PLAYER_SCORES       => 'Scores';
+use constant PLAYER_WINS         => 'Wins';
+use constant PLAYER_LOSSES       => 'Losses';
+use constant PLAYER_SPREAD       => 'Spread';
+use constant PLAYER_RESET_WINS   => 'Reset Wins';
+use constant PLAYER_RESET_LOSSES => 'Reset Losses';
+use constant PLAYER_RESET_SPREAD => 'Reset Spread';
+use constant PLAYER_FINAL_RANKS  => 'Player Final Ranks';
+
+
+use constant DEFAULT_TOURNAMENT_FILE       => 'a.t';
+use constant DEFAULT_PAIRING_METHOD        => PAIRING_METHOD_RANDOM_PAIR;
+use constant DEFAULT_SCORING_METHOD        => SCORING_METHOD_RATING;
+use constant DEFAULT_NUMBER_OF_SIMULATIONS => 10000;
+
+use constant DEFAULT_NAME_PADDING       => 40;
+use constant DEFAULT_PERCENTAGE_PADDING => 10;
+
+use constant DEFAULT_BASE_SCORE => 300;
+use constant DEFAULT_SCORE_PER_RATING => 450 / 1850;
+use constant DEFAULT_STANDARD_DEVIATION => 50;
+
+use constant DEFAULT_NAME_STANDING_SPACING => 30;
+use constant DEFAULT_STANDING_SPACING      => 8;
+
+use constant BLOWOUT_SCORE              => 1000;
+
 1;
 
 
