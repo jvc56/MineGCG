@@ -183,26 +183,27 @@ sub new
       my $player_score   = $player_scores->[$j];
       my $opponent_score = $player_opponents->[$j]->{Constants::PLAYER_SCORES}->[$j];
       my $spread = $player_score - $opponent_score;
-      $player->{Constants::PLAYER_SPREAD}       += $spread;
       $player->{Constants::PLAYER_RESET_SPREAD} += $spread;
       if ($player_score > $opponent_score)
       {
-        $player->{Constants::PLAYER_WINS}++;
         $player->{Constants::PLAYER_RESET_WINS}++;
       }
       elsif ($player_score < $opponent_score)
       {
-        $player->{Constants::PLAYER_LOSSES}++;
         $player->{Constants::PLAYER_RESET_LOSSES}++;
       }
       else
       {
-        $player->{Constants::PLAYER_WINS}   += 0.5;
         $player->{Constants::PLAYER_RESET_WINS}   += 0.5;
-        $player->{Constants::PLAYER_LOSSES} += 0.5;
         $player->{Constants::PLAYER_RESET_LOSSES} += 0.5;
       }
     }
+    $players->[$i]->{Constants::PLAYER_WINS}   =
+      $players->[$i]->{Constants::PLAYER_RESET_WINS};
+    $players->[$i]->{Constants::PLAYER_LOSSES} =
+      $players->[$i]->{Constants::PLAYER_RESET_LOSSES};
+    $players->[$i]->{Constants::PLAYER_SPREAD} =
+      $players->[$i]->{Constants::PLAYER_RESET_SPREAD};
     my @player_final_ranks = (0) x $number_of_players;
     $player->{Constants::PLAYER_FINAL_RANKS} = \@player_final_ranks;
   }
@@ -422,12 +423,6 @@ sub reset
   my $number_of_players = $this->{Constants::TOURNAMENT_NUMBER_OF_PLAYERS};
   for (my $i = 0; $i < $number_of_players; $i++)
   {
-    for (my $j = $this->{Constants::TOURNAMENT_RESET_ROUND} + 1;
-         $j < $this->{Constants::TOURNAMENT_NUMBER_OF_ROUNDS}; $j++)
-    {
-      $players->[$i]->{Constants::PLAYER_OPPONENTS}->[$j] = undef;
-      $players->[$i]->{Constants::PLAYER_SCORES}->[$j] = undef;
-    }
     $players->[$i]->{Constants::PLAYER_WINS}   =
       $players->[$i]->{Constants::PLAYER_RESET_WINS};
     $players->[$i]->{Constants::PLAYER_LOSSES} =
@@ -504,24 +499,24 @@ sub score
   {
     for (my $i = 0; $i < $number_of_players; $i++)
     {
-      if ()
       $players->[$i]->{Constants::PLAYER_SCORES}->[$round] = 300 + int(rand(300));
     }
   }
   elsif($method eq Constants::SCORING_METHOD_RANDOM_BLOWOUTS)
   {
+    my @scored = (0) x $number_of_players;
     for (my $i = 0; $i < $number_of_players; $i++)
     {
-      if (
-          !$players->[$i]->{Constants::PLAYER_OPPONENTS}->[$round]->
-          {Constants::PLAYER_SCORES}->[$round]
-         )
+      if (!$scored[$players->[$i]->{Constants::PLAYER_NUMBER}])
       {
         $player_score = Constants::BLOWOUT_SCORE * int(rand(2));
-        $players->[$i]->{Constants::PLAYER_SCORES}->[$round]  = $player_score + 1;
+        $players->[$i]->{Constants::PLAYER_SCORES}->[$round]  = $player_score;
         $players->[$i]->{Constants::PLAYER_OPPONENTS}->[$round]->
           {Constants::PLAYER_SCORES}->[$round] =
-          (Constants::BLOWOUT_SCORE - $player_score) + 1;
+          Constants::BLOWOUT_SCORE - $player_score;
+        $scored[$players->[$i]->{Constants::PLAYER_NUMBER}] = 1;
+        $scored[$players->[$i]->{Constants::PLAYER_OPPONENTS}->
+                 [$round]->{Constants::PLAYER_NUMBER}] = 1;
       }
     }    
   }
@@ -547,6 +542,13 @@ sub score
     $player_score = $players->[$i]->{Constants::PLAYER_SCORES}->[$round];
     $opponent_score = $players->[$i]->{Constants::PLAYER_OPPONENTS}->[$round]->
       {Constants::PLAYER_SCORES}->[$round];
+    if ($players->[$i]->{Constants::PLAYER_NUMBER} == 
+        $players->[$i]->{Constants::PLAYER_OPPONENTS}->[$round]
+        ->{Constants::PLAYER_NUMBER})
+    {
+      $player_score   = Constants::DEFAULT_BYE_SCORE;
+      $opponent_score = 0;
+    }
     $players->[$i]->{Constants::PLAYER_SPREAD} += $player_score - $opponent_score;
     if ($player_score > $opponent_score)
     {

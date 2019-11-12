@@ -1286,7 +1286,7 @@ use constant DEFAULT_NAME_STANDING_SPACING => 30;
 use constant DEFAULT_STANDING_SPACING      => 8;
 
 use constant BLOWOUT_SCORE              => 1000;
-
+use constant BYE_SCORE                  => 50;
 1;
 
 
