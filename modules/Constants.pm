@@ -37,6 +37,7 @@ use constant CROSS_TABLES_COUNTRY_PREFIX      => 'http://www.cross-tables.com/by
 use constant ANNOTATED_GAMES_PAGE_NAME        => 'anno_page.html';
 use constant QUERY_RESULTS_PAGE_NAME          => 'query_results.html';
 use constant HTML_GAME_NAME                   => 'annotated_game.html';
+use constant SCRIPTS_DIRECTORY_NAME           => './scripts';
 use constant DOWNLOADS_DIRECTORY_NAME         => './downloads';
 use constant STATS_DIRECTORY_NAME             => './stats';
 use constant NOTABLE_DIRECTORY_NAME           => './notable';
@@ -64,21 +65,113 @@ use constant PLAYER_INFO_API_CALL             => 'http://cross-tables.com/rest/p
 use constant TOURNAMENT_INFO_API_CALL         => 'http://cross-tables.com/rest/tourney.php?tourney=';
 use constant PLAYER_RESULTS_API_CALL          => 'http://cross-tables.com/rest/results.php?player=';
 
-use constant CGI_SCRIPT_FILENAME              => 'mine_webapp.pl';
+use constant CGI_WRAPPER_FILENAME             => 'cgi_wrapper.pl';
 use constant INDEX_HTML_FILENAME              => 'index.html';
 
 use constant GAME_TYPE_CASUAL                 => 'Casual';
 use constant GAME_TYPE_TOURNAMENT             => 'Tournament';
 
+use constant WRAPPER_SCRIPT                   => 'wrapper.pl';
+use constant DIRECTORY_FIELD_NAME             => 'directory';
+
+use constant PLAYER_SEARCH_OPTION             => 'player_search';
 use constant PLAYER_FIELD_NAME                => 'name';
 use constant CORT_FIELD_NAME                  => 'cort';
-use constant GAME_ID_FIELD_NAME               => 'game-id';
-use constant TOURNAMENT_ID_FIELD_NAME         => 'tournament-id';
+use constant GAME_ID_FIELD_NAME               => 'gameid';
+use constant TOURNAMENT_ID_FIELD_NAME         => 'tournamentid';
 use constant OPPONENT_FIELD_NAME              => 'opponent';
-use constant START_DATE_FIELD_NAME            => 'start-date';
-use constant END_DATE_FIELD_NAME              => 'end-date';
+use constant START_DATE_FIELD_NAME            => 'startdate';
+use constant END_DATE_FIELD_NAME              => 'enddate';
 use constant LEXICON_FIELD_NAME               => 'lexicon';
-use constant DIRECTORY_FIELD_NAME             => 'directory';
+use constant PLAYER_CGI_SCRIPT                => 'webapp_main.pl';
+
+use constant PLAYER_SEARCH_DISPATCH => "
+  require './modules/Mine.pm';
+  mine
+  (
+    \$".PLAYER_FIELD_NAME.",
+    \$".CORT_FIELD_NAME.",
+    \$".GAME_ID_FIELD_NAME.",
+    \$".OPPONENT_FIELD_NAME.",
+    \$".START_DATE_FIELD_NAME.",
+    \$".END_DATE_FIELD_NAME.",
+    \$".LEXICON_FIELD_NAME.",
+    0,
+    \$".TOURNAMENT_ID_FIELD_NAME.",
+    0,
+    1,
+    0
+  );
+"
+;
+
+use constant TYPING_SEARCH_OPTION         => 'typing_search';
+use constant TYPING_MIN_LENGTH_FIELD_NAME => 'min_length';
+use constant TYPING_MAX_LENGTH_FIELD_NAME => 'max_length';
+use constant TYPING_MIN_PROB_FIELD_NAME   => 'min_prob';
+use constant TYPING_MAX_PROB_FIELD_NAME   => 'max_prob';
+use constant TYPING_NUM_WORDS_FIELD_NAME  => 'num_words';
+use constant TYPING_CGI_SCRIPT            => 'typingapp_main.pl';
+use constant TYPING_HTML_FILENAME         => 'typing.html';
+
+use constant TYPING_SEARCH_DISPATCH => "
+  require './modules/Passage.pm';
+  Passage::passage
+  (
+    \$" . TYPING_MIN_LENGTH_FIELD_NAME . ",
+    \$" . TYPING_MAX_LENGTH_FIELD_NAME . ",
+    \$" . TYPING_MIN_PROB_FIELD_NAME . ",
+    \$" . TYPING_MAX_PROB_FIELD_NAME . ",
+    \$" . TYPING_NUM_WORDS_FIELD_NAME . "
+  );
+"
+;
+
+use constant CRONJOB_OPTION               => 'cron';
+
+
+use constant FIELD_LIST                   => 'fieldlist';
+use constant DISPATCH_FUNCTION            => 'dispatch';
+
+use constant CGI_TYPE => 'whichcgi';
+
+use constant WRAPPER_FUNCTIONS =>
+[
+  {
+    Constants::CGI_TYPE => Constants::PLAYER_SEARCH_OPTION,
+    Constants::DISPATCH_FUNCTION => Constants::PLAYER_SEARCH_DISPATCH,
+    Constants::FIELD_LIST =>
+    [
+      Constants::PLAYER_FIELD_NAME,
+      Constants::CORT_FIELD_NAME,
+      Constants::GAME_ID_FIELD_NAME,
+      Constants::TOURNAMENT_ID_FIELD_NAME,
+      Constants::OPPONENT_FIELD_NAME,
+      Constants::START_DATE_FIELD_NAME,
+      Constants::END_DATE_FIELD_NAME,
+      Constants::LEXICON_FIELD_NAME
+    ]
+  },
+  {
+    Constants::CGI_TYPE => Constants::TYPING_SEARCH_OPTION,
+    Constants::DISPATCH_FUNCTION => Constants::TYPING_SEARCH_DISPATCH,
+    Constants::FIELD_LIST =>
+    [
+      Constants::TYPING_MIN_LENGTH_FIELD_NAME,
+      Constants::TYPING_MAX_LENGTH_FIELD_NAME,
+      Constants::TYPING_MIN_PROB_FIELD_NAME,
+      Constants::TYPING_MAX_PROB_FIELD_NAME,
+      Constants::TYPING_NUM_WORDS_FIELD_NAME
+    ]
+  },
+  {
+    Constants::CGI_TYPE => Constants::CRONJOB_OPTION,
+    Constants::DISPATCH_FUNCTION => "system '." . Constants::SCRIPTS_DIRECTORY_NAME . "/daily_cronjob.pl';",
+    Constants::FIELD_LIST =>
+    [
+    ]
+  }
+];
 
 use constant COLLINS_OPTION                   => 'Collins';
 use constant TWL_OPTION                       => 'TWL/NSW';
@@ -226,13 +319,7 @@ use constant TYPING_TABLE_CREATION_ORDER =>
   Constants::WORDS_TABLE_NAME
 ];
 
-use constant TYPING_MIN_LENGTH_FIELD_NAME => 'min_length';
-use constant TYPING_MAX_LENGTH_FIELD_NAME => 'max_length';
-use constant TYPING_MIN_PROB_FIELD_NAME   => 'min_prob';
-use constant TYPING_MAX_PROB_FIELD_NAME   => 'max_prob';
-use constant TYPING_NUM_WORDS_FIELD_NAME  => 'num_words';
-use constant TYPING_CGI_SCRIPT            => 'typingapp_main.pl';
-use constant TYPING_HTML_FILENAME         => 'typing.html';
+
 
 use constant UNSPECIFIED_MISTAKE_NAME => 'Unspecified';
 
@@ -1236,6 +1323,30 @@ use constant HTML_FOOTER => <<FOOTER
 FOOTER
 ;
 
+use constant SANITIZE_FUNCTION => <<SANITIZE
+sub sanitize
+{
+  my \$string = shift;
+
+  \$string = substr( \$string, 0, 256);
+
+  # Remove trailing and leading whitespace
+  \$string =~ s/^\\s+|\\s+\$//g;
+
+  # Replace spaces with underscores
+  \$string =~ s/ /_/g;
+
+  # Remove anything that is not an
+  # underscore, dash, letter, or number
+  \$string =~ s/[^\\w-]//g;
+
+  # Capitalize
+  \$string = uc \$string;
+
+  return \$string;
+}
+SANITIZE
+;
 
 use constant TOURNAMENT_RESET_ROUND       => 'Starting Round';
 use constant TOURNAMENT_NUMBER_OF_ROUNDS  => 'Final Round';

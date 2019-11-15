@@ -24,8 +24,9 @@ use JSON::XS;
 
 unless (caller)
 {
+  update_wrapper();
+  exit(0);
   update_typing_html();
-  update_remote_typing_cgi();
   update_qualifiers();
   update_readme_and_about();
   my $validation        = update_search_data();
@@ -33,8 +34,153 @@ unless (caller)
   my $featured_notable  = update_notable_legacy();
   update_leaderboard();
   update_notable();
-  update_remote_cgi();
   update_html($validation, $featured_mistakes, $featured_notable);
+}
+
+sub update_wrapper
+{
+  my $wrapper_data = Constants::WRAPPER_FUNCTIONS;
+  my $functions = '';
+
+  my $whichcgi      = Constants::CGI_TYPE;
+  my $vm_ip_address = Constants::VM_IP_ADDRESS;
+  my $vm_username   = Constants::VM_USERNAME;
+  my $vm_ssh_args   = Constants::VM_SSH_ARGS;
+  my $dirname       = cwd();
+  $dirname =~ s/.*\///g;
+  my $target = $vm_username . '\@' . $vm_ip_address;
+  
+  my $cgi_params   = '';
+  my $cgi_args     = '';
+  my $cgi_ifs      = '';
+  my $cgi_cmd_args = '';
+
+  for (my $i = 0; $i < scalar @{$wrapper_data}; $i++)
+  {
+    my $data_item = $wrapper_data->[$i];
+    my $param_names = $data_item->{Constants::FIELD_LIST};
+    my $dispatch    = $data_item->{Constants::DISPATCH_FUNCTION};
+    my $cgi_name = $data_item->{Constants::CGI_TYPE};
+
+    my $params     = '';
+    my $options = '';
+    my $get_options = "  GetOptions\n  (\n";
+    my $args = '';
+    my $ifs = '';
+    my $cmd_args = '';
+    for (my $k = 0; $k < scalar @{$param_names}; $k++)
+    {
+      my $p = $param_names->[$k];
+      $params      .= "  my \$$p = '';\n";
+      $get_options .= "    '$p:s' => \\\$$p";
+      $args        .= "  my \$$p"."_arg = '';\n";
+      $cmd_args    .= "   \$$p"."_arg ";
+      $ifs         .= "  if (\$$p){\$$p"."_arg = \"--\$$p\" . sanitize(\$$p)}\n";
+
+      $cgi_params  .= "  my \$$p = \$query->param('$p');\n";
+
+      if ($i != scalar @{$param_names} - 1)
+      {
+        $get_options .= ",";
+      }
+      $get_options .= "\n";
+    }
+    if (!$params)
+    {
+      $get_options = '';
+    }
+    else
+    {
+      $get_options .= "  );\n";
+    }
+    my $if_stmt = 'elsif';
+    if ($i == 0)
+    {
+      $if_stmt = 'if';
+    }
+    $functions .= <<FUNC
+$if_stmt (\$wcgi eq '$cgi_name')
+{
+$params
+$options
+$get_options
+$dispatch
+}
+FUNC
+;
+    $cgi_args     .= $args . "\n";
+    $cgi_ifs      .= $ifs . "\n";
+    $cgi_cmd_args .= $cmd_args;
+  }
+  my $dir_option        = Constants::DIRECTORY_FIELD_NAME;
+  my $sanitize_function = Constants::SANITIZE_FUNCTION;
+  my $wrapper_filename = Constants::WRAPPER_SCRIPT;
+
+  my $cgi_wrapper = <<CGI_FUNC
+#!/usr/bin/perl
+ 
+use warnings;
+use strict;
+use CGI;
+
+my \$query = new CGI;
+
+my \$wcgi = \$query->param('$whichcgi');
+my \$dir_arg = " --$dir_option $dirname ";
+
+$cgi_params
+$cgi_args
+$cgi_ifs
+
+my \$output = '';
+my \$cmd = "LANG=C ssh $vm_ssh_args -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $target /home/jvc/$wrapper_filename --$whichcgi \$wcgi $cgi_cmd_args \$dir_arg |";
+open(SSH, \$cmd) or die "\$!";
+while (<SSH>)
+{
+  \$output .= \$_;
+}
+close SSH;
+print "Content-type: text/html\n\n";
+print \$output;
+
+$sanitize_function
+
+
+CGI_FUNC
+;
+
+  open(my $fh, '>', Constants::CGIBIN_DIRECTORY_NAME . '/' . Constants::CGI_WRAPPER_FILENAME);
+  print $fh $cgi_wrapper;
+  close $fh;
+
+  my $wrapper = <<WRAPPER
+
+#!/usr/bin/perl
+
+use warnings;
+use strict;
+use Getopt::Long;
+
+my \$dir  = '';
+my \$wcgi = '';
+
+GetOptions (
+             '$dir_option:s'       => \$dir,
+             '$whichcgi:s'         => \$wcgi
+           );
+
+chdir(\$dir);
+
+$functions
+
+$sanitize_function
+  
+WRAPPER
+;
+  open(my $wh, '>', Constants::SCRIPTS_DIRECTORY_NAME . '/' . $wrapper_filename);
+  print $wh $wrapper;
+  close $wh;
+
 }
 
 sub update_qualifiers
@@ -1770,151 +1916,6 @@ sub update_notable_legacy
   return \@featured_notable_games;
 }
 
-sub update_remote_cgi
-{
-  my $vm_ip_address = Constants::VM_IP_ADDRESS;
-  my $vm_username   = Constants::VM_USERNAME;
-  my $vm_ssh_args   = Constants::VM_SSH_ARGS;
-  my $dirname       = cwd();
-
-  $dirname =~ s/.*\///g;
-
-  my $target = $vm_username . '\@' . $vm_ip_address;
-
-
-  my $name  = Constants::PLAYER_FIELD_NAME         ;
-  my $cort  = Constants::CORT_FIELD_NAME           ;
-  my $gid   = Constants::GAME_ID_FIELD_NAME        ;
-  my $tid   = Constants::TOURNAMENT_ID_FIELD_NAME  ;
-  my $opp   = Constants::OPPONENT_FIELD_NAME       ;
-  my $start = Constants::START_DATE_FIELD_NAME     ;
-  my $end   = Constants::END_DATE_FIELD_NAME       ;
-  my $lex   = Constants::LEXICON_FIELD_NAME        ;
-  my $dir   = Constants::DIRECTORY_FIELD_NAME      ;
-
-  my $cgi_script = <<SCRIPT
-#!/usr/bin/perl
- 
-  use warnings;
-  use strict;
-  use CGI;
-  
-  sub sanitize_name
-  {
-    my \$string = shift;
-  
-    \$string = substr( \$string, 0, 256);
-  
-    # Remove trailing and leading whitespace
-    \$string =~ s/^\\s+|\\s+\$//g;
-  
-    # Replace spaces with underscores
-    \$string =~ s/ /_/g;
-  
-    # Remove anything that is not an
-    # underscore, dash, letter, or number
-    \$string =~ s/[^\\w\-]//g;
-  
-    # Capitalize
-    \$string = uc \$string;
-  
-    return \$string;
-  }
-  
-  sub sanitize_number
-  {
-    my \$string = shift;
-  
-    \$string = substr( \$string, 0, 256);
-  
-    # Remove trailing and leading whitespace
-    \$string =~ s/^\\s+|\\s+\$//g;
-  
-    # Remove anything that is not a number
-    \$string =~ s/[^\\d]//g;
-  
-    return \$string;
-  }
-  
-  my \$query = new CGI;
-  
-  my \$name = \$query->param('$name');
-  my \$cort = \$query->param('$cort');
-  my \$tid  = \$query->param('$tid');
-  my \$gid  = \$query->param('$gid');
-  my \$opp  = \$query->param('$opp');
-  my \$start = \$query->param('$start');
-  my \$end  = \$query->param('$end');
-  my \$lexicon  = \$query->param('$lex');
-  
-  my \$name_arg = '--$name "' . sanitize_name(\$name) . '"';
-  my \$cort_arg = "";
-  my \$tid_arg = "";
-  my \$gid_arg = "";
-  my \$opp_arg = "";
-  my \$start_arg = "";
-  my \$end_arg = "";
-  my \$lexicon_arg = "";
-  
-  if (\$cort)
-  {
-    \$cort_arg = "--$cort ". sanitize_name(\$cort);
-  }
-  
-  if (\$tid)
-  {
-    \$tid_arg = "--$tid " . sanitize_number(\$tid);
-  }
-  
-  if (\$gid)
-  {
-    \$gid_arg = "--$gid ". sanitize_number(\$gid);
-  }
-  
-  if (\$opp)
-  {
-    \$opp_arg = "--$opp " . sanitize_name(\$opp);
-  }
-  
-  if (\$start)
-  {
-    \$start_arg = "--$start " . sanitize_number(\$start);
-  }
-  
-  if (\$end)
-  {
-    \$end_arg = "--$end " . sanitize_number(\$end);
-  }
-  
-  if (\$lexicon)
-  {
-    \$lexicon_arg = "--$lex " . sanitize_name(\$lexicon);
-  }
-  
-  my \$dir_arg = " --$dir $dirname ";
-
-  my \$output = "";
-  my \$cmd = "LANG=C ssh $vm_ssh_args -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $target /home/jvc/minegcg_wrapper.pl \$name_arg \$cort_arg \$tid_arg \$gid_arg \$opp_arg \$start_arg \$end_arg \$lexicon_arg \$dir_arg |";
-  open(SSH, \$cmd) or die "\$!\n";
-  while (<SSH>)
-  {
-    \$output .= \$_;
-  }
-  close SSH;
-  print "Content-type: text/html\n\n";
-  #print \$cmd;
-  #print CGI::header();
-  print \$output;
-  
-  
-SCRIPT
-;
-   
-  open(my $fh, '>', Constants::CGIBIN_DIRECTORY_NAME . '/' . Constants::CGI_SCRIPT_FILENAME);
-  print $fh $cgi_script;
-  close $fh;
-}
-
 sub update_typing_html
 {
   my $cgibin_name = Constants::CGIBIN_DIRECTORY_NAME;
@@ -1995,6 +1996,11 @@ sub update_typing_html
   my $typinginputid = 'typing_input_id';
   my $wpmid      = 'wpm_id';
   my $htag       = 'span';
+
+  my $script = Constants::CGI_WRAPPER_FILENAME;
+  my $cgi_type = Constants::TYPING_SEARCH_OPTION;
+  my $cgi_type_name = Constants::CGI_TYPE;
+
   my $typinghtml =
   "
 <!DOCTYPE html>
@@ -2180,7 +2186,7 @@ sub update_typing_html
 
     var XHR = new XMLHttpRequest();
     var formData = new FormData(document.getElementById('$formid'));
-    var args = '';
+    var args = '$cgi_type_name=$cgi_type&';
     for (var [key, value] of formData.entries())
     { 
       args += key + '=' + value + '&';
@@ -2304,133 +2310,6 @@ sub update_typing_html
   close $fh;
 }
 
-sub update_remote_typing_cgi
-{
-  my $vm_ip_address = Constants::VM_IP_ADDRESS;
-  my $vm_username   = Constants::VM_USERNAME;
-  my $vm_ssh_args   = Constants::VM_SSH_ARGS;
-  my $dirname       = cwd();
-
-  $dirname =~ s/.*\///g;
-
-  my $target = $vm_username . '\@' . $vm_ip_address;
-
-  my $min_length  = Constants::TYPING_MIN_LENGTH_FIELD_NAME;
-  my $max_length  = Constants::TYPING_MAX_LENGTH_FIELD_NAME;
-  my $min_prob    = Constants::TYPING_MIN_PROB_FIELD_NAME;
-  my $max_prob    = Constants::TYPING_MAX_PROB_FIELD_NAME;
-  my $num_words   = Constants::TYPING_NUM_WORDS_FIELD_NAME;
-  my $dir   = Constants::DIRECTORY_FIELD_NAME      ;
-  my $script_name = Constants::TYPING_CGI_SCRIPT;
-
-
-  my $cgi_script = <<SCRIPT
-#!/usr/bin/perl
- 
-  use warnings;
-  use strict;
-  use CGI;
-  
-  sub sanitize_name
-  {
-    my \$string = shift;
-  
-    \$string = substr( \$string, 0, 256);
-  
-    # Remove trailing and leading whitespace
-    \$string =~ s/^\\s+|\\s+\$//g;
-  
-    # Replace spaces with underscores
-    \$string =~ s/ /_/g;
-  
-    # Remove anything that is not an
-    # underscore, dash, letter, or number
-    \$string =~ s/[^\\w\-]//g;
-  
-    # Capitalize
-    \$string = uc \$string;
-  
-    return \$string;
-  }
-  
-  sub sanitize_number
-  {
-    my \$string = shift;
-  
-    \$string = substr( \$string, 0, 256);
-  
-    # Remove trailing and leading whitespace
-    \$string =~ s/^\\s+|\\s+\$//g;
-  
-    # Remove anything that is not a number
-    \$string =~ s/[^\\d]//g;
-  
-    return \$string;
-  }
-  
-  my \$query = new CGI;
-  
-  my \$min_length = \$query->param('$min_length'); 
-  my \$max_length = \$query->param('$max_length');
-  my \$min_prob   = \$query->param('$min_prob');
-  my \$max_prob   = \$query->param('$max_prob');
-  my \$num_words  = \$query->param('$num_words');
-
-  my \$min_length_arg = "";
-  my \$max_length_arg = "";
-  my \$min_prob_arg   = "";
-  my \$max_prob_arg   = "";
-  my \$num_words_arg  = "";
-  
-  if (\$min_length)
-  {
-    \$min_length_arg = "--$min_length ". sanitize_name(\$min_length);
-  }
-  
-  if (\$max_length)
-  {
-    \$max_length_arg = "--$max_length " . sanitize_number(\$max_length);
-  }
-  
-  if (\$min_prob)
-  {
-    \$min_prob_arg = "--$min_prob ". sanitize_number(\$min_prob);
-  }
-  
-  if (\$max_prob)
-  {
-    \$max_prob_arg = "--$max_prob " . sanitize_name(\$max_prob);
-  }
-  
-  if (\$num_words)
-  {
-    \$num_words_arg = "--$num_words " . sanitize_number(\$num_words);
-  }
-
-  my \$dir_arg = " --$dir $dirname ";
-
-  my \$output = "";
-  my \$cmd = "LANG=C ssh $vm_ssh_args -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $target /home/jvc/typing_wrapper.pl \$min_length_arg \$max_length_arg \$min_prob_arg \$max_prob_arg \$num_words_arg \$dir_arg |";
-  open(SSH, \$cmd) or die "\$!\n";
-  while (<SSH>)
-  {
-    \$output .= \$_;
-  }
-  close SSH;
-  print "Content-type: text/html\n\n";
-  #print \$cmd;
-  #print CGI::header();
-  print \$output;
-  
-  
-SCRIPT
-;
-   
-  open(my $fh, '>', Constants::CGIBIN_DIRECTORY_NAME . "/$script_name");
-  print $fh $cgi_script;
-  close $fh;
-}
-
 sub update_html
 {
   my $validation        = shift;
@@ -2461,6 +2340,10 @@ sub update_html
   my $title_style       = "style='font-size: 20px;'";
   my $title_div_style   = "style='text-align: center'";
   my $body_style        = Constants::HTML_BODY_STYLE;
+
+  my $script = Constants::CGI_WRAPPER_FILENAME;
+  my $cgi_type = Constants::PLAYER_SEARCH_OPTION;
+  my $cgi_type_name = Constants::CGI_TYPE;
   my $index_html = <<HTML
 
 <!DOCTYPE html>
@@ -2478,7 +2361,7 @@ $nav
 <div $odd_div_style>
    <div $title_div_style> <b $title_style >Search</b></div>
     <div style="padding-bottom: $inner_content_padding; padding-top: $inner_content_padding">
-      <form action="$cgibin_name/mine_webapp.pl" target="_blank" method="get" onsubmit="return nocacheresult()">
+      <form action="$cgibin_name/$script?$cgi_type_name=$cgi_type&" target="_blank" method="get" onsubmit="return nocacheresult()">
 
         <!-- <p class="h4 mb-4 text-center">Search for a Player</p> -->
 
