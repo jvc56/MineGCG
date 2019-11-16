@@ -1,17 +1,21 @@
-
 #!/usr/bin/perl
 
 use warnings;
 use strict;
-use Getopt::Long;
+use Getopt::Long qw(GetOptionsFromArray GetOptions :config pass_through);
 
+my @arguments = @ARGV;
 my $dir  = '';
 my $wcgi = '';
 
-GetOptions (
-             'directory:s'       => $dir,
-             'whichcgi:s'         => $wcgi
+GetOptionsFromArray
+           (
+             \@arguments,
+             'directory:s'       => \$dir,
+             'whichcgi:s'         => \$wcgi
            );
+
+@arguments = @ARGV;
 
 chdir($dir);
 
@@ -41,7 +45,7 @@ if ($wcgi eq 'player_search')
 
 
   require './modules/Mine.pm';
-  mine
+  Mine::mine
   (
     $name,
     $cort,
@@ -93,7 +97,7 @@ elsif ($wcgi eq 'cron')
 
 
 
-system '../scripts/daily_cronjob.pl';
+system './scripts/daily_cronjob.pl';
 }
 
 

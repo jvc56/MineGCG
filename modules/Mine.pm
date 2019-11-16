@@ -192,13 +192,13 @@ sub mine
       $games_query .= " AND g.$game_lexicon_column_name = '$lexicon'";
     }
   }
-  if ($cort eq Constants::TOURNAMENT_OPTION)
+  if (uc $cort eq uc Constants::TOURNAMENT_OPTION)
   {
-    $games_query .= " AND g.$game_cross_tables_tournament_id_column_name > 0";
+    $games_query .= " AND g.$game_cross_tables_tournament_id_column_name IS NOT NULL";
   }
-  elsif ($cort eq Constants::CASUAL_OPTION)
+  elsif (uc $cort eq uc Constants::CASUAL_OPTION)
   {
-    $games_query .= " AND g.$game_cross_tables_tournament_id_column_name = 0";
+    $games_query .= " AND g.$game_cross_tables_tournament_id_column_name IS NULL";
   }
 
   my @game_results = @{$dbh->selectall_arrayref($games_query, {Slice => {}, "RaiseError" => 1})};

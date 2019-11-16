@@ -25,7 +25,6 @@ use JSON::XS;
 unless (caller)
 {
   update_wrapper();
-  exit(0);
   update_typing_html();
   update_qualifiers();
   update_readme_and_about();
@@ -75,7 +74,7 @@ sub update_wrapper
       $get_options .= "    '$p:s' => \\\$$p";
       $args        .= "  my \$$p"."_arg = '';\n";
       $cmd_args    .= "   \$$p"."_arg ";
-      $ifs         .= "  if (\$$p){\$$p"."_arg = \"--\$$p\" . sanitize(\$$p)}\n";
+      $ifs         .= "  if (\$$p){\$$p"."_arg = \"--$p  \" . sanitize(\$$p)}\n";
 
       $cgi_params  .= "  my \$$p = \$query->param('$p');\n";
 
@@ -140,8 +139,8 @@ while (<SSH>)
   \$output .= \$_;
 }
 close SSH;
-print "Content-type: text/html\n\n";
-print \$output;
+print "Content-type: text/html\n\n
+\$output";
 
 $sanitize_function
 
@@ -154,20 +153,24 @@ CGI_FUNC
   close $fh;
 
   my $wrapper = <<WRAPPER
-
 #!/usr/bin/perl
 
 use warnings;
 use strict;
-use Getopt::Long;
+use Getopt::Long qw(GetOptionsFromArray GetOptions :config pass_through);
 
+my \@arguments = \@ARGV;
 my \$dir  = '';
 my \$wcgi = '';
 
-GetOptions (
-             '$dir_option:s'       => \$dir,
-             '$whichcgi:s'         => \$wcgi
+GetOptionsFromArray
+           (
+             \\\@arguments,
+             '$dir_option:s'       => \\\$dir,
+             '$whichcgi:s'         => \\\$wcgi
            );
+
+\@arguments = \@ARGV;
 
 chdir(\$dir);
 
@@ -2344,6 +2347,7 @@ sub update_html
   my $script = Constants::CGI_WRAPPER_FILENAME;
   my $cgi_type = Constants::PLAYER_SEARCH_OPTION;
   my $cgi_type_name = Constants::CGI_TYPE;
+  my $formid        = 'search_form_id';
   my $index_html = <<HTML
 
 <!DOCTYPE html>
@@ -2361,8 +2365,8 @@ $nav
 <div $odd_div_style>
    <div $title_div_style> <b $title_style >Search</b></div>
     <div style="padding-bottom: $inner_content_padding; padding-top: $inner_content_padding">
-      <form action="$cgibin_name/$script?$cgi_type_name=$cgi_type&" target="_blank" method="get" onsubmit="return nocacheresult()">
-
+      <form action="$cgibin_name/$script" target="_blank" method="get" onsubmit="return nocacheresult()">
+        <input name='$cgi_type_name' value='$cgi_type' hidden>
         <!-- <p class="h4 mb-4 text-center">Search for a Player</p> -->
 
         <div id="$search_data_id">
@@ -2411,7 +2415,7 @@ $nav
       var inputs = document.getElementsByTagName("input");
       for (i = 0; i < inputs.length; i++)
       {
-        if (inputs[i].value != "Submit" && inputs[i].name != "name" && inputs[i].value != "")
+        if (inputs[i].value != "Submit" && inputs[i].name != "name" && inputs[i].name != '$cgi_type_name' && inputs[i].value != "")
         {
           // debug.innerHTML = inputs[i].name + " -  "  + inputs[i].value;
           return true;

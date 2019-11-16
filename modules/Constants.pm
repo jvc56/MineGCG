@@ -87,7 +87,7 @@ use constant PLAYER_CGI_SCRIPT                => 'webapp_main.pl';
 
 use constant PLAYER_SEARCH_DISPATCH => "
   require './modules/Mine.pm';
-  mine
+  Mine::mine
   (
     \$".PLAYER_FIELD_NAME.",
     \$".CORT_FIELD_NAME.",
@@ -166,7 +166,7 @@ use constant WRAPPER_FUNCTIONS =>
   },
   {
     Constants::CGI_TYPE => Constants::CRONJOB_OPTION,
-    Constants::DISPATCH_FUNCTION => "system '." . Constants::SCRIPTS_DIRECTORY_NAME . "/daily_cronjob.pl';",
+    Constants::DISPATCH_FUNCTION => "system '" . Constants::SCRIPTS_DIRECTORY_NAME . "/daily_cronjob.pl';",
     Constants::FIELD_LIST =>
     [
     ]
