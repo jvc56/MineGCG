@@ -1355,6 +1355,7 @@ use constant TOURNAMENT_NUMBER_OF_PLAYERS => 'Number of Players';
 use constant TOURNAMENT_PAIRING_METHOD    => 'Pairing Method';
 use constant TOURNAMENT_SCORING_METHOD    => 'Scoring Method';
 
+use constant TOURNAMENT_BYE_PLAYER                    => 'Bye Player';
 use constant TOURNAMENT_CURRENT_ROUND                 => 'Current Round';
 use constant TOURNAMENT_CURRENT_NUMBER_OF_SIMULATIONS => 'Current Number of Simulations';
 use constant TOURNAMENT_MAXIMUM_NUMBER_OF_SIMULATIONS => 'Total Number of Simulations';
@@ -1363,9 +1364,26 @@ use constant PAIRING_METHOD_KOTH        => 'King of the Hill';
 use constant PAIRING_METHOD_RANK_PAIR   => 'Rank Pair';
 use constant PAIRING_METHOD_RANDOM_PAIR => 'Random Pair';
 
+use constant PAIRING_METHOD_LIST =>
+[
+  Constants::PAIRING_METHOD_KOTH,
+  Constants::PAIRING_METHOD_RANK_PAIR,
+  Constants::PAIRING_METHOD_RANDOM_PAIR
+];
+
 use constant SCORING_METHOD_RATING          => 'Rating';
 use constant SCORING_METHOD_RANDOM_UNIFORM  => 'Random Uniform';
 use constant SCORING_METHOD_RANDOM_BLOWOUTS => 'Random Blowouts';
+use constant SCORING_METHOD_RANDOM_BST      => 'Random BST';
+
+use constant SCORING_METHOD_LIST =>
+[
+  Constants::SCORING_METHOD_RATING,
+  Constants::SCORING_METHOD_RANDOM_UNIFORM,
+  Constants::SCORING_METHOD_RANDOM_BLOWOUTS,
+  Constants::SCORING_METHOD_RANDOM_BST
+];
+
 
 use constant PLAYER_NAME         => 'Name';
 use constant PLAYER_NUMBER       => 'Number';
@@ -1396,8 +1414,9 @@ use constant DEFAULT_STANDARD_DEVIATION => 50;
 use constant DEFAULT_NAME_STANDING_SPACING => 30;
 use constant DEFAULT_STANDING_SPACING      => 8;
 
-use constant BLOWOUT_SCORE              => 1000;
-use constant BYE_SCORE                  => 50;
+use constant BLOWOUT_SCORES              => [0, 1000];
+use constant BST_SCORES                  => [[0, 1000], [0, 1], [1000, 0], [1, 0], [1, 1]];
+use constant DEFAULT_BYE_SCORE                  => 50;
 1;
 
 

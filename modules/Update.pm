@@ -1241,7 +1241,7 @@ TABBED
   my $footer                          = Constants::HTML_FOOTER;
   my $content_loader                  = Constants::HTML_CONTENT_LOADER;
 
-  $leaderboard_string = <<HTMLPAGE
+  $leaderboard_string = <<LEADERBOARD_HTML
 
 <!DOCTYPE html>
 <html lang="en">
@@ -1353,7 +1353,7 @@ TABBED
   </body>
 </html>
 
-HTMLPAGE
+LEADERBOARD_HTML
 ;
 
 
@@ -1786,7 +1786,7 @@ sub update_notable
   my $html_table_and_collapse_scripts = Constants::HTML_TABLE_AND_COLLAPSE_SCRIPTS;
   my $csv_download_scripts            = Constants::CSV_DOWNLOAD_SCRIPTS;
   my $footer                          = Constants::HTML_FOOTER;
-  $notable_string = <<HTMLPAGE
+  $notable_string = <<NOTABLEHTML
 
 <!DOCTYPE html>
 <html lang="en">
@@ -1810,7 +1810,7 @@ sub update_notable
   </body>
 </html>
 
-HTMLPAGE
+NOTABLEHTML
 ;
 
   my $logs = Constants::LOGS_DIRECTORY_NAME;
@@ -1938,7 +1938,6 @@ sub update_typing_html
   my $title_style           = "style='font-size: 20px;'";
   my $title_div_style       = "style='text-align: center'";
   my $body_style            = Constants::HTML_BODY_STYLE;
-  my $typing_script         = Constants::TYPING_CGI_SCRIPT;
   my $content_loader        = Constants::HTML_CONTENT_LOADER;
 
   my $min_length_option = Constants::TYPING_MIN_LENGTH_FIELD_NAME;
@@ -1948,6 +1947,7 @@ sub update_typing_html
   my $num_words_option  = Constants::TYPING_NUM_WORDS_FIELD_NAME;
 
   my $passage_length    = Constants::DEFAULT_NUMBER_OF_PASSAGE_WORDS;
+  my $script = Constants::CGI_WRAPPER_FILENAME;
 
   my $challenges_string = '[';
 
@@ -2204,7 +2204,7 @@ sub update_typing_html
       passage = event.target.responseText.toLowerCase();
       showPassage();
     });
-    var gettarget = '/$cgibin_name/$typing_script?' + args;
+    var gettarget = '/$cgibin_name/$script?' + args;
     XHR.open('GET', gettarget);
     XHR.send(formData);
     return false;
