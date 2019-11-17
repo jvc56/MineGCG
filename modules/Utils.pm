@@ -287,7 +287,7 @@ sub get_all_annotated_game_info
   my $download_dir = Constants::DOWNLOADS_DIRECTORY_NAME;
   my $filename     = "$download_dir/allanno.php";
 
-  system "wget $query_url -O $filename";
+  system "wget $wget_flags $query_url -O $filename";
 
   open (ANNOS, '<', $filename);
   my $header = <ANNOS>;

@@ -83,7 +83,6 @@ use constant OPPONENT_FIELD_NAME              => 'opponent';
 use constant START_DATE_FIELD_NAME            => 'startdate';
 use constant END_DATE_FIELD_NAME              => 'enddate';
 use constant LEXICON_FIELD_NAME               => 'lexicon';
-use constant PLAYER_CGI_SCRIPT                => 'webapp_main.pl';
 
 use constant PLAYER_SEARCH_DISPATCH => "
   require './modules/Mine.pm';
@@ -111,7 +110,6 @@ use constant TYPING_MAX_LENGTH_FIELD_NAME => 'max_length';
 use constant TYPING_MIN_PROB_FIELD_NAME   => 'min_prob';
 use constant TYPING_MAX_PROB_FIELD_NAME   => 'max_prob';
 use constant TYPING_NUM_WORDS_FIELD_NAME  => 'num_words';
-use constant TYPING_CGI_SCRIPT            => 'typingapp_main.pl';
 use constant TYPING_HTML_FILENAME         => 'typing.html';
 
 use constant TYPING_SEARCH_DISPATCH => "
@@ -126,6 +124,40 @@ use constant TYPING_SEARCH_DISPATCH => "
   );
 "
 ;
+
+use constant SIM_SEARCH_OPTION             => 'sim_search';
+use constant SIM_TOURNAMENT_FIELD_NAME     => 'tournamenturl';
+use constant SIM_START_ROUND_FIELD_NAME    => 'startround';
+use constant SIM_END_ROUND_FIELD_NAME      => 'endround';
+use constant SIM_PAIRING_METHOD_FIELD_NAME => 'pairingmethod';
+use constant SIM_SCORING_METHOD_FIELD_NAME => 'scoringmethod';
+use constant SIM_NUMBER_OF_SIMS_FIELD_NAME => 'numberofsims';
+use constant SIM_URL_ERROR                 => 'INVALID URL';
+use constant SIM_HTML_FILENAME             => 'simulate.html';
+
+use constant SIM_SEARCH_DISPATCH => "
+  require './modules/Tournament.pm';
+  my \$tournament = 
+  Tournament->new
+  (
+    \$" . SIM_TOURNAMENT_FIELD_NAME . ",
+    \$" . SIM_END_ROUND_FIELD_NAME . ",
+    \$" . SIM_PAIRING_METHOD_FIELD_NAME . ",
+    \$" . SIM_SCORING_METHOD_FIELD_NAME . ",
+    \$" . SIM_NUMBER_OF_SIMS_FIELD_NAME . ",
+    \$" . SIM_START_ROUND_FIELD_NAME . "
+  );
+  if (ref(\$tournament) ne 'Tournament')
+  {
+    print \$tournament;
+  }
+  else
+  {
+    \$tournament->simulate();
+  }
+"
+;
+
 
 use constant CRONJOB_OPTION               => 'cron';
 
@@ -162,6 +194,19 @@ use constant WRAPPER_FUNCTIONS =>
       Constants::TYPING_MIN_PROB_FIELD_NAME,
       Constants::TYPING_MAX_PROB_FIELD_NAME,
       Constants::TYPING_NUM_WORDS_FIELD_NAME
+    ]
+  },
+  {
+    Constants::CGI_TYPE => Constants::SIM_SEARCH_OPTION,
+    Constants::DISPATCH_FUNCTION => Constants::SIM_SEARCH_DISPATCH,
+    Constants::FIELD_LIST =>
+    [
+      Constants::SIM_TOURNAMENT_FIELD_NAME,
+      Constants::SIM_START_ROUND_FIELD_NAME,
+      Constants::SIM_END_ROUND_FIELD_NAME,
+      Constants::SIM_PAIRING_METHOD_FIELD_NAME,
+      Constants::SIM_SCORING_METHOD_FIELD_NAME,
+      Constants::SIM_NUMBER_OF_SIMS_FIELD_NAME,
     ]
   },
   {
@@ -925,6 +970,9 @@ use constant HTML_NAV => <<NAV
       <li class="nav-item">
         <a class="nav-link" href="/typing.html">RandomRacer 2.0</a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/simulate.html">Tournament Simulation</a>
+      </li>
       <!-- Dropdown -->
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown"
@@ -1374,7 +1422,7 @@ use constant PAIRING_METHOD_LIST =>
 use constant SCORING_METHOD_RATING          => 'Rating';
 use constant SCORING_METHOD_RANDOM_UNIFORM  => 'Random Uniform';
 use constant SCORING_METHOD_RANDOM_BLOWOUTS => 'Random Blowouts';
-use constant SCORING_METHOD_RANDOM_BST      => 'Random BST';
+use constant SCORING_METHOD_RANDOM_BST      => 'Random Blowouts, Close Wins, and Ties';
 
 use constant SCORING_METHOD_LIST =>
 [
@@ -1399,10 +1447,12 @@ use constant PLAYER_RESET_SPREAD => 'Reset Spread';
 use constant PLAYER_FINAL_RANKS  => 'Player Final Ranks';
 
 
-use constant DEFAULT_TOURNAMENT_FILE       => 'a.t';
+use constant DEFAULT_TOURNAMENT_URL        => 'http://event.scrabbleplayers.org/2019/nasc/build/tsh/2019-nasc-s/s.t';
 use constant DEFAULT_PAIRING_METHOD        => PAIRING_METHOD_RANDOM_PAIR;
-use constant DEFAULT_SCORING_METHOD        => SCORING_METHOD_RATING;
-use constant DEFAULT_NUMBER_OF_SIMULATIONS => 10000;
+use constant DEFAULT_SCORING_METHOD        => SCORING_METHOD_RANDOM_BST;
+use constant DEFAULT_NUMBER_OF_ROUNDS      => 30;
+use constant DEFAULT_NUMBER_OF_SIMULATIONS => 100;
+use constant DEFAULT_START_ROUND           => 13;
 
 use constant DEFAULT_NAME_PADDING       => 40;
 use constant DEFAULT_PERCENTAGE_PADDING => 10;
@@ -1417,6 +1467,8 @@ use constant DEFAULT_STANDING_SPACING      => 8;
 use constant BLOWOUT_SCORES              => [0, 1000];
 use constant BST_SCORES                  => [[0, 1000], [0, 1], [1000, 0], [1, 0], [1, 1]];
 use constant DEFAULT_BYE_SCORE                  => 50;
+
+use constant SELECT_TAG_CLASS            => "class='browser-default custom-select mb-4'";
 1;
 
 

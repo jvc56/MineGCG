@@ -92,6 +92,48 @@ elsif ($wcgi eq 'typing_search')
   );
 
 }
+elsif ($wcgi eq 'sim_search')
+{
+  my $tournamenturl = '';
+  my $startround = '';
+  my $endround = '';
+  my $pairingmethod = '';
+  my $scoringmethod = '';
+  my $numberofsims = '';
+
+
+  GetOptions
+  (
+    'tournamenturl:s' => \$tournamenturl,
+    'startround:s' => \$startround,
+    'endround:s' => \$endround,
+    'pairingmethod:s' => \$pairingmethod,
+    'scoringmethod:s' => \$scoringmethod,
+    'numberofsims:s' => \$numberofsims,
+  );
+
+
+  require './modules/Tournament.pm';
+  my $tournament = 
+  Tournament->new
+  (
+    $tournamenturl,
+    $endround,
+    $pairingmethod,
+    $scoringmethod,
+    $numberofsims,
+    $startround
+  );
+  if (ref($tournament) ne 'Tournament')
+  {
+    print $tournament;
+  }
+  else
+  {
+    $tournament->simulate();
+  }
+
+}
 elsif ($wcgi eq 'cron')
 {
 

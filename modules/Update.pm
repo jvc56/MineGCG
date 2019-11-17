@@ -25,6 +25,7 @@ use JSON::XS;
 unless (caller)
 {
   update_wrapper();
+  update_simulate_html();
   update_typing_html();
   update_qualifiers();
   update_readme_and_about();
@@ -663,13 +664,14 @@ sub make_select_input
   my $data     = shift;
 
   my $options = "<option value='' disabled selected>$title</option>\n";
+  my $select_class = Constants::SELECT_TAG_CLASS;
 
   for (my $i = 0; $i < scalar @{$data}; $i++)
   {
     my $val = $data->[$i];
     $options .= "<option value='$val'>$val</option>\n";
   }
-  return "<select class='browser-default custom-select mb-4' name='$name' placeholder='$title'>$options</select>";
+  return "<select $select_class name='$name' placeholder='$title'>$options</select>";
 }
 
 sub add_input_validation
@@ -1919,6 +1921,173 @@ sub update_notable_legacy
   return \@featured_notable_games;
 }
 
+sub update_simulate_html
+{
+  my $cgibin_name = Constants::CGIBIN_DIRECTORY_NAME;
+  $cgibin_name = substr $cgibin_name, 2;
+  $cgibin_name = Utils::get_environment_name($cgibin_name);
+
+  my $head_content          = Constants::HTML_HEAD_CONTENT;
+  my $html_styles           = Constants::HTML_STYLES;
+  my $nav                   = Constants::HTML_NAV;
+  my $default_scripts       = Constants::HTML_SCRIPTS;
+  my $collapse_scripts      = Constants::HTML_TABLE_AND_COLLAPSE_SCRIPTS;
+  my $footer                =  Constants::HTML_FOOTER;
+  my $toggle_icon_script    = Constants::TOGGLE_ICON_SCRIPT;
+  my $odd_div_style         = Constants::DIV_STYLE_ODD; 
+  my $even_div_style        = Constants::DIV_STYLE_EVEN; 
+  my $inner_content_padding = '5%';
+  my $title_style           = "style='font-size: 20px;'";
+  my $title_div_style       = "style='text-align: center'";
+  my $body_style            = Constants::HTML_BODY_STYLE;
+  my $content_loader        = Constants::HTML_CONTENT_LOADER;
+
+  my $td_style =
+  "
+  style=
+  '
+  font-size: 1rem;
+  font-weight: bolder;
+  text-align: left;
+  '
+  ";
+  my $typing_div_info_style =
+  "
+  style=
+  '
+    font-size: 25px;
+    font-weight: bolder;
+    padding: 1%;
+  '
+  ";
+
+  my $select_class = Constants::SELECT_TAG_CLASS;
+  my $select_style = "style='margin-bottom: 0!important;'";
+  my $td_info_style = 'style="font-size: 25px;font-weight: bolder; text-align: right"'; 
+  my $input_class = 'class="form-control"';
+  my $formid     = 'sim_form_id';
+  my $simid   = 'sim_content_id';
+
+  my $script = Constants::CGI_WRAPPER_FILENAME;
+  my $cgi_type = Constants::SIM_SEARCH_OPTION;
+  my $cgi_type_name = Constants::CGI_TYPE;
+
+  my $search_option         = Constants::SIM_SEARCH_OPTION;
+  my $tournament_option     = Constants::SIM_TOURNAMENT_FIELD_NAME;
+  my $start_round_option    = Constants::SIM_START_ROUND_FIELD_NAME;
+  my $end_round_option      = Constants::SIM_END_ROUND_FIELD_NAME;
+  my $pairing_option        = Constants::SIM_PAIRING_METHOD_FIELD_NAME;
+  my $scoring_option        = Constants::SIM_SCORING_METHOD_FIELD_NAME;
+  my $number_of_sims_option = Constants::SIM_NUMBER_OF_SIMS_FIELD_NAME;
+  my $sim_html_filename     = Constants::SIM_HTML_FILENAME;
+  my $default_num_sims      = Constants::DEFAULT_NUMBER_OF_SIMULATIONS;
+
+  my $scoring_options_list = Constants::SCORING_METHOD_LIST;
+  my $pairing_options_list = Constants::PAIRING_METHOD_LIST;
+  my $scoring_options_html = join "", (map {"<option value='$_'>$_</option>\n"} @{$scoring_options_list});
+  my $pairing_options_html = join "", (map {"<option value='$_'>$_</option>\n"} @{$pairing_options_list});
+
+  my $simhtml =
+  "
+<!DOCTYPE html>
+<html lang=\"en\">
+  <head>
+  $head_content
+  $html_styles
+  </head>
+  <body $body_style>
+
+  $nav
+
+  <div style='text-align: center; vertical-align: middle; padding: 2%'>
+    <h1>
+      Tournament Simulation 
+    </h1>
+    Simulate tournament outcomes to see which events are most likely and which are impossible. 
+  </div>
+  <div style='text-align: center; margin-top: 20px'>
+    <form onsubmit='return simulate()' id='$formid'>
+      <table style='margin: auto'>
+        <tbody>
+          <tr>
+             <td><input required $input_class  name='$tournament_option' type='text' value='' placeholder='Tournament File URL'></td>
+          </tr>
+          <tr>
+            <td><input  $input_class  name='$start_round_option' min='1' type='number' placeholder='Start Round' ></td>
+          </tr>
+          <tr>
+            <td ><input required $input_class  min='1' name='$end_round_option' type='number' placeholder='End Round' ></td>
+          </tr>
+          <tr>
+            <td>
+              <select $select_class $select_style required name='$pairing_option'>
+              $pairing_options_html
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <select $select_class $select_style required name='$scoring_option'>
+                $scoring_options_html
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td colspan='2'><input  $input_class required min='1' name='$number_of_sims_option' type='number' value='' placeholder='Number of Simulations'></td>
+          </tr>
+        </tbody>
+      </table>
+     <input class='btn' type='submit'>
+    </form>
+  </div>
+  <div id='$simid'>
+  >/div>
+  $default_scripts
+  $collapse_scripts
+
+  <script>
+
+  function simulate()
+  {
+    var div = document.getElementById('$simid');
+    div.style.display = 'block';
+    div.innerHTML = '$content_loader';
+
+    var XHR = new XMLHttpRequest();
+    var formData = new FormData(document.getElementById('$formid'));
+    var args = '$cgi_type_name=$cgi_type&';
+    for (var [key, value] of formData.entries())
+    { 
+      args += key + '=' + value + '&';
+    }
+    if (args)
+    {
+      args = args.substring(0, args.length - 1);
+    }
+    XHR.addEventListener('load', function(event)
+    {
+      document.getElementById('$simid').innerHTML = event.target.responseText;
+    });
+    var gettarget = '/$cgibin_name/$script?' + args;
+    XHR.open('GET', gettarget);
+    XHR.send(formData);
+    return false;
+  }
+  window.onload = function ()
+  {
+    simulate();
+  }
+  </script>
+  </body>
+</html>
+  "
+;
+  open(my $fh, '>', Constants::HTML_DIRECTORY_NAME . '/' . Constants::SIM_HTML_FILENAME);
+  print $fh $simhtml;
+  close $fh;
+}
+
+
 sub update_typing_html
 {
   my $cgibin_name = Constants::CGIBIN_DIRECTORY_NAME;
@@ -1947,7 +2116,6 @@ sub update_typing_html
   my $num_words_option  = Constants::TYPING_NUM_WORDS_FIELD_NAME;
 
   my $passage_length    = Constants::DEFAULT_NUMBER_OF_PASSAGE_WORDS;
-  my $script = Constants::CGI_WRAPPER_FILENAME;
 
   my $challenges_string = '[';
 
@@ -2201,7 +2369,7 @@ sub update_typing_html
     XHR.addEventListener('load', function(event)
     {
       // Set the passage
-      passage = event.target.responseText.toLowerCase();
+      passage = event.target.responseText.trim().toLowerCase();
       showPassage();
     });
     var gettarget = '/$cgibin_name/$script?' + args;

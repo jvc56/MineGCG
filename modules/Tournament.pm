@@ -12,17 +12,17 @@ use List::Util qw(shuffle min);
 
 use lib './modules';
 use Constants;
-
-my $file                  = Constants::DEFAULT_TOURNAMENT_FILE;
-my $number_of_rounds;
-my $pairing_method        = Constants::DEFAULT_PAIRING_METHOD;
-my $scoring_method        = Constants::DEFAULT_SCORING_METHOD;
-my $number_of_simulations = Constants::DEFAULT_NUMBER_OF_SIMULATIONS;
-my $reset_round         = -1;
-my $all;
+use Utils;
 
 unless (caller)
 {
+  my $file                  = Constants::DEFAULT_TOURNAMENT_URL;
+  my $number_of_rounds      = Constants::DEFAULT_NUMBER_OF_ROUNDS;
+  my $pairing_method        = Constants::DEFAULT_PAIRING_METHOD;
+  my $scoring_method        = Constants::DEFAULT_SCORING_METHOD;
+  my $number_of_simulations = Constants::DEFAULT_NUMBER_OF_SIMULATIONS;
+  my $reset_round           = Constants::DEFAULT_START_ROUND;
+  my $all;
 
   GetOptions (
               "file:s"   => \$file,
@@ -34,11 +34,6 @@ unless (caller)
               "all"      => \$all
              );
 
-  if (!$number_of_rounds)
-  {
-    print "Must specify the total number of rounds with --rounds\n";
-    exit(0);
-  }
   my $tournament = Tournament->new(
                     $file,
                     $number_of_rounds,
@@ -58,14 +53,12 @@ unless (caller)
         $tournament->{Constants::TOURNAMENT_PAIRING_METHOD} = $pm;
         $tournament->simulation_reset();
         $tournament->simulate();
-        print $tournament->get_results();
       }
     }
   }
   else
   {
     $tournament->simulate();
-    print $tournament->get_results();
   }
 
 }
@@ -73,18 +66,34 @@ unless (caller)
 sub new
 {
   my $this                = shift;
-  my $tournament_file     = shift;
+  my $tournament_file_url = shift;
   my $number_of_rounds    = shift;
   my $pairing_method      = shift;
   my $scoring_method      = shift;
   my $simulations         = shift;
   my $force_current_round = shift;
 
+  if (!$tournament_file_url)
+  {
+    $tournament_file_url = Constants::DEFAULT_TOURNAMENT_URL;
+    $number_of_rounds    = Constants::DEFAULT_NUMBER_OF_ROUNDS;
+    $pairing_method      = Constants::DEFAULT_PAIRING_METHOD;
+    $scoring_method      = Constants::DEFAULT_SCORING_METHOD;
+    $simulations         = Constants::DEFAULT_NUMBER_OF_SIMULATIONS;
+    $force_current_round = Constants::DEFAULT_START_ROUND;
+  }
+  my $downloads_dir = Constants::DOWNLOADS_DIRECTORY_NAME;
+  my $wget_flags    = Constants::WGET_FLAGS;
+
+  my $tournament_file = $downloads_dir . '/' . Utils::sanitize($tournament_file_url);
+
+  system "wget $wget_flags $tournament_file_url -O $tournament_file > /dev/null 2>&1";
+
   my $reset_round;
   my $number_of_players = 0;
   my @players = ();
 
-  open(my $fh, '<',  $tournament_file) or die "$!";
+  open(my $fh, '<',  $tournament_file) or return "Error: Cannot read file $tournament_file_url";
   while(<$fh>)
   {
     $number_of_players++;
@@ -111,14 +120,14 @@ sub new
 
     if ($number_of_opponents != $number_of_scores)
     {
-      die 'Different number of opponents and scores';
+      return "Error: Different number of opponents and scores for $first_name $last_name";
     }
     elsif($reset_round &&
            ($reset_round != $number_of_opponents - 1 ||
             $reset_round != $number_of_scores - 1)
          )
     {
-      die 'Inconsistent number of opponents or scores between players';
+      return "Error: Inconsistent number of opponents or scores between players for at $first_name $last_name";
     }
     elsif (!$reset_round)
     {
@@ -211,7 +220,6 @@ sub new
      Constants::TOURNAMENT_CURRENT_NUMBER_OF_SIMULATIONS => 0,
      Constants::TOURNAMENT_MAXIMUM_NUMBER_OF_SIMULATIONS => $simulations,
     );
-
   my $self = bless \%tournament, $this;
   $self->rerank();
   return $self;
@@ -225,27 +233,27 @@ sub pair
   my $method = $this->{Constants::TOURNAMENT_PAIRING_METHOD};
   my $players = $this->{Constants::TOURNAMENT_PLAYERS};
   my $number_of_players = $this->{Constants::TOURNAMENT_NUMBER_OF_PLAYERS};
-  my $pairings;
+  my @pairings;
   if ($method eq Constants::PAIRING_METHOD_RANDOM_PAIR)
   {
-    $pairings = join "", (0 .. $number_of_players - 1);
+    @pairings = (0 .. $number_of_players - 1);
 
     my $player_one;
     my $player_two;
-    while (length $pairings >= 2)
+    while (scalar @pairings >= 2)
     {
-      $player_one = substr($pairings, int(rand(length $pairings)), 1, '');
-      $player_two = substr($pairings, int(rand(length $pairings)), 1, '');
+      $player_one = splice(@pairings, int(rand(scalar @pairings)), 1);
+      $player_two = splice(@pairings, int(rand(scalar @pairings)), 1);
       $players->[$player_one]->{Constants::PLAYER_OPPONENTS}->[$round] = 
         $players->[$player_two];
       $players->[$player_two]->{Constants::PLAYER_OPPONENTS}->[$round] = 
         $players->[$player_one];
     }
-    if ($pairings)
+    if (@pairings)
     {
-      $players->[$pairings]->{Constants::PLAYER_OPPONENTS}->[$round] = 
-        $players->[$pairings];
-      $this->{Constants::TOURNAMENT_BYE_PLAYER} = $pairings;
+      $players->[$pairings[0]]->{Constants::PLAYER_OPPONENTS}->[$round] = 
+        $players->[$pairings[0]];
+      $this->{Constants::TOURNAMENT_BYE_PLAYER} = $pairings[0];
     }
   }
   elsif ($method eq Constants::PAIRING_METHOD_KOTH)
@@ -446,6 +454,7 @@ sub simulate
     $this->record_results();
     $this->reset();
   }
+  print $this->get_results();
 }
 
 sub simulation_reset
@@ -533,8 +542,9 @@ sub score
           $bst_scores->[$random_pair]->[1 - $random_index];
 
         $scored[$players->[$i]->{Constants::PLAYER_NUMBER}] = 1;
-        $scored[$players->[$i]->{Constants::PLAYER_OPPONENTS}->
-                 [$round]->{Constants::PLAYER_NUMBER}] = 1;
+        #print "Player name: " . "$players->[$i]->{Constants::PLAYER_NAME}"."\n";
+        #print "Player opp: " . "$players->[$i]->{Constants::PLAYER_OPPONENTS}->[$round]->{Constants::PLAYER_NAME}" . "\n";
+        $scored[$players->[$i]->{Constants::PLAYER_OPPONENTS}->[$round]->{Constants::PLAYER_NUMBER}] = 1;
       }
     }    
   }
