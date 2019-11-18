@@ -145,7 +145,8 @@ use constant SIM_SEARCH_DISPATCH => "
     \$" . SIM_PAIRING_METHOD_FIELD_NAME . ",
     \$" . SIM_SCORING_METHOD_FIELD_NAME . ",
     \$" . SIM_NUMBER_OF_SIMS_FIELD_NAME . ",
-    \$" . SIM_START_ROUND_FIELD_NAME . "
+    \$" . SIM_START_ROUND_FIELD_NAME . ",
+    1
   );
   if (ref(\$tournament) ne 'Tournament')
   {
@@ -1396,17 +1397,58 @@ sub sanitize
 SANITIZE
 ;
 
+use constant TOURNAMENT_DIV_STYLE =>
+    "   
+    style=
+    '
+      font-weight: bolder;
+      color: #FFFFFF;
+      border-radius: 20px;
+      background: black;
+      margin: 10px;
+      padding: 10px;
+    '
+    "
+;
+
+use constant TOURNAMENT_MATRIX_STYLE =>
+    "   
+    style=
+    '
+      font-weight: bolder;
+      color: #FFFFFF;
+      border-radius: 20px;
+      background: black;
+      margin: 10px;
+      padding: 10px;
+      text-align: center;
+    '
+    "
+;
+
+use constant TOURNAMENT_TABLE_STYLE =>
+    "   
+    style=
+    '
+      table-layout: fixed;
+      width: 100%;
+    '
+    "
+;
+
 use constant TOURNAMENT_RESET_ROUND       => 'Starting Round';
 use constant TOURNAMENT_NUMBER_OF_ROUNDS  => 'Final Round';
 use constant TOURNAMENT_PLAYERS           => 'Players';
 use constant TOURNAMENT_NUMBER_OF_PLAYERS => 'Number of Players';
 use constant TOURNAMENT_PAIRING_METHOD    => 'Pairing Method';
 use constant TOURNAMENT_SCORING_METHOD    => 'Scoring Method';
+use constant TOURNAMENT_FILENAME          => 'Tournament File';
+use constant TOURNAMENT_HTML_FORMAT       => 'HTML Format';
 
 use constant TOURNAMENT_BYE_PLAYER                    => 'Bye Player';
 use constant TOURNAMENT_CURRENT_ROUND                 => 'Current Round';
 use constant TOURNAMENT_CURRENT_NUMBER_OF_SIMULATIONS => 'Current Number of Simulations';
-use constant TOURNAMENT_MAXIMUM_NUMBER_OF_SIMULATIONS => 'Total Number of Simulations';
+use constant TOURNAMENT_MAXIMUM_NUMBER_OF_SIMULATIONS => 'Simulations';
 
 use constant PAIRING_METHOD_KOTH        => 'King of the Hill';
 use constant PAIRING_METHOD_RANK_PAIR   => 'Rank Pair';
@@ -1450,9 +1492,9 @@ use constant PLAYER_FINAL_RANKS  => 'Player Final Ranks';
 use constant DEFAULT_TOURNAMENT_URL        => 'http://event.scrabbleplayers.org/2019/nasc/build/tsh/2019-nasc-s/s.t';
 use constant DEFAULT_PAIRING_METHOD        => PAIRING_METHOD_RANDOM_PAIR;
 use constant DEFAULT_SCORING_METHOD        => SCORING_METHOD_RANDOM_BST;
-use constant DEFAULT_NUMBER_OF_ROUNDS      => 30;
+use constant DEFAULT_NUMBER_OF_ROUNDS      => 31;
 use constant DEFAULT_NUMBER_OF_SIMULATIONS => 100;
-use constant DEFAULT_START_ROUND           => 13;
+use constant DEFAULT_START_ROUND           => 28;
 
 use constant DEFAULT_NAME_PADDING       => 40;
 use constant DEFAULT_PERCENTAGE_PADDING => 10;

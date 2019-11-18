@@ -1932,7 +1932,7 @@ sub update_simulate_html
   my $nav                   = Constants::HTML_NAV;
   my $default_scripts       = Constants::HTML_SCRIPTS;
   my $collapse_scripts      = Constants::HTML_TABLE_AND_COLLAPSE_SCRIPTS;
-  my $footer                =  Constants::HTML_FOOTER;
+  my $footer                = Constants::HTML_FOOTER;
   my $toggle_icon_script    = Constants::TOGGLE_ICON_SCRIPT;
   my $odd_div_style         = Constants::DIV_STYLE_ODD; 
   my $even_div_style        = Constants::DIV_STYLE_EVEN; 
@@ -2013,7 +2013,7 @@ sub update_simulate_html
              <td><input required $input_class  name='$tournament_option' type='text' value='' placeholder='Tournament File URL'></td>
           </tr>
           <tr>
-            <td><input  $input_class  name='$start_round_option' min='1' type='number' placeholder='Start Round' ></td>
+            <td><input  $input_class  name='$start_round_option' min='0' type='number' placeholder='Start Round' ></td>
           </tr>
           <tr>
             <td ><input required $input_class  min='1' name='$end_round_option' type='number' placeholder='End Round' ></td>
@@ -2041,7 +2041,7 @@ sub update_simulate_html
     </form>
   </div>
   <div id='$simid'>
-  >/div>
+  </div>
   $default_scripts
   $collapse_scripts
 

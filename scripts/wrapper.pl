@@ -122,7 +122,8 @@ elsif ($wcgi eq 'sim_search')
     $pairingmethod,
     $scoringmethod,
     $numberofsims,
-    $startround
+    $startround,
+    1
   );
   if (ref($tournament) ne 'Tournament')
   {

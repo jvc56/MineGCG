@@ -8,7 +8,7 @@ use warnings;
 use strict;
 use Getopt::Long;
 use Data::Dumper;
-use List::Util qw(shuffle min);
+use List::Util qw(shuffle min max);
 
 use lib './modules';
 use Constants;
@@ -22,6 +22,7 @@ unless (caller)
   my $scoring_method        = Constants::DEFAULT_SCORING_METHOD;
   my $number_of_simulations = Constants::DEFAULT_NUMBER_OF_SIMULATIONS;
   my $reset_round           = Constants::DEFAULT_START_ROUND;
+  my $html                  = 0;
   my $all;
 
   GetOptions (
@@ -31,6 +32,7 @@ unless (caller)
               "score:s"  => \$scoring_method,
               "sim:s"    => \$number_of_simulations,
               "start:s"  => \$reset_round,
+              "html"     => \$html,
               "all"      => \$all
              );
 
@@ -40,7 +42,8 @@ unless (caller)
                     $pairing_method,
                     $scoring_method,
                     $number_of_simulations,
-                    $reset_round - 1);
+                    $reset_round - 1,
+                    $html);
   if ($all)
   {
     my $pairing_methods = Constants::PAIRING_METHOD_LIST;
@@ -72,6 +75,7 @@ sub new
   my $scoring_method      = shift;
   my $simulations         = shift;
   my $force_current_round = shift;
+  my $html                = shift;
 
   if (!$tournament_file_url)
   {
@@ -168,7 +172,15 @@ sub new
     my $player_opponents = $players[$i]->{Constants::PLAYER_OPPONENTS};
     for (my $j = 0; $j <= $reset_round; $j++)
     {
-      $player_opponents->[$j] = $players[$player_opponents->[$j]];
+      my $opponent_number = $player_opponents->[$j];
+      if ($opponent_number == -1)
+      {
+        $player_opponents->[$j] = $players[$i];
+      }
+      else
+      {
+        $player_opponents->[$j] = $players[$player_opponents->[$j]];
+      }
     }
   }
   
@@ -181,6 +193,11 @@ sub new
     {
       my $player_score   = $player_scores->[$j];
       my $opponent_score = $player_opponents->[$j]->{Constants::PLAYER_SCORES}->[$j];
+      if ($player->{Constants::PLAYER_NUMBER} ==
+            $player_opponents->[$j]->{Constants::PLAYER_NUMBER})
+      {
+        $opponent_score = 0;
+      }
       my $spread = $player_score - $opponent_score;
       $player->{Constants::PLAYER_RESET_SPREAD} += $spread;
       if ($player_score > $opponent_score)
@@ -219,6 +236,8 @@ sub new
      Constants::TOURNAMENT_CURRENT_ROUND                 => $reset_round,
      Constants::TOURNAMENT_CURRENT_NUMBER_OF_SIMULATIONS => 0,
      Constants::TOURNAMENT_MAXIMUM_NUMBER_OF_SIMULATIONS => $simulations,
+     Constants::TOURNAMENT_FILENAME                      => $tournament_file_url,
+     Constants::TOURNAMENT_HTML_FORMAT                   => $html
     );
   my $self = bless \%tournament, $this;
   $self->rerank();
@@ -253,7 +272,7 @@ sub pair
     {
       $players->[$pairings[0]]->{Constants::PLAYER_OPPONENTS}->[$round] = 
         $players->[$pairings[0]];
-      $this->{Constants::TOURNAMENT_BYE_PLAYER} = $pairings[0];
+      $this->{Constants::TOURNAMENT_BYE_PLAYER} = $pairings[0] + 1;
     }
   }
   elsif ($method eq Constants::PAIRING_METHOD_KOTH)
@@ -270,7 +289,7 @@ sub pair
       {
         # Assign a bye to the last odd player out
         $opponent_index = $i;
-        $this->{Constants::TOURNAMENT_BYE_PLAYER} = $i;
+        $this->{Constants::TOURNAMENT_BYE_PLAYER} = $i + 1;
       }
       else
       {
@@ -304,7 +323,7 @@ sub pair
           if ($i == $this->{Constants::TOURNAMENT_NUMBER_OF_PLAYERS} - 1)
           {
             $opponent_index = $i;
-            $this->{Constants::TOURNAMENT_BYE_PLAYER} = $i;
+            $this->{Constants::TOURNAMENT_BYE_PLAYER} = $i + 1;
           }
           else
           {
@@ -332,14 +351,9 @@ sub get_results
   my $players = $this->{Constants::TOURNAMENT_PLAYERS};
   my $number_of_players = $this->{Constants::TOURNAMENT_NUMBER_OF_PLAYERS};
   my $sims = $this->{Constants::TOURNAMENT_MAXIMUM_NUMBER_OF_SIMULATIONS};
-
-  my $pad  = Constants::DEFAULT_NAME_PADDING;
-  my $rpad = Constants::DEFAULT_PERCENTAGE_PADDING;
-
-  my $result_string = "Simulation Parameters:\n\n";
-
   my @parameters =
   (
+     Constants::TOURNAMENT_FILENAME,
      Constants::TOURNAMENT_RESET_ROUND,
      Constants::TOURNAMENT_NUMBER_OF_ROUNDS,
      Constants::TOURNAMENT_NUMBER_OF_PLAYERS,
@@ -347,42 +361,135 @@ sub get_results
      Constants::TOURNAMENT_SCORING_METHOD,
      Constants::TOURNAMENT_MAXIMUM_NUMBER_OF_SIMULATIONS
   );
-  for (my $i = 0; $i < scalar @parameters; $i++)
+
+  if (!$this->{Constants::TOURNAMENT_HTML_FORMAT})
   {
-    my $param = $parameters[$i];
-    $result_string .= sprintf "  %-" . $pad . "s", ($param . ':');
-    if ($param eq Constants::TOURNAMENT_RESET_ROUND)
+    my $pad  = Constants::DEFAULT_NAME_PADDING;
+    my $rpad = Constants::DEFAULT_PERCENTAGE_PADDING;
+  
+    my $result_string = "Simulation Parameters:\n\n";
+  
+    for (my $i = 0; $i < scalar @parameters; $i++)
     {
-      $result_string .= ($this->{$param} + 1) . "\n";
+      my $param = $parameters[$i];
+      $result_string .= sprintf "  %-" . $pad . "s", ($param . ':');
+      if ($param eq Constants::TOURNAMENT_RESET_ROUND)
+      {
+        $result_string .= ($this->{$param} + 1) . "\n";
+      }
+      else
+      {
+        $result_string .= $this->{$param} . "\n";
+      }
     }
-    else
+    $result_string .= "\n";
+    $result_string .= "Initial Standings:\n\n";
+    $result_string .= $this->standings();
+    $result_string .= "\n";
+    $result_string .= sprintf "%-" . $pad . "s", '';
+    for (my $i = 0; $i < $number_of_players; $i++)
     {
-      $result_string .= $this->{$param} . "\n";
+      $result_string .= sprintf "%-" . $rpad . "s", $i + 1;
     }
+    for (my $i = 0; $i < $number_of_players; $i++)
+    {
+      my $player = $players->[$i];
+      my $name   = $player->{Constants::PLAYER_NAME};
+      $result_string .= sprintf "\n%-" . $pad . "s", $name;
+      my $pranks = $player->{Constants::PLAYER_FINAL_RANKS};
+      for (my $j = 0; $j < scalar @{$pranks}; $j++)
+      {
+        my $jrank = $pranks->[$j];
+        my $perc = 100 * (sprintf '%.4f', $jrank / $sims) . '%';
+        $result_string .= sprintf '%-' . $rpad . 's', $perc;
+      }
+    }
+    return $result_string."\n\n";
   }
-  $result_string .= "\n";
-  $result_string .= "Initial Standings:\n\n";
-  $result_string .= $this->standings();
-  $result_string .= "\n";
-  $result_string .= sprintf "%-" . $pad . "s", '';
-  for (my $i = 0; $i < $number_of_players; $i++)
+  else
   {
-    $result_string .= sprintf "%-" . $rpad . "s", $i + 1;
-  }
-  for (my $i = 0; $i < $number_of_players; $i++)
-  {
-    my $player = $players->[$i];
-    my $name   = $player->{Constants::PLAYER_NAME};
-    $result_string .= sprintf "\n%-" . $pad . "s", $name;
-    my $pranks = $player->{Constants::PLAYER_FINAL_RANKS};
-    for (my $j = 0; $j < scalar @{$pranks}; $j++)
+    my $div_style    = Constants::TOURNAMENT_DIV_STYLE;
+    my $matrix_style = Constants::TOURNAMENT_MATRIX_STYLE;
+    my $table_style  = Constants::TOURNAMENT_TABLE_STYLE; 
+    my $params_div_id = 'params_div_id';
+    my $spaces = '&nbsp;' x 5;
+    my $params_table  = "<div id='$params_div_id' class='collapse' $div_style><table>\n<tbody>\n"; 
+    for (my $i = 0; $i < scalar @parameters; $i++)
     {
-      my $jrank = $pranks->[$j];
-      my $perc = 100 * (sprintf '%.4f', $jrank / $sims) . '%';
-      $result_string .= sprintf '%-' . $rpad . 's', $perc;
+      my $param = $parameters[$i];
+      my $value = $this->{$param};
+      if ($param eq Constants::TOURNAMENT_RESET_ROUND)
+      {
+        $value++;
+      }
+      $params_table .= "<tr><td><b><b>$param:$spaces</b></b></td><td><b>$value</b></td></tr>";
     }
+    $params_table .= "</tbody></table></div>";
+    my $params_table_expander = Utils::make_expander($params_div_id);
+    my $params_string = 
+      Utils::make_content_item(
+        $params_table_expander,
+        '<b><b>Simulation Parameters</b></b>',
+        $params_table,
+        $div_style);
+   
+    my $initial_standings_string = "<div $div_style>" . $this->standings() . '</div>';
+
+    my $rank_matrix = "<table style='width: 100%'><tbody><tr><td style='width: 1px'></td>";
+    for (my $i = 0; $i < $number_of_players; $i++)
+    {
+      $rank_matrix .= sprintf "<td><b><b>%s</b></b></td>", $i + 1;
+    }
+    $rank_matrix .= '</tr>';
+    my $corner_radius = '5px';
+    for (my $i = 0; $i < $number_of_players; $i++)
+    {
+      my $player = $players->[$i];
+      my $name   = $player->{Constants::PLAYER_NAME};
+      $rank_matrix .= "<tr style='white-space: nowrap'><td style='text-align: left'><b><b>$name</b></b></td>";
+      my $pranks = $player->{Constants::PLAYER_FINAL_RANKS};
+      my $pranks_length = scalar @{$pranks};
+      for (my $j = 0; $j < $pranks_length; $j++)
+      {
+        my $jrank = $pranks->[$j];
+        my $cell_color = '#000000'; 
+        my $perc = '';
+        if ($jrank != 0)
+        {
+          $perc = 100 * (sprintf '%.4f', $jrank / $sims) . '%';
+          $cell_color = '#00' . (sprintf("%02X", max(int(255/20), int(255*$jrank/$sims)))). '00';
+        }
+        my $radius_style = '';
+        if ($i == 0)
+        {
+          if ($j == 0)
+          {
+            $radius_style = "border-top-left-radius: $corner_radius";
+          }
+          elsif ($j == $pranks_length - 1)
+          {
+            $radius_style = "border-top-right-radius: $corner_radius";
+          }
+        }
+        elsif ($i == $number_of_players - 1)
+        {
+          if ($j == 0)
+          {
+            $radius_style = "border-bottom-left-radius: $corner_radius";
+          }
+          elsif ($j == $pranks_length - 1)
+          {
+            $radius_style = "border-bottom-right-radius: $corner_radius";
+          }
+        }
+        $rank_matrix .= "<td style='background-color: $cell_color; $radius_style'><b>$perc</b></td>";
+      }
+      $rank_matrix .= '</tr>';
+    }
+    $rank_matrix .= "</tbody></table>";
+    $rank_matrix  = "<div $matrix_style><h3><b><b>Rank Matrix</b></b></h3>$rank_matrix</div>";
+    return "$params_string $initial_standings_string $rank_matrix";
   }
-  return $result_string."\n\n";
 }
 
 sub record_results
@@ -566,7 +673,7 @@ sub score
   }
   for (my $i = 0; $i < $number_of_players; $i++)
   {
-    if ($bye_player && $i == $bye_player)
+    if ($bye_player && $i == $bye_player - 1)
     {
       $players->[$i]->{Constants::PLAYER_SCORES}->[$round] = Constants::DEFAULT_BYE_SCORE;
       $players->[$i]->{Constants::PLAYER_SPREAD} += Constants::DEFAULT_BYE_SCORE;
@@ -589,41 +696,79 @@ sub standings
 {
   my $this = shift;
   $this->rerank();
-
-  my $sns = Constants::DEFAULT_NAME_STANDING_SPACING;
-  my $ss  = Constants::DEFAULT_STANDING_SPACING;
-  my $print_string = '%-'.$sns.'s%-'.$ss.'s%-'.$ss.'s%-'.$ss.'s%-'.$ss."s\n";
-  my $standings_string = '';
-  my $players = $this->{Constants::TOURNAMENT_PLAYERS};
-  my $number_of_players = $this->{Constants::TOURNAMENT_NUMBER_OF_PLAYERS};
-  $standings_string .= sprintf $print_string, '', 'Wins', 'Losses', 'Spread', 'Next';
-  for (my $i = 0; $i < $number_of_players; $i++)
+  if (!$this->{Constants::TOURNAMENT_HTML_FORMAT})
   {
-    my $wins   = $players->[$i]->{Constants::PLAYER_WINS};
-    my $losses = $players->[$i]->{Constants::PLAYER_LOSSES};
-    my $spread = $players->[$i]->{Constants::PLAYER_SPREAD}; 
-    my $name   = $players->[$i]->{Constants::PLAYER_NAME};
-    
-    my $next = '';
-    my $this_round = $this->{Constants::TOURNAMENT_CURRENT_ROUND};
-    #print "\n\n\n\nthis round: $this_round\n";
-    my $next_round = $this->{Constants::TOURNAMENT_CURRENT_ROUND} + 1;
-    my $next_opp = $players->[$i]->{Constants::PLAYER_OPPONENTS}->[$next_round];
-    if ($next_opp)
+    my $sns = Constants::DEFAULT_NAME_STANDING_SPACING;
+    my $ss  = Constants::DEFAULT_STANDING_SPACING;
+    my $print_string = '%-'.$sns.'s%-'.$ss.'s%-'.$ss.'s%-'.$ss.'s%-'.$ss."s\n";
+    my $standings_string = '';
+    my $players = $this->{Constants::TOURNAMENT_PLAYERS};
+    my $number_of_players = $this->{Constants::TOURNAMENT_NUMBER_OF_PLAYERS};
+    $standings_string .= sprintf $print_string, '', 'Wins', 'Losses', 'Spread', 'Next';
+    for (my $i = 0; $i < $number_of_players; $i++)
     {
-      $next = $next_opp->{Constants::PLAYER_NAME};
+      my $wins   = $players->[$i]->{Constants::PLAYER_WINS};
+      my $losses = $players->[$i]->{Constants::PLAYER_LOSSES};
+      my $spread = $players->[$i]->{Constants::PLAYER_SPREAD}; 
+      my $name   = $players->[$i]->{Constants::PLAYER_NAME};
+      
+      my $next = '';
+      my $this_round = $this->{Constants::TOURNAMENT_CURRENT_ROUND};
+      #print "\n\n\n\nthis round: $this_round\n";
+      my $next_round = $this->{Constants::TOURNAMENT_CURRENT_ROUND} + 1;
+      my $next_opp = $players->[$i]->{Constants::PLAYER_OPPONENTS}->[$next_round];
+      if ($next_opp)
+      {
+        $next = $next_opp->{Constants::PLAYER_NAME};
+      }
+      else
+      {
+        my $pscore = $players->[$i]->{Constants::PLAYER_SCORES}->[$this_round];
+        my $oscore = $players->[$i]->{Constants::PLAYER_OPPONENTS}->[$this_round]
+                      ->{Constants::PLAYER_SCORES}->[$this_round];
+        my $opp = $players->[$i]->{Constants::PLAYER_OPPONENTS}->[$this_round]->{Constants::PLAYER_NAME};
+        $next = "$pscore - $oscore against $opp";
+      }
+      $standings_string .= sprintf $print_string, $name, $wins, $losses, $spread, $next;
     }
-    else
-    {
-      my $pscore = $players->[$i]->{Constants::PLAYER_SCORES}->[$this_round];
-      my $oscore = $players->[$i]->{Constants::PLAYER_OPPONENTS}->[$this_round]
-                    ->{Constants::PLAYER_SCORES}->[$this_round];
-      my $opp = $players->[$i]->{Constants::PLAYER_OPPONENTS}->[$this_round]->{Constants::PLAYER_NAME};
-      $next = "$pscore - $oscore against $opp";
-    }
-    $standings_string .= sprintf $print_string, $name, $wins, $losses, $spread, $next;
+    return $standings_string;
   }
-  return $standings_string;
+  else
+  {
+    my $table_style = Constants::TOURNAMENT_TABLE_STYLE;
+    my $div_style   = Constants::TOURNAMENT_DIV_STYLE;
+    my $players = $this->{Constants::TOURNAMENT_PLAYERS};
+    my $number_of_players = $this->{Constants::TOURNAMENT_NUMBER_OF_PLAYERS};
+    my $spaces = '&nbsp;' x 5;
+    my $init_div_id = 'init_div_id';
+    my $title_row = join "", (map {"<td><b><b>$_$spaces</b></b></td>"} ('Rank','Player', 'Wins', 'Losses', 'Spread'));
+    my $standings_string =
+     "<div id='$init_div_id' class='collapse' $div_style>\n<table>\n<tbody>
+        <tr>$title_row</tr>"; 
+    for (my $i = 0; $i < $number_of_players; $i++)
+    {
+      my $wins   = $players->[$i]->{Constants::PLAYER_WINS};
+      my $losses = $players->[$i]->{Constants::PLAYER_LOSSES};
+      my $spread = $players->[$i]->{Constants::PLAYER_SPREAD}; 
+      my $name   = $players->[$i]->{Constants::PLAYER_NAME};
+      
+      #my $this_round = $this->{Constants::TOURNAMENT_CURRENT_ROUND};
+      #my $pscore = $players->[$i]->{Constants::PLAYER_SCORES}->[$this_round];
+      #my $oscore = $players->[$i]->{Constants::PLAYER_OPPONENTS}->[$this_round]
+      #    ->{Constants::PLAYER_SCORES}->[$this_round];
+      #my $opp = $players->[$i]->{Constants::PLAYER_OPPONENTS}->[$this_round]->{Constants::PLAYER_NAME};
+      #my $last = "$pscore - $oscore against $opp";
+      my $row = join "", (map {"<td><b>$_$spaces</b></td>"} ($i + 1, $name, $wins, $losses, $spread));
+      $standings_string .= "<tr>$row</tr>";
+    }
+    $standings_string .= "</tbody>\n</table>\n</div>";
+    my $init_table_expander = Utils::make_expander($init_div_id);
+    return
+      Utils::make_content_item(
+        $init_table_expander,
+        '<b><b>Initial Standings</b></b>',
+        $standings_string);
+  }
 }
 
 sub trim
