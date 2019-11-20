@@ -971,9 +971,13 @@ use constant HTML_NAV => <<NAV
       <li class="nav-item">
         <a class="nav-link" href="/typing.html">RandomRacer 2.0</a>
       </li>
+
+      <!-- 
       <li class="nav-item">
         <a class="nav-link" href="/simulate.html">Tournament Simulation</a>
       </li>
+      -->
+
       <!-- Dropdown -->
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown"
