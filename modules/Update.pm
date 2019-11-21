@@ -2042,6 +2042,7 @@ sub update_simulate_html
   </div>
   <div id='$simid'>
   </div>
+
   $default_scripts
   $collapse_scripts
 

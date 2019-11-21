@@ -1443,6 +1443,7 @@ use constant TOURNAMENT_TABLE_STYLE =>
 use constant TOURNAMENT_RESET_ROUND       => 'Starting Round';
 use constant TOURNAMENT_NUMBER_OF_ROUNDS  => 'Final Round';
 use constant TOURNAMENT_PLAYERS           => 'Players';
+use constant TOURNAMENT_SCENARIO_MATRIX   => 'Scenario Matrix';
 use constant TOURNAMENT_NUMBER_OF_PLAYERS => 'Number of Players';
 use constant TOURNAMENT_PAIRING_METHOD    => 'Pairing Method';
 use constant TOURNAMENT_SCORING_METHOD    => 'Scoring Method';

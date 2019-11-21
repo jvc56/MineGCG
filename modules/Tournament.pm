@@ -224,12 +224,20 @@ sub new
     $player->{Constants::PLAYER_FINAL_RANKS} = \@player_final_ranks;
   }
 
+  my @scenario_matrix = ();
+  for (my $i = 0; $i < $number_of_players; $i++)
+  {
+    my @rank_scenarios = (undef) x $number_of_players;
+    push @scenario_matrix, \@rank_scenarios;
+  }
+
   my %tournament =
     (
      Constants::TOURNAMENT_RESET_ROUND       => $reset_round,
      Constants::TOURNAMENT_NUMBER_OF_ROUNDS  => $number_of_rounds,
      Constants::TOURNAMENT_NUMBER_OF_PLAYERS => $number_of_players,
      Constants::TOURNAMENT_PLAYERS           => \@players,
+     Constants::TOURNAMENT_SCENARIO_MATRIX   => \@scenario_matrix, 
      Constants::TOURNAMENT_PAIRING_METHOD    => $pairing_method,
      Constants::TOURNAMENT_SCORING_METHOD    => $scoring_method,
 
@@ -442,22 +450,32 @@ sub get_results
     }
     $rank_matrix .= '</tr>';
     my $corner_radius = '5px';
+    my $button_style = "style='color: white; padding: 0px; margin: 0px;'";
     for (my $i = 0; $i < $number_of_players; $i++)
     {
       my $player = $players->[$i];
+      my $player_number = $player->{Constants::PLAYER_NUMBER};
       my $name   = $player->{Constants::PLAYER_NAME};
-      $rank_matrix .= "<tr style='white-space: nowrap'><td style='text-align: left'><b><b>$name</b></b></td>";
+      my $outcome_row  = "<tr style='white-space: nowrap'><td style='text-align: left'><b><b>$name</b></b></td>";
+      my $srow_id      = "scenario_row_$i";
       my $pranks = $player->{Constants::PLAYER_FINAL_RANKS};
       my $pranks_length = scalar @{$pranks};
+      my $cspan = $pranks_length + 1;
+      my $scenario_row = "<tr id='$srow_id'><td style='text-align: center; width: 100%' colspan='$cspan'><div class='accordion' id='$srow_id'>";
       for (my $j = 0; $j < $pranks_length; $j++)
       {
         my $jrank = $pranks->[$j];
         my $cell_color = '#000000'; 
-        my $perc = '';
+        my $scenario = '';
+        my $outcome_content = '';
+        my $scenario_id = "scenario_$i"."_$j";
         if ($jrank != 0)
         {
-          $perc = 100 * (sprintf '%.4f', $jrank / $sims) . '%';
+          my $perc = 100 * (sprintf '%.4f', $jrank / $sims) . '%';
           $cell_color = '#00' . (sprintf("%02X", max(int(255/20), int(255*$jrank/$sims)))). '00';
+          my $scenario_matrix = $this->{Constants::TOURNAMENT_SCENARIO_MATRIX}->[$player_number]->[$j];
+          $scenario = "<br><b><b>Example Scenario of $name finishing in position ".($j + 1)."</b></b><br>$scenario_matrix";
+          $outcome_content = "<button class='btn btn-link collapsed' type='button' data-toggle='collapse' data-target='#$scenario_id' aria-expanded='false' aria-controls='$scenario_id' $button_style><b>$perc</b></button>"; 
         }
         my $radius_style = '';
         if ($i == 0)
@@ -482,9 +500,11 @@ sub get_results
             $radius_style = "border-bottom-right-radius: $corner_radius";
           }
         }
-        $rank_matrix .= "<td style='background-color: $cell_color; $radius_style'><b>$perc</b></td>";
+        $outcome_row .= "<td style='background-color: $cell_color; $radius_style'>$outcome_content</td>";
+        $scenario_row .= "<div id='$scenario_id' class='collapse' data-parent='#$srow_id' style='text-align: center'>$scenario</div>";
       }
-      $rank_matrix .= '</tr>';
+      $rank_matrix .= $outcome_row  . '</tr>';
+      $rank_matrix .= $scenario_row . '</td></tr>';
     }
     $rank_matrix .= "</tbody></table>";
     $rank_matrix  = "<div $matrix_style><h3><b><b>Rank Matrix</b></b></h3>$rank_matrix</div>";
@@ -498,9 +518,18 @@ sub record_results
 
   my $players = $this->{Constants::TOURNAMENT_PLAYERS};
   my $number_of_players = $this->{Constants::TOURNAMENT_NUMBER_OF_PLAYERS};
-
+  my $scenario_string;
   for (my $i = 0; $i < $number_of_players; $i++)
   {
+    if (!$players->[$i]->{Constants::PLAYER_FINAL_RANKS}->[$i])
+    {
+      if (!$scenario_string)
+      {
+        $scenario_string = $this->scenario();
+      }
+      $this->{Constants::TOURNAMENT_SCENARIO_MATRIX}->
+        [$players->[$i]->{Constants::PLAYER_NUMBER}]->[$i] = $scenario_string;
+    }
     $players->[$i]->{Constants::PLAYER_FINAL_RANKS}->[$i]++;
   }
   $this->{Constants::TOURNAMENT_CURRENT_NUMBER_OF_SIMULATIONS}++;
@@ -580,6 +609,88 @@ sub simulation_reset
     }
   }
   $this->{Constants::TOURNAMENT_CURRENT_NUMBER_OF_SIMULATIONS} = 0;
+}
+
+sub scenario
+{
+  my $this = shift;
+
+  my $players = $this->{Constants::TOURNAMENT_PLAYERS};
+  my $div_style    = Constants::TOURNAMENT_DIV_STYLE;
+  my $matrix_style = Constants::TOURNAMENT_MATRIX_STYLE;
+  my $table_style  = Constants::TOURNAMENT_TABLE_STYLE; 
+  my $number_of_players = $this->{Constants::TOURNAMENT_NUMBER_OF_PLAYERS};
+  my $number_of_rounds = $this->{Constants::TOURNAMENT_NUMBER_OF_ROUNDS};
+  my $scenario_matrix = "<table style='width: 100%'><tbody><tr><td style='width: 1px'></td>";
+  for (my $i = 0; $i < $number_of_rounds; $i++)
+  {
+    $scenario_matrix .= sprintf "<td><b><b>%s</b></b></td>", $i + 1;
+  }
+  $scenario_matrix .= '</tr>';
+  my $corner_radius = '5px';
+  for (my $i = 0; $i < $number_of_players; $i++)
+  {
+    my $player          = $players->[$i];
+    my $name            = $player->{Constants::PLAYER_NAME};
+    my $player_scores   = $player->{Constants::PLAYER_SCORES};
+    my $opponents       = $player->{Constants::PLAYER_OPPONENTS};
+    $scenario_matrix .= "<tr style='white-space: nowrap'><td style='text-align: left'><b><b>$name</b></b></td>";
+    for (my $j = 0; $j < $number_of_rounds; $j++)
+    {
+      my $player_score   = $player_scores->[$j];
+      my $opponent       = $opponents->[$j];
+      my $opponent_score = $opponent->{Constants::PLAYER_SCORES}->[$j];
+      
+      my $wl         = 'L';
+      my $cell_color = '#000000'; 
+      if ($player_score > $opponent_score)
+      {
+        $wl = 'W';
+        $cell_color = '#00CC00';
+      }
+      elsif ($player->{Constants::PLAYER_NUMBER} == $opponent->{Constants::PLAYER_NUMBER})
+      {
+        $wl = 'B';
+        $cell_color = '#CCCC00';
+        $opponent_score = 0;
+      }
+      elsif ($player_score == $opponent_score)
+      {
+        $wl = 'T';
+        $cell_color = '#0000CC';
+      }
+      my $scores     = "$player_score - $opponent_score";
+      my $cell_content = "$wl";
+      my $radius_style = '';
+      if ($i == 0)
+      {
+        if ($j == 0)
+        {
+          $radius_style = "border-top-left-radius: $corner_radius";
+        }
+        elsif ($j == $number_of_rounds - 1)
+        {
+          $radius_style = "border-top-right-radius: $corner_radius";
+        }
+      }
+      elsif ($i == $number_of_players - 1)
+      {
+        if ($j == 0)
+        {
+          $radius_style = "border-bottom-left-radius: $corner_radius";
+        }
+        elsif ($j == $number_of_rounds - 1)
+        {
+          $radius_style = "border-bottom-right-radius: $corner_radius";
+        }
+      }
+      $scenario_matrix .= "<td style='background-color: $cell_color; $radius_style'><b>$cell_content</b></td>";
+    }
+    $scenario_matrix .= '</tr>';
+  }
+  $scenario_matrix .= "</tbody></table>";
+  $scenario_matrix  = "<div $matrix_style>$scenario_matrix</div>";
+  return $scenario_matrix;
 }
 
 sub score
