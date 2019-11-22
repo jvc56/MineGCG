@@ -19,6 +19,35 @@ use Constants;
 use Game;
 use JSON::XS;
 
+sub get_ordinal_suffix
+{
+  my $number = shift;
+
+  my $last_digit = substr($number, -1);
+  my $suffix;
+  if ($number == 11)
+  {
+    $suffix = 'th';
+  }
+  elsif ($last_digit == 1)
+  {
+    $suffix = 'st';
+  }
+  elsif ($last_digit == 2)
+  {
+    $suffix = 'nd';
+  }
+  elsif ($last_digit == 3)
+  {
+    $suffix = 'rd';
+  }
+  else
+  {
+    $suffix = 'th';
+  }
+  return $suffix;
+}
+
 sub get_confidence_interval
 {
   my $P           = shift;

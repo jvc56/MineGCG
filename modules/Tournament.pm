@@ -430,7 +430,7 @@ sub get_results
       {
         $value++;
       }
-      $params_table .= "<tr><td><b><b>$param:$spaces</b></b></td><td><b>$value</b></td></tr>";
+      $params_table .= "<tr><td style='white-space: nowrap'><b><b>$param:$spaces</b></b></td><td><b>$value</b></td></tr>";
     }
     $params_table .= "</tbody></table></div>";
     my $params_table_expander = Utils::make_expander($params_div_id);
@@ -443,20 +443,21 @@ sub get_results
    
     my $initial_standings_string = "<div $div_style>" . $this->standings() . '</div>';
 
-    my $rank_matrix = "<table style='width: 100%'><tbody><tr><td style='width: 1px'></td>";
+    my $rank_matrix = "<table style='width: 100%'><tbody><tr><td style='width: 1%'></td>";
     for (my $i = 0; $i < $number_of_players; $i++)
     {
       $rank_matrix .= sprintf "<td><b><b>%s</b></b></td>", $i + 1;
     }
     $rank_matrix .= '</tr>';
     my $corner_radius = '5px';
-    my $button_style = "style='color: white; padding: 0px; margin: 0px;'";
+    my $button_style = "style='color: white; padding: 0px; margin: 0px; width: 100%'";
+    my $name_spaces = '&nbsp;' x 3;
     for (my $i = 0; $i < $number_of_players; $i++)
     {
       my $player = $players->[$i];
       my $player_number = $player->{Constants::PLAYER_NUMBER};
       my $name   = $player->{Constants::PLAYER_NAME};
-      my $outcome_row  = "<tr style='white-space: nowrap'><td style='text-align: left'><b><b>$name</b></b></td>";
+      my $outcome_row  = "<tr style='white-space: nowrap'><td style='text-align: left; width: 1%'><b><b>$name$name_spaces</b></b></td>";
       my $srow_id      = "scenario_row_$i";
       my $pranks = $player->{Constants::PLAYER_FINAL_RANKS};
       my $pranks_length = scalar @{$pranks};
@@ -471,11 +472,20 @@ sub get_results
         my $scenario_id = "scenario_$i"."_$j";
         if ($jrank != 0)
         {
-          my $perc = 100 * (sprintf '%.4f', $jrank / $sims) . '%';
+          my $perc = 100 * (sprintf '%.2f', $jrank / $sims);
+          if ($jrank / $sims < 0.01)
+          {
+            $perc = '<1';
+          }
+          $perc = "<b style='width: 100%'>$perc%</b>";
           $cell_color = '#00' . (sprintf("%02X", max(int(255/20), int(255*$jrank/$sims)))). '00';
           my $scenario_matrix = $this->{Constants::TOURNAMENT_SCENARIO_MATRIX}->[$player_number]->[$j];
-          $scenario = "<br><b><b>Example Scenario of $name finishing in position ".($j + 1)."</b></b><br>$scenario_matrix";
-          $outcome_content = "<button class='btn btn-link collapsed' type='button' data-toggle='collapse' data-target='#$scenario_id' aria-expanded='false' aria-controls='$scenario_id' $button_style><b>$perc</b></button>"; 
+          my $ordinal = ($j + 1) . Utils::get_ordinal_suffix($j + 1);
+          $scenario = "<br><b><b>Example Scenario of $name finishing in $ordinal</b></b><br>$scenario_matrix";
+          my $tooltip_title = "<b><b>$name</b></b> finishes <b><b>$ordinal</b></b> in <b><b>$jrank</b></b> out of <b><b>$sims</b></b> scenarios.";
+          my $tt_id = "tooltip_$i"."_$j";
+          my $tooltip = "<span id='$tt_id' onmouseover='initTooltip(\"$tt_id\")' data-toggle='tooltip' data-placement='top' data-html='true' title=\"$tooltip_title\" style='display: block; width: 100%'>$perc</span>";
+          $outcome_content = "<button class='btn btn-link collapsed' type='button' data-toggle='collapse' data-target='#$scenario_id' aria-expanded='false' aria-controls='$scenario_id' $button_style>$tooltip</button>"; 
         }
         my $radius_style = '';
         if ($i == 0)
@@ -525,7 +535,8 @@ sub record_results
     {
       if (!$scenario_string)
       {
-        $scenario_string = $this->scenario();
+        my $scenario_id = 'scenario_' . $players->[$i]->{Constants::PLAYER_NUMBER} . '_' . $i;
+        $scenario_string = $this->scenario($scenario_id);
       }
       $this->{Constants::TOURNAMENT_SCENARIO_MATRIX}->
         [$players->[$i]->{Constants::PLAYER_NUMBER}]->[$i] = $scenario_string;
@@ -614,6 +625,7 @@ sub simulation_reset
 sub scenario
 {
   my $this = shift;
+  my $id   = shift;
 
   my $players = $this->{Constants::TOURNAMENT_PLAYERS};
   my $div_style    = Constants::TOURNAMENT_DIV_STYLE;
@@ -621,28 +633,58 @@ sub scenario
   my $table_style  = Constants::TOURNAMENT_TABLE_STYLE; 
   my $number_of_players = $this->{Constants::TOURNAMENT_NUMBER_OF_PLAYERS};
   my $number_of_rounds = $this->{Constants::TOURNAMENT_NUMBER_OF_ROUNDS};
-  my $scenario_matrix = "<table style='width: 100%'><tbody><tr><td style='width: 1px'></td>";
+  my $num_attrs = 5;
+  my $td_style = "style='width: 1px; text-align: left; white-space: nowrap'";
+  my $spaces = '&nbsp;' x 2;
+  my $scenario_matrix =
+  "
+   <table style='width: 100%'><tbody>
+     <tr>
+        <td $td_style ><b><b>Rank  $spaces</b></b></td>
+        <td $td_style ><b><b>Player$spaces</b></b></td>
+        <td $td_style ><b><b>Wins  $spaces</b></b></td>
+        <td $td_style ><b><b>Losses$spaces</b></b></td>
+        <td $td_style ><b><b>Spread$spaces</b></b></td>
+        <td colspan='$number_of_rounds'><b><b>Rounds</b></b></td>   
+     </tr>
+     <tr>
+      <td colspan='$num_attrs'></td>
+  ";
   for (my $i = 0; $i < $number_of_rounds; $i++)
   {
     $scenario_matrix .= sprintf "<td><b><b>%s</b></b></td>", $i + 1;
   }
   $scenario_matrix .= '</tr>';
+
   my $corner_radius = '5px';
   for (my $i = 0; $i < $number_of_players; $i++)
   {
     my $player          = $players->[$i];
     my $name            = $player->{Constants::PLAYER_NAME};
+    my $wins            = $player->{Constants::PLAYER_WINS};
+    my $losses          = $player->{Constants::PLAYER_LOSSES};
+    my $spread          = $player->{Constants::PLAYER_SPREAD};
+    my $rank            = $i + 1;
     my $player_scores   = $player->{Constants::PLAYER_SCORES};
     my $opponents       = $player->{Constants::PLAYER_OPPONENTS};
-    $scenario_matrix .= "<tr style='white-space: nowrap'><td style='text-align: left'><b><b>$name</b></b></td>";
+    $scenario_matrix .=
+    "<tr style='white-space: nowrap'>
+       <td $td_style ><b><b>$rank$spaces</b></b></td>
+       <td $td_style ><b><b>$name$spaces</b></b></td>
+       <td $td_style ><b><b>$wins$spaces</b></b></td>
+       <td $td_style ><b><b>$losses$spaces</b></b></td>
+       <td $td_style ><b><b>$spread$spaces</b></b></td>
+    ";
     for (my $j = 0; $j < $number_of_rounds; $j++)
     {
       my $player_score   = $player_scores->[$j];
       my $opponent       = $opponents->[$j];
+      my $opponent_name  = $opponent->{Constants::PLAYER_NAME};
       my $opponent_score = $opponent->{Constants::PLAYER_SCORES}->[$j];
       
       my $wl         = 'L';
       my $cell_color = '#000000'; 
+      my $players = "$name vs. $opponent_name";
       if ($player_score > $opponent_score)
       {
         $wl = 'W';
@@ -653,14 +695,17 @@ sub scenario
         $wl = 'B';
         $cell_color = '#CCCC00';
         $opponent_score = 0;
+        $players = $name;
       }
       elsif ($player_score == $opponent_score)
       {
         $wl = 'T';
         $cell_color = '#0000CC';
       }
-      my $scores     = "$player_score - $opponent_score";
-      my $cell_content = "$wl";
+      my $tt_id = $id . "_tooltip_$i"."_$j";
+      my $tooltip_title = "$players ($player_score - $opponent_score)"; 
+      # my $cell_content = "<span id='$tt_id' onmouseover='initTooltip(\"$tt_id\")' data-toggle='tooltip' data-placement='top' data-html='true' title=\"$tooltip_title\"><b><b>$wl</b></b></span>";
+      my $cell_content = "<b><b>$wl</b></b>";
       my $radius_style = '';
       if ($i == 0)
       {
@@ -684,7 +729,7 @@ sub scenario
           $radius_style = "border-bottom-right-radius: $corner_radius";
         }
       }
-      $scenario_matrix .= "<td style='background-color: $cell_color; $radius_style'><b>$cell_content</b></td>";
+      $scenario_matrix .= "<td style='background-color: $cell_color; $radius_style' title=\"$tooltip_title\">$cell_content</td>";
     }
     $scenario_matrix .= '</tr>';
   }

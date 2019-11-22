@@ -2013,7 +2013,7 @@ sub update_simulate_html
              <td><input required $input_class  name='$tournament_option' type='text' value='' placeholder='Tournament File URL'></td>
           </tr>
           <tr>
-            <td><input  $input_class  name='$start_round_option' min='0' type='number' placeholder='Start Round' ></td>
+            <td><input  $input_class  name='$start_round_option' min='0' type='number' placeholder='Start Round (optional)' ></td>
           </tr>
           <tr>
             <td ><input required $input_class  min='1' name='$end_round_option' type='number' placeholder='End Round' ></td>
@@ -2043,9 +2043,9 @@ sub update_simulate_html
   <div id='$simid'>
   </div>
 
+  $footer
   $default_scripts
   $collapse_scripts
-
   <script>
 
   function simulate()
@@ -2068,11 +2068,43 @@ sub update_simulate_html
     XHR.addEventListener('load', function(event)
     {
       document.getElementById('$simid').innerHTML = event.target.responseText;
+      initExpanders();
     });
     var gettarget = '/$cgibin_name/$script?' + args;
     XHR.open('GET', gettarget);
     XHR.send(formData);
     return false;
+  }
+  function initExpanders()
+  {
+          \$('.collapse').on('shown.bs.collapse', function (e) {
+          var id = e.target.id;
+
+          id = 'button_' + id;
+          var el = document.getElementById(id);
+          if (el && el.nodeName == \"BUTTON\")
+          {
+            el.innerHTML = '&#8722';
+          }
+
+        });
+
+        \$('.collapse').on('hidden.bs.collapse', function (e) {
+
+          var id = e.target.id;
+
+          id = 'button_' + id;
+          var el = document.getElementById(id);
+          if (el && el.nodeName == \"BUTTON\")
+          {
+            el.innerHTML = '+';
+          }
+
+        });
+  }
+  function initTooltip(tt_id)
+  {
+    \$('#' + tt_id).tooltip('show'); 
   }
   window.onload = function ()
   {
