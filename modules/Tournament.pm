@@ -16,13 +16,18 @@ use Utils;
 
 unless (caller)
 {
+  # Must be a .t file produced by TSH
   my $file                  = Constants::DEFAULT_TOURNAMENT_URL;
   my $number_of_rounds      = Constants::DEFAULT_NUMBER_OF_ROUNDS;
   my $pairing_method        = Constants::DEFAULT_PAIRING_METHOD;
   my $scoring_method        = Constants::DEFAULT_SCORING_METHOD;
   my $number_of_simulations = Constants::DEFAULT_NUMBER_OF_SIMULATIONS;
+  # Round that the tournament starts at. Defaults to the number of
+  #   rounds in the .t file
   my $reset_round           = Constants::DEFAULT_START_ROUND;
+  # Set html to get HTML formatted output
   my $html                  = 0;
+  # Flag for testing
   my $all;
 
   GetOptions (
@@ -42,8 +47,14 @@ unless (caller)
                     $pairing_method,
                     $scoring_method,
                     $number_of_simulations,
+                    # Decrement the value of reset_round because
+                    #   rounds are 0-indexed and we assume a
+                    #   1-indexed value is passed in
                     $reset_round - 1,
                     $html);
+
+  # Simulate the .t file with all combinations of
+  #   pairing and scoring methods
   if ($all)
   {
     my $pairing_methods = Constants::PAIRING_METHOD_LIST;
@@ -74,6 +85,8 @@ sub new
   my $pairing_method      = shift;
   my $scoring_method      = shift;
   my $simulations         = shift;
+  # If $force_current_round is set, the simulation will start
+  #   from the 0-indexed $force_current_round 
   my $force_current_round = shift;
   my $html                = shift;
 
@@ -89,15 +102,19 @@ sub new
   my $downloads_dir = Constants::DOWNLOADS_DIRECTORY_NAME;
   my $wget_flags    = Constants::WGET_FLAGS;
 
-  my $tournament_file = $downloads_dir . '/' . Utils::sanitize($tournament_file_url);
+  my $tournament_file =
+    $downloads_dir . '/' . Utils::sanitize($tournament_file_url);
 
-  system "wget $wget_flags $tournament_file_url -O $tournament_file > /dev/null 2>&1";
+  system "wget $wget_flags $tournament_file_url -O $tournament_file
+            > /dev/null 2>&1";
 
   my $reset_round;
   my $number_of_players = 0;
   my @players = ();
 
-  open(my $fh, '<',  $tournament_file) or return "Error: Cannot read file $tournament_file_url";
+  open(my $fh, '<',  $tournament_file) or
+    return "Error: Cannot read file $tournament_file_url";
+
   while(<$fh>)
   {
     $number_of_players++;
@@ -113,8 +130,18 @@ sub new
     my @opponents = split / /, $opponents_string;
     my @scores    = split / /, $scores_string;
 
+    # $force_current_round is a 0-indexed round value
+    #   that sets which round the tournament will start
+    #   simulating from. Since starting the simulation
+    #   from 1-indexed round 0 is valid, a value of
+    #   -1 for $force_current_round is also valid.
     if ($force_current_round >= -1)
     {
+      # The splice value is incremented because if the
+      #   simulation is starting at 0-indexed force_current_round,
+      #   we have to include the results for that round in the
+      #   simulation. For example if $force_current_round is 3,
+      #   we need results for 4 rounds, hence the increment.
       splice @opponents, $force_current_round + 1;
       splice @scores, $force_current_round + 1;
     }
@@ -122,22 +149,32 @@ sub new
     my $number_of_opponents = scalar @opponents;
     my $number_of_scores    = scalar @scores;
 
+    # If a player has a different number of oppoents and scores,
+    #   the .t file is invalid
     if ($number_of_opponents != $number_of_scores)
     {
-      return "Error: Different number of opponents and scores for $first_name $last_name";
+      return "Error: Different number of opponents and scores " . 
+               "for $first_name $last_name";
     }
+    # If the reset round (starting round) has been established and
+    #   this player has a different number of scores or opponents,
+    #   the .t file is invalid
     elsif($reset_round &&
            ($reset_round != $number_of_opponents - 1 ||
             $reset_round != $number_of_scores - 1)
          )
     {
-      return "Error: Inconsistent number of opponents or scores between players for at $first_name $last_name";
+      return "Error: Inconsistent number of opponents or scores" . 
+               "between players for at $first_name $last_name";
     }
     elsif (!$reset_round)
     {
       $reset_round = $number_of_opponents - 1;
     }
 
+    # Opponents in .t files are 1-indexed, so we need to convert
+    #   to 0-indexed for the simulation. Byes that are denoted by
+    #   a player number of 0 are now -1, this is dealt with later
     @opponents = map {$_ - 1} @opponents;
 
     while (scalar @opponents < $number_of_rounds)
@@ -167,12 +204,17 @@ sub new
     };
   }
 
+  # Convert player numbers into actual player objects
   for (my $i = 0; $i < $number_of_players; $i++)
   {
     my $player_opponents = $players[$i]->{Constants::PLAYER_OPPONENTS};
     for (my $j = 0; $j <= $reset_round; $j++)
     {
       my $opponent_number = $player_opponents->[$j];
+      # After conversion to 0-indexed player numbers, byes are now
+      #   denoted by -1. For the simulation, we need to convert
+      #   the -1 to the player's own number as this is how byes
+      #   are represented in the Tournament object.
       if ($opponent_number == -1)
       {
         $player_opponents->[$j] = $players[$i];
@@ -184,6 +226,7 @@ sub new
     }
   }
   
+  # Calculate all the players' wins, losses, and spread
   for (my $i = 0; $i < $number_of_players; $i++)
   {
     my $player = $players[$i];
@@ -192,7 +235,11 @@ sub new
     for (my $j = 0; $j <= $reset_round; $j++)
     {
       my $player_score   = $player_scores->[$j];
-      my $opponent_score = $player_opponents->[$j]->{Constants::PLAYER_SCORES}->[$j];
+      my $opponent_score =
+        $player_opponents->[$j]->{Constants::PLAYER_SCORES}->[$j];
+      
+      # If a player had a bye, set opponent score to 0 for
+      #   purposes of spread
       if ($player->{Constants::PLAYER_NUMBER} ==
             $player_opponents->[$j]->{Constants::PLAYER_NUMBER})
       {
@@ -220,6 +267,7 @@ sub new
       $players[$i]->{Constants::PLAYER_RESET_LOSSES};
     $players[$i]->{Constants::PLAYER_SPREAD} =
       $players[$i]->{Constants::PLAYER_RESET_SPREAD};
+    # Initialize the array that counts the player's final rankings
     my @player_final_ranks = (0) x $number_of_players;
     $player->{Constants::PLAYER_FINAL_RANKS} = \@player_final_ranks;
   }
@@ -248,6 +296,8 @@ sub new
      Constants::TOURNAMENT_HTML_FORMAT                   => $html
     );
   my $self = bless \%tournament, $this;
+  # Rerank before returning so the players are ordered
+  #   for the initial standings report
   $self->rerank();
   return $self;
 }
@@ -276,16 +326,24 @@ sub pair
       $players->[$player_two]->{Constants::PLAYER_OPPONENTS}->[$round] = 
         $players->[$player_one];
     }
+    # If there is a player left, assign the bye to them
     if (@pairings)
     {
       $players->[$pairings[0]]->{Constants::PLAYER_OPPONENTS}->[$round] = 
         $players->[$pairings[0]];
+      # Increment the bye value stored as a player number because
+      #   later we will check for it's existence and if player
+      #   0 gets a bye the bye existence value would be false, which
+      #   is bad, so increment it now and it will be decremented
+      #   upon comparison. This is done for all bye assignments
       $this->{Constants::TOURNAMENT_BYE_PLAYER} = $pairings[0] + 1;
     }
   }
   elsif ($method eq Constants::PAIRING_METHOD_KOTH)
   {
+    # KOTH pairings are dependent on current rankings
     $this->rerank();
+    # Declare opponent index here for performance reasons
     my $opponent_index;
     for (my $i = 0; $i < $number_of_players; $i++)
     {
@@ -293,7 +351,7 @@ sub pair
       {
         $opponent_index = $i - 1;
       }
-      elsif ($i == $this->{Constants::TOURNAMENT_NUMBER_OF_PLAYERS} - 1)  
+      elsif ($i == $this->{Constants::TOURNAMENT_NUMBER_OF_PLAYERS} - 1)
       {
         # Assign a bye to the last odd player out
         $opponent_index = $i;
@@ -309,9 +367,13 @@ sub pair
   }
   elsif ($method eq Constants::PAIRING_METHOD_RANK_PAIR)
   {
+    # Rank pairings are dependent on current rankings
     $this->rerank();
     my $opponent_index;
-    my $offset = ($this->{Constants::TOURNAMENT_NUMBER_OF_ROUNDS} - $round) + 1;
+    my $offset =
+      ($this->{Constants::TOURNAMENT_NUMBER_OF_ROUNDS} - $round) + 1;
+    # The offset of rank pair cannot be greater than
+    #   half of the number of players
     $offset = min($offset, int($number_of_players / 2));
     for (my $i = 0; $i < $number_of_players; $i++)
     {
@@ -376,11 +438,13 @@ sub get_results
     my $rpad = Constants::DEFAULT_PERCENTAGE_PADDING;
   
     my $result_string = "Simulation Parameters:\n\n";
-  
+    # Build the parameters table
     for (my $i = 0; $i < scalar @parameters; $i++)
     {
       my $param = $parameters[$i];
       $result_string .= sprintf "  %-" . $pad . "s", ($param . ':');
+      # Since the start round is 0-indexed, increment it for
+      #   human readability
       if ($param eq Constants::TOURNAMENT_RESET_ROUND)
       {
         $result_string .= ($this->{$param} + 1) . "\n";
@@ -394,6 +458,7 @@ sub get_results
     $result_string .= "Initial Standings:\n\n";
     $result_string .= $this->standings();
     $result_string .= "\n";
+    # Build the final rank matrix
     $result_string .= sprintf "%-" . $pad . "s", '';
     for (my $i = 0; $i < $number_of_players; $i++)
     {
@@ -421,18 +486,41 @@ sub get_results
     my $table_style  = Constants::TOURNAMENT_TABLE_STYLE; 
     my $params_div_id = 'params_div_id';
     my $spaces = '&nbsp;' x 5;
-    my $params_table  = "<div id='$params_div_id' class='collapse' $div_style><table>\n<tbody>\n"; 
+    # Build the parameters table
+    my $params_table  =
+    "
+    <div id='$params_div_id' class='collapse' $div_style>
+      <table>
+        <tbody>
+    "; 
     for (my $i = 0; $i < scalar @parameters; $i++)
     {
       my $param = $parameters[$i];
       my $value = $this->{$param};
       if ($param eq Constants::TOURNAMENT_RESET_ROUND)
       {
+        # Increment the 0-indexed round number for
+        #   human readability
         $value++;
       }
-      $params_table .= "<tr><td style='white-space: nowrap'><b><b>$param:$spaces</b></b></td><td><b>$value</b></td></tr>";
+      $params_table .=
+      "
+      <tr>
+        <td style='white-space: nowrap'>
+          <b><b>$param:$spaces</b></b>
+        </td>
+        <td>
+          <b>$value</b>
+        </td>
+      </tr>
+      ";
     }
-    $params_table .= "</tbody></table></div>";
+    $params_table .=
+    "
+        </tbody>
+      </table>
+    </div>
+    ";
     my $params_table_expander = Utils::make_expander($params_div_id);
     my $params_string = 
       Utils::make_content_item(
@@ -441,9 +529,18 @@ sub get_results
         $params_table,
         $div_style);
    
-    my $initial_standings_string = "<div $div_style>" . $this->standings() . '</div>';
+    my $initial_standings_string =
+      "<div $div_style>" . $this->standings() . '</div>';
 
-    my $rank_matrix = "<table style='width: 100%'><tbody><tr><td style='width: 1%'></td>";
+    # Build the rank matrix
+    my $rank_matrix =
+    "
+    <table style='width: 100%'>
+      <tbody>
+        <tr>
+          <td style='width: 1%'></td>
+    ";
+    # Build the Rank label row
     for (my $i = 0; $i < $number_of_players; $i++)
     {
       $rank_matrix .= sprintf "<td><b><b>%s</b></b></td>", $i + 1;
@@ -457,12 +554,23 @@ sub get_results
       my $player = $players->[$i];
       my $player_number = $player->{Constants::PLAYER_NUMBER};
       my $name   = $player->{Constants::PLAYER_NAME};
-      my $outcome_row  = "<tr style='white-space: nowrap'><td style='text-align: left; width: 1%'><b><b>$name$name_spaces</b></b></td>";
+      my $outcome_row  =
+      "
+      <tr style='white-space: nowrap'>
+        <td style='text-align: left; width: 1%'>
+          <b><b>$name$name_spaces</b></b>
+        </td>
+      ";
       my $srow_id      = "scenario_row_$i";
       my $pranks = $player->{Constants::PLAYER_FINAL_RANKS};
       my $pranks_length = scalar @{$pranks};
       my $cspan = $pranks_length + 1;
-      my $scenario_row = "<tr id='$srow_id'><td style='text-align: center; width: 100%' colspan='$cspan'><div class='accordion' id='$srow_id'>";
+      my $scenario_row =
+      "
+      <tr id='$srow_id'>
+        <td style='text-align: center; width: 100%' colspan='$cspan'>
+          <div class='accordion' id='$srow_id'>
+      ";
       for (my $j = 0; $j < $pranks_length; $j++)
       {
         my $jrank = $pranks->[$j];
@@ -472,20 +580,55 @@ sub get_results
         my $scenario_id = "scenario_$i"."_$j";
         if ($jrank != 0)
         {
+          # If the player place in this rank in at least one scenario
+          #   fill that box with content
           my $perc = 100 * (sprintf '%.2f', $jrank / $sims);
           if ($jrank / $sims < 0.01)
           {
             $perc = '<1';
           }
           $perc = "<b style='width: 100%'>$perc%</b>";
-          $cell_color = '#00' . (sprintf("%02X", max(int(255/20), int(255*$jrank/$sims)))). '00';
-          my $scenario_matrix = $this->{Constants::TOURNAMENT_SCENARIO_MATRIX}->[$player_number]->[$j];
+
+          # Assign a brighter shade of green for higher percentages
+          $cell_color =
+            '#00' .
+            (sprintf("%02X", max(int(255/20), int(255*$jrank/$sims)))) .
+            '00';
+          # Retrieve the scenario matrix
+          my $scenario_matrix =
+            $this->{Constants::TOURNAMENT_SCENARIO_MATRIX}->
+            [$player_number]->[$j];
           my $ordinal = ($j + 1) . Utils::get_ordinal_suffix($j + 1);
-          $scenario = "<br><b><b>Example Scenario of $name finishing in $ordinal</b></b><br>$scenario_matrix";
-          my $tooltip_title = "<b><b>$name</b></b> finishes <b><b>$ordinal</b></b> in <b><b>$jrank</b></b> out of <b><b>$sims</b></b> scenarios.";
+          $scenario =
+            "<br><b><b>Example Scenario of $name finishing in $ordinal" . 
+            "</b></b><br>$scenario_matrix";
+          my $tooltip_title =
+            "<b><b>$name</b></b> finishes <b><b>$ordinal</b></b> in <b><b>" .
+            "$jrank</b></b> out of <b><b>$sims</b></b> scenarios.";
           my $tt_id = "tooltip_$i"."_$j";
-          my $tooltip = "<span id='$tt_id' onmouseover='initTooltip(\"$tt_id\")' data-toggle='tooltip' data-placement='top' data-html='true' title=\"$tooltip_title\" style='display: block; width: 100%'>$perc</span>";
-          $outcome_content = "<button class='btn btn-link collapsed' type='button' data-toggle='collapse' data-target='#$scenario_id' aria-expanded='false' aria-controls='$scenario_id' $button_style>$tooltip</button>"; 
+          my $tooltip =
+          "<span
+              id='$tt_id'
+              onmouseover='initTooltip(\"$tt_id\")'
+              data-toggle='tooltip'
+              data-placement='top'
+              data-html='true'
+              title=\"$tooltip_title\"
+              style='display: block; width: 100%'>
+                $perc
+          </span>";
+          $outcome_content =
+            "<button
+               class='btn btn-link collapsed'
+               type='button'
+               data-toggle='collapse'
+               data-target='#$scenario_id'
+               aria-expanded='false'
+               aria-controls='$scenario_id'
+               $button_style >
+                 $tooltip
+            </button>
+            "; 
         }
         my $radius_style = '';
         if ($i == 0)
@@ -510,14 +653,36 @@ sub get_results
             $radius_style = "border-bottom-right-radius: $corner_radius";
           }
         }
-        $outcome_row .= "<td style='background-color: $cell_color; $radius_style'>$outcome_content</td>";
-        $scenario_row .= "<div id='$scenario_id' class='collapse' data-parent='#$srow_id' style='text-align: center'>$scenario</div>";
+        $outcome_row .=
+        "
+        <td
+           style='background-color: $cell_color; $radius_style'>
+           $outcome_content
+        </td>
+        ";
+        $scenario_row .=
+        "
+        <div
+           id='$scenario_id'
+           class='collapse'
+           data-parent='#$srow_id'
+           style='text-align: center'>
+             $scenario
+        </div>
+        ";
       }
       $rank_matrix .= $outcome_row  . '</tr>';
       $rank_matrix .= $scenario_row . '</td></tr>';
     }
     $rank_matrix .= "</tbody></table>";
-    $rank_matrix  = "<div $matrix_style><h3><b><b>Rank Matrix</b></b></h3>$rank_matrix</div>";
+    $rank_matrix  =
+      "<div $matrix_style>
+         <h3>
+           <b><b>Rank Matrix</b></b>
+         </h3>
+         $rank_matrix
+       </div>
+      ";
     return "$params_string $initial_standings_string $rank_matrix";
   }
 }
@@ -533,9 +698,12 @@ sub record_results
   {
     if (!$players->[$i]->{Constants::PLAYER_FINAL_RANKS}->[$i])
     {
+      # If we have not generated a scenario string, generate one
       if (!$scenario_string)
       {
-        my $scenario_id = 'scenario_' . $players->[$i]->{Constants::PLAYER_NUMBER} . '_' . $i;
+        my $scenario_id =
+          'scenario_' . $players->[$i]->{Constants::PLAYER_NUMBER} . '_' . $i;
+        
         $scenario_string = $this->scenario($scenario_id);
       }
       $this->{Constants::TOURNAMENT_SCENARIO_MATRIX}->
@@ -595,7 +763,6 @@ sub simulate
       $this->pair($i);
       $this->score($i);
       $this->{Constants::TOURNAMENT_CURRENT_ROUND}++;
-      #print $this->standings();
     }
     $this->rerank();
     $this->record_results();
@@ -627,7 +794,7 @@ sub scenario
   my $this = shift;
   my $id   = shift;
 
-  my $players = $this->{Constants::TOURNAMENT_PLAYERS};
+  my $players      = $this->{Constants::TOURNAMENT_PLAYERS};
   my $div_style    = Constants::TOURNAMENT_DIV_STYLE;
   my $matrix_style = Constants::TOURNAMENT_MATRIX_STYLE;
   my $table_style  = Constants::TOURNAMENT_TABLE_STYLE; 
@@ -690,7 +857,8 @@ sub scenario
         $wl = 'W';
         $cell_color = '#00CC00';
       }
-      elsif ($player->{Constants::PLAYER_NUMBER} == $opponent->{Constants::PLAYER_NUMBER})
+      elsif ($player->{Constants::PLAYER_NUMBER} ==
+               $opponent->{Constants::PLAYER_NUMBER})
       {
         $wl = 'B';
         $cell_color = '#CCCC00';
@@ -703,8 +871,22 @@ sub scenario
         $cell_color = '#0000CC';
       }
       my $tt_id = $id . "_tooltip_$i"."_$j";
-      my $tooltip_title = "$players ($player_score - $opponent_score)"; 
-      # my $cell_content = "<span id='$tt_id' onmouseover='initTooltip(\"$tt_id\")' data-toggle='tooltip' data-placement='top' data-html='true' title=\"$tooltip_title\"><b><b>$wl</b></b></span>";
+      my $tooltip_title = "$players ($player_score - $opponent_score)";
+      # Switch the my $cell_content comments to enable/disable bootstrap
+      #   tooltips for the scenario HTML. It is disabled for now because
+      #   the HTML tends to lag/freeze for larger divisions
+      # my $cell_content =
+      # "
+      # <span
+      #    id='$tt_id'
+      #    onmouseover='initTooltip(\"$tt_id\")'
+      #    data-toggle='tooltip'
+      #    data-placement='top'
+      #    data-html='true'
+      #    title=\"$tooltip_title\" >
+      #    <b><b>$wl</b></b>
+      # </span>
+      # ";
       my $cell_content = "<b><b>$wl</b></b>";
       my $radius_style = '';
       if ($i == 0)
@@ -729,7 +911,14 @@ sub scenario
           $radius_style = "border-bottom-right-radius: $corner_radius";
         }
       }
-      $scenario_matrix .= "<td style='background-color: $cell_color; $radius_style' title=\"$tooltip_title\">$cell_content</td>";
+      $scenario_matrix .=
+        "
+        <td
+           style='background-color: $cell_color; $radius_style'
+           title=\"$tooltip_title\">
+             $cell_content
+        </td>
+        ";
     }
     $scenario_matrix .= '</tr>';
   }
@@ -744,15 +933,16 @@ sub score
   my $round = shift;
 
 
-  my $method = $this->{Constants::TOURNAMENT_SCORING_METHOD};
-  my $players = $this->{Constants::TOURNAMENT_PLAYERS};
+  my $method            = $this->{Constants::TOURNAMENT_SCORING_METHOD};
+  my $players           = $this->{Constants::TOURNAMENT_PLAYERS};
   my $number_of_players = $this->{Constants::TOURNAMENT_NUMBER_OF_PLAYERS};
-  my $bye_player = $this->{Constants::TOURNAMENT_BYE_PLAYER};
+  my $bye_player        = $this->{Constants::TOURNAMENT_BYE_PLAYER};
 
   my $win;
   my $player_score;
   my $opponent_score;
 
+  # Assign a uniform random score between 300 and 599
   if ($method eq Constants::SCORING_METHOD_RANDOM_UNIFORM)
   {
     for (my $i = 0; $i < $number_of_players; $i++)
@@ -760,6 +950,7 @@ sub score
       $players->[$i]->{Constants::PLAYER_SCORES}->[$round] = 300 + int(rand(300));
     }
   }
+  # Randomly assigns a score of 1000 - 0 or 0 - 1000
   elsif($method eq Constants::SCORING_METHOD_RANDOM_BLOWOUTS)
   {
     my @scored = (0) x $number_of_players;
@@ -769,12 +960,14 @@ sub score
     {
       if (!$scored[$players->[$i]->{Constants::PLAYER_NUMBER}])
       {
-        # Make blowouts predefined
         $random_index = int(rand(2));
 
-        $players->[$i]->{Constants::PLAYER_SCORES}->[$round]  = $blowout_scores->[$random_index];
+        $players->[$i]->{Constants::PLAYER_SCORES}->[$round] =
+          $blowout_scores->[$random_index];
+        
         $players->[$i]->{Constants::PLAYER_OPPONENTS}->[$round]->
-          {Constants::PLAYER_SCORES}->[$round] = 1 - $blowout_scores->[$random_index];
+          {Constants::PLAYER_SCORES}->[$round] =
+          1 - $blowout_scores->[$random_index];
 
         $scored[$players->[$i]->{Constants::PLAYER_NUMBER}] = 1;
         $scored[$players->[$i]->{Constants::PLAYER_OPPONENTS}->
@@ -782,6 +975,8 @@ sub score
       }
     }    
   }
+  # Randomly assigns one of the BST_SCORES found in the
+  #   Constants.pm file
   elsif($method eq Constants::SCORING_METHOD_RANDOM_BST)
   {
     my @scored = (0) x $number_of_players;
@@ -793,7 +988,6 @@ sub score
     {
       if (!$scored[$players->[$i]->{Constants::PLAYER_NUMBER}])
       {
-        # Make blowouts predefined
         $random_pair = int(rand($l));
         $random_index = int(rand(2));
 
@@ -805,17 +999,17 @@ sub score
           $bst_scores->[$random_pair]->[1 - $random_index];
 
         $scored[$players->[$i]->{Constants::PLAYER_NUMBER}] = 1;
-        #print "Player name: " . "$players->[$i]->{Constants::PLAYER_NAME}"."\n";
-        #print "Player opp: " . "$players->[$i]->{Constants::PLAYER_OPPONENTS}->[$round]->{Constants::PLAYER_NAME}" . "\n";
-        $scored[$players->[$i]->{Constants::PLAYER_OPPONENTS}->[$round]->{Constants::PLAYER_NUMBER}] = 1;
+        $scored[$players->[$i]->{Constants::PLAYER_OPPONENTS}->
+          [$round]->{Constants::PLAYER_NUMBER}] = 1;
       }
     }    
   }
+  # Score based on rating. For now this is random uniform
+  #   based on rating.
   elsif ($method eq Constants::SCORING_METHOD_RATING)
   {
     for (my $i = 0; $i < $number_of_players; $i++)
     {
-      # Uniform random for now
       $players->[$i]->{Constants::PLAYER_SCORES}->[$round] =
         (
             int (
@@ -827,19 +1021,29 @@ sub score
         Constants::DEFAULT_STANDARD_DEVIATION;
     }   
   }
+  # Using the scores, increment wins/losses and adjust spread
   for (my $i = 0; $i < $number_of_players; $i++)
   {
+    # Remember from above that the $bye_player was incremented
+    #   to avoid player 0 returning false for a bye, so we
+    #   decrement then compare.
     if ($bye_player && $i == $bye_player - 1)
     {
-      $players->[$i]->{Constants::PLAYER_SCORES}->[$round] = Constants::DEFAULT_BYE_SCORE;
-      $players->[$i]->{Constants::PLAYER_SPREAD} += Constants::DEFAULT_BYE_SCORE;
+      $players->[$i]->{Constants::PLAYER_SCORES}->[$round] =
+        Constants::DEFAULT_BYE_SCORE;
+      $players->[$i]->{Constants::PLAYER_SPREAD} +=
+        Constants::DEFAULT_BYE_SCORE;
       $players->[$i]->{Constants::PLAYER_WINS}   += 1;
     }
     else
     {
-      $player_score = $players->[$i]->{Constants::PLAYER_SCORES}->[$round];
-      $opponent_score = $players->[$i]->{Constants::PLAYER_OPPONENTS}->[$round]->
+      $player_score =
+        $players->[$i]->{Constants::PLAYER_SCORES}->[$round];
+      
+      $opponent_score =
+        $players->[$i]->{Constants::PLAYER_OPPONENTS}->[$round]->
         {Constants::PLAYER_SCORES}->[$round];
+      
       $players->[$i]->{Constants::PLAYER_SPREAD} += $player_score - $opponent_score;
       $win = (($player_score <=> $opponent_score) + 1) / 2;
       $players->[$i]->{Constants::PLAYER_WINS}   += $win;
@@ -856,11 +1060,13 @@ sub standings
   {
     my $sns = Constants::DEFAULT_NAME_STANDING_SPACING;
     my $ss  = Constants::DEFAULT_STANDING_SPACING;
-    my $print_string = '%-'.$sns.'s%-'.$ss.'s%-'.$ss.'s%-'.$ss.'s%-'.$ss."s\n";
-    my $standings_string = '';
-    my $players = $this->{Constants::TOURNAMENT_PLAYERS};
+    my $print_string =
+      '%-'.$sns.'s%-'.$ss.'s%-'.$ss.'s%-'.$ss.'s%-'.$ss."s\n";
+    my $standings_string  = '';
+    my $players           = $this->{Constants::TOURNAMENT_PLAYERS};
     my $number_of_players = $this->{Constants::TOURNAMENT_NUMBER_OF_PLAYERS};
-    $standings_string .= sprintf $print_string, '', 'Wins', 'Losses', 'Spread', 'Next';
+    $standings_string .=
+      sprintf $print_string, '', 'Wins', 'Losses', 'Spread', 'Next';
     for (my $i = 0; $i < $number_of_players; $i++)
     {
       my $wins   = $players->[$i]->{Constants::PLAYER_WINS};
@@ -870,9 +1076,10 @@ sub standings
       
       my $next = '';
       my $this_round = $this->{Constants::TOURNAMENT_CURRENT_ROUND};
-      #print "\n\n\n\nthis round: $this_round\n";
       my $next_round = $this->{Constants::TOURNAMENT_CURRENT_ROUND} + 1;
-      my $next_opp = $players->[$i]->{Constants::PLAYER_OPPONENTS}->[$next_round];
+      my $next_opp =
+        $players->[$i]->{Constants::PLAYER_OPPONENTS}->[$next_round];
+
       if ($next_opp)
       {
         $next = $next_opp->{Constants::PLAYER_NAME};
@@ -882,25 +1089,35 @@ sub standings
         my $pscore = $players->[$i]->{Constants::PLAYER_SCORES}->[$this_round];
         my $oscore = $players->[$i]->{Constants::PLAYER_OPPONENTS}->[$this_round]
                       ->{Constants::PLAYER_SCORES}->[$this_round];
-        my $opp = $players->[$i]->{Constants::PLAYER_OPPONENTS}->[$this_round]->{Constants::PLAYER_NAME};
+        my $opp =
+          $players->[$i]->{Constants::PLAYER_OPPONENTS}->
+          [$this_round]->{Constants::PLAYER_NAME};
+
         $next = "$pscore - $oscore against $opp";
       }
-      $standings_string .= sprintf $print_string, $name, $wins, $losses, $spread, $next;
+      $standings_string .=
+        sprintf $print_string, $name, $wins, $losses, $spread, $next;
     }
     return $standings_string;
   }
   else
   {
-    my $table_style = Constants::TOURNAMENT_TABLE_STYLE;
-    my $div_style   = Constants::TOURNAMENT_DIV_STYLE;
-    my $players = $this->{Constants::TOURNAMENT_PLAYERS};
+    my $table_style       = Constants::TOURNAMENT_TABLE_STYLE;
+    my $div_style         = Constants::TOURNAMENT_DIV_STYLE;
+    my $players           = $this->{Constants::TOURNAMENT_PLAYERS};
     my $number_of_players = $this->{Constants::TOURNAMENT_NUMBER_OF_PLAYERS};
-    my $spaces = '&nbsp;' x 5;
-    my $init_div_id = 'init_div_id';
-    my $title_row = join "", (map {"<td><b><b>$_$spaces</b></b></td>"} ('Rank','Player', 'Wins', 'Losses', 'Spread'));
-    my $standings_string =
+    my $spaces            = '&nbsp;' x 5;
+    my $init_div_id       = 'init_div_id';
+    my $title_row         =
+      join "", (
+                  map
+                  {"<td><b><b>$_$spaces</b></b></td>"}
+                  ('Rank','Player', 'Wins', 'Losses', 'Spread')
+               );
+    my $standings_string  =
      "<div id='$init_div_id' class='collapse' $div_style>\n<table>\n<tbody>
         <tr>$title_row</tr>"; 
+
     for (my $i = 0; $i < $number_of_players; $i++)
     {
       my $wins   = $players->[$i]->{Constants::PLAYER_WINS};
@@ -908,13 +1125,19 @@ sub standings
       my $spread = $players->[$i]->{Constants::PLAYER_SPREAD}; 
       my $name   = $players->[$i]->{Constants::PLAYER_NAME};
       
+      # Code to show the last played opponent
       #my $this_round = $this->{Constants::TOURNAMENT_CURRENT_ROUND};
       #my $pscore = $players->[$i]->{Constants::PLAYER_SCORES}->[$this_round];
       #my $oscore = $players->[$i]->{Constants::PLAYER_OPPONENTS}->[$this_round]
       #    ->{Constants::PLAYER_SCORES}->[$this_round];
       #my $opp = $players->[$i]->{Constants::PLAYER_OPPONENTS}->[$this_round]->{Constants::PLAYER_NAME};
       #my $last = "$pscore - $oscore against $opp";
-      my $row = join "", (map {"<td><b>$_$spaces</b></td>"} ($i + 1, $name, $wins, $losses, $spread));
+      my $row =
+        join "", (
+                    map 
+                    {"<td><b>$_$spaces</b></td>"}
+                    ($i + 1, $name, $wins, $losses, $spread)
+                 );
       $standings_string .= "<tr>$row</tr>";
     }
     $standings_string .= "</tbody>\n</table>\n</div>";
