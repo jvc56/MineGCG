@@ -154,7 +154,11 @@ sub new
   {
     $number_of_players++;
     my $line = shift @tournament_file_array;
-    $line =~ /(\D+),(\D+)\s+(\d+)\s+([^;]+);([^;]+);/;
+
+    if (!($line =~ /(\D+),(\D+)\s+(\d+)\s+([^;]+);([^;]+);/))
+    {
+      return "Error: Invalid line:\n$line\n";
+    }
 
     my $last_name         = trim($1);
     my $first_name        = trim($2);
