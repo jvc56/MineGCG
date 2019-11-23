@@ -324,13 +324,14 @@ sub new
 
   my %tournament =
     (
-     Constants::TOURNAMENT_RESET_ROUND       => $reset_round,
-     Constants::TOURNAMENT_NUMBER_OF_ROUNDS  => $number_of_rounds,
-     Constants::TOURNAMENT_NUMBER_OF_PLAYERS => $number_of_players,
-     Constants::TOURNAMENT_PLAYERS           => \@players,
-     Constants::TOURNAMENT_SCENARIO_MATRIX   => \@scenario_matrix, 
-     Constants::TOURNAMENT_PAIRING_METHOD    => $pairing_method,
-     Constants::TOURNAMENT_SCORING_METHOD    => $scoring_method,
+     Constants::TOURNAMENT_RESET_ROUND         => $reset_round,
+     Constants::TOURNAMENT_NUMBER_OF_ROUNDS    => $number_of_rounds,
+     Constants::TOURNAMENT_NUMBER_OF_PLAYERS   => $number_of_players,
+     Constants::TOURNAMENT_PLAYERS             => \@players,
+     Constants::TOURNAMENT_SCENARIO_MATRIX     => \@scenario_matrix, 
+     Constants::TOURNAMENT_SCENARIO_ID_COUNTER => 1,
+     Constants::TOURNAMENT_PAIRING_METHOD      => $pairing_method,
+     Constants::TOURNAMENT_SCORING_METHOD      => $scoring_method,
 
      Constants::TOURNAMENT_CURRENT_ROUND                 => $reset_round,
      Constants::TOURNAMENT_CURRENT_NUMBER_OF_SIMULATIONS => 0,
@@ -575,7 +576,7 @@ sub get_results
     <table style='width: 100%'>
       <tbody>
         <tr>
-          <td style='width: 1%'></td>
+          <td style='white-space: nowrap; width: 1%'></td>
     ";
     # Build the Rank label row
     for (my $i = 0; $i < $number_of_players; $i++)
@@ -594,7 +595,7 @@ sub get_results
       my $outcome_row  =
       "
       <tr style='white-space: nowrap'>
-        <td style='text-align: left; width: 1%'>
+        <td style='text-align: left; white-space: nowrap'>
           <b><b>$name$name_spaces</b></b>
         </td>
       ";
@@ -604,7 +605,7 @@ sub get_results
       my $cspan = $pranks_length + 1;
       my $scenario_row =
       "
-      <tr id='$srow_id'>
+      <tr>
         <td style='text-align: center; width: 100%' colspan='$cspan'>
           <div class='accordion' id='$srow_id'>
       ";
@@ -644,16 +645,16 @@ sub get_results
             "$jrank</b></b> out of <b><b>$sims</b></b> scenarios.";
           my $tt_id = "tooltip_$i"."_$j";
           my $tooltip =
-          "<span
+          "<div
               id='$tt_id'
               onmouseover='initTooltip(\"$tt_id\")'
               data-toggle='tooltip'
               data-placement='top'
               data-html='true'
               title=\"$tooltip_title\"
-              style='display: block; width: 100%'>
+              style='width: 100%'>
                 $perc
-          </span>";
+          </div>";
           $outcome_content =
             "<button
                class='btn btn-link collapsed'
@@ -690,10 +691,11 @@ sub get_results
             $radius_style = "border-bottom-right-radius: $corner_radius";
           }
         }
+        my $td_width = 100 / $pranks_length;
         $outcome_row .=
         "
         <td
-           style='background-color: $cell_color; $radius_style'>
+           style='background-color: $cell_color; $radius_style; width: $td_width%'>
            $outcome_content
         </td>
         ";
@@ -709,7 +711,7 @@ sub get_results
         ";
       }
       $rank_matrix .= $outcome_row  . '</tr>';
-      $rank_matrix .= $scenario_row . '</td></tr>';
+      $rank_matrix .= $scenario_row . '</div></td></tr>';
     }
     $rank_matrix .= "</tbody></table>";
     $rank_matrix  =
@@ -731,20 +733,24 @@ sub record_results
   my $players = $this->{Constants::TOURNAMENT_PLAYERS};
   my $number_of_players = $this->{Constants::TOURNAMENT_NUMBER_OF_PLAYERS};
   my $scenario_string;
+  my $player_number;
   for (my $i = 0; $i < $number_of_players; $i++)
   {
     if (!$players->[$i]->{Constants::PLAYER_FINAL_RANKS}->[$i])
     {
+      $player_number   = $players->[$i]->{Constants::PLAYER_NUMBER};
+      $scenario_string = $this->{Constants::TOURNAMENT_SCENARIO_MATRIX}->
+                          [$player_number]->[$i];
+
       # If we have not generated a scenario string, generate one
+      # We cannot reuse scenarios because the tooltip IDs would
+      # not be unique
       if (!$scenario_string)
       {
-        my $scenario_id =
-          'scenario_' . $players->[$i]->{Constants::PLAYER_NUMBER} . '_' . $i;
-        
-        $scenario_string = $this->scenario($scenario_id);
+        $scenario_string = $this->scenario();
       }
-      $this->{Constants::TOURNAMENT_SCENARIO_MATRIX}->
-        [$players->[$i]->{Constants::PLAYER_NUMBER}]->[$i] = $scenario_string;
+      $this->{Constants::TOURNAMENT_SCENARIO_MATRIX}->[$player_number]->[$i] =
+        $scenario_string;
     }
     $players->[$i]->{Constants::PLAYER_FINAL_RANKS}->[$i]++;
   }
@@ -829,8 +835,8 @@ sub simulation_reset
 sub scenario
 {
   my $this = shift;
-  my $id   = shift;
-
+  
+  my $id = 'scenario_' . $this->{Constants::TOURNAMENT_SCENARIO_ID_COUNTER}++;
   my $players      = $this->{Constants::TOURNAMENT_PLAYERS};
   my $div_style    = Constants::TOURNAMENT_DIV_STYLE;
   my $matrix_style = Constants::TOURNAMENT_MATRIX_STYLE;
@@ -912,19 +918,20 @@ sub scenario
       # Switch the my $cell_content comments to enable/disable bootstrap
       #   tooltips for the scenario HTML. It is disabled for now because
       #   the HTML tends to lag/freeze for larger divisions
-      # my $cell_content =
-      # "
-      # <span
-      #    id='$tt_id'
-      #    onmouseover='initTooltip(\"$tt_id\")'
-      #    data-toggle='tooltip'
-      #    data-placement='top'
-      #    data-html='true'
-      #    title=\"$tooltip_title\" >
-      #    <b><b>$wl</b></b>
-      # </span>
-      # ";
-      my $cell_content = "<b><b>$wl</b></b>";
+       my $cell_content =
+       "
+       <div
+          id='$tt_id'
+          onmouseover='initTooltip(\"$tt_id\")'
+          data-toggle='tooltip'
+          data-placement='top'
+          data-html='true'
+          title=\"$tooltip_title\"
+          style='width: 100%' >
+          <b><b>$wl</b></b>
+       </div>
+       ";
+      #m y $cell_content = "<b><b>$wl</b></b>";
       my $radius_style = '';
       if ($i == 0)
       {
@@ -952,7 +959,7 @@ sub scenario
         "
         <td
            style='background-color: $cell_color; $radius_style'
-           title=\"$tooltip_title\">
+           >
              $cell_content
         </td>
         ";

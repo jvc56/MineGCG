@@ -1445,15 +1445,16 @@ use constant TOURNAMENT_TABLE_STYLE =>
     "
 ;
 
-use constant TOURNAMENT_RESET_ROUND       => 'Starting Round';
-use constant TOURNAMENT_NUMBER_OF_ROUNDS  => 'Final Round';
-use constant TOURNAMENT_PLAYERS           => 'Players';
-use constant TOURNAMENT_SCENARIO_MATRIX   => 'Scenario Matrix';
-use constant TOURNAMENT_NUMBER_OF_PLAYERS => 'Number of Players';
-use constant TOURNAMENT_PAIRING_METHOD    => 'Pairing Method';
-use constant TOURNAMENT_SCORING_METHOD    => 'Scoring Method';
-use constant TOURNAMENT_FILENAME          => 'Tournament File';
-use constant TOURNAMENT_HTML_FORMAT       => 'HTML Format';
+use constant TOURNAMENT_RESET_ROUND         => 'Starting Round';
+use constant TOURNAMENT_NUMBER_OF_ROUNDS    => 'Final Round';
+use constant TOURNAMENT_PLAYERS             => 'Players';
+use constant TOURNAMENT_SCENARIO_MATRIX     => 'Scenario Matrix';
+use constant TOURNAMENT_SCENARIO_ID_COUNTER => 'Scenario ID Counter';
+use constant TOURNAMENT_NUMBER_OF_PLAYERS   => 'Number of Players';
+use constant TOURNAMENT_PAIRING_METHOD      => 'Pairing Method';
+use constant TOURNAMENT_SCORING_METHOD      => 'Scoring Method';
+use constant TOURNAMENT_FILENAME            => 'Tournament File';
+use constant TOURNAMENT_HTML_FORMAT         => 'HTML Format';
 
 use constant TOURNAMENT_BYE_PLAYER                    => 'Bye Player';
 use constant TOURNAMENT_CURRENT_ROUND                 => 'Current Round';
@@ -1510,12 +1511,12 @@ use constant TOURNAMENT_LIST =>
   Constants::LARGE_TOURNAMENT_URL
 ];
 
-use constant DEFAULT_TOURNAMENT_URL        => Constants::LARGE_TOURNAMENT_URL;
+use constant DEFAULT_TOURNAMENT_URL        => Constants::SMALL_TOURNAMENT_URL;
 use constant DEFAULT_PAIRING_METHOD        => PAIRING_METHOD_RANDOM_PAIR;
 use constant DEFAULT_SCORING_METHOD        => SCORING_METHOD_RANDOM_BST;
-use constant DEFAULT_NUMBER_OF_ROUNDS      => 31;
+use constant DEFAULT_NUMBER_OF_ROUNDS      => 6;
 use constant DEFAULT_NUMBER_OF_SIMULATIONS => 100;
-use constant DEFAULT_START_ROUND           => 30;
+use constant DEFAULT_START_ROUND           => 3;
 
 use constant DEFAULT_NAME_PADDING       => 40;
 use constant DEFAULT_PERCENTAGE_PADDING => 10;
