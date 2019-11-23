@@ -1514,8 +1514,8 @@ use constant DEFAULT_TOURNAMENT_URL        => Constants::LARGE_TOURNAMENT_URL;
 use constant DEFAULT_PAIRING_METHOD        => PAIRING_METHOD_RANDOM_PAIR;
 use constant DEFAULT_SCORING_METHOD        => SCORING_METHOD_RANDOM_BST;
 use constant DEFAULT_NUMBER_OF_ROUNDS      => 31;
-use constant DEFAULT_NUMBER_OF_SIMULATIONS => 10;
-use constant DEFAULT_START_ROUND           => 2;
+use constant DEFAULT_NUMBER_OF_SIMULATIONS => 100;
+use constant DEFAULT_START_ROUND           => 30;
 
 use constant DEFAULT_NAME_PADDING       => 40;
 use constant DEFAULT_PERCENTAGE_PADDING => 10;
