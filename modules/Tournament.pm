@@ -43,35 +43,13 @@ unless (caller)
               "all"      => \$all
              );
 
-  my $pairing_methods = Constants::PAIRING_METHOD_LIST;
-  my $scoring_methods = Constants::SCORING_METHOD_LIST;
- 
-  foreach my $pm (@{$pairing_methods})
-  {
-    if (Utils::sanitize($pm) eq $pairing_method)
-    {
-      $pairing_method = $pm;
-    }
-  }
-
-  foreach my $sm (@{$scoring_methods})
-  {
-    if (Utils::sanitize($sm) eq $scoring_method)
-    {
-      $scoring_method = $sm;
-    }
-  }
-
   my $tournament = Tournament->new(
                     $file,
                     $number_of_rounds,
                     $pairing_method,
                     $scoring_method,
                     $number_of_simulations,
-                    # Decrement the value of reset_round because
-                    #   rounds are 0-indexed and we assume a
-                    #   1-indexed value is passed in
-                    $reset_round - 1,
+                    $reset_round,
                     $html);
 
   # Simulate the .t file with all combinations of
@@ -79,7 +57,9 @@ unless (caller)
   if ($all)
   {
     my $tournaments     = Constants::TOURNAMENT_LIST;
-
+    my $pairing_methods = Constants::PAIRING_METHOD_LIST;
+    my $scoring_methods = Constants::SCORING_METHOD_LIST;
+ 
     for (my $i = 0; $i < scalar @{$tournaments}; $i++)
     {
       my $tournament_file = $tournaments->[$i];
@@ -127,6 +107,26 @@ sub new
   my $force_current_round = shift;
   my $html                = shift;
 
+  my $pairing_methods = Constants::PAIRING_METHOD_LIST;
+  my $scoring_methods = Constants::SCORING_METHOD_LIST;
+ 
+  foreach my $pm (@{$pairing_methods})
+  {
+    if (Utils::sanitize($pm) eq $pairing_method)
+    {
+      $pairing_method = $pm;
+    }
+  }
+
+  foreach my $sm (@{$scoring_methods})
+  {
+    if (Utils::sanitize($sm) eq $scoring_method)
+    {
+      $scoring_method = $sm;
+    }
+  }
+
+
   if (!$tournament_file_url)
   {
     $tournament_file_url = Constants::DEFAULT_TOURNAMENT_URL;
@@ -138,6 +138,11 @@ sub new
   }
   my $downloads_dir = Constants::DOWNLOADS_DIRECTORY_NAME;
   my $wget_flags    = Constants::WGET_FLAGS;
+
+  if (uc substr($tournament_file_url, 0, 4) ne 'HTTP')
+  {
+    $tournament_file_url = 'http://' . $tournament_file_url;
+  }
 
   my $tournament_file_string = LWP::Simple::get(URI->new($tournament_file_url));
   my @tournament_file_array  = split /\n/, $tournament_file_string;
@@ -183,8 +188,8 @@ sub new
       #   we have to include the results for that round in the
       #   simulation. For example if $force_current_round is 3,
       #   we need results for 4 rounds, hence the increment.
-      splice @opponents, $force_current_round + 1;
-      splice @scores, $force_current_round + 1;
+      splice @opponents, $force_current_round;
+      splice @scores, $force_current_round;
     }
 
     $number_of_opponents = scalar @opponents;
@@ -404,8 +409,7 @@ sub pair
     # Rank pairings are dependent on current rankings
     $this->rerank();
     my $opponent_index;
-    my $offset =
-      ($this->{Constants::TOURNAMENT_NUMBER_OF_ROUNDS} - $round) + 1;
+    my $offset = $this->{Constants::TOURNAMENT_NUMBER_OF_ROUNDS} - $round;
     # The offset of rank pair cannot be greater than
     #   half of the number of players
     $offset = min($offset, int($number_of_players / 2));

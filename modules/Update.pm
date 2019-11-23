@@ -79,11 +79,11 @@ sub update_wrapper
       
       if ($sanitize_exemptions->{$p})
       {
-        $ifs         .= "  if (\$$p){\$$p"."_arg = \"--$p  \" . sanitize(\$$p)}\n";
+        $ifs         .= "  if (\$$p){\$$p =~ s/'//g;\$$p"."_arg = \"--$p  \" . \"'\$$p'\"}\n";
       }
       else
       {
-        $ifs         .= "  if (\$$p){\$$p"."_arg = \"--$p  \" . \$$p}\n";
+        $ifs         .= "  if (\$$p){\$$p"."_arg = \"--$p  \" . sanitize(\$$p)}\n";
       }
 
       $cgi_params  .= "  my \$$p = \$query->param('$p');\n";

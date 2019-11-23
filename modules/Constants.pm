@@ -1499,8 +1499,8 @@ use constant PLAYER_RESET_SPREAD => 'Reset Spread';
 use constant PLAYER_FINAL_RANKS  => 'Player Final Ranks';
 
 
-use constant SMALL_TOURNAMENT_URL          => 'dev.randomracer.com/a.t';
-use constant MEDIUM_TOURNAMENT_URL         => 'dev.randomracer.com/b.t';
+use constant SMALL_TOURNAMENT_URL          => 'http://dev.randomracer.com/a.t';
+use constant MEDIUM_TOURNAMENT_URL         => 'http://dev.randomracer.com/b.t';
 use constant LARGE_TOURNAMENT_URL          => 'http://event.scrabbleplayers.org/2019/nasc/build/tsh/2019-nasc-s/s.t';
 
 use constant TOURNAMENT_LIST =>
