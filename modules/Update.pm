@@ -39,7 +39,8 @@ unless (caller)
 
 sub update_wrapper
 {
-  my $wrapper_data = Constants::WRAPPER_FUNCTIONS;
+  my $wrapper_data        = Constants::WRAPPER_FUNCTIONS;
+  my $sanitize_exemptions = Constants::SANITIZE_EXEMPTIONS;
   my $functions = '';
 
   my $whichcgi      = Constants::CGI_TYPE;
@@ -75,7 +76,15 @@ sub update_wrapper
       $get_options .= "    '$p:s' => \\\$$p";
       $args        .= "  my \$$p"."_arg = '';\n";
       $cmd_args    .= "   \$$p"."_arg ";
-      $ifs         .= "  if (\$$p){\$$p"."_arg = \"--$p  \" . sanitize(\$$p)}\n";
+      
+      if ($sanitize_exemptions->{$p})
+      {
+        $ifs         .= "  if (\$$p){\$$p"."_arg = \"--$p  \" . sanitize(\$$p)}\n";
+      }
+      else
+      {
+        $ifs         .= "  if (\$$p){\$$p"."_arg = \"--$p  \" . \$$p}\n";
+      }
 
       $cgi_params  .= "  my \$$p = \$query->param('$p');\n";
 

@@ -219,6 +219,11 @@ use constant WRAPPER_FUNCTIONS =>
   }
 ];
 
+use constant SANITIZE_EXEMPTIONS =>
+{
+  Constants::SIM_TOURNAMENT_FIELD_NAME => 1
+};
+
 use constant COLLINS_OPTION                   => 'Collins';
 use constant TWL_OPTION                       => 'TWL/NSW';
 
@@ -1494,13 +1499,23 @@ use constant PLAYER_RESET_SPREAD => 'Reset Spread';
 use constant PLAYER_FINAL_RANKS  => 'Player Final Ranks';
 
 
-use constant DEFAULT_TOURNAMENT_URL        => 'http://event.scrabbleplayers.org/2019/nasc/build/tsh/2019-nasc-s/s.t';
-#use constant DEFAULT_TOURNAMENT_URL        => 'dev.randomracer.com/a.t';
+use constant SMALL_TOURNAMENT_URL          => 'dev.randomracer.com/a.t';
+use constant MEDIUM_TOURNAMENT_URL         => 'dev.randomracer.com/b.t';
+use constant LARGE_TOURNAMENT_URL          => 'http://event.scrabbleplayers.org/2019/nasc/build/tsh/2019-nasc-s/s.t';
+
+use constant TOURNAMENT_LIST =>
+[
+  Constants::SMALL_TOURNAMENT_URL, 
+  Constants::MEDIUM_TOURNAMENT_URL,
+  Constants::LARGE_TOURNAMENT_URL
+];
+
+use constant DEFAULT_TOURNAMENT_URL        => Constants::LARGE_TOURNAMENT_URL;
 use constant DEFAULT_PAIRING_METHOD        => PAIRING_METHOD_RANDOM_PAIR;
 use constant DEFAULT_SCORING_METHOD        => SCORING_METHOD_RANDOM_BST;
 use constant DEFAULT_NUMBER_OF_ROUNDS      => 31;
-use constant DEFAULT_NUMBER_OF_SIMULATIONS => 100000;
-use constant DEFAULT_START_ROUND           => 27;
+use constant DEFAULT_NUMBER_OF_SIMULATIONS => 10;
+use constant DEFAULT_START_ROUND           => 2;
 
 use constant DEFAULT_NAME_PADDING       => 40;
 use constant DEFAULT_PERCENTAGE_PADDING => 10;

@@ -9,6 +9,8 @@ use strict;
 use Getopt::Long;
 use Data::Dumper;
 use List::Util qw(shuffle min max);
+use LWP::Simple qw(get);
+use URI;
 
 use lib './modules';
 use Constants;
@@ -41,6 +43,25 @@ unless (caller)
               "all"      => \$all
              );
 
+  my $pairing_methods = Constants::PAIRING_METHOD_LIST;
+  my $scoring_methods = Constants::SCORING_METHOD_LIST;
+ 
+  foreach my $pm (@{$pairing_methods})
+  {
+    if (Utils::sanitize($pm) eq $pairing_method)
+    {
+      $pairing_method = $pm;
+    }
+  }
+
+  foreach my $sm (@{$scoring_methods})
+  {
+    if (Utils::sanitize($sm) eq $scoring_method)
+    {
+      $scoring_method = $sm;
+    }
+  }
+
   my $tournament = Tournament->new(
                     $file,
                     $number_of_rounds,
@@ -57,18 +78,34 @@ unless (caller)
   #   pairing and scoring methods
   if ($all)
   {
-    my $pairing_methods = Constants::PAIRING_METHOD_LIST;
-    my $scoring_methods = Constants::SCORING_METHOD_LIST;
-    foreach my $pm (@{$pairing_methods})
+    my $tournaments     = Constants::TOURNAMENT_LIST;
+
+    for (my $i = 0; $i < scalar @{$tournaments}; $i++)
     {
-      foreach my $sm (@{$scoring_methods})
+      my $tournament_file = $tournaments->[$i];
+      my $tournament = Tournament->new(
+                        $tournament_file,
+                        $number_of_rounds,
+                        $pairing_method,
+                        $scoring_method,
+                        $number_of_simulations,
+                        $reset_round - 1,
+                        $html);
+      if (ref($tournament) ne 'Tournament')
       {
-        $tournament->{Constants::TOURNAMENT_SCORING_METHOD} = $sm;
-        $tournament->{Constants::TOURNAMENT_PAIRING_METHOD} = $pm;
-        $tournament->simulation_reset();
-        $tournament->simulate();
+        die $tournament;
       }
-    }
+      foreach my $pm (@{$pairing_methods})
+      {
+        foreach my $sm (@{$scoring_methods})
+        {
+          $tournament->{Constants::TOURNAMENT_SCORING_METHOD} = $sm;
+          $tournament->{Constants::TOURNAMENT_PAIRING_METHOD} = $pm;
+          $tournament->simulation_reset();
+          $tournament->simulate();
+        }
+      }
+    }   
   }
   else
   {
@@ -102,24 +139,17 @@ sub new
   my $downloads_dir = Constants::DOWNLOADS_DIRECTORY_NAME;
   my $wget_flags    = Constants::WGET_FLAGS;
 
-  my $tournament_file =
-    $downloads_dir . '/' . Utils::sanitize($tournament_file_url);
-
-  system "wget $wget_flags $tournament_file_url -O $tournament_file
-            > /dev/null 2>&1";
-
+  my $tournament_file_string = LWP::Simple::get(URI->new($tournament_file_url));
+  my @tournament_file_array  = split /\n/, $tournament_file_string;
   my $reset_round;
   my $number_of_players = 0;
   my @players = ();
 
-  open(my $fh, '<',  $tournament_file) or
-    return "Error: Cannot read file $tournament_file_url";
-
-  while(<$fh>)
+  while(@tournament_file_array)
   {
     $number_of_players++;
-    chomp $_;
-    /(\D+),(\D+)\s+(\d+)\s+([^;]+);([^;]+);/;
+    my $line = shift @tournament_file_array;
+    $line =~ /(\D+),(\D+)\s+(\d+)\s+([^;]+);([^;]+);/;
 
     my $last_name         = trim($1);
     my $first_name        = trim($2);
@@ -129,6 +159,17 @@ sub new
 
     my @opponents = split / /, $opponents_string;
     my @scores    = split / /, $scores_string;
+
+    my $number_of_opponents = scalar @opponents;
+    my $number_of_scores    = scalar @scores;
+    
+    # Throw error is user tries to simulate from a yet
+    #   unplayed round
+    if ($force_current_round > $number_of_opponents ||
+        $force_current_round > $number_of_scores)
+    {
+      return "Error: Start round is greater than the number of rounds played";
+    }
 
     # $force_current_round is a 0-indexed round value
     #   that sets which round the tournament will start
@@ -146,20 +187,13 @@ sub new
       splice @scores, $force_current_round + 1;
     }
 
-    my $number_of_opponents = scalar @opponents;
-    my $number_of_scores    = scalar @scores;
+    $number_of_opponents = scalar @opponents;
+    $number_of_scores    = scalar @scores;
 
-    # If a player has a different number of oppoents and scores,
-    #   the .t file is invalid
-    if ($number_of_opponents != $number_of_scores)
-    {
-      return "Error: Different number of opponents and scores " . 
-               "for $first_name $last_name";
-    }
     # If the reset round (starting round) has been established and
     #   this player has a different number of scores or opponents,
     #   the .t file is invalid
-    elsif($reset_round &&
+    if($reset_round &&
            ($reset_round != $number_of_opponents - 1 ||
             $reset_round != $number_of_scores - 1)
          )
@@ -385,25 +419,20 @@ sub pair
       {
         $opponent_index = $i - $offset;
       }
+      # Use KOTH for remaining players we don't care about
+      elsif($i % 2 == 1)
+      {
+        $opponent_index = $i - 1;
+      }
+      elsif($i == $this->{Constants::TOURNAMENT_NUMBER_OF_PLAYERS} - 1)
+      {
+        # Assign a bye to the last odd player out
+        $opponent_index = $i;
+        $this->{Constants::TOURNAMENT_BYE_PLAYER} = $i + 1;
+      }
       else
       {
-        if ($i % 2 == 1)
-        {
-          # Assign a bye to the last odd player out
-          if ($i == $this->{Constants::TOURNAMENT_NUMBER_OF_PLAYERS} - 1)
-          {
-            $opponent_index = $i;
-            $this->{Constants::TOURNAMENT_BYE_PLAYER} = $i + 1;
-          }
-          else
-          {
-            $opponent_index = $i - 1;
-          }
-        }
-        else
-        {
-          $opponent_index = $i + 1;
-        }
+        $opponent_index = $i + 1;
       }
       $players->[$i]->{Constants::PLAYER_OPPONENTS}->[$round] = 
         $players->[$opponent_index];
@@ -846,9 +875,9 @@ sub scenario
     {
       my $player_score   = $player_scores->[$j];
       my $opponent       = $opponents->[$j];
+
       my $opponent_name  = $opponent->{Constants::PLAYER_NAME};
       my $opponent_score = $opponent->{Constants::PLAYER_SCORES}->[$j];
-      
       my $wl         = 'L';
       my $cell_color = '#000000'; 
       my $players = "$name vs. $opponent_name";
