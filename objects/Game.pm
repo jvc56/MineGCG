@@ -1071,7 +1071,7 @@ sub getHighestScoringPlay
       next;
     }
 
-    my $score = $move->{'score'} - ($move->{'challenge_points'} + $move->{'out_points'});
+    my $score = $move->getScore();
     if ($score > $highest[1])
     {
       my $high_cap = $this->readableMove($move);
@@ -1242,7 +1242,7 @@ sub labelPlay
   {
     $word .= '*';
   }
-  return [$color, $word, $prob, $move->{'score'} - $move->{'challenge_points'}, $game_id];
+  return [$color, $word, $prob, $move->getScore(), $game_id];
 }
 
 sub getNumWordsPlayed

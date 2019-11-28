@@ -62,6 +62,15 @@ sub new
   return $self;
 }
 
+sub getScore
+{
+  my $this = shift;
+
+  return $this->{'score'} -
+         ($this->{'challenge_points'} +
+          $this->{'out_points'});
+}
+
 sub getAlphanumericLocation
 {
   my $this = shift;
