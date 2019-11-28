@@ -9,7 +9,6 @@ use lib './modules';
 use Constants;
 use Update;
 
-system "mkdir -p " . Constants::DATA_DIRECTORY_NAME;
 system "mkdir -p " . Constants::CACHE_DIRECTORY_NAME;
 system "mkdir -p " . Constants::HTML_DIRECTORY_NAME;
 system "mkdir -p " . Constants::CGIBIN_DIRECTORY_NAME;
@@ -25,12 +24,12 @@ system "mkdir -p $logs";
 
 my @jobs =
 (
-  "Preload",     "./meta/maintenance/preload.pl         > $logs/preload.log 2>&1   ",
-  "Check",       "./meta/maintenance/check_data.pl      > $logs/check_data.log 2>&1"  ,
-  "Test",        "./meta/maintenance/mine_games_test.pl                             "  ,
-  "Access",      "./meta/maintenance/get_access_log.pl  > $logs/access_retrieval.log 2>&1            "  ,
-  "Update",      "./modules/Update.pm                   > $logs/update_html.log 2>&1",
-  "Copy",        "./meta/maintenance/copy_to_remote.pl                              " 
+  "Preload",     "./scripts/preload.pl         > $logs/preload.log 2>&1   ",
+  "Check",       "./scripts/check_data.pl      > $logs/check_data.log 2>&1"  ,
+  "Test",        "./scripts/mine_games_test.pl",
+  "Access",      "./scripts/get_access_log.pl  > $logs/access_retrieval.log 2>&1",
+  "Update",      "./modules/Update.pm          > $logs/update_html.log 2>&1",
+  "Copy",        "./scripts/copy_to_remote.pl" 
 );
 
 my $full_start_time = time;

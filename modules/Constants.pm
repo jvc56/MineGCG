@@ -44,12 +44,9 @@ use constant NOTABLE_DIRECTORY_NAME           => './notable';
 use constant CACHE_DIRECTORY_NAME             => './cache';
 use constant HTML_DIRECTORY_NAME              => './html';
 use constant CGIBIN_DIRECTORY_NAME            => './cgi-bin';
-use constant DATA_DIRECTORY_NAME              => './data';
 use constant LOGS_DIRECTORY_NAME              => './logs';
 use constant HTML_STATIC_DIRECTORY_NAME       => './html_static';
 use constant LEGACY_DIRECTORY_NAME            => './legacy';
-use constant NAME_ID_DATA_FILENAME            => 'NameConversion.pm';
-use constant NAME_ID_VARIABLE_NAME            => 'NAMES_TO_IDS';
 use constant ABOUT_PAGE_NAME                  => 'about.html';
 use constant QUALIFIERS_PAGE_NAME             => 'alchemist_qualifiers.html';
 use constant TOURNAMENT_OPTION                => 'Tournament';
@@ -291,6 +288,7 @@ use constant PLAYER_ID_COLUMN_NAME                         => 'player_id';
 use constant PLAYER_CROSS_TABLES_ID_COLUMN_NAME            => 'player_cross_tables_id';
 use constant PLAYER_NAME_COLUMN_NAME                       => 'player_name';
 use constant PLAYER_SANITIZED_NAME_COLUMN_NAME             => 'player_sanitized_name';
+use constant PLAYER_PHOTO_URL_COLUMN_NAME                  => 'player_photo_url';
 use constant PLAYER_TOTAL_GAMES_COLUMN_NAME                => 'player_total_games';
 use constant PLAYER_STATS_COLUMN_NAME                      => 'player_stats';
 use constant GAME_ID_COLUMN_NAME                           => 'game_id';
@@ -325,6 +323,7 @@ use constant DATABASE_TABLES =>
     Constants::PLAYER_CROSS_TABLES_ID_COLUMN_NAME . " INT NOT NULL UNIQUE",
     Constants::PLAYER_NAME_COLUMN_NAME            . " VARCHAR(255)",
     Constants::PLAYER_SANITIZED_NAME_COLUMN_NAME  . " VARCHAR(255)",
+    Constants::PLAYER_PHOTO_URL_COLUMN_NAME       . " TEXT",
     Constants::PLAYER_TOTAL_GAMES_COLUMN_NAME     . " INT",
     Constants::PLAYER_STATS_COLUMN_NAME           . " JSON"
   ],
@@ -976,13 +975,9 @@ use constant HTML_NAV => <<NAV
       <li class="nav-item">
         <a class="nav-link" href="/typing.html">RandomRacer 2.0</a>
       </li>
-
-      <!-- 
       <li class="nav-item">
         <a class="nav-link" href="/simulate.html">Tournament Simulation</a>
       </li>
-      -->
-
       <!-- Dropdown -->
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown"

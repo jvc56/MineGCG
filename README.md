@@ -17,6 +17,12 @@ In October 2019, the site underwent major updates which include:
  - Alchemist Cup registrants list.
  - RandomRacer 2.0, a new version of the original typing practice feature of RandomRacer.
 
+
+In November 2019, the following features were added:
+
+
+ - Tournament Simulation
+
 You can learn more about some of these features in later sections. Please report any bugs to joshuacastellano7@gmail.com
 
 # Usage
@@ -495,6 +501,37 @@ You can learn more <a href="https://www.scrabbleplayers.org/w/2020_Alchemist_Cup
 
 RandomRacer 2.0 is a revamped version of the original RandomRacer typing practice that was released sometime
 in 2016. All words are from the Collins CSW19 lexicon.
+
+# Tournament Simulation
+
+The Tournament Simulation tool simulates tournaments from an initial starting round and produces a rank matrix indicating
+the percentage of scenarios that each player achieved for each rank. Each parameter is described below.
+
+
+<h4>Tournament File</h4>
+The tournament file must be a valid .t file, which are produced by <a href="http://www.poslarchive.com/tsh/doc/">tsh</a>.
+
+
+<h4>Start Round</h4>
+An optional parameter to specify which round the simulations should start from. If no start round is given, the number
+of rounds for which there are data in the .t file will be used as the start round. If the start round specified is
+greater than the number of rounds for which there are data, an error will be thrown.
+
+
+<h4>End Round</h4>
+The total number of rounds for the tournament.
+
+
+<h4>Pairing Method</h4>
+The pairing method specifies how each round should be paired.
+
+
+<h4>Scoring Method</h4>
+The scoring method specifies how each round should be scored.
+
+
+<h4>Number of Simulations</h4>
+The number of simulations that will be performed.
 
 # Development Team
 

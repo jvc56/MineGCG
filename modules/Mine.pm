@@ -13,7 +13,6 @@ use lib "./data";
 use Constants;
 use Stats;
 use Utils;
-use NameConversion;
 use JSON::XS;
 
 sub mine
@@ -21,7 +20,6 @@ sub mine
   my $stats_dir               = Constants::STATS_DIRECTORY_NAME;
   my $notable_dir             = Constants::NOTABLE_DIRECTORY_NAME;
   my $cache_dir               = Constants::CACHE_DIRECTORY_NAME;
-  my $names_to_info_hashref   = NameConversion::NAMES_TO_IDS;
 
   my $dbh = Utils::connect_to_database();
 
@@ -36,8 +34,6 @@ sub mine
   my $tourney_id        = shift;
   my $statsdump         = shift;
   my $missingracks      = shift;
-
-
 
   if ($startdate)
   {
@@ -73,11 +69,25 @@ sub mine
     return;
   }
 
-  my $player_id          = $names_to_info_hashref->{$sanitized_player_name}->[0];
-  my $player_pretty_name = $names_to_info_hashref->{$sanitized_player_name}->[1];
-  my $player_photo       = $names_to_info_hashref->{$sanitized_player_name}->[2];
+  my $players_tn            = Constants::PLAYERS_TABLE_NAME;
+  my $player_sanitized_name_column_name  = Constants::PLAYER_SANITIZED_NAME_COLUMN_NAME;
+  my $player_cross_tables_id_column_name = Constants::PLAYER_CROSS_TABLES_ID_COLUMN_NAME;
+  my $player_name_column_name            = Constants::PLAYER_NAME_COLUMN_NAME;
+  my $player_photo_url_column_name       = Constants::PLAYER_PHOTO_URL_COLUMN_NAME;
 
-  if (!$player_id)
+  my $query =
+  "SELECT
+     $player_cross_tables_id_column_name,
+     $player_name_column_name,
+     $player_photo_url_column_name
+   FROM $players_tn WHERE
+   $player_sanitized_name_column_name = '$sanitized_player_name'";
+
+  my $player_db_result       = $dbh->selectall_arrayref($query, {Slice => {}, "RaiseError" => 1});
+  my $player_cross_tables_id = $player_db_result->[0]->{$player_cross_tables_id_column_name};
+  my $player_pretty_name     = $player_db_result->[0]->{$player_name_column_name};
+  my $player_photo           = $player_db_result->[0]->{$player_photo_url_column_name};
+  if (!$player_cross_tables_id)
   {
     print STDERR "Player ID not found for $player_name\n";
     return;
@@ -90,8 +100,6 @@ sub mine
   my $games_table   = Constants::GAMES_TABLE_NAME;
   my $players_table = Constants::PLAYERS_TABLE_NAME;
 
-  my $player_sanitized_name_column_name           = Constants::PLAYER_SANITIZED_NAME_COLUMN_NAME;
-  my $player_cross_tables_id_column_name          = Constants::PLAYER_CROSS_TABLES_ID_COLUMN_NAME;
   my $game_cross_tables_id_column_name            = Constants::GAME_CROSS_TABLES_ID_COLUMN_NAME;
   my $game_player1_cross_tables_id_column_name    = Constants::GAME_PLAYER_ONE_CROSS_TABLES_ID_COLUMN_NAME;
   my $game_player2_cross_tables_id_column_name    = Constants::GAME_PLAYER_TWO_CROSS_TABLES_ID_COLUMN_NAME;
@@ -111,10 +119,17 @@ sub mine
 
   if ($opponent_name)
   {
-    my $opp_id = $names_to_info_hashref->{Utils::sanitize($opponent_name)}->[0];
+
+    my $sanitized_opponent_name = Utils::sanitize($opponent_name);
+    my $query =
+      "SELECT $player_cross_tables_id_column_name FROM $players_tn WHERE
+       $player_sanitized_name_column_name = '$sanitized_opponent_name'";
+    my $opp_db_result = $dbh->selectall_arrayref($query, {Slice => {}, "RaiseError" => 1});
+    my $opp_cross_tables_id = $opp_db_result->[0]->{$player_cross_tables_id_column_name};
+
     $opp_query =
     "
-      AND opp.$player_cross_tables_id_column_name = $opp_id
+      AND opp.$player_cross_tables_id_column_name = $opp_cross_tables_id
       AND
          (
           opp.$player_cross_tables_id_column_name = g.$game_player1_cross_tables_id_column_name OR
@@ -140,7 +155,7 @@ sub mine
        $game_round_column_name
   FROM $games_table AS g, $players_table AS p $opp_table_statement
   WHERE
-        p.$player_cross_tables_id_column_name = $player_id AND
+        p.$player_cross_tables_id_column_name = $player_cross_tables_id AND
         (
          g.$game_player1_cross_tables_id_column_name =
          p.$player_cross_tables_id_column_name
@@ -150,7 +165,6 @@ sub mine
         )
   $opp_query
   ";
-
   if ($single_game_id)
   {
     $games_query .= " AND g.$game_cross_tables_id_column_name = $single_game_id";
@@ -226,7 +240,7 @@ sub mine
    
     my $player2_id = $game->{$game_player2_cross_tables_id_column_name};
 
-    if ($player2_id && $player_id == $player2_id)
+    if ($player2_id && $player_cross_tables_id == $player2_id)
     {
       $player_is_first = 0;
       $game_opp_name = $game->{$game_player1_name_column_name};
@@ -266,11 +280,10 @@ sub mine
     $num_games++;
     $at_least_one = 1;
   }
-
   if ($statsdump && $at_least_one)
   {
     my $dump = JSON::XS::encode_json(Utils::prepare_stats($all_stats));
-    Utils::update_player_record($dbh, $player_id, 0, 0, $dump, $num_games);
+    Utils::update_player_record($dbh, $player_cross_tables_id, 0, 0, '', $dump, $num_games);
   }
 
   # Make error stats here

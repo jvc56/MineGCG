@@ -19,7 +19,6 @@ use Constants;
 use Utils;
 use Stats;
 use Passage;
-use NameConversion;
 use JSON::XS;
 
 unless (caller)
@@ -79,7 +78,7 @@ sub update_wrapper
       
       if ($sanitize_exemptions->{$p})
       {
-        $ifs         .= "  if (\$$p){\$$p =~ s/'//g;\$$p"."_arg = \"--$p  \" . \"'\$$p'\"}\n";
+        $ifs         .= "  if (\$$p){\$$p =~ s/[';\\s]//g;\$$p"."_arg = \"--$p  \" . \"'\$$p'\"}\n";
       }
       else
       {
@@ -378,10 +377,16 @@ sub get_qualifier_data
 
   my $wget_flags = Constants::WGET_FLAGS; 
   my $downloads_dir = Constants::DOWNLOADS_DIRECTORY_NAME;
-  my $name_to_id_hash = NameConversion::NAMES_TO_IDS;
   my $sanitized_qualifier = Utils::sanitize($qualifier);
-  my $qualifier_id = $name_to_id_hash->{$sanitized_qualifier}->[0];
 
+  my $dbh                               = Utils::connect_to_database();
+  my $player_xt_id_column_name          = Constants::PLAYER_CROSS_TABLES_ID_COLUMN_NAME;
+  my $player_sanitized_name_column_name = Constants::PLAYER_SANITIZED_NAME_COLUMN_NAME;
+  my $players_tn                        = Constants::PLAYERS_TABLE_NAME;
+  my $query =
+  "SELECT $player_xt_id_column_name FROM $players_tn WHERE
+   $player_sanitized_name_column_name = '$sanitized_qualifier'";
+  my $qualifier_id = $dbh->selectrow_arrayref($query, {"RaiseError" => 1})->[0];
   my $results_call = Constants::PLAYER_RESULTS_API_CALL . $qualifier_id;
   my $filename     = $downloads_dir . "/qualifier_results_$qualifier_id.txt";
 
@@ -1493,7 +1498,6 @@ sub update_leaderboard_legacy
   my $total_games_name = Constants::PLAYER_TOTAL_GAMES_COLUMN_NAME;
 
   my @player_data = @{$dbh->selectall_arrayref("SELECT * FROM $playerstable WHERE $total_games_name >= $min_games", {Slice => {}, "RaiseError" => 1})};
-
   my @all_mistakes = ();
   my $total_mistakes = 0;
   foreach my $player_item (@player_data)
@@ -1674,7 +1678,7 @@ sub update_leaderboard_legacy
     {
       if ($random_indexes{$i})
       {
-  push @featured_mistakes, $m;
+        push @featured_mistakes, $m;
       }
       $i++
     }
@@ -2013,6 +2017,7 @@ sub update_simulate_html
       Tournament Simulation 
     </h1>
     Simulate tournament outcomes to see which events are most likely and which are impossible. 
+    To learn more, check the 'Tournament Simulation' section of the <a href='/about.html'>about page</a>.
   </div>
   <div style='text-align: center; margin-top: 20px'>
     <form onsubmit='return simulate()' id='$formid'>
@@ -2030,6 +2035,7 @@ sub update_simulate_html
           <tr>
             <td>
               <select $select_class $select_style required name='$pairing_option'>
+              <option disabled selected value=''>Pairing Method</option>
               $pairing_options_html
               </select>
             </td>
@@ -2037,6 +2043,7 @@ sub update_simulate_html
           <tr>
             <td>
               <select $select_class $select_style required name='$scoring_option'>
+                <option disabled selected value=''>Scoring Method</option>
                 $scoring_options_html
               </select>
             </td>
@@ -2059,21 +2066,35 @@ sub update_simulate_html
 
   function simulate()
   {
-    var div = document.getElementById('$simid');
-    div.style.display = 'block';
-    div.innerHTML = '$content_loader';
-
     var XHR = new XMLHttpRequest();
     var formData = new FormData(document.getElementById('$formid'));
     var args = '$cgi_type_name=$cgi_type&';
+    var start;
+    var end;
     for (var [key, value] of formData.entries())
     { 
       args += key + '=' + value + '&';
+      if (key == '$start_round_option')
+      {
+        start = value;
+      }
+      else if (key == '$end_round_option')
+      {
+        end = value;
+      }
+    }
+    if (start && end && end < start)
+    {
+      alert('The Start Round must be less than the End Round');
+      return false;
     }
     if (args)
     {
       args = args.substring(0, args.length - 1);
     }
+    var div = document.getElementById('$simid');
+    div.style.display = 'block';
+    div.innerHTML = '$content_loader';
     XHR.addEventListener('load', function(event)
     {
       document.getElementById('$simid').innerHTML = event.target.responseText;
@@ -2573,7 +2594,7 @@ $html_styles
 $nav
 
 <div $odd_div_style>
-   <div $title_div_style> <b $title_style >Search</b></div>
+   <!-- <div $title_div_style> <b $title_style >Search</b></div> -->
     <div style="padding-bottom: $inner_content_padding; padding-top: $inner_content_padding">
       <form action="$cgibin_name/$script" target="_blank" method="get" onsubmit="return nocacheresult()">
         <input name='$cgi_type_name' value='$cgi_type' hidden>
@@ -2689,54 +2710,6 @@ HTML
 ;
   open(my $fh, '>', Constants::HTML_DIRECTORY_NAME . '/' . Constants::INDEX_HTML_FILENAME);
   print $fh $index_html;
-  close $fh;
-}
-
-sub update_name_id_hash
-{
-  my $hashref = shift;
-
-  my $datadir               = Constants::DATA_DIRECTORY_NAME;
-  my $name_id_data_filename = Constants::NAME_ID_DATA_FILENAME;
-  my $var_name              = Constants::NAME_ID_VARIABLE_NAME;
-
-  my $data = "{";
-
-  foreach my $key (keys %{$hashref})
-  {
-    my $arrayref = $hashref->{$key};
-    my $arrayref_string = '[';
-    for (my $i = 0; $i < scalar @{$arrayref}; $i++)
-    {
-      $arrayref_string .= '"' . $arrayref->[$i] . '",';
-    }
-    chop($arrayref_string);
-    $arrayref_string .= ']';
-    $data .= "\n  '$key' => $arrayref_string,";
-  }
-
-  chop($data);
-
-  $data .= "\n}";
-  
-  my $file_string =
-"
-#!/usr/bin/perl
- 
-package NameConversion;
-
-use strict;
-use warnings;
-
-use constant $var_name => 
-$data
-;
-
-1;
-";
-
-  open (my $fh, '>', "$datadir/$name_id_data_filename");
-  print $fh $file_string;
   close $fh;
 }
 
@@ -2931,6 +2904,12 @@ In October 2019, the site underwent major updates which include:
 <li>Dynamic mistake tagging.</li>
 <li>Alchemist Cup registrants list.</li>
 <li>RandomRacer 2.0, a new version of the original typing practice feature of RandomRacer.</li>
+</ul>
+<br><br>
+In November 2019, the following features were added:
+<br><br>
+<ul>
+<li>Tournament Simulation</li>
 </ul>
 You can learn more about some of these features in later sections. Please report any bugs to joshuacastellano7@gmail.com'
     ],
@@ -3155,6 +3134,27 @@ You can learn more <a href="https://www.scrabbleplayers.org/w/2020_Alchemist_Cup
       'RandomRacer 2.0',
 'RandomRacer 2.0 is a revamped version of the original RandomRacer typing practice that was released sometime
 in 2016. All words are from the Collins CSW19 lexicon.
+'
+    ],
+    [
+      'Tournament Simulation',
+'
+The Tournament Simulation tool simulates tournaments from an initial starting round and produces a rank matrix indicating
+the percentage of scenarios that each player achieved for each rank. Each parameter is described below.
+<h4>Tournament File</h4>
+The tournament file must be a valid .t file, which are produced by <a href="http://www.poslarchive.com/tsh/doc/">tsh</a>.
+<h4>Start Round</h4>
+An optional parameter to specify which round the simulations should start from. If no start round is given, the number
+of rounds for which there are data in the .t file will be used as the start round. If the start round specified is
+greater than the number of rounds for which there are data, an error will be thrown.
+<h4>End Round</h4>
+The total number of rounds for the tournament.
+<h4>Pairing Method</h4>
+The pairing method specifies how each round should be paired.
+<h4>Scoring Method</h4>
+The scoring method specifies how each round should be scored.
+<h4>Number of Simulations</h4>
+The number of simulations that will be performed.
 '
     ],
     [

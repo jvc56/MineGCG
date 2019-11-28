@@ -39,7 +39,6 @@ sub retrieve
 
   my @every_annotated_game_info = Utils::get_all_annotated_game_info();
   my %updated_players = ();
-  my %name_id_hash    = ();
   my %id_name_hash    = ();
   my %tournament_id_date_hash = ();
 
@@ -48,7 +47,6 @@ sub retrieve
   while (@every_annotated_game_info)
   {
     my $annotated_game_data = shift @every_annotated_game_info;
-    
     Utils::prepare_anno_data($annotated_game_data, \%id_name_hash, \%tournament_id_date_hash);
 
     my $game_xt_id       = $annotated_game_data->[0];
@@ -88,8 +86,7 @@ sub retrieve
       if ($id && !$updated_players{$id})
       {
         $updated_players{$id} = 1;
-        $name_id_hash{Utils::sanitize($name)} = [$id, $id_name_hash{$id}->[0],  $id_name_hash{$id}->[1]];
-        Utils::update_player_record($dbh, $id, $name, Utils::sanitize($name));
+        Utils::update_player_record($dbh, $id, $name, Utils::sanitize($name), $id_name_hash{$id}->[1]);
       }
     }
 
@@ -102,7 +99,6 @@ sub retrieve
   }
   print "\n\n$games_to_update games detected in API call\n";
   print "$games_updated new games retrieved\n";
-  Update::update_name_id_hash(\%name_id_hash);
 }
 
 sub get_lexicon_ref

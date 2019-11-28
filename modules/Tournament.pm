@@ -73,7 +73,7 @@ unless (caller)
                         $html);
       if (ref($tournament) ne 'Tournament')
       {
-        die $tournament;
+        return $tournament;
       }
       foreach my $pm (@{$pairing_methods})
       {
@@ -145,7 +145,15 @@ sub new
   }
 
   my $tournament_file_string = LWP::Simple::get(URI->new($tournament_file_url));
+  if (!$tournament_file_string)
+  {
+    return format_error("Invalid URL: $tournament_file_url");
+  }
   my @tournament_file_array  = split /\n/, $tournament_file_string;
+  if (!@tournament_file_array)
+  {
+    return format_error("No content in URL: $tournament_file_url");
+  }
   my $reset_round;
   my $number_of_players = 0;
   my @players = ();
@@ -157,7 +165,7 @@ sub new
 
     if (!($line =~ /(\D+),(\D+)\s+(\d+)\s+([^;]+);([^;]+);/))
     {
-      return "Error: Invalid line:\n$line\n";
+      return format_error("Invalid line:\n$line\n");
     }
 
     my $last_name         = trim($1);
@@ -174,10 +182,12 @@ sub new
     
     # Throw error is user tries to simulate from a yet
     #   unplayed round
-    if ($force_current_round > $number_of_opponents ||
-        $force_current_round > $number_of_scores)
+    my $potential_start = min($number_of_opponents, $number_of_scores);
+    if ($force_current_round > $potential_start)
     {
-      return "Error: Start round is greater than the number of rounds played";
+      return format_error("Error: Start round ($potential_start)
+              is greater than the number of rounds played
+              ($force_current_round)");
     }
 
     # $force_current_round is a 0-indexed round value
@@ -207,8 +217,8 @@ sub new
             $reset_round != $number_of_scores - 1)
          )
     {
-      return "Error: Inconsistent number of opponents or scores" . 
-               "between players for at $first_name $last_name";
+      return format_error("Error: Inconsistent number of opponents or score
+             between players for at $first_name $last_name");
     }
     elsif (!$reset_round)
     {
@@ -726,6 +736,21 @@ sub get_results
   }
 }
 
+sub format_error
+{
+  my $matrix_style = Constants::TOURNAMENT_MATRIX_STYLE;
+  my $text = shift;
+  my $error_string =
+    "<div $matrix_style>
+       <h3>
+         <b><b>Error</b></b>
+       </h3>
+       $text
+     </div>
+    ";
+  return $error_string;
+}
+
 sub record_results
 {
   my $this = shift;
@@ -736,7 +761,8 @@ sub record_results
   my $player_number;
   for (my $i = 0; $i < $number_of_players; $i++)
   {
-    if (!$players->[$i]->{Constants::PLAYER_FINAL_RANKS}->[$i])
+    if (!$players->[$i]->{Constants::PLAYER_FINAL_RANKS}->[$i] &&
+         $this->{Constants::TOURNAMENT_HTML_FORMAT})
     {
       $player_number   = $players->[$i]->{Constants::PLAYER_NUMBER};
       $scenario_string = $this->{Constants::TOURNAMENT_SCENARIO_MATRIX}->

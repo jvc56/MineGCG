@@ -17,7 +17,6 @@ my $cort           = '';
 my $tid            = '';
 my $game           = '';
 my $opponent       = '';
-my $opponent_sanitized;
 my $startdate      = '';
 my $enddate        = '';
 my $lexicon        = '';
@@ -56,7 +55,7 @@ GetOptions (
 
 pod2usage(1) if $help || !$name;
 
-Mine::mine($name, $cort, $game, $opponent_sanitized, $startdate, $enddate, $lexicon, $verbose, $tid, $statsdump, $missingracks);
+Mine::mine($name, $cort, $game, $opponent, $startdate, $enddate, $lexicon, $verbose, $tid, $statsdump, $missingracks);
 
 
 __END__

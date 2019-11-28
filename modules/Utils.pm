@@ -453,6 +453,7 @@ sub update_player_record
   my $player_cross_tables_id = shift;
   my $raw_name               = shift;
   my $player_name            = shift;
+  my $player_photo_url       = shift;
   my $stats                  = shift;
   my $total_games            = shift;
 
@@ -476,8 +477,9 @@ sub update_player_record
 
   my $update_gcg = 0;
 
-  my $queried_name     = $player_query[0]->{Constants::PLAYER_SANITIZED_NAME_COLUMN_NAME};
-  my $queried_raw_name = $player_query[0]->{Constants::PLAYER_NAME_COLUMN_NAME};
+  my $queried_name      = $player_query[0]->{Constants::PLAYER_SANITIZED_NAME_COLUMN_NAME};
+  my $queried_raw_name  = $player_query[0]->{Constants::PLAYER_NAME_COLUMN_NAME};
+  my $queried_photo_url = $player_query[0]->{Constants::PLAYER_PHOTO_URL_COLUMN_NAME};
 
   if (@player_query)
   {
@@ -496,6 +498,11 @@ sub update_player_record
   {
     $player_name = $queried_name;
   }
+  if (!$player_photo_url)
+  {
+    $player_photo_url = $queried_photo_url;
+  }
+
   elsif ($queried_name && $player_name ne $queried_name)
   {
     $update_gcg = 1;
@@ -516,6 +523,7 @@ sub update_player_record
     Constants::PLAYER_CROSS_TABLES_ID_COLUMN_NAME => $player_cross_tables_id,
     Constants::PLAYER_NAME_COLUMN_NAME            => $raw_name,
     Constants::PLAYER_SANITIZED_NAME_COLUMN_NAME  => $player_name,
+    Constants::PLAYER_PHOTO_URL_COLUMN_NAME       => $player_photo_url,
     Constants::PLAYER_STATS_COLUMN_NAME           => $stats,
     Constants::PLAYER_TOTAL_GAMES_COLUMN_NAME     => $total_games
   };
@@ -575,7 +583,6 @@ sub insert_or_set_hash_into_table
   }
 
   my $stmt;
-
   if (!$record_id)
   {
     my $keys_string   = "("; 
