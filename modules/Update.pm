@@ -1985,15 +1985,17 @@ sub update_simulate_html
   my $cgi_type = Constants::SIM_SEARCH_OPTION;
   my $cgi_type_name = Constants::CGI_TYPE;
 
-  my $search_option         = Constants::SIM_SEARCH_OPTION;
-  my $tournament_option     = Constants::SIM_TOURNAMENT_FIELD_NAME;
-  my $start_round_option    = Constants::SIM_START_ROUND_FIELD_NAME;
-  my $end_round_option      = Constants::SIM_END_ROUND_FIELD_NAME;
-  my $pairing_option        = Constants::SIM_PAIRING_METHOD_FIELD_NAME;
-  my $scoring_option        = Constants::SIM_SCORING_METHOD_FIELD_NAME;
-  my $number_of_sims_option = Constants::SIM_NUMBER_OF_SIMS_FIELD_NAME;
-  my $sim_html_filename     = Constants::SIM_HTML_FILENAME;
-  my $default_num_sims      = Constants::DEFAULT_NUMBER_OF_SIMULATIONS;
+  my $search_option            = Constants::SIM_SEARCH_OPTION;
+  my $tournament_option        = Constants::SIM_TOURNAMENT_FIELD_NAME;
+  my $start_round_option       = Constants::SIM_START_ROUND_FIELD_NAME;
+  my $end_round_option         = Constants::SIM_END_ROUND_FIELD_NAME;
+  my $pairing_option           = Constants::SIM_PAIRING_METHOD_FIELD_NAME;
+  my $scoring_option           = Constants::SIM_SCORING_METHOD_FIELD_NAME;
+  my $number_of_sims_option    = Constants::SIM_NUMBER_OF_SIMS_FIELD_NAME;
+  my $include_scenarios_option = Constants::SIM_SCENARIOS_FIELD_NAME;
+  my $sim_html_filename        = Constants::SIM_HTML_FILENAME;
+  my $default_num_sims         = Constants::DEFAULT_NUMBER_OF_SIMULATIONS;
+  my $scenario_id              = 'scenario_checkbox';
 
   my $scoring_options_list = Constants::SCORING_METHOD_LIST;
   my $pairing_options_list = Constants::PAIRING_METHOD_LIST;
@@ -2049,8 +2051,18 @@ sub update_simulate_html
             </td>
           </tr>
           <tr>
-            <td colspan='2'><input  $input_class required min='1' name='$number_of_sims_option' type='number' value='' placeholder='Number of Simulations'></td>
+            <td><input  $input_class required min='1' name='$number_of_sims_option' type='number' value='' placeholder='Number of Simulations'></td>
           </tr>
+          <tr>
+            <td>
+              <div style='font-size: 1rem; margin: 10px 0px;'>
+                <input name='$include_scenarios_option' type='checkbox' id='$scenario_id' checked>
+                <label class='form-check-label' for='$scenario_id'>
+                  <b><b>Include Scenarios</b></b>
+                </label>
+              </div>
+            </td>
+           </tr>
         </tbody>
       </table>
      <input class='btn' type='submit'>
@@ -3151,10 +3163,37 @@ greater than the number of rounds for which there are data, an error will be thr
 The total number of rounds for the tournament.
 <h4>Pairing Method</h4>
 The pairing method specifies how each round should be paired.
+<h5>Random Pair</h5>
+All pairings and the bye are assigned randomly.
+<h5>King of the Hill</h5>
+The player in first plays the player in second, the player in third plays the player in fourth, and so on. If there are an odd number of players, the last player will receive a bye.
+<h5>Rank Pair</h5>
+The player at rank \(i\) plays the player in rank \( i + r \), where \(r\) is the number of rounds left in the tournament. So if there are 3 rounds left, the player in first plays the player in fourth, the player in second plays the player in fifth, and so on. The top \(2r\) players are paired in this manner. If there are remaining players, they are paired using King of the Hill. If \(r\) is greater than half the number of players, then \(r\) is assigned to half the number of players. If King of the Hill is used for the remaining players, the last player receives a bye.
 <h4>Scoring Method</h4>
 The scoring method specifies how each round should be scored.
+<h5>Rating</h5>
+Players receive game scores based on their rating.
+<h5>Random Uniform</h5>
+Players receive a uniformly random score between 300 and 599.
+<h5>Random Blowouts</h5>
+For each game, all the following scores (Player One score - Player Two score) are equally likely:
+<ul>
+<li>1000 - 0</li>
+<li>0 - 1000</li>
+</ul>
+<h5>Random Blowouts, Close Wins, and Ties</h5>
+For each game, all the following scores (Player One score - Player Two score) are equally likely:
+<ul>
+<li>1000 - 0</li>
+<li>0 - 1000</li>
+<li>0 - 1</li>
+<li>1 - 0</li>
+<li>1 - 1</li>
+</ul>
 <h4>Number of Simulations</h4>
 The number of simulations that will be performed.
+<h4>Include Scenarios</h5>
+If this box is checked, the Rank Matrix will include the final tournament standings and all tournament results for every possible final rank achieved by every player. The amount of HTML increases approximately cubically with the number of players, so your browser performance may significantly degrade for large tournaments. 
 '
     ],
     [

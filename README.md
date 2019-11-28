@@ -526,12 +526,55 @@ The total number of rounds for the tournament.
 The pairing method specifies how each round should be paired.
 
 
+<h5>Random Pair</h5>
+All pairings and the bye are assigned randomly.
+
+
+<h5>King of the Hill</h5>
+The player in first plays the player in second, the player in third plays the player in fourth, and so on. If there are an odd number of players, the last player will receive a bye.
+
+
+<h5>Rank Pair</h5>
+The player at rank \(i\) plays the player in rank \( i + r \), where \(r\) is the number of rounds left in the tournament. So if there are 3 rounds left, the player in first plays the player in fourth, the player in second plays the player in fifth, and so on. The top \(2r\) players are paired in this manner. If there are remaining players, they are paired using King of the Hill. If \(r\) is greater than half the number of players, then \(r\) is assigned to half the number of players. If King of the Hill is used for the remaining players, the last player receives a bye.
+
+
 <h4>Scoring Method</h4>
 The scoring method specifies how each round should be scored.
 
 
+<h5>Rating</h5>
+Players receive game scores based on their rating.
+
+
+<h5>Random Uniform</h5>
+Players receive a uniformly random score between 300 and 599.
+
+
+<h5>Random Blowouts</h5>
+For each game, all the following scores (Player One score - Player Two score) are equally likely:
+
+ - 1000 - 0
+ - 0 - 1000
+
+
+
+<h5>Random Blowouts, Close Wins, and Ties</h5>
+For each game, all the following scores (Player One score - Player Two score) are equally likely:
+
+ - 1000 - 0
+ - 0 - 1000
+ - 0 - 1
+ - 1 - 0
+ - 1 - 1
+
+
+
 <h4>Number of Simulations</h4>
 The number of simulations that will be performed.
+
+
+<h4>Include Scenarios</h5>
+If this box is checked, the Rank Matrix will include the final tournament standings and all tournament results for every possible final rank achieved by every player. The amount of HTML increases approximately cubically with the number of players, so your browser performance may significantly degrade for large tournaments.
 
 # Development Team
 

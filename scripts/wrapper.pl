@@ -100,6 +100,7 @@ elsif ($wcgi eq 'sim_search')
   my $pairingmethod = '';
   my $scoringmethod = '';
   my $numberofsims = '';
+  my $scenarios = '';
 
 
   GetOptions
@@ -110,6 +111,7 @@ elsif ($wcgi eq 'sim_search')
     'pairingmethod:s' => \$pairingmethod,
     'scoringmethod:s' => \$scoringmethod,
     'numberofsims:s' => \$numberofsims,
+    'scenarios:s' => \$scenarios,
   );
 
 
@@ -123,6 +125,7 @@ elsif ($wcgi eq 'sim_search')
     $scoringmethod,
     $numberofsims,
     $startround,
+    $scenarios,
     1
   );
   if (ref($tournament) ne 'Tournament')

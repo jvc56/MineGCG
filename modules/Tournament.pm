@@ -27,6 +27,8 @@ unless (caller)
   # Round that the tournament starts at. Defaults to the number of
   #   rounds in the .t file
   my $reset_round           = Constants::DEFAULT_START_ROUND;
+  # Include scenarios by default
+  my $scenarios             = 1;
   # Set html to get HTML formatted output
   my $html                  = 0;
   # Flag for testing
@@ -39,6 +41,7 @@ unless (caller)
               "score:s"  => \$scoring_method,
               "sim:s"    => \$number_of_simulations,
               "start:s"  => \$reset_round,
+              "scenario" => \$scenarios,
               "html"     => \$html,
               "all"      => \$all
              );
@@ -50,6 +53,7 @@ unless (caller)
                     $scoring_method,
                     $number_of_simulations,
                     $reset_round,
+                    $scenarios,
                     $html);
 
   # Simulate the .t file with all combinations of
@@ -70,6 +74,7 @@ unless (caller)
                         $scoring_method,
                         $number_of_simulations,
                         $reset_round - 1,
+                        $scenarios,
                         $html);
       if (ref($tournament) ne 'Tournament')
       {
@@ -105,7 +110,13 @@ sub new
   # If $force_current_round is set, the simulation will start
   #   from the 0-indexed $force_current_round 
   my $force_current_round = shift;
+  my $include_scenarios   = shift;
   my $html                = shift;
+
+  if (!$html)
+  {
+    $include_scenarios = 0;
+  }
 
   my $pairing_methods = Constants::PAIRING_METHOD_LIST;
   my $scoring_methods = Constants::SCORING_METHOD_LIST;
@@ -347,6 +358,7 @@ sub new
      Constants::TOURNAMENT_CURRENT_NUMBER_OF_SIMULATIONS => 0,
      Constants::TOURNAMENT_MAXIMUM_NUMBER_OF_SIMULATIONS => $simulations,
      Constants::TOURNAMENT_FILENAME                      => $tournament_file_url,
+     Constants::TOURNAMENT_INCLUDE_SCENARIOS             => $include_scenarios,
      Constants::TOURNAMENT_HTML_FORMAT                   => $html
     );
   my $self = bless \%tournament, $this;
@@ -477,7 +489,8 @@ sub get_results
      Constants::TOURNAMENT_NUMBER_OF_PLAYERS,
      Constants::TOURNAMENT_PAIRING_METHOD,
      Constants::TOURNAMENT_SCORING_METHOD,
-     Constants::TOURNAMENT_MAXIMUM_NUMBER_OF_SIMULATIONS
+     Constants::TOURNAMENT_MAXIMUM_NUMBER_OF_SIMULATIONS,
+     Constants::TOURNAMENT_INCLUDE_SCENARIOS
   );
 
   if (!$this->{Constants::TOURNAMENT_HTML_FORMAT})
@@ -496,6 +509,10 @@ sub get_results
       if ($param eq Constants::TOURNAMENT_RESET_ROUND)
       {
         $result_string .= ($this->{$param} + 1) . "\n";
+      }
+      elsif ($param eq Constants::TOURNAMENT_INCLUDE_SCENARIOS)
+      {
+        $result_string .= ($this->{$param}) ? 'True' : 'False';
       }
       else
       {
@@ -532,6 +549,7 @@ sub get_results
     my $div_style    = Constants::TOURNAMENT_DIV_STYLE;
     my $matrix_style = Constants::TOURNAMENT_MATRIX_STYLE;
     my $table_style  = Constants::TOURNAMENT_TABLE_STYLE; 
+    my $inc_scen     = $this->{Constants::TOURNAMENT_INCLUDE_SCENARIOS};
     my $params_div_id = 'params_div_id';
     my $spaces = '&nbsp;' x 5;
     # Build the parameters table
@@ -550,6 +568,10 @@ sub get_results
         # Increment the 0-indexed round number for
         #   human readability
         $value++;
+      }
+      elsif ($param eq Constants::TOURNAMENT_INCLUDE_SCENARIOS)
+      {
+        $value = ($this->{$param}) ? 'True' : 'False';
       }
       $params_table .=
       "
@@ -609,23 +631,28 @@ sub get_results
           <b><b>$name$name_spaces</b></b>
         </td>
       ";
-      my $srow_id      = "scenario_row_$i";
       my $pranks = $player->{Constants::PLAYER_FINAL_RANKS};
       my $pranks_length = scalar @{$pranks};
-      my $cspan = $pranks_length + 1;
-      my $scenario_row =
-      "
-      <tr>
-        <td style='text-align: center; width: 100%' colspan='$cspan'>
-          <div class='accordion' id='$srow_id'>
-      ";
+      my $scenario_row;
+      my $srow_id;
+      my $scenario_id;
+      if ($inc_scen)
+      {
+        $srow_id      = "scenario_row_$i";
+        my $cspan = $pranks_length + 1;
+        $scenario_row =
+        "
+        <tr>
+          <td style='text-align: center; width: 100%' colspan='$cspan'>
+            <div class='accordion' id='$srow_id'>
+        ";
+      }
       for (my $j = 0; $j < $pranks_length; $j++)
       {
         my $jrank = $pranks->[$j];
         my $cell_color = '#000000'; 
         my $scenario = '';
         my $outcome_content = '';
-        my $scenario_id = "scenario_$i"."_$j";
         if ($jrank != 0)
         {
           # If the player place in this rank in at least one scenario
@@ -636,47 +663,67 @@ sub get_results
             $perc = '<1';
           }
           $perc = "<b style='width: 100%'>$perc%</b>";
-
           # Assign a brighter shade of green for higher percentages
           $cell_color =
             '#00' .
             (sprintf("%02X", max(int(255/20), int(255*$jrank/$sims)))) .
             '00';
-          # Retrieve the scenario matrix
-          my $scenario_matrix =
-            $this->{Constants::TOURNAMENT_SCENARIO_MATRIX}->
-            [$player_number]->[$j];
+
           my $ordinal = ($j + 1) . Utils::get_ordinal_suffix($j + 1);
-          $scenario =
-            "<br><b><b>Example Scenario of $name finishing in $ordinal" . 
-            "</b></b><br>$scenario_matrix";
           my $tooltip_title =
             "<b><b>$name</b></b> finishes <b><b>$ordinal</b></b> in <b><b>" .
             "$jrank</b></b> out of <b><b>$sims</b></b> scenarios.";
           my $tt_id = "tooltip_$i"."_$j";
-          my $tooltip =
-          "<div
-              id='$tt_id'
-              onmouseover='initTooltip(\"$tt_id\")'
-              data-toggle='tooltip'
-              data-placement='top'
-              data-html='true'
-              title=\"$tooltip_title\"
-              style='width: 100%'>
-                $perc
-          </div>";
-          $outcome_content =
-            "<button
-               class='btn btn-link collapsed'
-               type='button'
-               data-toggle='collapse'
-               data-target='#$scenario_id'
-               aria-expanded='false'
-               aria-controls='$scenario_id'
-               $button_style >
-                 $tooltip
-            </button>
-            "; 
+
+          if ($inc_scen)
+          {
+            # Retrieve the scenario matrix
+            my $scenario_matrix =
+              $this->{Constants::TOURNAMENT_SCENARIO_MATRIX}->
+              [$player_number]->[$j];
+            $scenario_id = "scenario_$i"."_$j";
+            $scenario =
+              "<br><b><b>Example Scenario of $name finishing in $ordinal" . 
+              "</b></b><br>$scenario_matrix";
+            my $tooltip =
+            "<div
+                id='$tt_id'
+                onmouseover='initTooltip(\"$tt_id\")'
+                data-toggle='tooltip'
+                data-placement='top'
+                data-html='true'
+                title=\"$tooltip_title\"
+                style='width: 100%'>
+                  $perc
+            </div>";
+            $outcome_content =
+              "<button
+                 class='btn btn-link collapsed'
+                 type='button'
+                 data-toggle='collapse'
+                 data-target='#$scenario_id'
+                 aria-expanded='false'
+                 aria-controls='$scenario_id'
+                 $button_style >
+                   $tooltip
+              </button>
+              "; 
+
+          }
+          else
+          {
+            $outcome_content =
+            "<div
+                id='$tt_id'
+                onmouseover='initTooltip(\"$tt_id\")'
+                data-toggle='tooltip'
+                data-placement='top'
+                data-html='true'
+                title=\"$tooltip_title\"
+                style='width: 100%'>
+                  $perc
+            </div>";
+          }
         }
         my $radius_style = '';
         if ($i == 0)
@@ -709,19 +756,25 @@ sub get_results
            $outcome_content
         </td>
         ";
-        $scenario_row .=
-        "
-        <div
-           id='$scenario_id'
-           class='collapse'
-           data-parent='#$srow_id'
-           style='text-align: center'>
-             $scenario
-        </div>
-        ";
+        if ($inc_scen)
+        {
+          $scenario_row .=
+          "
+          <div
+             id='$scenario_id'
+             class='collapse'
+             data-parent='#$srow_id'
+             style='text-align: center'>
+               $scenario
+          </div>
+          ";
+        }
       }
       $rank_matrix .= $outcome_row  . '</tr>';
-      $rank_matrix .= $scenario_row . '</div></td></tr>';
+      if ($inc_scen)
+      {
+        $rank_matrix .= $scenario_row . '</div></td></tr>';
+      }
     }
     $rank_matrix .= "</tbody></table>";
     $rank_matrix  =
@@ -762,7 +815,7 @@ sub record_results
   for (my $i = 0; $i < $number_of_players; $i++)
   {
     if (!$players->[$i]->{Constants::PLAYER_FINAL_RANKS}->[$i] &&
-         $this->{Constants::TOURNAMENT_HTML_FORMAT})
+         $this->{Constants::TOURNAMENT_INCLUDE_SCENARIOS})
     {
       $player_number   = $players->[$i]->{Constants::PLAYER_NUMBER};
       $scenario_string = $this->{Constants::TOURNAMENT_SCENARIO_MATRIX}->
@@ -868,7 +921,9 @@ sub scenario
   my $matrix_style = Constants::TOURNAMENT_MATRIX_STYLE;
   my $table_style  = Constants::TOURNAMENT_TABLE_STYLE; 
   my $number_of_players = $this->{Constants::TOURNAMENT_NUMBER_OF_PLAYERS};
+  my $reset_round      = $this->{Constants::TOURNAMENT_RESET_ROUND};
   my $number_of_rounds = $this->{Constants::TOURNAMENT_NUMBER_OF_ROUNDS};
+  my $colspan = $number_of_rounds - $reset_round;
   my $num_attrs = 5;
   my $td_style = "style='width: 1px; text-align: left; white-space: nowrap'";
   my $spaces = '&nbsp;' x 2;
@@ -881,12 +936,12 @@ sub scenario
         <td $td_style ><b><b>Wins  $spaces</b></b></td>
         <td $td_style ><b><b>Losses$spaces</b></b></td>
         <td $td_style ><b><b>Spread$spaces</b></b></td>
-        <td colspan='$number_of_rounds'><b><b>Rounds</b></b></td>   
+        <td colspan='$colspan'><b><b>Rounds</b></b></td>   
      </tr>
      <tr>
       <td colspan='$num_attrs'></td>
   ";
-  for (my $i = 0; $i < $number_of_rounds; $i++)
+  for (my $i = $reset_round + 1; $i < $number_of_rounds; $i++)
   {
     $scenario_matrix .= sprintf "<td><b><b>%s</b></b></td>", $i + 1;
   }
@@ -911,7 +966,7 @@ sub scenario
        <td $td_style ><b><b>$losses$spaces</b></b></td>
        <td $td_style ><b><b>$spread$spaces</b></b></td>
     ";
-    for (my $j = 0; $j < $number_of_rounds; $j++)
+    for (my $j = $reset_round + 1; $j < $number_of_rounds; $j++)
     {
       my $player_score   = $player_scores->[$j];
       my $opponent       = $opponents->[$j];
@@ -1037,7 +1092,7 @@ sub score
         
         $players->[$i]->{Constants::PLAYER_OPPONENTS}->[$round]->
           {Constants::PLAYER_SCORES}->[$round] =
-          1 - $blowout_scores->[$random_index];
+          $blowout_scores->[1 - $random_index];
 
         $scored[$players->[$i]->{Constants::PLAYER_NUMBER}] = 1;
         $scored[$players->[$i]->{Constants::PLAYER_OPPONENTS}->
