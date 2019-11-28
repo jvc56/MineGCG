@@ -1049,7 +1049,7 @@ sub statsList
     {
       Constants::STAT_NAME => 'Bingos',
       Constants::STAT_DESCRIPTION_NAME =>
-      'The number of bingos played by the player that were not challenged off.',
+      'The of bingos played by the player that were not challenged off.',
       Constants::STAT_ITEM_OBJECT_NAME => {'list' => []},
       Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
       Constants::STAT_METATYPE_NAME => Constants::METATYPE_PLAYER,
