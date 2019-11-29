@@ -43,7 +43,6 @@ my $dbh = Utils::connect_to_database;
 
 execute_db_command("DROP DATABASE IF EXISTS $database");
 execute_db_command("CREATE DATABASE $database WITH TEMPLATE $dev_database");
-execute_command("rm -rf $target/data && cp -r data $target");
 execute_command("rm -rf $target/cache");
 execute_command("git -C $target pull origin master");
 

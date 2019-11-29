@@ -72,8 +72,6 @@ for (my $i = 0; $i < scalar @log_names; $i++)
   open(LOGFILE, '<', $log_name);
   while (<LOGFILE>)
   {
-    if (/(\/cache\/\w+\.html)|(\/cgi-bin\/mine_webapp\.pl)|(leaderboard)|(notable)|(about)|(alchemist)/)
-    {
       $_ =~ /(\d+).(\w+).(\d+):(\d+):(\d+):(\d+)/;
 
       my $logline_time = DateTime->new(
@@ -130,7 +128,6 @@ for (my $i = 0; $i < scalar @log_names; $i++)
         $final_access_log .= "\n";
       }
     }
-  }
 }
 
 my $final_access_log_name = "$logs/access.log";

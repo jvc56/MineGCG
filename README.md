@@ -100,7 +100,7 @@ The total number of turns of the player and the opponent.
 
 <h3>Bingos</h3>
 
-The number of bingos played by the player that were not challenged off.
+The of bingos played by the player that were not challenged off.
 
 <h3>Triple Triples</h3>
 
