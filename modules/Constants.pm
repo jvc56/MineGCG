@@ -396,7 +396,9 @@ use constant MISTAKES_MAGNITUDE =>
 
   'Saddest' => 'Large',
   'Sadder'  => 'Medium',
-  'Sad'     => 'Small'
+  'Sad'     => 'Small',
+
+  'Smol'    => 'Small'
 };
 
 use constant MISTAKES_ORDER =>
