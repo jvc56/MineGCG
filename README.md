@@ -17,7 +17,6 @@ In October 2019, the site underwent major updates which include:
  - Alchemist Cup registrants list.
  - RandomRacer 2.0, a new version of the original typing practice feature of RandomRacer.
 
-
 In November 2019, the following features were added:
 
 

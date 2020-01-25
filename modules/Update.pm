@@ -3081,7 +3081,7 @@ You can also mark a move with more than one mistake:
 <br><br>
 #findingmedium blah blah blah #tacticslarge ##dynamicsomething ##moredynamic
 <br><br>
-Mistakes and dynamic mistakes are completely distinct categories. Standard mistakes are never counted as dynamic mistakes and dynamic mistakes are never counted as standard mistakes. If you see this happen on RandomRacer, please contact joshuacastellano7#gmail.com.
+Mistakes and dynamic mistakes are completely distinct categories. Standard mistakes are never counted as dynamic mistakes and dynamic mistakes are never counted as standard mistakes. If you see this happen on RandomRacer, please contact joshuacastellano7@gmail.com.
 '
     ],
     [
