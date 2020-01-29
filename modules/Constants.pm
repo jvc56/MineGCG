@@ -225,7 +225,7 @@ use constant SANITIZE_EXEMPTIONS =>
 };
 
 use constant COLLINS_OPTION                   => 'Collins';
-use constant TWL_OPTION                       => 'TWL/NSW';
+use constant TWL_OPTION                       => 'TWL/NWL';
 
 use constant SEARCH_DATA_FILENAME             => 'search_data.html';
 
