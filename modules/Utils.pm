@@ -806,6 +806,11 @@ sub prepare_anno_data
     }
   }
   $data->[10] = $date;
+
+  if ($data->[7] eq 'NSW18')
+  {
+    $data->[7] = 'NWL18';
+  }
 }
 
 sub get_tournament_date

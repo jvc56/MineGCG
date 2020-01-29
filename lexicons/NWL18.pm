@@ -1,11 +1,11 @@
 #!/usr/bin/perl
 
-package NSW18;
+package NWL18;
 
 use warnings;
 use strict;
 
-use constant NSW18_LEXICON =>
+use constant NWL18_LEXICON =>
 {
 'AA' => 41,
 'AAH' => 643,

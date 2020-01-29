@@ -18,7 +18,7 @@ use CSW19;
 use TWL98;
 use TWL06;
 use TWL15;
-use NSW18;
+use NWL18;
 
 unless (caller)
 {
@@ -118,9 +118,9 @@ sub get_lexicon_ref
   {
     $lexicon_ref = TWL15::TWL15_LEXICON;
   }
-  elsif ($lexicon eq 'NSW18')
+  elsif ($lexicon eq 'NWL18')
   {
-    $lexicon_ref = NSW18::NSW18_LEXICON;
+    $lexicon_ref = NWL18::NWL18_LEXICON;
   }
   elsif ($lexicon eq 'CSW07')
   {
