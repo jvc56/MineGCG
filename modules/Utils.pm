@@ -807,7 +807,7 @@ sub prepare_anno_data
   }
   $data->[10] = $date;
 
-  if ($data->[7] eq 'NSW18')
+  if ($data->[7] && $data->[7] eq 'NSW18')
   {
     $data->[7] = 'NWL18';
   }
