@@ -167,9 +167,13 @@ sub mine
         )
   $opp_query
   ";
-  if ($game_id_min && $game_id_max)
+  if ($game_id_min)
   {
-    $games_query .= " AND g.$game_cross_tables_id_column_name >= $game_id_min AND g.$game_cross_tables_id_column_name <= $game_id_max";
+    $games_query .= " AND g.$game_cross_tables_id_column_name >= $game_id_min";
+  }
+  if ($game_id_max)
+  {
+    $games_query .= " AND g.$game_cross_tables_id_column_name <= $game_id_max";
   }
   if ($tourney_id)
   {
