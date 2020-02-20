@@ -74,7 +74,8 @@ use constant DIRECTORY_FIELD_NAME             => 'directory';
 use constant PLAYER_SEARCH_OPTION             => 'player_search';
 use constant PLAYER_FIELD_NAME                => 'name';
 use constant CORT_FIELD_NAME                  => 'cort';
-use constant GAME_ID_FIELD_NAME               => 'gameid';
+use constant GAME_ID_MIN_FIELD_NAME               => 'gameidmin';
+use constant GAME_ID_MAX_FIELD_NAME               => 'gameidmax';
 use constant TOURNAMENT_ID_FIELD_NAME         => 'tournamentid';
 use constant OPPONENT_FIELD_NAME              => 'opponent';
 use constant START_DATE_FIELD_NAME            => 'startdate';
@@ -87,7 +88,8 @@ use constant PLAYER_SEARCH_DISPATCH => "
   (
     \$".PLAYER_FIELD_NAME.",
     \$".CORT_FIELD_NAME.",
-    \$".GAME_ID_FIELD_NAME.",
+    \$".GAME_ID_MIN_FIELD_NAME.",
+    \$".GAME_ID_MAX_FIELD_NAME.",
     \$".OPPONENT_FIELD_NAME.",
     \$".START_DATE_FIELD_NAME.",
     \$".END_DATE_FIELD_NAME.",

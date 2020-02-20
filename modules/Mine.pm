@@ -25,7 +25,8 @@ sub mine
 
   my $player_name       = shift;
   my $cort              = shift;
-  my $single_game_id    = shift;
+  my $game_id_min       = shift;
+  my $game_id_max       = shift;
   my $opponent_name     = shift;
   my $startdate         = shift;
   my $enddate           = shift;
@@ -50,7 +51,8 @@ sub mine
 
   my $cache_filename = "$cache_dir/$sanitized_player_name.html";
   my $cache_condition = !$cort &&
-                        !$single_game_id &&
+                        !$game_id_min &&
+                        !$game_id_max &&
                         !$opponent_name &&
                         !$startdate &&
                         !$enddate &&
@@ -165,9 +167,9 @@ sub mine
         )
   $opp_query
   ";
-  if ($single_game_id)
+  if ($game_id_min && $game_id_max)
   {
-    $games_query .= " AND g.$game_cross_tables_id_column_name = $single_game_id";
+    $games_query .= " AND g.$game_cross_tables_id_column_name >= $game_id_min AND g.$game_cross_tables_id_column_name <= $game_id_max";
   }
   if ($tourney_id)
   {
@@ -313,7 +315,8 @@ sub mine
     make_search_params_table
     ([
       ['Type', $cort],
-      ['Game ID', $single_game_id],
+      ['Game ID Minimum', $game_id_min],
+      ['Game ID Maximu,', $game_id_max],
       ['Opponent', $opponent_name],
       ['Lexicon', $lexicon],
       ['Tournament', $tourney_id],
