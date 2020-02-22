@@ -23,7 +23,8 @@ if ($wcgi eq 'player_search')
 {
   my $name = '';
   my $cort = '';
-  my $gameid = '';
+  my $gameidmin = '';
+  my $gameidmax = '';
   my $tournamentid = '';
   my $opponent = '';
   my $startdate = '';
@@ -35,7 +36,8 @@ if ($wcgi eq 'player_search')
   (
     'name:s' => \$name,
     'cort:s' => \$cort,
-    'gameid:s' => \$gameid,
+    'gameidmin:s' => \$gameidmin,
+    'gameidmax:s' => \$gameidmax,
     'tournamentid:s' => \$tournamentid,
     'opponent:s' => \$opponent,
     'startdate:s' => \$startdate,
@@ -49,7 +51,8 @@ if ($wcgi eq 'player_search')
   (
     $name,
     $cort,
-    $gameid,
+    $gameidmin,
+    $gameidmax,
     $opponent,
     $startdate,
     $enddate,

@@ -356,9 +356,13 @@ sub new
         $column_letter = uc shift @loc_array;
         $row_number = join "", @loc_array;
       }
-      if (!($row_number =~ /^\d+$/))
+      if ($row_number !~ /^\d+$/)
       {
         return format_game_error("Invalid row number: $row_number.", $filename, $line_number, $line);
+      }
+      if ($column_letter !~ /[A-Z]/)
+      {
+        return format_game_error("Invalid column letter: $column_letter.", $filename, $line_number, $line);
       }
       my $column_index_mapping_ref = Constants::COLUMN_INDEX_MAPPING;
       $zero_index_row = $row_number - 1;

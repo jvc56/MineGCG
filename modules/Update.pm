@@ -579,7 +579,14 @@ sub update_search_data
     my $input_id = $name . '_input';
     my $html_id  = $name . '_html';
 
-    if ($table && $table ne 'date')
+    if ($title =~ /Game ID/)
+    {
+      $html .=
+      "
+      <input class='form-control mb-4' $required name='$name' id='$input_id' placeholder='$title' type='number'>
+      ";
+    }
+    elsif ($table && $table ne 'date')
     {
       my $data = Utils::get_all_unique_values($dbh, $table, $field);
       $html .= make_datalist_input

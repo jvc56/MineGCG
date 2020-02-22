@@ -15,7 +15,8 @@ use Constants;
 my $verbose        = '';
 my $cort           = '';
 my $tid            = '';
-my $game           = '';
+my $game_min           = '';
+my $game_max           = '';
 my $opponent       = '';
 my $startdate      = '';
 my $enddate        = '';
@@ -30,7 +31,8 @@ my $help = 0;
 
   my $name_option = Constants::PLAYER_FIELD_NAME         ;
   my $cort_option = Constants::CORT_FIELD_NAME           ;
-  my $gid_option = Constants::GAME_ID_FIELD_NAME        ;
+  my $gid_min_option = Constants::GAME_ID_MIN_FIELD_NAME        ;
+  my $gid_max_option = Constants::GAME_ID_MAX_FIELD_NAME        ;
   my $tid_option = Constants::TOURNAMENT_ID_FIELD_NAME  ;
   my $opp_option = Constants::OPPONENT_FIELD_NAME       ;
   my $start_option = Constants::START_DATE_FIELD_NAME     ;
@@ -40,7 +42,8 @@ my $help = 0;
 
 GetOptions (
             "verbose"          => \$verbose,
-            "$gid_option:s"    => \$game,
+            "$gid_min_option:s"    => \$game_min,
+            "$gid_max_option:s"    => \$game_max,
             "$cort_option:s"   => \$cort,
             "$tid_option:s"    => \$tid,
             "$opp_option:s"    => \$opponent,
@@ -55,7 +58,7 @@ GetOptions (
 
 pod2usage(1) if $help || !$name;
 
-Mine::mine($name, $cort, $game, $opponent, $startdate, $enddate, $lexicon, $verbose, $tid, $statsdump, $missingracks);
+Mine::mine($name, $cort, $game_min, $game_max, $opponent, $startdate, $enddate, $lexicon, $verbose, $tid, $statsdump, $missingracks);
 
 
 __END__

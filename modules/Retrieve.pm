@@ -50,6 +50,7 @@ sub retrieve
     Utils::prepare_anno_data($annotated_game_data, \%id_name_hash, \%tournament_id_date_hash);
 
     my $game_xt_id       = $annotated_game_data->[0];
+    print "Preparing game $game_xt_id\n";
     my $player_one_xt_id = $annotated_game_data->[1];
     my $player_two_xt_id = $annotated_game_data->[2];
     my $player_one_name  = $annotated_game_data->[3];

@@ -178,7 +178,8 @@ use constant WRAPPER_FUNCTIONS =>
     [
       Constants::PLAYER_FIELD_NAME,
       Constants::CORT_FIELD_NAME,
-      Constants::GAME_ID_FIELD_NAME,
+      Constants::GAME_ID_MIN_FIELD_NAME,
+      Constants::GAME_ID_MAX_FIELD_NAME,
       Constants::TOURNAMENT_ID_FIELD_NAME,
       Constants::OPPONENT_FIELD_NAME,
       Constants::START_DATE_FIELD_NAME,
