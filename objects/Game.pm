@@ -1011,6 +1011,37 @@ sub getBingos
   return \@bingos;
 }
 
+sub get_most_consecutive_bingos
+{
+  my $this = shift;
+  my $player = shift;
+
+  my @moves = @{$this->{'moves'}};
+
+  my @bingos = ();
+
+  my $max    = 0;
+  my $streak = 0;
+
+  foreach my $move (@moves)
+  {
+    my $bingo = $move->isBingo($player);
+    if ($bingo)
+    {
+      $streak++;
+    }
+    else
+    {
+      $streak = 0
+    }
+    if ($streak > $max)
+    {
+      $max = $streak;
+    }
+  }
+  return $max;
+}
+
 sub getTripleTriples
 {
   my $this = shift;

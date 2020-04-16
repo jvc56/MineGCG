@@ -2834,6 +2834,35 @@ sub statsList
      }
     },
     {
+      Constants::STAT_NAME => 'Four or More Consecutive Bingos',
+      Constants::STAT_DESCRIPTION_NAME => 'Games in which the player bingos at least 4 times in a row.',
+      Constants::STAT_ITEM_OBJECT_NAME => {'list' => [], 'ids' => []},
+      Constants::STAT_DATATYPE_NAME => Constants::DATATYPE_LIST,
+      Constants::STAT_METATYPE_NAME => Constants::METATYPE_NOTABLE,
+      Constants::STAT_COMBINE_FUNCTION_NAME =>
+      sub
+      {
+        my $this  = shift;
+        my $other = shift;
+        push @{$this->{'ids'}}, @{$other->{'ids'}};
+        push @{$this->{'list'}}, @{$other->{'list'}};
+      },
+      Constants::STAT_ADD_FUNCTION_NAME =>
+      sub
+      {
+        my $this = shift;
+        my $game = shift;
+        my $player = shift;
+
+        my $consecutive_bingos = $game->get_most_consecutive_bingos($player);
+        if ($game->get_most_consecutive_bingos($player) >= 4)
+        {
+          push @{$this->{'ids'}},  $game->{'id'};
+          push @{$this->{'list'}}, $game->getReadableName() . " ($consecutive_bingos)";
+        }
+     }
+    },
+    {
       Constants::STAT_NAME => 'Mistakeless Turns',
       Constants::STAT_DESCRIPTION_NAME =>
       'The number of turns the player made that are not tagged with a standard mistake. For more information about mistakes, check the \'Mistakes\' section of the <a href="/about.html">about page</a>.',
