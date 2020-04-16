@@ -3213,6 +3213,7 @@ If this box is checked, the Rank Matrix will include the final tournament standi
 'The following lists the intellectual contributions made to RandomRacer in reverse chronological (roughly) order.
 <br><br>
 <ul>
+<li>Consecutive Bingos statistic (Will Anderson)</li>
 <li>Tiles Played Confidence Intervals (James Curley)</li>
 <li>Win Correlations (James Curley)</li>
 <li>Dynamic Mistakes (Kenji Matsumoto)</li>
