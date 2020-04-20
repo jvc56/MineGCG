@@ -90,14 +90,14 @@ sub addGame
   foreach my $key (keys %{$stats})
   {
     my $statlist = $stats->{$key};
+    my $player_is_first;
+    if ($key =~ /player(\d)/)
+    {
+      $player_is_first = ($1 - 2) * (-1);
+    }
     for (my $i = 0; $i < scalar @{$statlist}; $i++)
     {
       my $stat = $statlist->[$i];
-      my $player_is_first;
-      if ($key =~ /player(\d)/)
-      {
-        $player_is_first = ($1 - 2) * (-1);
-      }
       $stat->{$function_name}->($stat->{$object_name}, $game, $player_is_first);
     }
   }
@@ -2850,12 +2850,19 @@ sub statsList
       Constants::STAT_ADD_FUNCTION_NAME =>
       sub
       {
-        my $this = shift;
-        my $game = shift;
-        my $player = shift;
+        my $this   = shift;
+        my $game   = shift;
 
-        my $consecutive_bingos = $game->get_most_consecutive_bingos($player);
-        if ($game->get_most_consecutive_bingos($player) >= 4)
+        my $player_two_consecutive_bingos = $game->get_most_consecutive_bingos(0);
+        my $player_one_consecutive_bingos = $game->get_most_consecutive_bingos(1);
+        my $consecutive_bingos = $player_two_consecutive_bingos;
+
+        if ($player_one_consecutive_bingos > $consecutive_bingos)
+        {
+          $consecutive_bingos = $player_one_consecutive_bingos;
+        }
+
+        if ($consecutive_bingos >= 4)
         {
           push @{$this->{'ids'}},  $game->{'id'};
           push @{$this->{'list'}}, $game->getReadableName() . " ($consecutive_bingos)";

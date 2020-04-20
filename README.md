@@ -281,6 +281,10 @@ Games in which there are at least 5 challenges made. This list may not be comple
 
 Games in which no blank is played. Blanks in words that are challenged off do not count.
 
+<h3>Four or More Consecutive Bingos</h3>
+
+Games in which the player bingos at least 4 times in a row.
+
 <h3>Mistakeless Turns</h3>
 
 The number of turns the player made that are not tagged with a standard mistake. For more information about mistakes, check the 'Mistakes' section of the <a href="/about.html">about page</a>.
@@ -585,6 +589,7 @@ RandomRacer is maintained by Joshua Castellano, but many people have suggested n
 The following lists the intellectual contributions made to RandomRacer in reverse chronological (roughly) order.
 
 
+ - Consecutive Bingos statistic (Will Anderson)
  - Tiles Played Confidence Intervals (James Curley)
  - Win Correlations (James Curley)
  - Dynamic Mistakes (Kenji Matsumoto)

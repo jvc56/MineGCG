@@ -252,6 +252,7 @@ use constant US_QUALIFIERS                    =>
   'Will Anderson',
   'Evans Clinchy',
   'David Koenig',
+  "Matthew O'Connor'",
   'Jesse Day',
   'Jason Keller',
   'Conrad Bassett-Bouchard',

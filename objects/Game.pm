@@ -1025,18 +1025,22 @@ sub get_most_consecutive_bingos
 
   foreach my $move (@moves)
   {
-    my $bingo = $move->isBingo($player);
-    if ($bingo)
+    my $turn = $move->{'turn'};
+    if ($turn == $player)
     {
-      $streak++;
-    }
-    else
-    {
-      $streak = 0
-    }
-    if ($streak > $max)
-    {
-      $max = $streak;
+      my $bingo = $move->isBingo($player);
+      if ($bingo)
+      {
+        $streak++;
+      }
+      else
+      {
+        $streak = 0
+      }
+      if ($streak > $max)
+      {
+        $max = $streak;
+      }
     }
   }
   return $max;

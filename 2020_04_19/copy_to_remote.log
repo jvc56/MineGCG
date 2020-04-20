@@ -1,0 +1,11 @@
+Copy to Remote log file on Sun Apr 19 22:01:58 2020
+
+cp -r ./html_static/* ./html
+cp -r ./cache ./html
+cp -r ./legacy ./html
+ssh  -i /home/jvc/randomracer-keypair1.pem  ubuntu@3.13.229.56 'sudo rm -rf  /home/ubuntu/./htmldev'
+ssh  -i /home/jvc/randomracer-keypair1.pem  ubuntu@3.13.229.56 'sudo rm -rf  /home/ubuntu/./cgi-bindev '
+scp -r  -i /home/jvc/randomracer-keypair1.pem  ./html ubuntu@3.13.229.56:/home/ubuntu/./htmldev
+scp -r  -i /home/jvc/randomracer-keypair1.pem  ./cgi-bin  ubuntu@3.13.229.56:/home/ubuntu/./cgi-bindev 
+ssh  -i /home/jvc/randomracer-keypair1.pem  ubuntu@3.13.229.56 'sudo cp -r  /home/ubuntu/./htmldev /var/www/'
+ssh  -i /home/jvc/randomracer-keypair1.pem  ubuntu@3.13.229.56 'sudo cp -r  /home/ubuntu/./cgi-bindev  /var/www/ '
