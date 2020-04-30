@@ -2930,7 +2930,7 @@ In November 2019, the following features were added:
 <ul>
 <li>Tournament Simulation</li>
 </ul>
-You can learn more about some of these features in later sections. Please report any bugs to joshuacastellano7@gmail.com'
+You can learn more about some of these features in later sections. Please report any bugs to randomracerteam@gmail.com'
     ],
     [
       'Usage',
@@ -2997,7 +2997,7 @@ the corrected version should appear in your stats the next day.
 <br><br>
 Any other errors that appear are rare and likely due to a bug.
 If you see an error or warning that was not described above,
-please email them to joshuacastellano7@gmail.com.
+please email them to randomracerteam@gmail.com.
 <br><br><br><br>
 Warnings are for letting players know that they
 might want to correct certain GCG files. The complete
@@ -3030,7 +3030,7 @@ To correct any errors or warnings, simply update the game with the corrected GCG
 <li>The game has less than 20 turns</li>
 </ul>
 <br>
-If you think you can improve these heuristics, please contact joshuacastellano7@gmail.com.'
+If you think you can improve these heuristics, please contact randomracerteam@gmail.com.'
     ],
     [
       'Mistakes',
@@ -3089,7 +3089,7 @@ You can also mark a move with more than one mistake:
 <br><br>
 #findingmedium blah blah blah #tacticslarge ##dynamicsomething ##moredynamic
 <br><br>
-Mistakes and dynamic mistakes are completely distinct categories. Standard mistakes are never counted as dynamic mistakes and dynamic mistakes are never counted as standard mistakes. If you see this happen on RandomRacer, please contact joshuacastellano7@gmail.com.
+Mistakes and dynamic mistakes are completely distinct categories. Standard mistakes are never counted as dynamic mistakes and dynamic mistakes are never counted as standard mistakes. If you see this happen on RandomRacer, please contact randomracerteam@gmail.com.
 '
     ],
     [
@@ -3139,7 +3139,7 @@ Games with no lexicons are omitted because the lexicons are necessary for
 computing several statistics and the resulting inaccuracies could be
 misleading and introduce error (or more error anyway) into the leaderboards.
 
-Contact joshuacastellano7@gmail.com if you think a game was omitted by mistake.'
+Contact randomracerteam@gmail.com if you think a game was omitted by mistake.'
     ],
     [
       'Alchemist Cup Qualifiers',
