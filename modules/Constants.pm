@@ -64,6 +64,7 @@ use constant PLAYER_RESULTS_API_CALL          => 'http://cross-tables.com/rest/r
 
 use constant CGI_WRAPPER_FILENAME             => 'cgi_wrapper.pl';
 use constant INDEX_HTML_FILENAME              => 'index.html';
+use constant JYZZYVA_HTML_FILENAME            => 'jyzzyva.html';
 
 use constant GAME_TYPE_CASUAL                 => 'Casual';
 use constant GAME_TYPE_TOURNAMENT             => 'Tournament';

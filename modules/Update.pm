@@ -27,6 +27,7 @@ unless (caller)
   update_simulate_html();
   update_typing_html();
   update_qualifiers();
+  update_jyzzyva();
   update_readme_and_about();
   my $validation        = update_search_data();
   my $featured_mistakes = update_leaderboard_legacy();
@@ -193,6 +194,358 @@ WRAPPER
   print $wh $wrapper;
   close $wh;
 
+}
+
+sub update_jyzzyva
+{
+  my $head_content                    = Constants::HTML_HEAD_CONTENT;
+  my $html_styles                     = Constants::HTML_STYLES;
+  my $body_style                      = Constants::HTML_BODY_STYLE;
+  my $nav                             = Constants::HTML_NAV;
+  my $collapse_scripts                = Constants::HTML_TABLE_AND_COLLAPSE_SCRIPTS;
+  my $default_scripts                 = Constants::HTML_SCRIPTS;
+  my $amchart_scripts                 = Constants::AMCHART_SCRIPTS;
+  my $math_scripts                    = Constants::MATH_SCRIPTS;
+  my $footer                          = Constants::HTML_FOOTER;
+
+  my $jyzzpage = <<"JYZZYVA"
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  $head_content
+  $html_styles
+  $math_scripts
+  </head>
+  <body $body_style>
+
+  $nav
+
+  <div style='display: flex; flex-flow: column; height: 100%;'>
+
+    <div style='text-align: center; vertical-align: middle; padding: 2%'>
+      <h1 id='question'>
+        A Japanese Zyzzyva ripoff.
+      </h1>
+    </div>
+  
+    <div id='answer' style='width: 100%;
+                     text-align: center;
+                     flex-grow : 1;
+                     border: 10px solid #343a40'>
+    </div>
+  
+    <div id='buttons'>
+      <table style='width: 100%'>
+        <tr >
+          <td style='width: 50%; text-align: center'>
+            <input type='button'
+                   class='btn btn-sm waves-effect waves-light'
+                   style='color: white'
+                   value='Show Answer (Enter)'
+                   onclick='show_or_next()'
+                   id='show_or_next_button'/>
+          </td>
+          <td  style='width: 50%; text-align: center'  >
+            <input type='button'
+                   class='btn btn-sm waves-effect waves-light'
+                   style='color: white'
+                   value='Toggle Correctness (M)'
+                   onclick='toggle_correctness()'/>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div style='text-align: center; padding: 10px'>
+      <b id='info'></b>
+    </div>
+    <div>
+      <table style='width: 100%'>
+        <tr>
+          <td style='width: 50%; text-align: center'>
+            <div style='width: 50%; margin: auto' class="input-group">
+              <div class="custom-file">
+                <input type="file" class="custom-file-input" id="upload_jqz"
+                  aria-describedby="inputGroupFileAddon01">
+                <label class="custom-file-label" for="upload_jqz">Upload Quiz</label>
+              </div>
+            </div>
+          </td>
+          <td style='width: 50%; text-align: center'  >
+            <button id="download_jqz"
+                    class='btn btn-sm waves-effect waves-light'
+                    style='color: white'
+                    onclick="write_jqz_object_to_file()" >Save
+            </button>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <script>
+    var current_jqz_object = {};
+    var next_jqz_object   = {};
+
+    var incorrect_color = 'cyan';
+    var correct_color   = '#343a40';
+    var neutral_color   = '#343a40';
+
+    function jqz_at_end()
+    {
+      return current_jqz_object['current_question_index'] ==
+               current_jqz_object['questions'].length;
+    }
+
+    function jqz_is_done()
+    {
+      return jqz_at_end() && next_jqz_object['questions'].length == 0;
+    }
+
+    function process_last_question()
+    {
+      var index = current_jqz_object['current_question_index'];
+      var question = current_jqz_object['questions'][index];
+      var answer = current_jqz_object['answers'][index];
+
+      current_jqz_object['appearances'][index]++
+
+      var int_correct = parseInt(current_jqz_object['is_correct'], 10)
+
+      current_jqz_object['correct'][index] = int_correct + parseInt(current_jqz_object['correct'][index], 10);
+      current_jqz_object['number_correct'] = int_correct + parseInt(current_jqz_object['number_correct'], 10);
+
+      if (!current_jqz_object['is_correct'])
+      {
+        next_jqz_object['questions'].push(question);
+        next_jqz_object['answers'].push(answer);
+        next_jqz_object['appearances'].push(current_jqz_object['appearances'][index]);
+        next_jqz_object['correct'].push(current_jqz_object['correct'][index]);
+      }
+
+      current_jqz_object['current_question_index']++;
+    }
+
+    function reset_jqz_object(jqz_object)
+    {
+      jqz_object['questions']              = [];
+      jqz_object['answers']                = [];
+      jqz_object['appearances']            = [];
+      jqz_object['correct']                = [];
+      jqz_object['number_correct']         = 0;
+      jqz_object['current_question_index'] = 0;
+      jqz_object['answer_is_shown']        = 0;
+      jqz_object['is_correct']             = 0;
+    }
+
+    function show_answer()
+    {
+      var current_answer = current_jqz_object['answers'][current_jqz_object['current_question_index']];
+      document.getElementById('answer').innerHTML          = current_answer;
+      document.getElementById('answer').style.borderColor  = incorrect_color;
+      document.getElementById('show_or_next_button').value = 'Next (Enter)';
+      current_jqz_object['answer_is_shown'] = 1;
+    }
+
+    function show_new_question()
+    {
+      if (!jqz_is_done())
+      {
+        var question = current_jqz_object['questions'][current_jqz_object['current_question_index']];
+
+        document.getElementById('question').innerHTML = question;
+
+        document.getElementById('show_or_next_button').value = 'Show Answer (Enter)';
+        document.getElementById('answer').style.borderColor = neutral_color;
+        document.getElementById('answer').innerHTML   = '';
+        current_jqz_object['is_correct']      = 0;
+        current_jqz_object['answer_is_shown'] = 0;
+        update_info();
+      }
+    }
+
+    function show_or_next()
+    {
+      var done = jqz_is_done();
+      if (!done || (done && !current_jqz_object['is_correct']))
+      {
+        if (!current_jqz_object['answer_is_shown'])
+        {
+          show_answer();
+        }
+        else 
+        {
+          process_last_question();
+          start_new_quiz_with_incorrect_answers();
+          show_new_question();
+        }
+      }
+      else
+      {
+        alert('Quiz Completed!');
+      }
+    }
+
+    function start_new_quiz_with_incorrect_answers()
+    {
+      var at_end = jqz_at_end();
+      var done   = jqz_is_done();
+      if (at_end && !done)
+      {
+        current_jqz_object = next_jqz_object;
+        next_jqz_object = {};
+        reset_jqz_object(next_jqz_object);
+      }
+    }
+
+    function start_quiz()
+    {
+      reset_jqz_object(next_jqz_object);
+      show_new_question();
+    }
+
+    function toggle_correctness()
+    {
+      if (current_jqz_object['answer_is_shown'] && !jqz_is_done())
+      {
+        current_jqz_object['is_correct'] = 1 - current_jqz_object['is_correct'];
+        if (current_jqz_object['is_correct'])
+        {
+          document.getElementById('answer').style.borderColor = correct_color;
+        }
+        else
+        {
+          document.getElementById('answer').style.borderColor = incorrect_color;
+        }
+      }
+    }
+
+    function update_info()
+    {
+      var current_question_number = current_jqz_object['current_question_index'];
+      var total_questions = current_jqz_object['questions'].length;
+      var number_correct  = current_jqz_object['number_correct'];
+      document.getElementById('info').innerHTML =
+      'Question: ' + (current_question_number + 1) + '/' + total_questions +
+       ', Correct: ' + number_correct + '/' + current_question_number;
+    }
+
+    function write_file_to_jqz_object()
+    {
+      reset_jqz_object(current_jqz_object);
+      console.log('jqz: ', current_jqz_object);
+
+      var files = this.files;
+      if (files.length === 0)
+      {
+          console.log('No file is selected');
+          return;
+      }
+
+      var reader = new FileReader();
+      var jqz_string;
+      reader.onload = function(event)
+      {
+        jqz_string = event.target.result.trim();
+        var jqz_string_array = jqz_string.split(/[\\r\\n]+/);
+        var data_line = jqz_string_array[0];
+        var data = data_line.split(/;/);
+        console.log(data);
+        current_jqz_object['number_correct']         = parseInt(data[0], 10);
+        current_jqz_object['current_question_index'] = parseInt(data[1], 10);
+        current_jqz_object['answer_is_shown']        = parseInt(data[2], 10);
+        current_jqz_object['is_correct']             = parseInt(data[3], 10);
+
+        for (var i = 1; i < jqz_string_array.length; i++)
+        {
+          var question_line = jqz_string_array[i];
+          question_line = question_line.trim();
+          var question_data = question_line.split(/;/);
+          current_jqz_object['questions'].push(question_data[0].trim());
+          current_jqz_object['answers'].push(question_data[1].trim());
+          current_jqz_object['appearances'].push(question_data[2].trim());
+          current_jqz_object['correct'].push(question_data[3].trim());
+        }
+        start_quiz();
+      };
+      reader.readAsText(files[0]);
+    }
+
+    function write_jqz_object_to_file()
+    {
+      var string =
+      [
+        current_jqz_object['number_correct'],
+        current_jqz_object['current_question_index'],
+        current_jqz_object['answer_is_shown'],
+        current_jqz_object['is_correct']
+      ].join(';') + "\\n";
+      var quiz_length = current_jqz_object['questions'].length;
+      for (var i = 1; i < quiz_length; i++)
+      {
+        var question    = current_jqz_object['questions'][i].trim();
+        var answer      = current_jqz_object['answers'][i].trim();
+        var appearances = current_jqz_object['appearances'][i].toString().trim();
+        var correct     = current_jqz_object['correct'][i].toString().trim();
+        string += [question, answer, appearances, correct].join(';') + "\\n";
+      }
+
+      var filename = 'japanese_zyzzyva_quiz_' + quiz_length + '_question.jqz';
+      var csvFile;
+      var downloadLink;
+
+      // CSV file
+      csvFile = new Blob([string], {type: "text/csv"});
+
+      // Download link
+      downloadLink = document.createElement("a");
+
+      // File name
+      downloadLink.download = filename;
+
+      // Create a link to the file
+      downloadLink.href = window.URL.createObjectURL(csvFile);
+
+      // Hide download link
+      downloadLink.style.display = "none";
+
+      // Add the link to DOM
+      document.body.appendChild(downloadLink);
+
+      // Click download link
+      downloadLink.click();
+    }
+
+    document.getElementById('upload_jqz').addEventListener('change', write_file_to_jqz_object);
+    document.getElementById('download_jqz').addEventListener('change', write_jqz_object_to_file);
+
+    document.addEventListener
+    (
+      'keypress',
+      function(event)
+      {
+        if (event.keyCode == 13)
+        {
+          show_or_next();
+        }
+        else if (event.keyCode == 109)
+        {
+          toggle_correctness();
+        }
+      }
+    )
+  </script>
+
+  $default_scripts
+  $collapse_scripts
+  
+  $footer
+  </body>
+</html>
+JYZZYVA
+;
+
+  open(my $jyzzfh, '>', Constants::HTML_DIRECTORY_NAME . '/' . Constants::JYZZYVA_HTML_FILENAME);
+  print $jyzzfh $jyzzpage;
+  close $jyzzfh;
 }
 
 sub update_qualifiers
