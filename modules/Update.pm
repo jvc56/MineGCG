@@ -210,30 +210,38 @@ sub update_jyzzyva
 
   my $jyzzpage = <<"JYZZYVA"
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style='height: 100%'>
   <head>
   $head_content
   $html_styles
   $math_scripts
+
   </head>
   <body $body_style>
 
-  $nav
+  <div style='display: flex; flex-flow: column; height: 100%'>
 
-  <div style='display: flex; flex-flow: column; height: 100%;'>
+  $nav
 
     <div style='text-align: center; vertical-align: middle; padding: 2%'>
       <h1 id='question'>
-        A Japanese Zyzzyva ripoff.
+        A Zyzzyva Ripoff.
       </h1>
     </div>
   
-    <div id='answer' style='width: 100%;
-                     text-align: center;
-                     flex-grow : 1;
-                     border: 10px solid #343a40'>
+    <div id='answer'
+         style='width: 98%;
+                margin: auto;
+                border-radius: 10px;
+                text-align: center;
+                flex : 1 1 auto;
+                border: 10px solid #343a40'>
     </div>
   
+    <div style='text-align: center; padding: 10px'>
+      <b id='info'></b>
+    </div>
+
     <div id='buttons'>
       <table style='width: 100%'>
         <tr >
@@ -255,14 +263,12 @@ sub update_jyzzyva
         </tr>
       </table>
     </div>
-    <div style='text-align: center; padding: 10px'>
-      <b id='info'></b>
-    </div>
+
     <div>
       <table style='width: 100%'>
         <tr>
           <td style='width: 50%; text-align: center'>
-            <div style='width: 50%; margin: auto' class="input-group">
+            <div style='width: 85%; margin: auto' class="input-group">
               <div class="custom-file">
                 <input type="file" class="custom-file-input" id="upload_jqz"
                   aria-describedby="inputGroupFileAddon01">
@@ -280,6 +286,7 @@ sub update_jyzzyva
         </tr>
       </table>
     </div>
+  $footer
   </div>
   <script>
     var current_jqz_object = {};
@@ -306,18 +313,15 @@ sub update_jyzzyva
       var question = current_jqz_object['questions'][index];
       var answer = current_jqz_object['answers'][index];
 
-      current_jqz_object['appearances'][index]++
-
       var int_correct = parseInt(current_jqz_object['is_correct'], 10)
 
-      current_jqz_object['correct'][index] = int_correct + parseInt(current_jqz_object['correct'][index], 10);
-      current_jqz_object['number_correct'] = int_correct + parseInt(current_jqz_object['number_correct'], 10);
+      current_jqz_object['correct'][index]  = int_correct;
+      current_jqz_object['number_correct'] += int_correct;
 
       if (!current_jqz_object['is_correct'])
       {
         next_jqz_object['questions'].push(question);
         next_jqz_object['answers'].push(answer);
-        next_jqz_object['appearances'].push(current_jqz_object['appearances'][index]);
         next_jqz_object['correct'].push(current_jqz_object['correct'][index]);
       }
 
@@ -328,7 +332,6 @@ sub update_jyzzyva
     {
       jqz_object['questions']              = [];
       jqz_object['answers']                = [];
-      jqz_object['appearances']            = [];
       jqz_object['correct']                = [];
       jqz_object['number_correct']         = 0;
       jqz_object['current_question_index'] = 0;
@@ -339,7 +342,7 @@ sub update_jyzzyva
     function show_answer()
     {
       var current_answer = current_jqz_object['answers'][current_jqz_object['current_question_index']];
-      document.getElementById('answer').innerHTML          = current_answer;
+      document.getElementById('answer').innerHTML          = '<h1>' + current_answer + '</h1>';
       document.getElementById('answer').style.borderColor  = incorrect_color;
       document.getElementById('show_or_next_button').value = 'Next (Enter)';
       current_jqz_object['answer_is_shown'] = 1;
@@ -359,6 +362,10 @@ sub update_jyzzyva
         current_jqz_object['is_correct']      = 0;
         current_jqz_object['answer_is_shown'] = 0;
         update_info();
+      }
+      else
+      {
+        alert('Quiz Completed!');
       }
     }
 
@@ -396,12 +403,6 @@ sub update_jyzzyva
       }
     }
 
-    function start_quiz()
-    {
-      reset_jqz_object(next_jqz_object);
-      show_new_question();
-    }
-
     function toggle_correctness()
     {
       if (current_jqz_object['answer_is_shown'] && !jqz_is_done())
@@ -431,7 +432,7 @@ sub update_jyzzyva
     function write_file_to_jqz_object()
     {
       reset_jqz_object(current_jqz_object);
-      console.log('jqz: ', current_jqz_object);
+      reset_jqz_object(next_jqz_object);
 
       var files = this.files;
       if (files.length === 0)
@@ -446,46 +447,49 @@ sub update_jyzzyva
       {
         jqz_string = event.target.result.trim();
         var jqz_string_array = jqz_string.split(/[\\r\\n]+/);
-        var data_line = jqz_string_array[0];
-        var data = data_line.split(/;/);
-        console.log(data);
-        current_jqz_object['number_correct']         = parseInt(data[0], 10);
-        current_jqz_object['current_question_index'] = parseInt(data[1], 10);
-        current_jqz_object['answer_is_shown']        = parseInt(data[2], 10);
-        current_jqz_object['is_correct']             = parseInt(data[3], 10);
 
+        current_jqz_object['current_question_index'] =
+          parseInt(jqz_string_array[0].trim(), 10);
+
+        var number_correct = 0;
         for (var i = 1; i < jqz_string_array.length; i++)
         {
           var question_line = jqz_string_array[i];
           question_line = question_line.trim();
           var question_data = question_line.split(/;/);
-          current_jqz_object['questions'].push(question_data[0].trim());
-          current_jqz_object['answers'].push(question_data[1].trim());
-          current_jqz_object['appearances'].push(question_data[2].trim());
-          current_jqz_object['correct'].push(question_data[3].trim());
+
+          var question   = question_data[0].trim();
+          var answer     = question_data[1].trim();
+          var is_correct = parseInt(question_data[2].trim(), 10);
+
+          current_jqz_object['questions'].push(question);
+          current_jqz_object['answers'].push(answer);
+          current_jqz_object['correct'].push(is_correct);
+          number_correct += is_correct;
+          if (!is_correct && i <= current_jqz_object['current_question_index'])
+          {
+            next_jqz_object['questions'].push(question);
+            next_jqz_object['answers'].push(answer);
+            next_jqz_object['correct'].push(0);
+          }
         }
-        start_quiz();
+
+        current_jqz_object['number_correct'] = number_correct;
+        show_new_question();
       };
       reader.readAsText(files[0]);
     }
 
     function write_jqz_object_to_file()
     {
-      var string =
-      [
-        current_jqz_object['number_correct'],
-        current_jqz_object['current_question_index'],
-        current_jqz_object['answer_is_shown'],
-        current_jqz_object['is_correct']
-      ].join(';') + "\\n";
+      var string = current_jqz_object['current_question_index'] + "\\n";
       var quiz_length = current_jqz_object['questions'].length;
-      for (var i = 1; i < quiz_length; i++)
+      for (var i = 0; i < quiz_length; i++)
       {
         var question    = current_jqz_object['questions'][i].trim();
         var answer      = current_jqz_object['answers'][i].trim();
-        var appearances = current_jqz_object['appearances'][i].toString().trim();
         var correct     = current_jqz_object['correct'][i].toString().trim();
-        string += [question, answer, appearances, correct].join(';') + "\\n";
+        string += [question, answer, correct].join(';') + "\\n";
       }
 
       var filename = 'japanese_zyzzyva_quiz_' + quiz_length + '_question.jqz';
@@ -537,7 +541,6 @@ sub update_jyzzyva
   $default_scripts
   $collapse_scripts
   
-  $footer
   </body>
 </html>
 JYZZYVA

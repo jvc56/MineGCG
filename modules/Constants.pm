@@ -686,7 +686,7 @@ use constant METATYPE_ERROR   => 'error';
 
 use constant DATA_DOWNLOAD_ATTRIBUTE => "data-download='true'";
 
-use constant HTML_BODY_STYLE => 'style="background-color: #343a40; color: white"';
+use constant HTML_BODY_STYLE => 'style="background-color: #343a40; color: white; height: 100%"';
 
 use constant DIV_STYLE_EVEN => <<DIVEVEN
 style=
