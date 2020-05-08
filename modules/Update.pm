@@ -261,7 +261,7 @@ sub update_jyzzyva
                    id='correct_button'
                    class='btn btn-sm waves-effect waves-light'
                    style='color: white'
-                   value='Mark Correct (M)'
+                   value='Mark as Correct (M)'
                    onclick='toggle_correctness()'/>
           </td>
           <td  style='width: 33.333%; text-align: center'  >
@@ -359,6 +359,7 @@ sub update_jyzzyva
       document.getElementById('answer').innerHTML          = '<h1>' + current_answer + '</h1>';
       document.getElementById('answer').style.borderColor  = incorrect_color;
       document.getElementById('show_or_next_button').value = 'Next (Return)';
+      document.getElementById('correct_button').disabled   = false;
       current_jqz_object['answer_is_shown'] = 1;
     }
 
@@ -367,14 +368,14 @@ sub update_jyzzyva
       if (!jqz_is_done())
       {
         var question = current_jqz_object['questions'][current_jqz_object['current_question_index']];
-
+        document.getElementById('correct_button').value      = 'Mark as Correct (M)';
         document.getElementById('question').innerHTML = question;
-
         document.getElementById('show_or_next_button').value = 'Show Answer (Return)';
         document.getElementById('answer').style.borderColor = neutral_color;
         document.getElementById('answer').innerHTML   = '';
         current_jqz_object['is_correct']      = 0;
         current_jqz_object['answer_is_shown'] = 0;
+        document.getElementById('correct_button').disabled = true;
         update_info();
       }
       else
@@ -424,12 +425,14 @@ sub update_jyzzyva
       var quiz_length = current_jqz_object['questions'].length;
       var questions   = [];
       var answers     = [];
+      var correct     = [];
 
       for (var i = 0; i < quiz_length; i++)
       {
         shuffle_indexes.push(i);
         questions.push(current_jqz_object['questions'][i]);
         answers.push(current_jqz_object['answers'][i]);
+        correct.push(current_jqz_object['correct'][i]);
       }
 
       shuffle_indexes = shuffle(shuffle_indexes);
@@ -438,6 +441,7 @@ sub update_jyzzyva
       {
         current_jqz_object['questions'][i] = questions[shuffle_indexes[i]];
         current_jqz_object['answers'][i]   = answers[shuffle_indexes[i]];
+        current_jqz_object['correct'][i]   = correct[shuffle_indexes[i]];
       }     
     }
 
@@ -450,8 +454,8 @@ sub update_jyzzyva
         current_jqz_object = next_jqz_object;
         next_jqz_object = {};
         reset_jqz_object(next_jqz_object);
+        shuffle_jqz();
       }
-      shuffle_jqz();
     }
 
     function switch_questions_and_answers()
@@ -530,7 +534,7 @@ sub update_jyzzyva
         jqz_string_array = shuffle(jqz_string_array);
 
         var number_correct = 0;
-        for (var i = 1; i < jqz_string_array.length; i++)
+        for (var i = 0; i < jqz_string_array.length; i++)
         {
           var question_line = jqz_string_array[i];
           question_line = question_line.trim();
@@ -544,7 +548,7 @@ sub update_jyzzyva
           current_jqz_object['answers'].push(answer);
           current_jqz_object['correct'].push(is_correct);
           number_correct += is_correct;
-          if (!is_correct && i <= current_jqz_object['current_question_index'])
+          if (!is_correct && i < current_jqz_object['current_question_index'])
           {
             next_jqz_object['questions'].push(question);
             next_jqz_object['answers'].push(answer);
@@ -554,7 +558,6 @@ sub update_jyzzyva
 
         current_jqz_object['number_correct'] = number_correct;
         document.getElementById('switch_button').disabled = false;
-        document.getElementById('correct_button').disabled = false;
         document.getElementById('show_or_next_button').disabled = false;
         document.getElementById('download_jqz').disabled = false;
         shuffle_jqz();
