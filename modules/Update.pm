@@ -23,18 +23,18 @@ use JSON::XS;
 
 unless (caller)
 {
-  update_wrapper();
-  update_simulate_html();
-  update_typing_html();
-  update_qualifiers();
+#  update_wrapper();
+#  update_simulate_html();
+#  update_typing_html();
+#  update_qualifiers();
   update_jyzzyva();
-  update_readme_and_about();
-  my $validation        = update_search_data();
-  my $featured_mistakes = update_leaderboard_legacy();
-  my $featured_notable  = update_notable_legacy();
-  update_leaderboard();
-  update_notable();
-  update_html($validation, $featured_mistakes, $featured_notable);
+#  update_readme_and_about();
+#  my $validation        = update_search_data();
+#  my $featured_mistakes = update_leaderboard_legacy();
+#  my $featured_notable  = update_notable_legacy();
+#  update_leaderboard();
+#  update_notable();
+#  update_html($validation, $featured_mistakes, $featured_notable);
 }
 
 sub update_wrapper
@@ -224,13 +224,14 @@ sub update_jyzzyva
   $nav
 
     <div style='text-align: center; vertical-align: middle; padding: 2%'>
-      <h1 id='question'>
+      <h1 id='question' style='font-size: 3rem'>
         A Zyzzyva Ripoff.
       </h1>
     </div>
   
     <div id='answer'
          style='width: 98%;
+                font-size: 3rem;
                 margin: auto;
                 border-radius: 10px;
                 text-align: center;
@@ -245,20 +246,32 @@ sub update_jyzzyva
     <div id='buttons'>
       <table style='width: 100%'>
         <tr >
-          <td style='width: 50%; text-align: center'>
+          <td style='width: 33.3333%; text-align: center'>
             <input type='button'
+                   disabled
                    class='btn btn-sm waves-effect waves-light'
                    style='color: white'
                    value='Show Answer (Enter)'
                    onclick='show_or_next()'
                    id='show_or_next_button'/>
           </td>
-          <td  style='width: 50%; text-align: center'  >
+          <td  style='width: 33.3333%; text-align: center'  >
             <input type='button'
+                   disabled
+                   id='correct_button'
                    class='btn btn-sm waves-effect waves-light'
                    style='color: white'
-                   value='Toggle Correctness (M)'
+                   value='Mark Correct (M)'
                    onclick='toggle_correctness()'/>
+          </td>
+          <td  style='width: 33.333%; text-align: center'  >
+            <input type='button'
+                   disabled
+                   id='switch_button'
+                   class='btn btn-sm waves-effect waves-light'
+                   style='color: white'
+                   value='Switch Questions and Answers'
+                   onclick='switch_questions_and_answers()'/>
           </td>
         </tr>
       </table>
@@ -278,6 +291,7 @@ sub update_jyzzyva
           </td>
           <td style='width: 50%; text-align: center'  >
             <button id="download_jqz"
+                    disabled
                     class='btn btn-sm waves-effect waves-light'
                     style='color: white'
                     onclick="write_jqz_object_to_file()" >Save
@@ -344,7 +358,7 @@ sub update_jyzzyva
       var current_answer = current_jqz_object['answers'][current_jqz_object['current_question_index']];
       document.getElementById('answer').innerHTML          = '<h1>' + current_answer + '</h1>';
       document.getElementById('answer').style.borderColor  = incorrect_color;
-      document.getElementById('show_or_next_button').value = 'Next (Enter)';
+      document.getElementById('show_or_next_button').value = 'Next (Return)';
       current_jqz_object['answer_is_shown'] = 1;
     }
 
@@ -356,7 +370,7 @@ sub update_jyzzyva
 
         document.getElementById('question').innerHTML = question;
 
-        document.getElementById('show_or_next_button').value = 'Show Answer (Enter)';
+        document.getElementById('show_or_next_button').value = 'Show Answer (Return)';
         document.getElementById('answer').style.borderColor = neutral_color;
         document.getElementById('answer').innerHTML   = '';
         current_jqz_object['is_correct']      = 0;
@@ -391,6 +405,42 @@ sub update_jyzzyva
       }
     }
 
+    function shuffle(a)
+    {
+      var j, x, i;
+      for (i = a.length - 1; i > 0; i--)
+      {
+        j = Math.floor(Math.random() * (i + 1));
+        x = a[i];
+        a[i] = a[j];
+        a[j] = x;
+      }
+      return a;
+    }
+
+    function shuffle_jqz()
+    {
+      var shuffle_indexes = [];
+      var quiz_length = current_jqz_object['questions'].length;
+      var questions   = [];
+      var answers     = [];
+
+      for (var i = 0; i < quiz_length; i++)
+      {
+        shuffle_indexes.push(i);
+        questions.push(current_jqz_object['questions'][i]);
+        answers.push(current_jqz_object['answers'][i]);
+      }
+
+      shuffle_indexes = shuffle(shuffle_indexes);
+ 
+      for (var i = 0; i < quiz_length; i++)
+      {
+        current_jqz_object['questions'][i] = questions[shuffle_indexes[i]];
+        current_jqz_object['answers'][i]   = answers[shuffle_indexes[i]];
+      }     
+    }
+
     function start_new_quiz_with_incorrect_answers()
     {
       var at_end = jqz_at_end();
@@ -400,6 +450,28 @@ sub update_jyzzyva
         current_jqz_object = next_jqz_object;
         next_jqz_object = {};
         reset_jqz_object(next_jqz_object);
+      }
+      shuffle_jqz();
+    }
+
+    function switch_questions_and_answers()
+    {
+      var quiz_length = current_jqz_object['questions'].length;
+      for (var i = 0; i < quiz_length; i++)
+      {
+        var question    = current_jqz_object['questions'][i];
+        var answer      = current_jqz_object['answers'][i];
+        current_jqz_object['questions'][i] = answer;
+        current_jqz_object['answers'][i]   = question;
+      }
+
+      var question = current_jqz_object['questions'][current_jqz_object['current_question_index']];
+      document.getElementById('question').innerHTML = question;
+
+      if (current_jqz_object['answer_is_shown'])
+      {
+        var current_answer = current_jqz_object['answers'][current_jqz_object['current_question_index']];
+        document.getElementById('answer').innerHTML          = '<h1>' + current_answer + '</h1>';
       }
     }
 
@@ -411,10 +483,12 @@ sub update_jyzzyva
         if (current_jqz_object['is_correct'])
         {
           document.getElementById('answer').style.borderColor = correct_color;
+          document.getElementById('correct_button').value = 'Mark as Incorrect (M)';
         }
         else
         {
           document.getElementById('answer').style.borderColor = incorrect_color;
+          document.getElementById('correct_button').value = 'Mark as Correct (M)';
         }
       }
     }
@@ -451,6 +525,10 @@ sub update_jyzzyva
         current_jqz_object['current_question_index'] =
           parseInt(jqz_string_array[0].trim(), 10);
 
+        jqz_string_array.shift();
+
+        jqz_string_array = shuffle(jqz_string_array);
+
         var number_correct = 0;
         for (var i = 1; i < jqz_string_array.length; i++)
         {
@@ -475,6 +553,11 @@ sub update_jyzzyva
         }
 
         current_jqz_object['number_correct'] = number_correct;
+        document.getElementById('switch_button').disabled = false;
+        document.getElementById('correct_button').disabled = false;
+        document.getElementById('show_or_next_button').disabled = false;
+        document.getElementById('download_jqz').disabled = false;
+        shuffle_jqz();
         show_new_question();
       };
       reader.readAsText(files[0]);
