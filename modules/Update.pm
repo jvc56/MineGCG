@@ -23,18 +23,18 @@ use JSON::XS;
 
 unless (caller)
 {
-#  update_wrapper();
-#  update_simulate_html();
-#  update_typing_html();
-#  update_qualifiers();
+  update_wrapper();
+  update_simulate_html();
+  update_typing_html();
+  update_qualifiers();
   update_jyzzyva();
-#  update_readme_and_about();
-#  my $validation        = update_search_data();
-#  my $featured_mistakes = update_leaderboard_legacy();
-#  my $featured_notable  = update_notable_legacy();
-#  update_leaderboard();
-#  update_notable();
-#  update_html($validation, $featured_mistakes, $featured_notable);
+  update_readme_and_about();
+  my $validation        = update_search_data();
+  my $featured_mistakes = update_leaderboard_legacy();
+  my $featured_notable  = update_notable_legacy();
+  update_leaderboard();
+  update_notable();
+  update_html($validation, $featured_mistakes, $featured_notable);
 }
 
 sub update_wrapper
