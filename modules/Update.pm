@@ -531,8 +531,6 @@ sub update_jyzzyva
 
         jqz_string_array.shift();
 
-        jqz_string_array = shuffle(jqz_string_array);
-
         var number_correct = 0;
         for (var i = 0; i < jqz_string_array.length; i++)
         {
@@ -560,7 +558,6 @@ sub update_jyzzyva
         document.getElementById('switch_button').disabled = false;
         document.getElementById('show_or_next_button').disabled = false;
         document.getElementById('download_jqz').disabled = false;
-        shuffle_jqz();
         show_new_question();
       };
       reader.readAsText(files[0]);

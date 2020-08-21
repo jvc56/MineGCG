@@ -27,7 +27,7 @@ my @jobs =
   "Preload",     "./scripts/preload.pl         > $logs/preload.log 2>&1   ",
   "Check",       "./scripts/check_data.pl      > $logs/check_data.log 2>&1"  ,
   "Test",        "./scripts/mine_games_test.pl",
-  "Access",      "./scripts/get_access_log.pl  > $logs/access_retrieval.log 2>&1",
+#  "Access",      "./scripts/get_access_log.pl  > $logs/access_retrieval.log 2>&1",
   "Update",      "./modules/Update.pm          > $logs/update_html.log 2>&1",
   "Copy",        "./scripts/copy_to_remote.pl" 
 );
