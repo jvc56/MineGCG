@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en" style='height: 100%'>
+  <head>
+    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>RandomRacer</title>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+  <!-- Bootstrap core CSS -->
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Material Design Bootstrap -->
+  <link href="/css/mdb.min.css" rel="stylesheet">
+  <!-- Your custom styles (optional) -->
+
+  <!-- Datepicker Syles -->
+  <link href="/datepickercss/bootstrap-datepicker3.css" rel="stylesheet">
+  <link href="/datepickercss/bootstrap-datepicker3.min.css" rel="stylesheet">
+
+  <link href="/datepickercss/bootstrap-datepicker3.standalone.css" rel="stylesheet">
+  <link href="/datepickercss/bootstrap-datepicker3.standalone.min.css" rel="stylesheet">
+
+  <link href="/datepickercss/bootstrap-datepicker.css" rel="stylesheet">
+  <link href="/datepickercss/bootstrap-datepicker.min.css" rel="stylesheet">
+
+  <link href="/datepickercss/bootstrap-datepicker.standalone.css" rel="stylesheet">
+  <link href="/datepickercss/bootstrap-datepicker.standalone.min.css" rel="stylesheet">
+
+  <link href="/css/style.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
+
+  
+  <style>
+  .infobox
+  {
+    border-radius: 5px;
+    background-color: #000000;
+    text-align: center;
+    border-collapse: separate;
+    margin: auto;
+  }
+  .content_td
+  {
+    background-color: #394047;
+    border-radius: 5px;
+  }
+  .display
+  {
+    width: 99%;
+    margin: auto;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 5px;
+    border: 1px solid black;
+  }
+  .display th
+  {
+    cursor: pointer;
+  }
+  .display tr:nth-child(odd)
+  {
+    /*background: #22262a; */
+    background-color: black;
+  }
+  .display tr:nth-child(even)
+  {
+    /* background:  #394047; */
+    background-color: #111111;
+  }
+
+  .display tr:last-child td:first-child
+  {
+      border-bottom-left-radius: 5px;
+  }
+  .display tr:last-child td:last-child
+  {
+      border-bottom-right-radius: 5px;
+  }
+  .display tr:first-child td:first-child
+  {
+      border-top-left-radius: 5px;
+  }
+  .display tr:first-child td:last-child
+  {
+      border-top-right-radius: 5px;
+  }
+
+
+  .titledisplay
+  {
+    width: 99%;
+    margin: auto;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 10px;
+    background-color: black;
+    padding: 5px; 
+  }
+  .titledisplay th
+  {
+    text-align: center;
+    cursor: pointer;
+    font-size: 20px;
+    border-radius: 10px;
+  }
+  .dscclass
+  {
+    background-color: #444444;
+    color: white;
+  }
+  .ascclass
+  {
+    background-color: #222222;
+    color: white;
+  }
+
+  .statitemtable
+  {
+    width: 100%;
+  }
+
+  .statitemtable td, th
+  {
+    width: 33.333333333%;
+  }
+
+  .statitemdiv
+  {
+    background-color: black;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    margin: 5px;
+  }
+
+  .scrollwindow
+  {
+    max-height: 500px;
+    overflow: auto;
+    -ms-overflow-style: none;  /* IE 10+ */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .scrollwindow::-webkit-scrollbar
+  { 
+      display: none;  /* Safari and Chrome */
+  }
+
+  .noscrollwindow
+  {
+    max-height: none;
+    overflow: auto;
+    -ms-overflow-style: none;  /* IE 10+ */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .noscrollwindow::-webkit-scrollbar
+  { 
+      display: none;  /* Safari and Chrome */
+  }
+
+  .dropdown-toggle::after
+  {
+      vertical-align: 0em;
+  }
+  .info
+  {
+    text-align: center;
+  }
+
+  .loader
+  {
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid #3498db;
+    width: 120px;
+    height: 120px;
+    -webkit-animation: spin 2s linear infinite; /* Safari */
+    animation: spin 2s linear infinite;
+  }
+  
+  /* Safari */
+  @-webkit-keyframes spin
+  {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+  }
+  
+  @keyframes spin
+  {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  </style>
+
+
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+  </head>
+  <body style="background-color: #343a40; color: white; height: 100%">
+
+  <div style='display: flex; flex-flow: column; height: 100%'>
+
+  
+<!--Navbar-->
+<nav class="navbar navbar-expand-lg navbar-dark elegant-color-dark">
+
+  <!-- Navbar brand -->
+  <a class="navbar-brand" href="/" style="font-family: 'VT323', monospace;" >RandomRacer</a>
+
+  <!-- Collapse button -->
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
+    aria-controls="basicExampleNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <!-- Collapsible content -->
+  <div class="collapse navbar-collapse" id="basicExampleNav">
+
+    <!-- Links -->
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="/leaderboard.html" >Leaderboards</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/notable.html" >Notable</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/alchemist_qualifiers.html" >Alchemist Cup Qualifiers</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/typing.html">RandomRacer 2.0</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/simulate.html">Tournament Simulation</a>
+      </li>
+      <!-- Dropdown -->
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">Legacy</a>
+        <div class="dropdown-menu dropdown-primary" aria-labelledby="navbarDropdownMenuLink">
+          <a class="dropdown-item" href="/legacy/notable.html">Notable</a>
+          <a class="dropdown-item" href="/legacy/leaderboard.html">Leaderboards</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/about.html" >About</a>
+      </li>
+    </ul>
+    <!-- Links -->
+  </div>
+  <!-- Collapsible content -->
+
+</nav>
+<!--/.Navbar-->
+
+
+
+
+    <div style='text-align: center; vertical-align: middle; padding: 2%'>
+      <h1 id='question' style='font-size: 3rem'>
+        A Zyzzyva Ripoff.
+      </h1>
+    </div>
+  
+    <div id='answer'
+         style='width: 98%;
+                font-size: 3rem;
+                margin: auto;
+                border-radius: 10px;
+                text-align: center;
+                flex : 1 1 auto;
+                border: 10px solid #343a40'>
+    </div>
+  
+    <div style='text-align: center; padding: 10px'>
+      <b id='info'></b>
+    </div>
+
+    <div id='buttons'>
+      <table style='width: 100%'>
+        <tr >
+          <td style='width: 33.3333%; text-align: center'>
+            <input type='button'
+                   disabled
+                   class='btn btn-sm waves-effect waves-light'
+                   style='color: white'
+                   value='Show Answer (Enter)'
+                   onclick='show_or_next()'
+                   id='show_or_next_button'/>
+          </td>
+          <td  style='width: 33.3333%; text-align: center'  >
+            <input type='button'
+                   disabled
+                   id='correct_button'
+                   class='btn btn-sm waves-effect waves-light'
+                   style='color: white'
+                   value='Mark as Correct (M)'
+                   onclick='toggle_correctness()'/>
+          </td>
+          <td  style='width: 33.333%; text-align: center'  >
+            <input type='button'
+                   disabled
+                   id='switch_button'
+                   class='btn btn-sm waves-effect waves-light'
+                   style='color: white'
+                   value='Switch Questions and Answers'
+                   onclick='switch_questions_and_answers()'/>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div>
+      <table style='width: 100%'>
+        <tr>
+          <td style='width: 50%; text-align: center'>
+            <div style='width: 85%; margin: auto' class="input-group">
+              <div class="custom-file">
+                <input type="file" class="custom-file-input" id="upload_jqz"
+                  aria-describedby="inputGroupFileAddon01">
+                <label class="custom-file-label" for="upload_jqz">Upload Quiz</label>
+              </div>
+            </div>
+          </td>
+          <td style='width: 50%; text-align: center'  >
+            <button id="download_jqz"
+                    disabled
+                    class='btn btn-sm waves-effect waves-light'
+                    style='color: white'
+                    onclick="write_jqz_object_to_file()" >Save
+            </button>
+          </td>
+        </tr>
+      </table>
+    </div>
+  <footer>
+  <!-- Copyright -->
+  <div class="footer-copyright text-center py-3" style='font-size: 12px'>© 2019 Copyright
+    <a href="/">RandomRacer.com</a>
+  </div>
+  <!-- Copyright -->
+</footer>
+
+
+
+  </div>
+  <script>
+    var current_jqz_object = {};
+    var next_jqz_object   = {};
+
+    var incorrect_color = 'cyan';
+    var correct_color   = '#343a40';
+    var neutral_color   = '#343a40';
+    var total_quizzed   = 0;
+
+    function jqz_at_end()
+    {
+      return current_jqz_object['current_question_index'] ==
+               current_jqz_object['questions'].length;
+    }
+
+    function jqz_is_done()
+    {
+      return jqz_at_end() && next_jqz_object['questions'].length == 0;
+    }
+
+    function process_last_question()
+    {
+      var index = current_jqz_object['current_question_index'];
+      var question = current_jqz_object['questions'][index];
+      var answer = current_jqz_object['answers'][index];
+
+      var int_correct = parseInt(current_jqz_object['is_correct'], 10)
+
+      current_jqz_object['correct'][index]  = int_correct;
+      current_jqz_object['number_correct'] += int_correct;
+
+      if (!current_jqz_object['is_correct'])
+      {
+        next_jqz_object['questions'].push(question);
+        next_jqz_object['answers'].push(answer);
+        next_jqz_object['correct'].push(current_jqz_object['correct'][index]);
+      }
+
+      current_jqz_object['current_question_index']++;
+      total_quizzed++;
+    }
+
+    function reset_jqz_object(jqz_object)
+    {
+      jqz_object['questions']              = [];
+      jqz_object['answers']                = [];
+      jqz_object['correct']                = [];
+      jqz_object['number_correct']         = 0;
+      jqz_object['current_question_index'] = 0;
+      jqz_object['answer_is_shown']        = 0;
+      jqz_object['is_correct']             = 0;
+    }
+
+    function show_answer()
+    {
+      var current_answer = current_jqz_object['answers'][current_jqz_object['current_question_index']];
+      document.getElementById('answer').innerHTML          = '<h1>' + current_answer + '</h1>';
+      document.getElementById('answer').style.borderColor  = incorrect_color;
+      document.getElementById('show_or_next_button').value = 'Next (Return)';
+      document.getElementById('correct_button').disabled   = false;
+      current_jqz_object['answer_is_shown'] = 1;
+    }
+
+    function show_new_question()
+    {
+      if (!jqz_is_done())
+      {
+        var question = current_jqz_object['questions'][current_jqz_object['current_question_index']];
+        document.getElementById('correct_button').value      = 'Mark as Correct (M)';
+        document.getElementById('question').innerHTML = question;
+        document.getElementById('show_or_next_button').value = 'Show Answer (Return)';
+        document.getElementById('answer').style.borderColor = neutral_color;
+        document.getElementById('answer').innerHTML   = '';
+        current_jqz_object['is_correct']      = 0;
+        current_jqz_object['answer_is_shown'] = 0;
+        document.getElementById('correct_button').disabled = true;
+        update_info();
+      }
+      else
+      {
+        alert('Quiz Completed!');
+      }
+    }
+
+    function show_or_next()
+    {
+      var done = jqz_is_done();
+      if (!done || (done && !current_jqz_object['is_correct']))
+      {
+        if (!current_jqz_object['answer_is_shown'])
+        {
+          show_answer();
+        }
+        else 
+        {
+          process_last_question();
+          start_new_quiz_with_incorrect_answers();
+          show_new_question();
+        }
+      }
+      else
+      {
+        alert('Quiz Completed!');
+      }
+    }
+
+    function shuffle(a)
+    {
+      var j, x, i;
+      for (i = a.length - 1; i > 0; i--)
+      {
+        j = Math.floor(Math.random() * (i + 1));
+        x = a[i];
+        a[i] = a[j];
+        a[j] = x;
+      }
+      return a;
+    }
+
+    function shuffle_jqz()
+    {
+      var shuffle_indexes = [];
+      var quiz_length = current_jqz_object['questions'].length;
+      var questions   = [];
+      var answers     = [];
+      var correct     = [];
+
+      for (var i = 0; i < quiz_length; i++)
+      {
+        shuffle_indexes.push(i);
+        questions.push(current_jqz_object['questions'][i]);
+        answers.push(current_jqz_object['answers'][i]);
+        correct.push(current_jqz_object['correct'][i]);
+      }
+
+      shuffle_indexes = shuffle(shuffle_indexes);
+ 
+      for (var i = 0; i < quiz_length; i++)
+      {
+        current_jqz_object['questions'][i] = questions[shuffle_indexes[i]];
+        current_jqz_object['answers'][i]   = answers[shuffle_indexes[i]];
+        current_jqz_object['correct'][i]   = correct[shuffle_indexes[i]];
+      }     
+    }
+
+    function start_new_quiz_with_incorrect_answers()
+    {
+      var at_end = jqz_at_end();
+      var done   = jqz_is_done();
+      if (at_end && !done)
+      {
+        current_jqz_object = next_jqz_object;
+        next_jqz_object = {};
+        reset_jqz_object(next_jqz_object);
+        shuffle_jqz();
+      }
+    }
+
+    function switch_questions_and_answers()
+    {
+      var quiz_length = current_jqz_object['questions'].length;
+      for (var i = 0; i < quiz_length; i++)
+      {
+        var question    = current_jqz_object['questions'][i];
+        var answer      = current_jqz_object['answers'][i];
+        current_jqz_object['questions'][i] = answer;
+        current_jqz_object['answers'][i]   = question;
+      }
+
+      var question = current_jqz_object['questions'][current_jqz_object['current_question_index']];
+      document.getElementById('question').innerHTML = question;
+
+      if (current_jqz_object['answer_is_shown'])
+      {
+        var current_answer = current_jqz_object['answers'][current_jqz_object['current_question_index']];
+        document.getElementById('answer').innerHTML          = '<h1>' + current_answer + '</h1>';
+      }
+    }
+
+    function toggle_correctness()
+    {
+      if (current_jqz_object['answer_is_shown'] && !jqz_is_done())
+      {
+        current_jqz_object['is_correct'] = 1 - current_jqz_object['is_correct'];
+        if (current_jqz_object['is_correct'])
+        {
+          document.getElementById('answer').style.borderColor = correct_color;
+          document.getElementById('correct_button').value = 'Mark as Incorrect (M)';
+        }
+        else
+        {
+          document.getElementById('answer').style.borderColor = incorrect_color;
+          document.getElementById('correct_button').value = 'Mark as Correct (M)';
+        }
+      }
+    }
+
+    function update_info()
+    {
+      var current_question_number = current_jqz_object['current_question_index'];
+      var total_questions = current_jqz_object['questions'].length;
+      var number_correct  = current_jqz_object['number_correct'];
+      document.getElementById('info').innerHTML =
+      'Question: ' + (current_question_number + 1) + '/' + total_questions +
+       ', Correct: ' + number_correct + '/' + current_question_number +
+       ', Total: ' + total_quizzed;
+    }
+
+    function write_file_to_jqz_object()
+    {
+      reset_jqz_object(current_jqz_object);
+      reset_jqz_object(next_jqz_object);
+
+      var files = this.files;
+      if (files.length === 0)
+      {
+          console.log('No file is selected');
+          return;
+      }
+
+      var reader = new FileReader();
+      var jqz_string;
+      reader.onload = function(event)
+      {
+        jqz_string = event.target.result.trim();
+        var jqz_string_array = jqz_string.split(/[\r\n]+/);
+
+        current_jqz_object['current_question_index'] =
+          parseInt(jqz_string_array[0].trim(), 10);
+
+        jqz_string_array.shift();
+
+        var number_correct = 0;
+        for (var i = 0; i < jqz_string_array.length; i++)
+        {
+          var question_line = jqz_string_array[i];
+          question_line = question_line.trim();
+          var question_data = question_line.split(/;/);
+
+          var question   = question_data[0].trim();
+          var answer     = question_data[1].trim();
+          var is_correct = parseInt(question_data[2].trim(), 10);
+
+          current_jqz_object['questions'].push(question);
+          current_jqz_object['answers'].push(answer);
+          current_jqz_object['correct'].push(is_correct);
+          number_correct += is_correct;
+          if (!is_correct && i < current_jqz_object['current_question_index'])
+          {
+            next_jqz_object['questions'].push(question);
+            next_jqz_object['answers'].push(answer);
+            next_jqz_object['correct'].push(0);
+          }
+        }
+
+        current_jqz_object['number_correct'] = number_correct;
+        document.getElementById('switch_button').disabled = false;
+        document.getElementById('show_or_next_button').disabled = false;
+        document.getElementById('download_jqz').disabled = false;
+        show_new_question();
+      };
+      reader.readAsText(files[0]);
+    }
+
+    function write_jqz_object_to_file()
+    {
+      var string = current_jqz_object['current_question_index'] + "\n";
+      var quiz_length = current_jqz_object['questions'].length;
+      for (var i = 0; i < quiz_length; i++)
+      {
+        var question    = current_jqz_object['questions'][i].trim();
+        var answer      = current_jqz_object['answers'][i].trim();
+        var correct     = current_jqz_object['correct'][i].toString().trim();
+        string += [question, answer, correct].join(';') + "\n";
+      }
+
+      var filename = 'japanese_zyzzyva_quiz_' + quiz_length + '_question.jqz';
+      var csvFile;
+      var downloadLink;
+
+      // CSV file
+      csvFile = new Blob([string], {type: "text/csv"});
+
+      // Download link
+      downloadLink = document.createElement("a");
+
+      // File name
+      downloadLink.download = filename;
+
+      // Create a link to the file
+      downloadLink.href = window.URL.createObjectURL(csvFile);
+
+      // Hide download link
+      downloadLink.style.display = "none";
+
+      // Add the link to DOM
+      document.body.appendChild(downloadLink);
+
+      // Click download link
+      downloadLink.click();
+    }
+
+    document.getElementById('upload_jqz').addEventListener('change', write_file_to_jqz_object);
+    document.getElementById('download_jqz').addEventListener('change', write_jqz_object_to_file);
+
+    document.addEventListener
+    (
+      'keypress',
+      function(event)
+      {
+        if (event.keyCode == 13)
+        {
+          show_or_next();
+        }
+        else if (event.keyCode == 109)
+        {
+          toggle_correctness();
+        }
+      }
+    )
+  </script>
+
+    <!-- SCRIPTS -->
+  <!-- JQuery -->
+  <script type="text/javascript" src="/js/jquery-3.4.1.min.js"></script>
+  <!-- Bootstrap tooltips -->
+  <script type="text/javascript" src="/js/popper.min.js"></script>
+  <!-- Bootstrap core JavaScript -->
+  <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+  <!-- MDB core JavaScript -->
+  <script type="text/javascript" src="/js/mdb.min.js"></script>
+
+  <!-- Datepicker JavaScript -->
+  <script type="text/javascript" src="/datepickerjs/bootstrap-datepicker.js"></script>
+  <script type="text/javascript" src="/datepickerjs/bootstrap-datepicker.min.js"></script>
+
+
+  
+  <script>
+      $(document).ready(function () {
+
+        $('.collapse').on('shown.bs.collapse', function (e) {
+          var id = e.target.id;
+
+          id = 'button_' + id;
+          var el = document.getElementById(id);
+          if (el && el.nodeName == "BUTTON")
+          {
+            el.innerHTML = '&#8722';
+          }
+
+        });
+
+        $('.collapse').on('hidden.bs.collapse', function (e) {
+
+          var id = e.target.id;
+
+          id = 'button_' + id;
+          var el = document.getElementById(id);
+          if (el && el.nodeName == "BUTTON")
+          {
+            el.innerHTML = '+';
+          }
+
+        });
+      });
+  </script>
+
+
+
+  
+  </body>
+</html>
