@@ -11,6 +11,7 @@ use Constants;
 use Utils;
 use Update;
 
+use NWL20;
 use CSW07;
 use CSW12;
 use CSW15;
@@ -138,6 +139,11 @@ sub get_lexicon_ref
   {
     $lexicon_ref = CSW19::CSW19_LEXICON;
   }
+  elsif ($lexicon eq 'NWL20')
+  {
+    $lexicon_ref = NWL20::NWL20_LEXICON;
+  }
+
   return $lexicon_ref;
 }
 

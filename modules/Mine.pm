@@ -201,6 +201,7 @@ sub mine
     elsif ($lexicon eq Utils::sanitize(Constants::TWL_OPTION))
     {
       $games_query .= " AND (
+                             g.$game_lexicon_column_name = 'NWL20' OR 
                              g.$game_lexicon_column_name = 'NWL18' OR 
                              g.$game_lexicon_column_name = 'TWL15' OR 
                              g.$game_lexicon_column_name = 'TWL06' OR 

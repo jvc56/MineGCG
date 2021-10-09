@@ -16,7 +16,7 @@ if (!$lexicon)
   exit(0);
 }
 
-my $file_loc = "./meta/lexicon_extraction/$lexicon.txt";
+my $file_loc = "$lexicon.txt";
 
 my $mod_name = uc $lexicon;
 
