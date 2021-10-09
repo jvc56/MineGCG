@@ -48,7 +48,7 @@ use constant LOGS_DIRECTORY_NAME              => './logs';
 use constant HTML_STATIC_DIRECTORY_NAME       => './html_static';
 use constant LEGACY_DIRECTORY_NAME            => './legacy';
 use constant ABOUT_PAGE_NAME                  => 'about.html';
-use constant QUALIFIERS_PAGE_NAME             => 'alchemist_qualifiers.html';
+use constant QUALIFIERS_PAGE_NAME             => 'wespac_qualifiers.html';
 use constant TOURNAMENT_OPTION                => 'Tournament';
 use constant CASUAL_OPTION                    => 'Casual';
 
@@ -981,7 +981,7 @@ use constant HTML_NAV => <<NAV
         <a class="nav-link" href="/notable.html" >Notable</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/alchemist_qualifiers.html" >Alchemist Cup Qualifiers</a>
+        <a class="nav-link" href="/wespac_qualifiers.html" >2021 WESPAC Qualifiers</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="/typing.html">RandomRacer 2.0</a>

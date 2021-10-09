@@ -678,8 +678,8 @@ sub update_qualifiers
     for (my $j = 0; $j < scalar @{$qualifiers_list}; $j++)
     {
       my $qualifier = $qualifiers_list->[$j];
-      my ($qaverage, $qresults, $qrating) = get_qualifier_data($qualifier);
-      push @qualifier_data, [$qualifier, $qaverage, $qresults, $qrating];
+      my ($qmax, $qresults, $qrating) = get_qualifier_data($qualifier);
+      push @qualifier_data, [$qualifier, $qmax, $qresults, $qrating];
     }
 
     @qualifier_data = sort {$b->[1] <=> $a->[1]} @qualifier_data;
@@ -687,10 +687,10 @@ sub update_qualifiers
     for (my $j = 0; $j < scalar @qualifier_data; $j++)
     {
       my $qname    = $qualifier_data[$j][0];
-      my $qaverage = $qualifier_data[$j][1];
+      my $qmax     = $qualifier_data[$j][1];
       my $qresults = $qualifier_data[$j][2];
       my $qrating  = $qualifier_data[$j][3];
-      $qualifierhtml .= get_qualifier_html($qname, $qaverage, $qresults, $qrating, $styles[$j % 2], $j + 1);
+      $qualifierhtml .= get_qualifier_html($qname, $qmax, $qresults, $qrating, $styles[$j % 2], $j + 1);
     }
   }
 
@@ -707,9 +707,9 @@ sub update_qualifiers
   $nav
   <div style='text-align: center; vertical-align: middle; padding: 2%'>
     <h1>
-      Alchemist Cup Qualifiers
+      2021 WESPAC Qualifiers
     </h1>
-    This page updates daily at midnight (EST).<br><a href='/about.html'>Learn more</a>
+    This page updates daily at midnight (EST).<br><a href='https://www.scrabbleplayers.org/w/2021_WESPA_Championship'>Learn more</a>
   </div>
   $qualifierhtml
   $default_scripts
@@ -717,7 +717,7 @@ sub update_qualifiers
   $amchart_scripts
   
   <script>
-  function make_qchart(chartid, name, average, data)
+  function make_qchart(chartid, name, max, data)
   {
     var chartdiv = document.getElementById(chartid);
     if (chartdiv.innerHTML)
@@ -780,10 +780,10 @@ sub update_qualifiers
     trend.stroke = chart.colors.getIndex(0);
     trend.strokeOpacity = 0.7;
     trend.data = [
-      { 'value': data[0]['date'],               'value2': average },
-      { 'value': data[data.length - 1]['date'], 'value2': average }
+      { 'value': data[0]['date'],               'value2': max },
+      { 'value': data[data.length - 1]['date'], 'value2': max }
     ];
-    trend.legendSettings.labelText = 'Qualifying Average';
+    trend.legendSettings.labelText = 'Peak Rating';
     
     //scrollbars
     chart.scrollbarX = new am4core.Scrollbar();
@@ -842,24 +842,26 @@ sub get_qualifier_data
   close $fh;
   $json = JSON::XS::decode_json($json);
   my @results = @{$json->{'results'}};
-  @results = grep {$_->{'date'} ge '2018-06-01' && $_->{'date'} le '2020-05-31' && $_->{'lexicon'}} @results;
+  @results = grep {$_->{'date'} ge '2019-10-20' && $_->{'date'} le '2021-10-31' && $_->{'lexicon'}} @results;
   @results = sort {$a->{'date'} cmp $b->{'date'} || $b->{'isearlybird'}} @results;
 
   my $num_results = scalar @results;
-  my $sum = 0;
+  my $max = -1;
   foreach my $res (@results)
   {
-    $sum += $res->{'newrating'};
+    $rating = $res->{'newrating'};
+    if ($rating > $max) {
+      $max = $rating
+    }
   }
-  my $average = sprintf "%.2f", $sum / $num_results;
 
-  return ($average, \@results, $results[-1]->{'newrating'});
+  return ($max, \@results, $results[-1]->{'newrating'});
 }
 
 sub get_qualifier_html
 {
   my $qualifier = shift;
-  my $average   = shift;
+  my $max       = shift;
   my $results   = shift;
   my $current_rating    = shift;
   my $div_style = shift;
@@ -892,19 +894,7 @@ sub get_qualifier_html
   my $under_div = '';
   my $asterisk  = '';
 
-
-  if ($num_games < 30)
-  {
-    $asterisk = '<b><b>*</b></b>';
-    $under_div =
-    "
-      <div style='text-align: center'>
-        $asterisk$qualifier has played fewer than the minimum 30 games required to qualify.
-      </div>
-    ";
-  }
-
-  my $diff = sprintf "%.2f", $current_rating - $average;
+  my $diff = sprintf "%.2f", $max - $current_rating;
   my $diff_color = '#00cc00';
   my $diff_sign  = '+';
   if ($diff > 0)
@@ -915,60 +905,19 @@ sub get_qualifier_html
   $diff = abs($diff);
   my $diff_html = "<b style='color: $diff_color'><b>$diff_sign$diff</b></b>";
 
-  my $margin = 10;
-  my $max_tourneys = 1000;
-  my $future_average = $average;
-  my $future_tourneys = 0;
-  my $future_sum = $sum;
-  my $future_num_tourneys = $num_tourneys;
-  my $add_num_tourneys = 0;
-  my $add_sum = 0;
-  my $future_diff = $future_average - $current_rating;
-  while($add_num_tourneys < $max_tourneys)
-  {
-    if (abs($future_diff) < $margin)
-    {
-      last;
-    }
-    $future_sum += $current_rating;
-    $add_num_tourneys++;
-    $add_sum    += $current_rating;
-    $future_num_tourneys++;
-    $future_average = sprintf "%.2f", ($future_sum / $future_num_tourneys);
-    $future_diff = $future_average - $current_rating;
-  }
-  $future_diff = sprintf "%.2f", $future_diff;
-  my $math_stmt =
-    "
-      Their current qualifying average is \\[ { $sum \\over $num_tourneys } = $average \\]
-      After <b><b>$add_num_tourneys</b></b> additional tournament(s) with an end rating of <b><b>$current_rating</b></b>, their new qualifying average will be
-      \\[ { $sum + $add_num_tourneys($current_rating) \\over $num_tourneys + $add_num_tourneys} = { $future_sum \\over $future_num_tourneys } =  $future_average\\] 
-      which is a difference of <b><b>$future_diff</b></b> compared to their current rating. 
-    ";
-
-  my $future_cmp;
-  if ($add_num_tourneys == $max_tourneys)
-  {
-    $future_cmp = 'more than';
-  }
-  else
-  {
-    $future_cmp = 'exactly';
-  }
 
   my $content =
   "
   <div id='$id' class='collapse'>
     <div style='text-align: center; padding: 15px'>
-      $qualifier has a qualifying average of <b><b>$average</b></b>, which is a difference of $diff_html compared to their current rating of <b><b>$current_rating</b></b>. They have played <b><b>$num_games</b></b> Collins games in <b><b>$num_tourneys</b></b> tournaments during the qualification period. If they maintain their current rating for all future tournaments in the qualification period, it will take <b><b>$future_cmp $add_num_tourneys</b></b> tournament(s) to bring their qualifying average within <b><b>$margin</b></b> rating points of their current rating. $math_stmt
-    </div>
+      $qualifier has a qualifying peak rating of <b><b>$max</b></b>, which is a difference of $diff_html compared to their current rating of <b><b>$current_rating</b></b>. They have played <b><b>$num_games</b></b> Collins games in <b><b>$num_tourneys</b></b> tournaments during the qualification period.</div>
     $under_div
     <div id='$chartid' style='height: 500px'></div>
   </div>
   ";
   my $onclick =
   "
-  onclick=\"make_qchart('$chartid', '$qualifier', $average, $chartdata)\"
+  onclick=\"make_qchart('$chartid', '$qualifier', $max, $chartdata)\"
   ";
   my $expander = "<button type='button' id='button_$id'  class='btn btn-sm' data-toggle='collapse' data-target='#$id' $onclick>+</button>";
   my $link = "<a href='/cache/$sanitized_qualifier.html'>$qualifier</a>";
@@ -976,7 +925,7 @@ sub get_qualifier_html
   "
   <table style='width: 100%'>
    <tbody>
-    <tr><td style='width: 1px; font-size: inherit'>$expander</td><td style='width: 300px; font-size: inherit '>$rank . $link$asterisk</td><td style='font-size: inherit'><b><b>$average</b></b>&nbsp;&nbsp;&nbsp;$diff_html</td></tr>
+    <tr><td style='width: 1px; font-size: inherit'>$expander</td><td style='width: 300px; font-size: inherit '>$rank . $link$asterisk</td><td style='font-size: inherit'><b><b>$max</b></b>&nbsp;&nbsp;&nbsp;$diff_html</td></tr>
    </tbody>
   </table>
   ";
@@ -3358,7 +3307,6 @@ In October 2019, the site underwent major updates which include:
 <li>Win Correlation graphs for every statistic on the leaderboard.</li>
 <li>Confidence intervals for all Tiles Played statistics.</li>
 <li>Dynamic mistake tagging.</li>
-<li>Alchemist Cup registrants list.</li>
 <li>RandomRacer 2.0, a new version of the original typing practice feature of RandomRacer.</li>
 </ul>
 In November 2019, the following features were added:
@@ -3578,11 +3526,11 @@ misleading and introduce error (or more error anyway) into the leaderboards.
 Contact randomracerteam@gmail.com if you think a game was omitted by mistake.'
     ],
     [
-      'Alchemist Cup Qualifiers',
-'The Alchemist Cup Qualifiers page is a list of the registered NASPA players for the Alchemist Cup.
+      '2021 WESPAC Qualifiers',
+'The 2021 WESPAC Qualifiers page is a list of the registered NASPA players for the 2021 WESPAC Championship.
 Registrants are listed by country and ordered by qualifying rating. Players\' qualifying ratings are
 in white and the difference between their qualifying rating and their current rating is in red or green.
-You can learn more <a href="https://www.scrabbleplayers.org/w/2020_Alchemist_Cup_Qualification_System">here</a>.
+You can learn more <a href="http://www.scrabbleplayers.org/w/2021_WESPA_Championship">here</a>.
 '
     ],
     [
