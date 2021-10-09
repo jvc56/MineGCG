@@ -235,35 +235,13 @@ use constant SEARCH_DATA_FILENAME             => 'search_data.html';
 
 use constant CANADA_QUALIFIERS                =>
 [
-  'Adam Logan',
-  'Jackson Smylie',
-  'Joshua Sokol',
-  'Evan Berofsky',
-  'Joshua Castellano',
-  'Jesse Matthews',
   'Tony Leah',
-  'Shan Abbasi',
-  'Matthew Tunnicliffe'
+  'Jason Ubeika'
 ];
 
 use constant US_QUALIFIERS                    =>
 [
-  'Dave Wiegand',
-  'Austin Shin',
-  'Will Anderson',
-  'Evans Clinchy',
-  'David Koenig',
-  "Matthew O'Connor'",
-  'Jesse Day',
-  'Jason Keller',
-  'Conrad Bassett-Bouchard',
-  'Rob Robinsky',
-  'Chris Lipe',
-  'Ben Schoenbrun',
-  'Rasheed Balogun',
-  'Cesar Del Solar',
-  'Lucas Freeman',
-  'Puneet Sharma'
+  'Ben Schoenbrun'
 ];
 
 use constant INACTIVE_PLAYERS =>

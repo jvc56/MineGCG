@@ -14,7 +14,6 @@ In October 2019, the site underwent major updates which include:
  - Win Correlation graphs for every statistic on the leaderboard.
  - Confidence intervals for all Tiles Played statistics.
  - Dynamic mistake tagging.
- - Alchemist Cup registrants list.
  - RandomRacer 2.0, a new version of the original typing practice feature of RandomRacer.
 
 In November 2019, the following features were added:
@@ -493,12 +492,12 @@ misleading and introduce error (or more error anyway) into the leaderboards.
 
 Contact randomracerteam@gmail.com if you think a game was omitted by mistake.
 
-# Alchemist Cup Qualifiers
+# 2021 WESPAC Qualifiers
 
-The Alchemist Cup Qualifiers page is a list of the registered NASPA players for the Alchemist Cup.
+The 2021 WESPAC Qualifiers page is a list of the registered NASPA players for the 2021 WESPAC Championship.
 Registrants are listed by country and ordered by qualifying rating. Players' qualifying ratings are
 in white and the difference between their qualifying rating and their current rating is in red or green.
-You can learn more <a href="https://www.scrabbleplayers.org/w/2020_Alchemist_Cup_Qualification_System">here</a>.
+You can learn more <a href="http://www.scrabbleplayers.org/w/2021_WESPA_Championship">here</a>.
 
 # RandomRacer 2.0
 

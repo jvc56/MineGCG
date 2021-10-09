@@ -772,19 +772,6 @@ sub update_qualifiers
     //bullet.circle.fillOpacity = 1;
     bullet.tooltipText          = \"Tournament: {tourney}\\nEnd Rating: {rating}\\nDate: {date}\";
     
-    //add the trendlines
-    var trend = chart.series.push(new am4charts.LineSeries());
-    trend.dataFields.valueY = 'value2';
-    trend.dataFields.dateX = 'value';
-    trend.strokeWidth = 2
-    trend.stroke = chart.colors.getIndex(0);
-    trend.strokeOpacity = 0.7;
-    trend.data = [
-      { 'value': data[0]['date'],               'value2': max },
-      { 'value': data[data.length - 1]['date'], 'value2': max }
-    ];
-    trend.legendSettings.labelText = 'Peak Rating';
-    
     //scrollbars
     chart.scrollbarX = new am4core.Scrollbar();
     chart.scrollbarY = new am4core.Scrollbar();    
@@ -849,13 +836,19 @@ sub get_qualifier_data
   my $max = -1;
   foreach my $res (@results)
   {
-    $rating = $res->{'newrating'};
+    my $rating = $res->{'newrating'};
     if ($rating > $max) {
       $max = $rating
     }
   }
 
-  return ($max, \@results, $results[-1]->{'newrating'});
+  my $current_rating = 0;
+
+  if (scalar @results > 0) {
+    $current_rating = $results[-1]->{'newrating'}
+  }
+
+  return ($max, \@results, $current_rating);
 }
 
 sub get_qualifier_html
