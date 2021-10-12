@@ -242,6 +242,7 @@ use constant CANADA_QUALIFIERS                =>
 use constant US_QUALIFIERS                    =>
 [
   'Ben Schoenbrun',
+  'Jason Keller',
   'Randy Hersom'
 ];
 
