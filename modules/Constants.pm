@@ -241,7 +241,8 @@ use constant CANADA_QUALIFIERS                =>
 
 use constant US_QUALIFIERS                    =>
 [
-  'Ben Schoenbrun'
+  'Ben Schoenbrun',
+  'Randy Hersom'
 ];
 
 use constant INACTIVE_PLAYERS =>
