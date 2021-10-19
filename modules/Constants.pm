@@ -236,6 +236,7 @@ use constant SEARCH_DATA_FILENAME             => 'search_data.html';
 use constant CANADA_QUALIFIERS                =>
 [
   'Tony Leah',
+  'Priya Fernando',
   'Jason Ubeika'
 ];
 
@@ -243,6 +244,9 @@ use constant US_QUALIFIERS                    =>
 [
   'Ben Schoenbrun',
   'Jason Keller',
+  'Will Anderson',
+  'Alec Sjoholm',
+  "Matthew O'Connor",
   'Randy Hersom'
 ];
 
