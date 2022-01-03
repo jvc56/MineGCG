@@ -216,43 +216,6 @@
     <span class="navbar-toggler-icon"></span>
   </button>
 
-  <!-- Collapsible content -->
-  <div class="collapse navbar-collapse" id="basicExampleNav">
-
-    <!-- Links -->
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="/leaderboard.html" >Leaderboards</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/notable.html" >Notable</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/alchemist_qualifiers.html" >Alchemist Cup Qualifiers</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/typing.html">RandomRacer 2.0</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/simulate.html">Tournament Simulation</a>
-      </li>
-      <!-- Dropdown -->
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false">Legacy</a>
-        <div class="dropdown-menu dropdown-primary" aria-labelledby="navbarDropdownMenuLink">
-          <a class="dropdown-item" href="/legacy/notable.html">Notable</a>
-          <a class="dropdown-item" href="/legacy/leaderboard.html">Leaderboards</a>
-        </div>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/about.html" >About</a>
-      </li>
-    </ul>
-    <!-- Links -->
-  </div>
-  <!-- Collapsible content -->
-
 </nav>
 <!--/.Navbar-->
 
@@ -282,7 +245,7 @@
     <div id='buttons'>
       <table style='width: 100%'>
         <tr >
-          <td style='width: 33.3333%; text-align: center'>
+          <td style='width: 25%; text-align: center'>
             <input type='button'
                    disabled
                    class='btn btn-sm waves-effect waves-light'
@@ -291,7 +254,7 @@
                    onclick='show_or_next()'
                    id='show_or_next_button'/>
           </td>
-          <td  style='width: 33.3333%; text-align: center'  >
+          <td  style='width: 25%; text-align: center'  >
             <input type='button'
                    disabled
                    id='correct_button'
@@ -300,7 +263,7 @@
                    value='Mark as Correct (M)'
                    onclick='toggle_correctness()'/>
           </td>
-          <td  style='width: 33.333%; text-align: center'  >
+          <td  style='width: 25%; text-align: center'  >
             <input type='button'
                    disabled
                    id='switch_button'
@@ -308,6 +271,11 @@
                    style='color: white'
                    value='Switch Questions and Answers'
                    onclick='switch_questions_and_answers()'/>
+          </td>
+          <td  style='width: 25%; text-align: center'  >
+            <input type='checkbox'
+                   id='shuffle_at_start'
+                   value='Shuffle At Start'/>
           </td>
         </tr>
       </table>
@@ -501,7 +469,10 @@
         current_jqz_object = next_jqz_object;
         next_jqz_object = {};
         reset_jqz_object(next_jqz_object);
-        shuffle_jqz();
+        if (document.getElementById('shuffle_at_start').checked)
+        {
+          shuffle_jqz();
+        }
       }
     }
 
@@ -606,6 +577,10 @@
         document.getElementById('switch_button').disabled = false;
         document.getElementById('show_or_next_button').disabled = false;
         document.getElementById('download_jqz').disabled = false;
+        if (document.getElementById('shuffle_at_start').checked)
+        {
+          shuffle_jqz();
+        }
         show_new_question();
       };
       reader.readAsText(files[0]);
@@ -685,7 +660,7 @@
 
 
   
-  <script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"  >
       $(document).ready(function () {
 
         $('.collapse').on('shown.bs.collapse', function (e) {

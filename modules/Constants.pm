@@ -246,6 +246,7 @@ use constant US_QUALIFIERS                    =>
   'Jason Keller',
   'Will Anderson',
   'Alec Sjoholm',
+  'Jesse Day',
   "Matthew O'Connor",
   'Randy Hersom'
 ];
