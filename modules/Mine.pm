@@ -192,6 +192,7 @@ sub mine
     if ($lexicon eq Utils::sanitize(Constants::COLLINS_OPTION))
     {
       $games_query .= " AND (
+                             g.$game_lexicon_column_name = 'CSW21' OR 
                              g.$game_lexicon_column_name = 'CSW19' OR 
                              g.$game_lexicon_column_name = 'CSW15' OR 
                              g.$game_lexicon_column_name = 'CSW12' OR 
