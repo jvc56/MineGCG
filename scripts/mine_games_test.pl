@@ -36,7 +36,7 @@ print $log "\n\n$count names tested\n\n";
 
 if ($testing)
 {
-  system "./scripts/main.pl --name 'joshua castellano' --statsdump";
+  system "./scripts/main.pl --name 'joshua sokol' --statsdump";
 }
 else
 {
