@@ -301,6 +301,14 @@
                     onclick="write_jqz_object_to_file()" >Save
             </button>
           </td>
+          <td style='width: 50%; text-align: center'  >
+            <button id="download_missed_jqz"
+                    disabled
+                    class='btn btn-sm waves-effect waves-light'
+                    style='color: white'
+                    onclick="write_missed_jqz_object_to_file()" >Quiz Missed
+            </button>
+          </td>
         </tr>
       </table>
     </div>
@@ -323,6 +331,8 @@
     var correct_color   = '#343a40';
     var neutral_color   = '#343a40';
     var total_quizzed   = 0;
+
+    var start_index = 0;
 
     function jqz_at_end()
     {
@@ -462,6 +472,7 @@
 
     function start_new_quiz_with_incorrect_answers()
     {
+      start_index = 0;
       var at_end = jqz_at_end();
       var done   = jqz_is_done();
       if (at_end && !done)
@@ -548,6 +559,8 @@
         current_jqz_object['current_question_index'] =
           parseInt(jqz_string_array[0].trim(), 10);
 
+        start_index = current_jqz_object['current_question_index'];
+
         jqz_string_array.shift();
 
         var number_correct = 0;
@@ -577,6 +590,7 @@
         document.getElementById('switch_button').disabled = false;
         document.getElementById('show_or_next_button').disabled = false;
         document.getElementById('download_jqz').disabled = false;
+        document.getElementById('download_missed_jqz').disabled = false;
         if (document.getElementById('shuffle_at_start').checked)
         {
           shuffle_jqz();
@@ -584,6 +598,45 @@
         show_new_question();
       };
       reader.readAsText(files[0]);
+    }
+
+    function write_missed_jqz_object_to_file()
+    {
+      var string = "0\n";
+      for (var i = start_index; i < current_jqz_object['current_question_index']; i++)
+      {
+        var correct = current_jqz_object['correct'][i].toString().trim();
+        if (correct == 0) {
+          var question    = current_jqz_object['questions'][i].trim();
+          var answer      = current_jqz_object['answers'][i].trim();
+          string += [question, answer, correct].join(';') + "\n";
+        }
+      }
+
+      var filename = 'jzyzzyva_missed_quiz_' + current_jqz_object['current_question_index'] + '_question.jqz';
+      var csvFile;
+      var downloadLink;
+
+      // CSV file
+      csvFile = new Blob([string], {type: "text/csv"});
+
+      // Download link
+      downloadLink = document.createElement("a");
+
+      // File name
+      downloadLink.download = filename;
+
+      // Create a link to the file
+      downloadLink.href = window.URL.createObjectURL(csvFile);
+
+      // Hide download link
+      downloadLink.style.display = "none";
+
+      // Add the link to DOM
+      document.body.appendChild(downloadLink);
+
+      // Click download link
+      downloadLink.click();
     }
 
     function write_jqz_object_to_file()
@@ -626,6 +679,7 @@
 
     document.getElementById('upload_jqz').addEventListener('change', write_file_to_jqz_object);
     document.getElementById('download_jqz').addEventListener('change', write_jqz_object_to_file);
+    document.getElementById('download_missed_jqz').addEventListener('change', write_missed_jqz_object_to_file);
 
     document.addEventListener
     (
