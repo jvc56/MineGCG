@@ -1362,7 +1362,7 @@ MATH
 use constant HTML_FOOTER => <<FOOTER
 <footer>
   <!-- Copyright -->
-  <div class="footer-copyright text-center py-3" style='font-size: 12px'>© 2019 Copyright
+  <div class="footer-copyright text-center py-3" style='font-size: 12px'>© 2023 Copyright
     <a href="/">RandomRacer.com</a>
   </div>
   <!-- Copyright -->
