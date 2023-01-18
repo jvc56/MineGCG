@@ -578,6 +578,11 @@ The number of simulations that will be performed.
 <h4>Include Scenarios</h5>
 If this box is checked, the Rank Matrix will include the final tournament standings and all tournament results for every possible final rank achieved by every player. The amount of HTML increases approximately cubically with the number of players, so your browser performance may significantly degrade for large tournaments.
 
+# Development Team
+
+RandomRacer is maintained by Joshua Castellano, but many people have suggested new features. Contributors
+      are listed in the Contributions section.
+
 # Contributions
 
 The following lists the intellectual contributions made to RandomRacer in reverse chronological (roughly) order.
