@@ -245,23 +245,13 @@
     <div id='buttons'>
       <table style='width: 100%'>
         <tr >
-          <td style='width: 25%; text-align: center'>
-            <input type='button'
-                   disabled
-                   class='btn btn-sm waves-effect waves-light'
-                   style='color: white'
-                   value='Show Answer (Enter)'
-                   onclick='show_or_next()'
-                   id='show_or_next_button'/>
-          </td>
-          <td  style='width: 25%; text-align: center'  >
-            <input type='button'
-                   disabled
-                   id='correct_button'
-                   class='btn btn-sm waves-effect waves-light'
-                   style='color: white'
-                   value='Mark as Correct (M)'
-                   onclick='toggle_correctness()'/>
+          <td style='width: 50%; text-align: center'  >
+            <button id="download_missed_jqz"
+                    disabled
+                    class='btn btn-sm waves-effect waves-light'
+                    style='color: white'
+                    onclick="write_missed_jqz_object_to_file()" >Quiz Missed
+            </button>
           </td>
           <td  style='width: 25%; text-align: center'  >
             <input type='button'
@@ -272,7 +262,16 @@
                    value='Switch Questions and Answers'
                    onclick='switch_questions_and_answers()'/>
           </td>
-          <td  style='width: 25%; text-align: center'  >
+         <td  style='width: 25%; text-align: center'  >
+            <input type='button'
+                   disabled
+                   id='correct_button'
+                   class='btn btn-sm waves-effect waves-light'
+                   style='color: white'
+                   value='Mark as Correct (M)'
+                   onclick='toggle_correctness()'/>
+          </td>
+         <td  style='width: 25%; text-align: center'  >
             <input type='checkbox'
                    id='shuffle_at_start'
                    value='Shuffle At Start'/>
@@ -301,15 +300,16 @@
                     onclick="write_jqz_object_to_file()" >Save
             </button>
           </td>
-          <td style='width: 50%; text-align: center'  >
-            <button id="download_missed_jqz"
-                    disabled
-                    class='btn btn-sm waves-effect waves-light'
-                    style='color: white'
-                    onclick="write_missed_jqz_object_to_file()" >Quiz Missed
-            </button>
+          <td style='width: 25%; text-align: center'>
+            <input type='button'
+                   disabled
+                   class='btn btn-sm waves-effect waves-light'
+                   style='color: white'
+                   value='Show Answer (Enter)'
+                   onclick='show_or_next()'
+                   id='show_or_next_button'/>
           </td>
-        </tr>
+       </tr>
       </table>
     </div>
   <footer>

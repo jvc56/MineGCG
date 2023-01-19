@@ -297,7 +297,7 @@
                    class='btn btn-sm waves-effect waves-light'
                    style='color: white'
                    value='Next'
-                   onclick='increment_index()'/>
+                   onclick='go_forward()'/>
           </td>
           <td  style='width: 25%; text-align: center'  >
             <input type='button'
@@ -305,7 +305,7 @@
                    class='btn btn-sm waves-effect waves-light'
                    style='color: white'
                    value='Back'
-                   onclick='decrement_index()'/>
+                   onclick='go_backward()'/>
           </td>
         </tr>
       </table>
@@ -328,17 +328,13 @@
             <input type='number'
                    class='btn btn-sm waves-effect waves-light'
                    value='1'
-                   onkeyup='this.onchange();'
-                   onchange='set_decrement()'
-                   id='set_decrement_input'/>
+                   id='decrement_input'/>
           </td>
           <td style='width: 25%; text-align: center'  >
             Checkpoint
             <input type='number'
                    class='btn btn-sm waves-effect waves-light'
                    value='1'
-                   onkeyup='this.onchange();'
-                   onchange='set_checkpoint()'
                    id='checkpoint_input'/>
           </td>
         </tr>
@@ -357,8 +353,6 @@
   </div>
   <script>
     var current_index = 0;
-    var increment_value = 1;
-    var decrement_value = 1;
     var word_length;
     var checkpoint;
     var words = [
@@ -394,29 +388,19 @@
       go_to_index(0);
     }
 
-    function increment_index()
+    function go_forward()
     {
-      go_to_index(current_index + increment_value);
+      go_to_index(current_index + 1);
     }
 
-    function decrement_index()
+    function go_backward()
     {
-      go_to_index(current_index - decrement_value);
-    }
-
-    function set_decrement()
-    {
-      decrement_value = document.getElementById('set_decrement_input').value;
+      go_to_index(current_index - document.getElementById('decrement_input').value);
     }
 
     function go_to()
     {
       go_to_index(document.getElementById('go_to_input').value - 1);
-    }
-
-    function set_checkpoint()
-    {
-      decrement_value = document.getElementById('checkpoint_input').value;
     }
 
     function go_to_checkpoint()
@@ -429,14 +413,18 @@
       'keypress',
       function(event)
       {
-        // Right click, go next
-        if (event.keyCode == 13)
+        // Period, go next
+        if (event.keyCode == 46)
         {
-          increment_index();
-        } // Left click, go back
+          go_forward();
+        } // Comma, go back
+        else if (event.keyCode == 44)
+        {
+          go_backward();
+        }
         else if (event.keyCode == 109)
         {
-          decrement_index();
+          go_to_checkpoint();
         }
       }
     )
