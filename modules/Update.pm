@@ -653,8 +653,8 @@ sub update_qualifiers
   my $us_qualifiers     = Constants::US_QUALIFIERS;
   my @qualifying_countries =
   (
-    ['Canada', $canada_qualifiers],
-    ['United States', $us_qualifiers]
+    ['United States', $us_qualifiers],
+    ['Canada', $canada_qualifiers]
   );
   
   my $qualifierhtml = '';
@@ -679,7 +679,12 @@ sub update_qualifiers
     {
       my $qualifier = $qualifiers_list->[$j];
       my ($qmax, $qresults, $qrating) = get_qualifier_data($qualifier);
-      push @qualifier_data, [$qualifier, $qmax, $qresults, $qrating];
+      my $sort_value = $qmax;
+      if ($qmax <= 0)
+      {
+        $sort_value = $qrating;
+      }
+      push @qualifier_data, [$qualifier, $sort_value, $qmax, $qresults, $qrating];
     }
 
     @qualifier_data = sort {$b->[1] <=> $a->[1]} @qualifier_data;
@@ -687,9 +692,9 @@ sub update_qualifiers
     for (my $j = 0; $j < scalar @qualifier_data; $j++)
     {
       my $qname    = $qualifier_data[$j][0];
-      my $qmax     = $qualifier_data[$j][1];
-      my $qresults = $qualifier_data[$j][2];
-      my $qrating  = $qualifier_data[$j][3];
+      my $qmax     = $qualifier_data[$j][2];
+      my $qresults = $qualifier_data[$j][3];
+      my $qrating  = $qualifier_data[$j][4];
       $qualifierhtml .= get_qualifier_html($qname, $qmax, $qresults, $qrating, $styles[$j % 2], $j + 1);
     }
   }
@@ -709,7 +714,7 @@ sub update_qualifiers
     <h1>
       2024 Alchemist Cup Qualifiers
     </h1>
-    Unofficial list of the Alchemist Cup Qualifiers for North America. This page updates daily. Learn more in the About section.
+    Unofficial list of the 2024 Alchemist Cup Qualifiers for North America. This page updates daily and only shows NASPA Collins tournaments and ratings. Learn more in the About section.
   </div>
   $qualifierhtml
   $default_scripts
@@ -796,6 +801,27 @@ sub update_qualifiers
   close $qfh;
 }
 
+sub get_url_as_json
+{
+  my $url = shift;
+  my $json = '';
+  my $wget_flags = Constants::WGET_FLAGS;
+  my $downloads_dir = Constants::DOWNLOADS_DIRECTORY_NAME;
+  my $filename = $downloads_dir . "/url_content.json";
+
+  my $cmd = "wget $wget_flags $url -O $filename  >/dev/null 2>&1";
+  system $cmd;
+
+  open(my $fh, "<", $filename);
+  while (<$fh>)
+  {
+    $json .= $_;
+  }
+  close $fh; 
+  $json = JSON::XS::decode_json($json);
+  return $json;
+}
+
 sub get_qualifier_data
 {
   my $qualifier = shift;
@@ -803,6 +829,7 @@ sub get_qualifier_data
 
   my $wget_flags = Constants::WGET_FLAGS; 
   my $downloads_dir = Constants::DOWNLOADS_DIRECTORY_NAME;
+  my $minimum_games = Constants::ALCHEMIST_CUP_MINIMUM_GAMES;
   my $sanitized_qualifier = Utils::sanitize($qualifier);
 
   my $dbh                               = Utils::connect_to_database();
@@ -815,41 +842,29 @@ sub get_qualifier_data
   print($qualifier . "\n");
   my $qualifier_id = $dbh->selectrow_arrayref($query, {"RaiseError" => 1})->[0];
   my $results_call = Constants::PLAYER_RESULTS_API_CALL . $qualifier_id;
-  my $filename     = $downloads_dir . "/qualifier_results_$qualifier_id.txt";
+  my $info_call =    Constants::PLAYER_INFO_API_CALL . $qualifier_id;
 
-  my $json = '';
-
-  my $cmd = "wget $wget_flags $results_call -O $filename  >/dev/null 2>&1";
-  system $cmd;
-
-  open(my $fh, "<", $filename);
-  while (<$fh>)
-  {
-    $json .= $_;
-  }
-  close $fh;
-  $json = JSON::XS::decode_json($json);
-  my @results = @{$json->{'results'}};
+  my $player_results_json = get_url_as_json($results_call);
+  my $player_info_json = get_url_as_json($info_call);
+  my @results = @{$player_results_json->{'results'}};
+  my $player_current_csw_rating = $player_info_json->{'player'}->{'cswrating'};
+  # When lexicon is set to 1, the tourney is Collins.
   @results = grep {$_->{'date'} ge '2022-12-30' && $_->{'date'} le '2024-06-30' && $_->{'lexicon'}} @results;
   @results = sort {$a->{'date'} cmp $b->{'date'} || $b->{'isearlybird'}} @results;
 
   my $num_results = scalar @results;
-  my $max = 0;
+  my $peak_rating = -1;
+  my $num_games = 0;
   foreach my $res (@results)
   {
     my $rating = $res->{'newrating'};
-    if ($rating > $max) {
-      $max = $rating
+    $num_games += $res->{'w'} + $res->{'l'} + $res->{'t'};
+    if ($num_games >= $minimum_games && $rating > $peak_rating) {
+      $peak_rating = $rating
     }
   }
 
-  my $current_rating = 0;
-
-  if (scalar @results > 0) {
-    $current_rating = $results[-1]->{'newrating'}
-  }
-
-  return ($max, \@results, $current_rating);
+  return ($peak_rating, \@results, $player_current_csw_rating);
 }
 
 sub get_qualifier_html
@@ -861,6 +876,10 @@ sub get_qualifier_html
   my $div_style = shift;
   my $rank      = shift;
 
+  my $minimum_games = Constants::ALCHEMIST_CUP_MINIMUM_GAMES;
+
+  my $qualifier_name = $qualifier;
+  $qualifier_name =~ s/'//g;
   my $sanitized_qualifier = Utils::sanitize($qualifier);
   my $id = $sanitized_qualifier;
   my $chartid = $id . '_chart';
@@ -889,17 +908,6 @@ sub get_qualifier_html
   my $asterisk  = '';
   my $qual_word = 'qualifying';
   
-  if ($num_games < 50)
-  {
-    $asterisk = '<b><b>*</b></b>';
-    $under_div =
-    "
-      <div style='text-align: center'>
-        $asterisk$qualifier has played fewer than the minimum 50 games required to qualify. They must play at least 50 games after the start of the qualification period in order for their peak rating to begin counting for qualification standings.
-      </div>
-    ";
-    $qual_word = 'nonqualifying';
-  }
 
   my $diff = sprintf "%.2f", $max - $current_rating;
   my $diff_color = '#00cc00';
@@ -912,27 +920,41 @@ sub get_qualifier_html
   $diff = abs($diff);
   my $diff_html = "<b style='color: $diff_color'><b>$diff_sign$diff</b></b>";
 
-
-  my $content = "";
+  my $chart_div = "<div id='$chartid' style='height: 500px'></div>"; 
   if ($num_games == 0)
   {
-  $content =
-  "
-  <div id='$id' class='collapse'>
-    <div style='text-align: center; padding: 15px'>
-      $qualifier has not played any games during the qualification period.</div>
-    <div id='$chartid' style='height: 500px'></div>
-  </div>
-  ";
-  }  else 
+    $chart_div = "";
+  }
+
+
+  my $display_rating = $max;
+  my $content = "";
+  if ($num_games < 50)
   {
+    $diff_html = "";
+    $display_rating = $current_rating;
+    $asterisk = '<b><b>*</b></b>';
+    $content =
+    "
+    <div id='$id' class='collapse'>
+      <div style='text-align: center; padding: 15px'>
+        $qualifier_name has a current rating of <b><b>$current_rating</b></b>. They have played <b><b>$num_games</b></b> Collins games in <b><b>$num_tourneys</b></b> tournament(s) during the qualification period.</div>
+      <div style='text-align: center'>
+        $asterisk$qualifier_name has played fewer than the minimum $minimum_games games required to qualify. They must play at least $minimum_games games after the start of the qualification period in order for their peak rating to begin counting for qualification standings.
+      </div>
+      $chart_div
+    </div>
+    ";
+ 
+  } else
+  {
+
   $content =
   "
   <div id='$id' class='collapse'>
     <div style='text-align: center; padding: 15px'>
-      $qualifier has a <b><b>$qual_word</b></b> peak rating of <b><b>$max</b></b>, which is a difference of $diff_html compared to their current rating of <b><b>$current_rating</b></b>. They have played <b><b>$num_games</b></b> Collins games in <b><b>$num_tourneys</b></b> tournaments during the qualification period.</div>
-    $under_div
-    <div id='$chartid' style='height: 500px'></div>
+      $qualifier_name has a qualifying peak rating of <b><b>$max</b></b>, which is a difference of $diff_html compared to their current rating of <b><b>$current_rating</b></b>. They have played <b><b>$num_games</b></b> Collins games in <b><b>$num_tourneys</b></b> tournament(s) during the qualification period.</div>
+    $chart_div
   </div>
   ";
  
@@ -940,15 +962,15 @@ sub get_qualifier_html
 
   my $onclick =
   "
-  onclick=\"make_qchart('$chartid', '$qualifier', $max, $chartdata)\"
+  onclick=\"make_qchart('$chartid', '$qualifier_name', $max, $chartdata)\"
   ";
   my $expander = "<button type='button' id='button_$id'  class='btn btn-sm' data-toggle='collapse' data-target='#$id' $onclick>+</button>";
-  my $link = "<a href='/cache/$sanitized_qualifier.html'>$qualifier</a>";
+  my $link = "<a href='/cache/$sanitized_qualifier.html'>$qualifier_name</a>";
   my $title = 
   "
   <table style='width: 100%'>
    <tbody>
-    <tr><td style='width: 1px; font-size: inherit'>$expander</td><td style='width: 300px; font-size: inherit '>$rank . $link$asterisk</td><td style='font-size: inherit'><b><b>$max</b></b>&nbsp;&nbsp;&nbsp;$diff_html</td></tr>
+    <tr><td style='width: 1px; font-size: inherit'>$expander</td><td style='width: 300px; font-size: inherit '>$rank . $link$asterisk</td><td style='font-size: inherit'><b><b>$display_rating</b></b>&nbsp;&nbsp;&nbsp;$diff_html</td></tr>
    </tbody>
   </table>
   ";
@@ -3555,7 +3577,8 @@ Contact randomracerteam@gmail.com if you think a game was omitted by mistake.'
       'Alchemist Cup Qualifiers',
 'The 2024 Alchemist Cup Qualifiers page is an unofficial list of the registered players for the 2024 Alchemist Cup.
 Registrants are listed by country and ordered by qualifying NASPA rating. Players\' qualifying ratings are
-in white and the difference between their qualifying rating and their current rating is in red or green. Only
+in white and the difference between their qualifying rating and their current rating is in red or green. If the player
+has not played the minimum 50 games to qualify, only their current rating will be shown next to their name. Only
 NASPA ratings are shown. You can learn more <a href="http://www.scrabble.org.au/ratings/selective/2024Alchemist.html">here</a>.
 '
     ],

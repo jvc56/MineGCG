@@ -496,7 +496,8 @@ Contact randomracerteam@gmail.com if you think a game was omitted by mistake.
 
 The 2024 Alchemist Cup Qualifiers page is an unofficial list of the registered players for the 2024 Alchemist Cup.
 Registrants are listed by country and ordered by qualifying NASPA rating. Players' qualifying ratings are
-in white and the difference between their qualifying rating and their current rating is in red or green. Only
+in white and the difference between their qualifying rating and their current rating is in red or green. If the player
+has not played the minimum 50 games to qualify, only their current rating will be shown next to their name. Only
 NASPA ratings are shown. You can learn more <a href="http://www.scrabble.org.au/ratings/selective/2024Alchemist.html">here</a>.
 
 # RandomRacer 2.0

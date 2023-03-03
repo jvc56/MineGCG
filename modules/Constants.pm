@@ -233,6 +233,7 @@ use constant TWL_OPTION                       => 'TWL/NWL';
 
 use constant SEARCH_DATA_FILENAME             => 'search_data.html';
 
+use constant ALCHEMIST_CUP_MINIMUM_GAMES      => 50;
 use constant CANADA_QUALIFIERS                =>
 [
   'Adam Logan',
