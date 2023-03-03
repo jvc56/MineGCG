@@ -492,12 +492,12 @@ misleading and introduce error (or more error anyway) into the leaderboards.
 
 Contact randomracerteam@gmail.com if you think a game was omitted by mistake.
 
-# 2021 WESPAC Qualifiers
+# Alchemist Cup Qualifiers
 
-The 2021 WESPAC Qualifiers page is a list of the registered NASPA players for the 2021 WESPAC Championship.
-Registrants are listed by country and ordered by qualifying rating. Players' qualifying ratings are
-in white and the difference between their qualifying rating and their current rating is in red or green.
-You can learn more <a href="http://www.scrabbleplayers.org/w/2021_WESPA_Championship">here</a>.
+The 2024 Alchemist Cup Qualifiers page is an unofficial list of the registered players for the 2024 Alchemist Cup.
+Registrants are listed by country and ordered by qualifying NASPA rating. Players' qualifying ratings are
+in white and the difference between their qualifying rating and their current rating is in red or green. Only
+NASPA ratings are shown. You can learn more <a href="http://www.scrabble.org.au/ratings/selective/2024Alchemist.html">here</a>.
 
 # RandomRacer 2.0
 

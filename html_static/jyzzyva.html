@@ -651,7 +651,7 @@
         string += [question, answer, correct].join(';') + "\n";
       }
 
-      var filename = 'japanese_zyzzyva_quiz_' + quiz_length + '_question.jqz';
+      var filename = quiz_length + '.jqz';
       var csvFile;
       var downloadLink;
 
@@ -696,6 +696,18 @@
         }
       }
     )
+    document.addEventListener('contextmenu', event => event.preventDefault());
+    window.onbeforeunload = function (e) {
+        e = e || window.event;
+
+        // For IE and Firefox prior to version 4
+        if (e) {
+            e.returnValue = 'Sure?';
+        }
+
+        // For Safari
+        return 'Sure?';
+    };
   </script>
 
     <!-- SCRIPTS -->

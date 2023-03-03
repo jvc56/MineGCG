@@ -48,7 +48,7 @@ use constant LOGS_DIRECTORY_NAME              => './logs';
 use constant HTML_STATIC_DIRECTORY_NAME       => './html_static';
 use constant LEGACY_DIRECTORY_NAME            => './legacy';
 use constant ABOUT_PAGE_NAME                  => 'about.html';
-use constant QUALIFIERS_PAGE_NAME             => 'wespac_qualifiers.html';
+use constant QUALIFIERS_PAGE_NAME             => 'qualifiers.html';
 use constant TOURNAMENT_OPTION                => 'Tournament';
 use constant CASUAL_OPTION                    => 'Casual';
 
@@ -235,20 +235,26 @@ use constant SEARCH_DATA_FILENAME             => 'search_data.html';
 
 use constant CANADA_QUALIFIERS                =>
 [
-  'Tony Leah',
-  'Priya Fernando',
-  'Jason Ubeika'
+  'Adam Logan',
+  'Joshua Castellano',
+  'Matthew Tunnicliffe',
+  'Jackson Smylie',
+  'Joshua Sokol',
+  'Arie Sinke',
+  'Evan Berofsky'
 ];
 
 use constant US_QUALIFIERS                    =>
 [
-  'Ben Schoenbrun',
-  'Jason Keller',
+  'Dave Wiegand',
+  'Austin Shin',
   'Will Anderson',
   'Alec Sjoholm',
   'Jesse Day',
   "Matthew O'Connor",
-  'Randy Hersom'
+  'Jason Keller',
+  'Conrad Bassett-Bouchard',
+  'Ben Schoenbrun',
 ];
 
 use constant INACTIVE_PLAYERS =>
@@ -966,7 +972,7 @@ use constant HTML_NAV => <<NAV
         <a class="nav-link" href="/notable.html" >Notable</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/wespac_qualifiers.html" >2021 WESPAC Qualifiers</a>
+        <a class="nav-link" href="/qualifiers.html" >2024 Alchemist Cup Qualifiers</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="/typing.html">RandomRacer 2.0</a>

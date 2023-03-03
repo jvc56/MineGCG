@@ -707,9 +707,9 @@ sub update_qualifiers
   $nav
   <div style='text-align: center; vertical-align: middle; padding: 2%'>
     <h1>
-      2021 WESPAC Qualifiers
+      2024 Alchemist Cup Qualifiers
     </h1>
-    This page updates daily at midnight (EST).<br><a href='https://www.scrabbleplayers.org/w/2021_WESPA_Championship'>Learn more</a>
+    Unofficial list of the Alchemist Cup Qualifiers for North America. This page updates daily. Learn more in the About section.
   </div>
   $qualifierhtml
   $default_scripts
@@ -812,6 +812,7 @@ sub get_qualifier_data
   my $query =
   "SELECT $player_xt_id_column_name FROM $players_tn WHERE
    $player_sanitized_name_column_name = '$sanitized_qualifier'";
+  print($qualifier . "\n");
   my $qualifier_id = $dbh->selectrow_arrayref($query, {"RaiseError" => 1})->[0];
   my $results_call = Constants::PLAYER_RESULTS_API_CALL . $qualifier_id;
   my $filename     = $downloads_dir . "/qualifier_results_$qualifier_id.txt";
@@ -829,11 +830,11 @@ sub get_qualifier_data
   close $fh;
   $json = JSON::XS::decode_json($json);
   my @results = @{$json->{'results'}};
-  @results = grep {$_->{'date'} ge '2019-10-20' && $_->{'date'} le '2021-10-31' && $_->{'lexicon'}} @results;
+  @results = grep {$_->{'date'} ge '2022-12-30' && $_->{'date'} le '2024-06-30' && $_->{'lexicon'}} @results;
   @results = sort {$a->{'date'} cmp $b->{'date'} || $b->{'isearlybird'}} @results;
 
   my $num_results = scalar @results;
-  my $max = -1;
+  my $max = 0;
   foreach my $res (@results)
   {
     my $rating = $res->{'newrating'};
@@ -886,6 +887,19 @@ sub get_qualifier_html
 
   my $under_div = '';
   my $asterisk  = '';
+  my $qual_word = 'qualifying';
+  
+  if ($num_games < 50)
+  {
+    $asterisk = '<b><b>*</b></b>';
+    $under_div =
+    "
+      <div style='text-align: center'>
+        $asterisk$qualifier has played fewer than the minimum 50 games required to qualify. They must play at least 50 games after the start of the qualification period in order for their peak rating to begin counting for qualification standings.
+      </div>
+    ";
+    $qual_word = 'nonqualifying';
+  }
 
   my $diff = sprintf "%.2f", $max - $current_rating;
   my $diff_color = '#00cc00';
@@ -899,15 +913,31 @@ sub get_qualifier_html
   my $diff_html = "<b style='color: $diff_color'><b>$diff_sign$diff</b></b>";
 
 
-  my $content =
+  my $content = "";
+  if ($num_games == 0)
+  {
+  $content =
   "
   <div id='$id' class='collapse'>
     <div style='text-align: center; padding: 15px'>
-      $qualifier has a qualifying peak rating of <b><b>$max</b></b>, which is a difference of $diff_html compared to their current rating of <b><b>$current_rating</b></b>. They have played <b><b>$num_games</b></b> Collins games in <b><b>$num_tourneys</b></b> tournaments during the qualification period.</div>
+      $qualifier has not played any games during the qualification period.</div>
+    <div id='$chartid' style='height: 500px'></div>
+  </div>
+  ";
+  }  else 
+  {
+  $content =
+  "
+  <div id='$id' class='collapse'>
+    <div style='text-align: center; padding: 15px'>
+      $qualifier has a <b><b>$qual_word</b></b> peak rating of <b><b>$max</b></b>, which is a difference of $diff_html compared to their current rating of <b><b>$current_rating</b></b>. They have played <b><b>$num_games</b></b> Collins games in <b><b>$num_tourneys</b></b> tournaments during the qualification period.</div>
     $under_div
     <div id='$chartid' style='height: 500px'></div>
   </div>
   ";
+ 
+  }
+
   my $onclick =
   "
   onclick=\"make_qchart('$chartid', '$qualifier', $max, $chartdata)\"
@@ -2072,7 +2102,10 @@ sub update_leaderboard_legacy
       $i++
     }
     $current_mistake_list_ref = shift @all_mistakes;
-    @current_mistake_list = @{$current_mistake_list_ref}; 
+    if (length $current_mistake_list_ref)
+    {
+      @current_mistake_list = @{$current_mistake_list_ref};
+    }
   }
   @featured_mistakes = shuffle @featured_mistakes;
   return \@featured_mistakes;
@@ -3519,11 +3552,11 @@ misleading and introduce error (or more error anyway) into the leaderboards.
 Contact randomracerteam@gmail.com if you think a game was omitted by mistake.'
     ],
     [
-      '2021 WESPAC Qualifiers',
-'The 2021 WESPAC Qualifiers page is a list of the registered NASPA players for the 2021 WESPAC Championship.
-Registrants are listed by country and ordered by qualifying rating. Players\' qualifying ratings are
-in white and the difference between their qualifying rating and their current rating is in red or green.
-You can learn more <a href="http://www.scrabbleplayers.org/w/2021_WESPA_Championship">here</a>.
+      'Alchemist Cup Qualifiers',
+'The 2024 Alchemist Cup Qualifiers page is an unofficial list of the registered players for the 2024 Alchemist Cup.
+Registrants are listed by country and ordered by qualifying NASPA rating. Players\' qualifying ratings are
+in white and the difference between their qualifying rating and their current rating is in red or green. Only
+NASPA ratings are shown. You can learn more <a href="http://www.scrabble.org.au/ratings/selective/2024Alchemist.html">here</a>.
 '
     ],
     [
