@@ -242,6 +242,7 @@ use constant CANADA_QUALIFIERS                =>
   'Jackson Smylie',
   'Joshua Sokol',
   'Arie Sinke',
+  'Dean Saldanha',
   'Evan Berofsky'
 ];
 
@@ -256,6 +257,7 @@ use constant US_QUALIFIERS                    =>
   'Jason Keller',
   'Conrad Bassett-Bouchard',
   'Ben Schoenbrun',
+  'Rob Robinsky'
 ];
 
 use constant INACTIVE_PLAYERS =>
