@@ -237,27 +237,45 @@ use constant ALCHEMIST_CUP_MINIMUM_GAMES      => 50;
 use constant CANADA_QUALIFIERS                =>
 [
   'Adam Logan',
+  2142,
   'Joshua Castellano',
+  596,
   'Matthew Tunnicliffe',
+  2236,
   'Jackson Smylie',
+  1823,
   'Joshua Sokol',
+  2072,
   'Arie Sinke',
+  -1,
   'Dean Saldanha',
-  'Evan Berofsky'
+  707,
+  'Evan Berofsky',
+  2079
 ];
 
 use constant US_QUALIFIERS                    =>
 [
   'Dave Wiegand',
+  523,
   'Austin Shin',
+  2080,
   'Will Anderson',
+  2064,
   'Alec Sjoholm',
+  2316,
   'Jesse Day',
+  758,
   "Matthew O'Connor",
+  1791,
   'Jason Keller',
+  2081,
   'Conrad Bassett-Bouchard',
+  526,
   'Ben Schoenbrun',
+  1884,
   'Rob Robinsky'
+  214
 ];
 
 use constant INACTIVE_PLAYERS =>

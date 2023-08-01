@@ -675,16 +675,28 @@ sub update_qualifiers
     my @qualifier_data = ();
     my @sortdata = ();
 
-    for (my $j = 0; $j < scalar @{$qualifiers_list}; $j++)
+    for (my $j = 0; $j < scalar @{$qualifiers_list}; $j += 2)
     {
       my $qualifier = $qualifiers_list->[$j];
-      my ($qmax, $qresults, $qrating) = get_qualifier_data($qualifier);
-      my $sort_value = $qmax;
-      if ($qmax <= 0)
-      {
-        $sort_value = $qrating;
+      my $qualifier_wgpo_id = $qualifiers_list->[$j + 1];
+
+      my ($naspa_qmax, $naspa_qresults, $naspa_qrating) = get_naspa_qualifier_data($qualifier);
+      my ($wgpo_qmax, $wgpo_qresults, $wgpo_qrating) = get_wgpo_qualifier_data($qualifier_wgpo_id);
+
+      my $peak_qrating = $naspa_qmax;
+
+      if ($wgpo_qmax > $peak_qrating) {
+        $peak_qrating = $wgpo_qmax;
       }
-      push @qualifier_data, [$qualifier, $sort_value, $qmax, $qresults, $qrating];
+
+      if ($peak_qrating <= 0)
+      {
+        $peak_qrating = $naspa_qrating;
+        if ($wgpo_qrating > $peak_qrating) {
+          $peak_qrating = $wgpo_qrating;
+        }
+      }
+      push @qualifier_data, [$qualifier, $peak_qrating, $naspa_qmax, $naspa_qresults, $naspa_qrating, $wgpo_qmax, $wgpo_qresults, $wgpo_qrating];
     }
 
     @qualifier_data = sort {$b->[1] <=> $a->[1]} @qualifier_data;
@@ -692,10 +704,14 @@ sub update_qualifiers
     for (my $j = 0; $j < scalar @qualifier_data; $j++)
     {
       my $qname    = $qualifier_data[$j][0];
-      my $qmax     = $qualifier_data[$j][2];
-      my $qresults = $qualifier_data[$j][3];
-      my $qrating  = $qualifier_data[$j][4];
-      $qualifierhtml .= get_qualifier_html($qname, $qmax, $qresults, $qrating, $styles[$j % 2], $j + 1);
+      my $qrating    = $qualifier_data[$j][1];
+      my $naspa_qmax     = $qualifier_data[$j][2];
+      my $naspa_qresults = $qualifier_data[$j][3];
+      my $naspa_qrating  = $qualifier_data[$j][4];
+      my $wgpo_qmax     = $qualifier_data[$j][5];
+      my $wgpo_qresults = $qualifier_data[$j][6];
+      my $wgpo_qrating  = $qualifier_data[$j][7];
+      $qualifierhtml .= get_qualifier_html($qname, $qrating, $naspa_qmax, $naspa_qresults, $naspa_qrating, $wgpo_qmax, $wgpo_qresults, $wgpo_qrating, $styles[$j % 2], $j + 1);
     }
   }
 
@@ -714,7 +730,7 @@ sub update_qualifiers
     <h1>
       2024 Alchemist Cup Qualifiers
     </h1>
-    Unofficial list of the 2024 Alchemist Cup Qualifiers for North America. This page updates daily and only shows NASPA Collins tournaments and ratings. Learn more in the About section.
+    Unofficial list of the 2024 Alchemist Cup Qualifiers for North America. This page updates daily and only shows NASPA and WGPO Collins tournaments and ratings. Learn more in the About section.
   </div>
   $qualifierhtml
   $default_scripts
@@ -775,7 +791,7 @@ sub update_qualifiers
     //bullet.circle.fill        = am4core.color('blue');
     //bullet.circle.stroke      = am4core.color('blue');
     //bullet.circle.fillOpacity = 1;
-    bullet.tooltipText          = \"Tournament: {tourney}\\nEnd Rating: {rating}\\nDate: {date}\";
+    bullet.tooltipText          = \"Tournament: {tourney}\\nEnd Rating: {rating}\\nDate: {date}\\nNumber of Games: {number_of_games}\";
     
     //scrollbars
     chart.scrollbarX = new am4core.Scrollbar();
@@ -801,10 +817,10 @@ sub update_qualifiers
   close $qfh;
 }
 
-sub get_url_as_json
+sub get_url_as_text
 {
   my $url = shift;
-  my $json = '';
+  my $text = '';
   my $wget_flags = Constants::WGET_FLAGS;
   my $downloads_dir = Constants::DOWNLOADS_DIRECTORY_NAME;
   my $filename = $downloads_dir . "/url_content.json";
@@ -815,17 +831,22 @@ sub get_url_as_json
   open(my $fh, "<", $filename);
   while (<$fh>)
   {
-    $json .= $_;
+    $text .= $_;
   }
   close $fh; 
-  $json = JSON::XS::decode_json($json);
+  return $text;
+}
+
+sub get_url_as_json
+{
+  my $url = shift;
+  $json = JSON::XS::decode_json(get_url_as_text($url));
   return $json;
 }
 
-sub get_qualifier_data
+sub get_naspa_qualifier_data
 {
   my $qualifier = shift;
-  my $div_style = shift;
 
   my $wget_flags = Constants::WGET_FLAGS; 
   my $downloads_dir = Constants::DOWNLOADS_DIRECTORY_NAME;
@@ -839,7 +860,6 @@ sub get_qualifier_data
   my $query =
   "SELECT $player_xt_id_column_name FROM $players_tn WHERE
    $player_sanitized_name_column_name = '$sanitized_qualifier'";
-  print($qualifier . "\n");
   my $qualifier_id = $dbh->selectrow_arrayref($query, {"RaiseError" => 1})->[0];
   my $results_call = Constants::PLAYER_RESULTS_API_CALL . $qualifier_id;
   my $info_call =    Constants::PLAYER_INFO_API_CALL . $qualifier_id;
@@ -867,24 +887,67 @@ sub get_qualifier_data
   return ($peak_rating, \@results, $player_current_csw_rating);
 }
 
-sub get_qualifier_html
+sub get_wgpo_qualifier_data
 {
-  my $qualifier = shift;
-  my $max       = shift;
-  my $results   = shift;
-  my $current_rating    = shift;
-  my $div_style = shift;
-  my $rank      = shift;
+  my $qualifier_wgpo_id = shift;
 
-  my $minimum_games = Constants::ALCHEMIST_CUP_MINIMUM_GAMES;
+  # I don't have the patience to write something
+  # good, so I made the wgpo qualifier data
+  # match the xtables qualifier data so the
+  # get_qualifier_html can operate on it.
 
-  my $qualifier_name = $qualifier;
-  $qualifier_name =~ s/'//g;
-  my $sanitized_qualifier = Utils::sanitize($qualifier);
-  my $id = $sanitized_qualifier;
-  my $chartid = $id . '_chart';
+  my $wgpo_url = 'https://wordgameplayers.org/stats/player/' . $qualifier_wgpo_id;
+  my $webpage_as_text = get_url_as_text($wgpo_url);
+  $table_id    =~ //;
 
-  my @results = @{$results};
+  my @tourney_results = ();
+  my @tourney_rows = ($wegpage_as_text =~ /data-tournament-rating-type="Collins">(.*?)</tr>/g);
+  my $peak_reating = -1;
+  foreach my $tourney_row (@tourney_rows)
+  {
+    $tourney_row =~ /
+    <td>.*?</td>
+    <td>(d+)\/(d+)\/(d+)</td>\
+    <td>(.*?)</td>
+    <td>(d+)</td>
+    <td>(d+)</td>
+    <td>(d+)</td>
+    <td>.*?</td>
+    <td>.*?</td>
+    <td>+d</td>
+    <td>(+d)</td>/xms;
+    my $day = $1;
+    my $month = $2;
+    my $year = $3;
+    my $tourney_name = $4;
+    my $wins = $5;
+    my $losses = $6;
+    my $ties = $7;
+    my $new_rating = $8;
+    if ($new_rating > $peak_rating) {
+      $peak_rating = $new_rating;
+    }
+    push @tourney_results, {
+      newrating => $new_rating,
+      w => $wins,
+      l => $losses,
+      t => $ties,
+      date => "$year-$month-$day",
+      tourneyname => $tourney_name
+    };
+  }
+
+  @tourney_results = grep {$_->{'date'} ge '2022-12-30' && $_->{'date'} le '2024-06-30'} @tourney_results;
+  @tourney_results = sort {$a->{'date'} cmp $b->{'date'} || $b->{'isearlybird'}} @tourney_results;
+
+  my $wgpo_current_rating = $tourney_results[(scalar @tourney_results)-1]->{newrating};
+  return $peak_reating, \@tourney_results, $wgpo_current_rating;
+}
+
+sub get_chartdata_from_results
+{
+  my $results_ref = shift;
+  my @results = @{$results_ref};
   my $num_games = 0;
   my $num_tourneys = scalar @results;
   my $chartdata = '[';
@@ -895,54 +958,46 @@ sub get_qualifier_html
     my $rating  = $item->{'newrating'};
     my $date    = $item->{'date'};
     my $tourney = $item->{'tourneyname'};
-    $num_games += $item->{'w'} + $item->{'l'} + $item->{'t'};
+    my $number_of_games_this_tourney = $item->{'w'} + $item->{'l'} + $item->{'t'};
+    $num_games += $number_of_games_this_tourney;
     $sum += $rating;
-    $chartdata .= "{'rating': $rating, 'date': '$date', 'tourney': '$tourney'},";
+    $chartdata .= "{'rating': $rating, 'date': '$date', 'tourney': '$tourney', 'number_of_games': '$number_of_games_this_tourney'},";
   }
  
-
   chop($chartdata);
   $chartdata .= ']';
+  return $chartdata, $num_games;
+}
 
-  my $under_div = '';
-  my $asterisk  = '';
-  my $qual_word = 'qualifying';
-  
+sub get_chart_content
+{
+  my $org_name = shift;
+  my $org_current_rating = shift;
+  my $org_max_rating = shift;
+  my $org_num_games = shift;
+  my $org_chartid = shift;
 
-  my $diff = sprintf "%.2f", $max - $current_rating;
-  my $diff_color = '#00cc00';
-  my $diff_sign  = '+';
-  if ($diff > 0)
-  {
-    $diff_color = '#e70d18'; 
-    $diff_sign  = '-';
-  }
-  $diff = abs($diff);
-  my $diff_html = "<b style='color: $diff_color'><b>$diff_sign$diff</b></b>";
+  my $minimum_games = Constants::ALCHEMIST_CUP_MINIMUM_GAMES;
 
+  my $content = "";
   my $chart_div = "<div id='$chartid' style='height: 500px'></div>"; 
   if ($num_games == 0)
   {
     $chart_div = "";
   }
-
-
-  my $display_rating = $max;
-  my $content = "";
-  if ($num_games < 50)
+  if ($org_num_games < 50)
   {
-    $diff_html = "";
-    $display_rating = $current_rating;
-    $asterisk = '<b><b>*</b></b>';
     $content =
     "
     <div id='$id' class='collapse'>
       <div style='text-align: center; padding: 15px'>
-        $qualifier_name has a current rating of <b><b>$current_rating</b></b>. They have played <b><b>$num_games</b></b> Collins games in <b><b>$num_tourneys</b></b> tournament(s) during the qualification period.</div>
-      <div style='text-align: center'>
-        $asterisk$qualifier_name has played fewer than the minimum $minimum_games games required to qualify. They must play at least $minimum_games games after the start of the qualification period in order for their peak rating to begin counting for qualification standings.
+        $qualifier_name has a current $org_name rating of <b><b>$org_current_rating</b></b>. They have played <b><b>$num_games</b></b> $org_name Collins games in <b><b>$num_tourneys</b></b> tournament(s) during the qualification period.
       </div>
-      $chart_div
+      <div style='text-align: center'>
+        $asterisk$qualifier_name has played fewer than the minimum $minimum_games games in $org_name required for a qualifying rating in this organization. They must play at least $minimum_games $org_name games after the start of the qualification period in order for their peak $org_name rating to begin counting for qualification standings.
+      </div>
+      $naspa_chart_div
+      $wgpo_chart_div
     </div>
     ";
  
@@ -953,16 +1008,78 @@ sub get_qualifier_html
   "
   <div id='$id' class='collapse'>
     <div style='text-align: center; padding: 15px'>
-      $qualifier_name has a qualifying peak rating of <b><b>$max</b></b>, which is a difference of $diff_html compared to their current rating of <b><b>$current_rating</b></b>. They have played <b><b>$num_games</b></b> Collins games in <b><b>$num_tourneys</b></b> tournament(s) during the qualification period.</div>
+      $qualifier_name has a qualifying peak $org_name rating of <b><b>$org_max_rating</b></b>, which is a difference of $diff_html compared to their current rating of <b><b>$org_current_rating</b></b>. They have played <b><b>$org_num_games</b></b> $org_name Collins games in <b><b>$num_tourneys</b></b> tournament(s) during the qualification period.
+    </div>
     $chart_div
   </div>
   ";
  
   }
+  return $content;
 
+}
+
+sub get_diff_html
+{
+  my $max_rating = shift;
+  my $current_rating = shift;
+  my $org_num_games = shift;
+
+  my $minimum_games = Constants::ALCHEMIST_CUP_MINIMUM_GAMES;
+
+  if ($org_num_games < $minimum_games)
+  {
+    return "";
+  }
+
+  my $diff = sprintf "%.2f", $max_rating - $current_rating;
+  my $diff_color = '#00cc00';
+  my $diff_sign  = '+';
+  if ($diff > 0)
+  {
+    $diff_color = '#e70d18'; 
+    $diff_sign  = '-';
+  }
+  $diff = abs($diff);
+  return "<b style='color: $diff_color'><b>$diff_sign$diff</b></b>";
+}
+
+sub get_qualifier_html
+{
+  my $qualifier = shift;
+  my $peak_or_current      = shift;
+  my $naspa_max       = shift;
+  my $naspa_results   = shift;
+  my $naspa_current_rating = shift;
+  my $wgpo_max       = shift;
+  my $wgpo_results   = shift;
+  my $wgpo_current_rating = shift;
+  my $div_style = shift;
+  my $rank      = shift;
+
+  my $qualifier_name = $qualifier;
+  $qualifier_name =~ s/'//g;
+  my $sanitized_qualifier = Utils::sanitize($qualifier);
+  my $id = $sanitized_qualifier;
+
+  my $naspa_chartid = $id . '_naspa_chart';
+  my $naspa_chartdata, $naspa_num_games = get_chartdata_from_results($naspa_results);
+
+  my $wgpo_chartid = $id . '_wgpo_chart';
+  my $wgpo_chartdata, $wgpo_num_games = get_chartdata_from_results($wgpo_results);
+
+  my $wgpo_chart_content = get_chart_content("WGPO", $wgpo_current_rating, $wgpo_max, $wgpo_num_games, $wgpo_chartid);
+  my $naspa_chart_content = get_chart_content("NASPA", $naspa_current_rating, $naspa_max, $naspa_num_games, $naspa_chartid);
+
+  my $asterisk = '';
+  if ($wgpo_num_games < $minimum_games && $naspa_num_games < $minimum_games)
+  {
+    $asterisk = '<b><b>*</b></b>';
+  }
   my $onclick =
   "
-  onclick=\"make_qchart('$chartid', '$qualifier_name', $max, $chartdata)\"
+  onclick=\"make_qchart('$naspa_chartid', '$qualifier_name', $naspa_max, $naspa_chartdata)\"
+  onclick=\"make_qchart('$wgpo_chartid', '$qualifier_name', $wgpo_max, $wgpo_chartdata)\"
   ";
   my $expander = "<button type='button' id='button_$id'  class='btn btn-sm' data-toggle='collapse' data-target='#$id' $onclick>+</button>";
   my $link = "<a href='/cache/$sanitized_qualifier.html'>$qualifier_name</a>";
@@ -970,11 +1087,11 @@ sub get_qualifier_html
   "
   <table style='width: 100%'>
    <tbody>
-    <tr><td style='width: 1px; font-size: inherit'>$expander</td><td style='width: 300px; font-size: inherit '>$rank . $link$asterisk</td><td style='font-size: inherit'><b><b>$display_rating</b></b>&nbsp;&nbsp;&nbsp;$diff_html</td></tr>
+    <tr><td style='width: 1px; font-size: inherit'>$expander</td><td style='width: 300px; font-size: inherit '>$rank . $link$asterisk</td><td style='font-size: inherit'><b><b>$peak_or_current</b></b></td></tr>
    </tbody>
   </table>
   ";
-  return Utils::make_content_item('', $title, $content, $div_style);
+  return Utils::make_content_item('', $title, $wgpo_chart_content . $naspa_chart_content, $div_style);
 }
 
 sub update_search_data
@@ -3576,10 +3693,11 @@ Contact randomracerteam@gmail.com if you think a game was omitted by mistake.'
     [
       'Alchemist Cup Qualifiers',
 'The 2024 Alchemist Cup Qualifiers page is an unofficial list of the registered players for the 2024 Alchemist Cup.
-Registrants are listed by country and ordered by qualifying NASPA rating. Players\' qualifying ratings are
-in white and the difference between their qualifying rating and their current rating is in red or green. If the player
-has not played the minimum 50 games to qualify, only their current rating will be shown next to their name. Only
-NASPA ratings are shown. You can learn more <a href="http://www.scrabble.org.au/ratings/selective/2024Alchemist.html">here</a>.
+Registrants are listed by country and ordered by qualifying rating. Players\' qualifying ratings are
+in white and the difference between their qualifying rating and their current rating is in red or green. Currently,
+only NASPA and WGPO ratings are used to calculate the qualifying rating. If the player has not played the minimum 50
+games to qualify, only their current rating will be shown next to their name.
+You can learn more <a href="https://docs.google.com/document/d/1gk8_85P3VQy8TJj4-EW29Lusk0XFFqT0OTI-lklza8s">here</a>.
 '
     ],
     [

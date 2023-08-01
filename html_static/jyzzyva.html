@@ -651,7 +651,7 @@
         string += [question, answer, correct].join(';') + "\n";
       }
 
-      var filename = quiz_length + '.jqz';
+      var filename = quiz_length + '_' + (current_jqz_object['current_question_index'] + 1) + '.jqz';
       var csvFile;
       var downloadLink;
 
