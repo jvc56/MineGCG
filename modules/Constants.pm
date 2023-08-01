@@ -274,7 +274,7 @@ use constant US_QUALIFIERS                    =>
   526,
   'Ben Schoenbrun',
   1884,
-  'Rob Robinsky'
+  'Rob Robinsky',
   214
 ];
 
