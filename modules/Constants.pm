@@ -11,7 +11,7 @@ use constant RR_USERNAME                      => 'ubuntu';
 
 use constant SSH_ARGS                         => ' -i /home/jvc/randomracer-keypair1.pem ';
 
-use constant VM_SSH_ARGS                      => ' -i /home/ubuntu/vm.pem -p 2222 ';
+use constant VM_SSH_ARGS                      => ' -i /home/ubuntu/vmh1.pem -p2223  ';
 use constant VM_IP_ADDRESS                    => 'ocs.wgvc.com';
 use constant VM_USERNAME                      => 'jvc';
 
