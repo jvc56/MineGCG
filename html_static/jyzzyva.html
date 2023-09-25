@@ -243,9 +243,9 @@
     </div>
 
     <div id='buttons'>
-      <table style='width: 100%'>
+      <table >
         <tr >
-          <td style='width: 50%; text-align: center'  >
+          <td style='text-align: center'  >
             <button id="download_missed_jqz"
                     disabled
                     class='btn btn-sm waves-effect waves-light'
@@ -253,16 +253,16 @@
                     onclick="write_missed_jqz_object_to_file()" >Quiz Missed
             </button>
           </td>
-          <td  style='width: 25%; text-align: center'  >
+          <td  style='text-align: center'  >
             <input type='button'
                    disabled
                    id='switch_button'
                    class='btn btn-sm waves-effect waves-light'
                    style='color: white'
-                   value='Switch Questions and Answers'
-                   onclick='switch_questions_and_answers()'/>
+                   value='Previous'
+                   onclick='show_previous_question()'/>
           </td>
-         <td  style='width: 25%; text-align: center'  >
+         <td  style='text-align: center'  >
             <input type='button'
                    disabled
                    id='correct_button'
@@ -271,11 +271,19 @@
                    value='Mark as Correct (M)'
                    onclick='toggle_correctness()'/>
           </td>
-         <td  style='width: 25%; text-align: center'  >
-            <input type='checkbox'
-                   id='shuffle_at_start'
-                   value='Shuffle At Start'/>
-          </td>
+         </tr>
+         <tr>
+           <td  style='text-align: center'  >
+             <input type='number'
+                    id='answer_font_size'
+                    style='width:3em'
+                    value=40 />
+           </td>
+           <td  style='text-align: center'  >
+              <input type='checkbox'
+                     id='shuffle_at_start'
+                     value='Shuffle At Start'/>
+           </td>
         </tr>
       </table>
     </div>
@@ -285,7 +293,7 @@
         <tr>
           <td style='width: 50%; text-align: center'>
             <div style='width: 85%; margin: auto' class="input-group">
-              <div class="custom-file">
+              <div class="custom-file" id="upload_jqz_div">
                 <input type="file" class="custom-file-input" id="upload_jqz"
                   aria-describedby="inputGroupFileAddon01">
                 <label class="custom-file-label" for="upload_jqz">Upload Quiz</label>
@@ -312,16 +320,6 @@
        </tr>
       </table>
     </div>
-  <footer>
-  <!-- Copyright -->
-  <div class="footer-copyright text-center py-3" style='font-size: 12px'>© 2019 Copyright
-    <a href="/">RandomRacer.com</a>
-  </div>
-  <!-- Copyright -->
-</footer>
-
-
-
   </div>
   <script>
     var current_jqz_object = {};
@@ -366,7 +364,24 @@
       current_jqz_object['current_question_index']++;
       total_quizzed++;
     }
-
+    function undo_last_question() {
+      if (current_jqz_object['current_question_index'] > 0) {
+        current_jqz_object['current_question_index']--;
+    
+        var index = current_jqz_object['current_question_index'];
+        var int_correct = current_jqz_object['correct'][index];
+    
+        current_jqz_object['number_correct'] -= int_correct;
+    
+        if (!int_correct) {
+          next_jqz_object['questions'].pop();
+          next_jqz_object['answers'].pop();
+          next_jqz_object['correct'].pop();
+        }
+    
+        total_quizzed--;
+      }
+    }
     function reset_jqz_object(jqz_object)
     {
       jqz_object['questions']              = [];
@@ -381,7 +396,8 @@
     function show_answer()
     {
       var current_answer = current_jqz_object['answers'][current_jqz_object['current_question_index']];
-      document.getElementById('answer').innerHTML          = '<h1>' + current_answer + '</h1>';
+      var font_size = document.getElementById('answer_font_size').value;
+      document.getElementById('answer').innerHTML          = '<h1 style="font-size:' + font_size + 'px;">' + current_answer + '</h1>';
       document.getElementById('answer').style.borderColor  = incorrect_color;
       document.getElementById('show_or_next_button').value = 'Next (Return)';
       document.getElementById('correct_button').disabled   = false;
@@ -408,6 +424,19 @@
         alert('Quiz Completed!');
       }
     }
+    function show_previous_question()
+    {
+      if (!jqz_is_done() && current_jqz_object['current_question_index'] > 0)
+      {
+        undo_last_question(); 
+        show_new_question();
+      }
+      else
+      {
+        alert('No Previous Question');
+      }
+    }
+
 
     function show_or_next()
     {
@@ -596,6 +625,7 @@
           shuffle_jqz();
         }
         show_new_question();
+        document.getElementById('upload_jqz_div').style.display = "none";
       };
       reader.readAsText(files[0]);
     }
