@@ -60,7 +60,6 @@ sub retrieve
     my $round            = $annotated_game_data->[6];
     my $lexicon          = $annotated_game_data->[7];
     my $upload_date      = $annotated_game_data->[8];
-    my $date             = $annotated_game_data->[10];
 
     if (!$lexicon)
     {
@@ -84,6 +83,7 @@ sub retrieve
       if (!$name)
       {
         print "Name undefined: " . $annotated_game_data->[0] . "\n";
+        next;
       }
       if ($id && !$updated_players{$id})
       {

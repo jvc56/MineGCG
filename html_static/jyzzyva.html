@@ -253,15 +253,6 @@
                     onclick="write_missed_jqz_object_to_file()" >Quiz Missed
             </button>
           </td>
-          <td  style='text-align: center'  >
-            <input type='button'
-                   disabled
-                   id='switch_button'
-                   class='btn btn-sm waves-effect waves-light'
-                   style='color: white'
-                   value='Previous'
-                   onclick='show_previous_question()'/>
-          </td>
          <td  style='text-align: center'  >
             <input type='button'
                    disabled
@@ -271,6 +262,16 @@
                    value='Mark as Correct (M)'
                    onclick='toggle_correctness()'/>
           </td>
+          <td  style='text-align: center'  >
+            <input type='button'
+                   disabled
+                   id='switch_button'
+                   class='btn btn-sm waves-effect waves-light'
+                   style='color: white'
+                   value='Previous'
+                   onclick='show_previous_question()'/>
+          </td>
+
          </tr>
          <tr>
            <td  style='text-align: center'  >
@@ -291,15 +292,6 @@
     <div>
       <table style='width: 100%'>
         <tr>
-          <td style='width: 50%; text-align: center'>
-            <div style='width: 85%; margin: auto' class="input-group">
-              <div class="custom-file" id="upload_jqz_div">
-                <input type="file" class="custom-file-input" id="upload_jqz"
-                  aria-describedby="inputGroupFileAddon01">
-                <label class="custom-file-label" for="upload_jqz">Upload Quiz</label>
-              </div>
-            </div>
-          </td>
           <td style='width: 50%; text-align: center'  >
             <button id="download_jqz"
                     disabled
@@ -317,6 +309,16 @@
                    onclick='show_or_next()'
                    id='show_or_next_button'/>
           </td>
+          <td style='width: 50%; text-align: center'>
+            <div style='width: 85%; margin: auto' class="input-group">
+              <div class="custom-file" id="upload_jqz_div">
+                <input type="file" class="custom-file-input" id="upload_jqz"
+                  aria-describedby="inputGroupFileAddon01">
+                <label class="custom-file-label" for="upload_jqz">Upload Quiz</label>
+              </div>
+            </div>
+          </td>
+
        </tr>
       </table>
     </div>
@@ -723,6 +725,10 @@
         else if (event.keyCode == 109)
         {
           toggle_correctness();
+        }
+        else if (event.keyCode == 118)
+        {
+          show_previous_question();
         }
       }
     )

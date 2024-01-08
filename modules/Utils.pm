@@ -325,7 +325,7 @@ sub get_all_annotated_game_info
   {
     chomp $_;
     my @data = split /,/, $_;
-    if (scalar @data > 9)
+    if (scalar @data > 10)
     {
       my $crap_data = $_;
       @data = ();
@@ -350,7 +350,7 @@ sub get_all_annotated_game_info
 	}
 	push @data, $item;
       }
-      if (scalar @data != 9)
+      if (scalar @data != 10)
       {
         die "Too many elements: $_\n" . Dumper(\@data);
       }
@@ -837,7 +837,8 @@ sub get_tournament_date
       return $date;
     }
   }
-  die "Date not found in $filename for id : $id\n";
+  print "Date not found in $filename for id : $id\n";
+  return "1000-01-01";
 }
 
 sub get_player_info
