@@ -148,7 +148,10 @@ sub get_lexicon_ref
   {
     $lexicon_ref = CSW21::CSW21_LEXICON;
   }
-
+  elsif ($lexicon eq 'NWL23')
+  {
+    $lexicon_ref = NWL23::NWL23_LEXICON;
+  }
 
   return $lexicon_ref;
 }
