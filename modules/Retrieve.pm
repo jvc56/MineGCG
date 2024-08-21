@@ -11,6 +11,7 @@ use Constants;
 use Utils;
 use Update;
 
+use NWL23;
 use CSW21;
 use NWL20;
 use CSW07;
