@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en" style='height: 100%'>
+  <head>
+    <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>RandomRacer</title>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+  <!-- Bootstrap core CSS -->
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Material Design Bootstrap -->
+  <link href="/css/mdb.min.css" rel="stylesheet">
+  <!-- Your custom styles (optional) -->
+
+  <!-- Datepicker Syles -->
+  <link href="/datepickercss/bootstrap-datepicker3.css" rel="stylesheet">
+  <link href="/datepickercss/bootstrap-datepicker3.min.css" rel="stylesheet">
+
+  <link href="/datepickercss/bootstrap-datepicker3.standalone.css" rel="stylesheet">
+  <link href="/datepickercss/bootstrap-datepicker3.standalone.min.css" rel="stylesheet">
+
+  <link href="/datepickercss/bootstrap-datepicker.css" rel="stylesheet">
+  <link href="/datepickercss/bootstrap-datepicker.min.css" rel="stylesheet">
+
+  <link href="/datepickercss/bootstrap-datepicker.standalone.css" rel="stylesheet">
+  <link href="/datepickercss/bootstrap-datepicker.standalone.min.css" rel="stylesheet">
+
+  <link href="/css/style.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
+
+  
+  <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #1e1e1e; /* Dark background for body */
+            color: #dcdcdc; /* Light text color */
+        }
+        h1 {
+            color: #f5f5f5; /* Light color for headings */
+        }
+        .keyword {
+            color: #c586c0; /* Purple color for keywords */
+            font-weight: bold;
+        }
+        .type {
+            color: #4ec9b0; /* Teal color for types */
+        }
+        code {
+            background-color: #2d2d2d; /* Dark background for code block */
+            padding: 10px;
+            display: block;
+            white-space: pre-wrap;
+            font-family: monospace;
+            border: 1px solid #444; /* Slightly lighter border */
+            border-radius: 5px;
+            max-width: 800px;
+            margin-top: 20px;
+            color: #dcdcdc; /* Light text color */
+        }
+  </style>
+
+
+
+  </head>
+  <body>
+
+  <div style='display: flex; flex-flow: column; height: 100%'>
+
+  
+<!--Navbar-->
+<nav class="navbar navbar-expand-lg navbar-dark elegant-color-dark">
+
+  <!-- Navbar brand -->
+  <a class="navbar-brand" href="/" style="font-family: 'VT323', monospace;" >RandomRacer</a>
+
+  <!-- Collapse button -->
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
+    aria-controls="basicExampleNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+</nav>
+<!--/.Navbar-->
+
+
+
+
+    <div style='text-align: center; vertical-align: middle; padding: 2%'>
+      <h1 id='question' style='font-size: 3rem'>
+        Code Quiz.
+      </h1>
+    </div>
+  
+    <div id='answer_div'
+         style='width: 98%;
+                font-size: 3rem;
+                margin: auto;
+                border-radius: 10px;
+                text-align: center;
+                flex : 1 1 auto;
+                border: 10px solid #343a40'>
+    <pre style="text-align: left; background-color: #2d2d2d; padding: 10px; border-radius: 5px; white-space: pre-wrap; word-wrap: break-word;">
+        <code id='answer'>
+        </code>
+    </pre>
+    </div>
+  
+    <div style='text-align: center; padding: 10px'>
+      <b id='info'></b>
+    </div>
+
+    <div id='buttons'>
+      <table >
+        <tr >
+          <td style='text-align: center'  >
+            <button id="download_missed_cqz"
+                    disabled
+                    class='btn btn-sm waves-effect waves-light'
+                    style='color: white'
+                    onclick="write_missed_cqz_object_to_file()" >Quiz Missed
+            </button>
+          </td>
+         <td  style='text-align: center'  >
+            <input type='button'
+                   disabled
+                   id='correct_button'
+                   class='btn btn-sm waves-effect waves-light'
+                   style='color: white'
+                   value='Mark as Correct (M)'
+                   onclick='toggle_correctness()'/>
+          </td>
+          <td  style='text-align: center'  >
+            <input type='button'
+                   disabled
+                   id='switch_button'
+                   class='btn btn-sm waves-effect waves-light'
+                   style='color: white'
+                   value='Previous'
+                   onclick='show_previous_question()'/>
+          </td>
+
+         </tr>
+         <tr>
+           <td  style='text-align: center'  >
+             <input type='number'
+                    id='answer_font_size'
+                    style='width:3em'
+                    value=40 />
+           </td>
+           <td  style='text-align: center'  >
+              <input type='checkbox'
+                     id='shuffle_at_start'
+                     value='Shuffle At Start'/>
+           </td>
+        </tr>
+      </table>
+    </div>
+
+    <div>
+      <table style='width: 100%'>
+        <tr>
+          <td style='width: 50%; text-align: center'  >
+            <button id="download_cqz"
+                    disabled
+                    class='btn btn-sm waves-effect waves-light'
+                    style='color: white'
+                    onclick="write_cqz_object_to_file()" >Save
+            </button>
+          </td>
+          <td style='width: 25%; text-align: center'>
+            <input type='button'
+                   disabled
+                   class='btn btn-sm waves-effect waves-light'
+                   style='color: white'
+                   value='Show Answer (Enter)'
+                   onclick='show_or_next()'
+                   id='show_or_next_button'/>
+          </td>
+          <td style='width: 50%; text-align: center'>
+            <div style='width: 85%; margin: auto' class="input-group">
+              <div class="custom-file" id="upload_cqz_div">
+                <input type="file" class="custom-file-input" id="upload_cqz"
+                  aria-describedby="inputGroupFileAddon01">
+                <label class="custom-file-label" for="upload_cqz">Upload Quiz</label>
+              </div>
+            </div>
+          </td>
+
+       </tr>
+      </table>
+    </div>
+  </div>
+  <script>
+    var current_cqz_object = {};
+    var next_cqz_object   = {};
+
+    var incorrect_color = 'cyan';
+    var correct_color   = '#343a40';
+    var neutral_color   = '#343a40';
+    var total_quizzed   = 0;
+
+    var start_index = 0;
+
+    function cqz_at_end()
+    {
+      return current_cqz_object['current_question_index'] ==
+               current_cqz_object['questions'].length;
+    }
+
+    function cqz_is_done()
+    {
+      return cqz_at_end() && next_cqz_object['questions'].length == 0;
+    }
+
+    function process_last_question()
+    {
+      var index = current_cqz_object['current_question_index'];
+      var question = current_cqz_object['questions'][index];
+      var answer = current_cqz_object['answers'][index];
+
+      var int_correct = parseInt(current_cqz_object['is_correct'], 10)
+
+      current_cqz_object['correct'][index]  = int_correct;
+      current_cqz_object['number_correct'] += int_correct;
+
+      if (!current_cqz_object['is_correct'])
+      {
+        next_cqz_object['questions'].push(question);
+        next_cqz_object['answers'].push(answer);
+        next_cqz_object['correct'].push(current_cqz_object['correct'][index]);
+      }
+
+      current_cqz_object['current_question_index']++;
+      total_quizzed++;
+    }
+    function undo_last_question() {
+      if (current_cqz_object['current_question_index'] > 0) {
+        current_cqz_object['current_question_index']--;
+    
+        var index = current_cqz_object['current_question_index'];
+        var int_correct = current_cqz_object['correct'][index];
+    
+        current_cqz_object['number_correct'] -= int_correct;
+    
+        if (!int_correct) {
+          next_cqz_object['questions'].pop();
+          next_cqz_object['answers'].pop();
+          next_cqz_object['correct'].pop();
+        }
+    
+        total_quizzed--;
+      }
+    }
+    function reset_cqz_object(cqz_object)
+    {
+      cqz_object['questions']              = [];
+      cqz_object['answers']                = [];
+      cqz_object['correct']                = [];
+      cqz_object['number_correct']         = 0;
+      cqz_object['current_question_index'] = 0;
+      cqz_object['answer_is_shown']        = 0;
+      cqz_object['is_correct']             = 0;
+    }
+
+    function show_answer()
+    {
+      var current_answer = current_cqz_object['answers'][current_cqz_object['current_question_index']];
+      var font_size = document.getElementById('answer_font_size').value;
+      document.getElementById('answer').innerHTML          = '<h1 style="font-size:' + font_size + 'px;">' + current_answer + '</h1>';
+      document.getElementById('answer_div').style.borderColor  = incorrect_color;
+      document.getElementById('show_or_next_button').value = 'Next (Return)';
+      document.getElementById('correct_button').disabled   = false;
+      current_cqz_object['answer_is_shown'] = 1;
+    }
+
+    function show_new_question()
+    {
+      if (!cqz_is_done())
+      {
+        var question = current_cqz_object['questions'][current_cqz_object['current_question_index']];
+        document.getElementById('correct_button').value      = 'Mark as Correct (M)';
+        document.getElementById('question').innerHTML = question;
+        document.getElementById('show_or_next_button').value = 'Show Answer (Return)';
+        document.getElementById('answer_div').style.borderColor = neutral_color;
+        document.getElementById('answer').innerHTML   = '';
+        current_cqz_object['is_correct']      = 0;
+        current_cqz_object['answer_is_shown'] = 0;
+        document.getElementById('correct_button').disabled = true;
+        update_info();
+      }
+      else
+      {
+        alert('Quiz Completed!');
+      }
+    }
+    function show_previous_question()
+    {
+      if (!cqz_is_done() && current_cqz_object['current_question_index'] > 0)
+      {
+        undo_last_question(); 
+        show_new_question();
+      }
+      else
+      {
+        alert('No Previous Question');
+      }
+    }
+
+
+    function show_or_next()
+    {
+      var done = cqz_is_done();
+      if (!done || (done && !current_cqz_object['is_correct']))
+      {
+        if (!current_cqz_object['answer_is_shown'])
+        {
+          show_answer();
+        }
+        else 
+        {
+          process_last_question();
+          start_new_quiz_with_incorrect_answers();
+          show_new_question();
+        }
+      }
+      else
+      {
+        alert('Quiz Completed!');
+      }
+    }
+
+    function shuffle(a)
+    {
+      var j, x, i;
+      for (i = a.length - 1; i > 0; i--)
+      {
+        j = Math.floor(Math.random() * (i + 1));
+        x = a[i];
+        a[i] = a[j];
+        a[j] = x;
+      }
+      return a;
+    }
+
+    function shuffle_cqz()
+    {
+      var shuffle_indexes = [];
+      var quiz_length = current_cqz_object['questions'].length;
+      var questions   = [];
+      var answers     = [];
+      var correct     = [];
+
+      for (var i = 0; i < quiz_length; i++)
+      {
+        shuffle_indexes.push(i);
+        questions.push(current_cqz_object['questions'][i]);
+        answers.push(current_cqz_object['answers'][i]);
+        correct.push(current_cqz_object['correct'][i]);
+      }
+
+      shuffle_indexes = shuffle(shuffle_indexes);
+ 
+      for (var i = 0; i < quiz_length; i++)
+      {
+        current_cqz_object['questions'][i] = questions[shuffle_indexes[i]];
+        current_cqz_object['answers'][i]   = answers[shuffle_indexes[i]];
+        current_cqz_object['correct'][i]   = correct[shuffle_indexes[i]];
+      }     
+    }
+
+    function start_new_quiz_with_incorrect_answers()
+    {
+      start_index = 0;
+      var at_end = cqz_at_end();
+      var done   = cqz_is_done();
+      if (at_end && !done)
+      {
+        current_cqz_object = next_cqz_object;
+        next_cqz_object = {};
+        reset_cqz_object(next_cqz_object);
+        if (document.getElementById('shuffle_at_start').checked)
+        {
+          shuffle_cqz();
+        }
+      }
+    }
+
+    function switch_questions_and_answers()
+    {
+      var quiz_length = current_cqz_object['questions'].length;
+      for (var i = 0; i < quiz_length; i++)
+      {
+        var question    = current_cqz_object['questions'][i];
+        var answer      = current_cqz_object['answers'][i];
+        current_cqz_object['questions'][i] = answer;
+        current_cqz_object['answers'][i]   = question;
+      }
+
+      var question = current_cqz_object['questions'][current_cqz_object['current_question_index']];
+      document.getElementById('question').innerHTML = question;
+
+      if (current_cqz_object['answer_is_shown'])
+      {
+        var current_answer = current_cqz_object['answers'][current_cqz_object['current_question_index']];
+        document.getElementById('answer').innerHTML          = '<h1>' + current_answer + '</h1>';
+      }
+    }
+
+    function toggle_correctness()
+    {
+      if (current_cqz_object['answer_is_shown'] && !cqz_is_done())
+      {
+        current_cqz_object['is_correct'] = 1 - current_cqz_object['is_correct'];
+        if (current_cqz_object['is_correct'])
+        {
+          document.getElementById('answer_div').style.borderColor = correct_color;
+          document.getElementById('correct_button').value = 'Mark as Incorrect (M)';
+        }
+        else
+        {
+          document.getElementById('answer_div').style.borderColor = incorrect_color;
+          document.getElementById('correct_button').value = 'Mark as Correct (M)';
+        }
+      }
+    }
+
+    function update_info()
+    {
+      var current_question_number = current_cqz_object['current_question_index'];
+      var total_questions = current_cqz_object['questions'].length;
+      var number_correct  = current_cqz_object['number_correct'];
+      document.getElementById('info').innerHTML =
+      'Question: ' + (current_question_number + 1) + '/' + total_questions +
+       ', Correct: ' + number_correct + '/' + current_question_number +
+       ', Total: ' + total_quizzed;
+    }
+
+
+        function formatCppCode(code) {
+            // Escape HTML special characters
+            const escapeHtml = (text) => {
+                const map = {
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '&': '&amp;',
+                    '"': '&quot;',
+                    "'": '&#39;',
+                };
+                return text.replace(/[<>&"']/g, (char) => map[char]);
+            };
+
+            // Perform basic syntax highlighting for C++
+            const highlightSyntax = (text) => {
+                const keywords = /\b(int|float|double|char|void|if|else|for|while|return|class|public|private|protected|namespace|include|using|std|string|const|bool|true|false|new|delete)\b/g;
+                const types = /\b([A-Z][a-zA-Z0-9_]+)\b/g;
+                
+                return text
+                    .replace(keywords, '<span class="keyword">$1</span>')
+                    .replace(types, '<span class="type">$1</span>');
+            };
+
+            // Function to auto-indent, format code, and handle semicolons
+            const autoIndent = (code) => {
+                let lines = code.split('\n'); // Split code into lines
+                let indentLevel = 0;
+                const indentSize = 4; // Set how many spaces to use for each indent level
+                let formattedLines = [];
+                let insideIfBlock = false;
+
+                // Process each line
+                lines.forEach(line => {
+                    // Split line into multiple lines at semicolons
+                    let splitLines = line.split(';').map(s => s.trim()).filter(s => s.length > 0);
+                    splitLines.forEach((part, index) => {
+                        if (part.endsWith('{')) {
+                            // Add newline after opening brace if it's a block start
+                            if (/^(if|for|while|class|struct|public|private|protected|namespace|function)/.test(part)) {
+                                formattedLines.push(' '.repeat(indentSize * indentLevel) + part + '\n');
+                            } else {
+                                formattedLines.push(' '.repeat(indentSize * indentLevel) + part);
+                            }
+                            indentLevel++;
+                        } else if (part.startsWith('}')) {
+                            indentLevel = Math.max(0, indentLevel - 1);
+                            formattedLines.push(' '.repeat(indentSize * indentLevel) + part);
+                        } else {
+                            // Normal statement
+                            formattedLines.push(' '.repeat(indentSize * indentLevel) + part + (index < splitLines.length - 1 ? '\n' : ''));
+                        }
+                    });
+                });
+
+                // Join all lines and remove extra newlines before semicolons
+                return formattedLines.join('\n').replace(/;\n/g, ';\n');
+            };
+
+            // Auto-indent, escape HTML, and add syntax highlighting
+            let formattedCode = autoIndent(code);
+            formattedCode = escapeHtml(formattedCode);
+            formattedCode = highlightSyntax(formattedCode);
+
+            // Preserve line breaks and indentation for display
+            formattedCode = formattedCode.replace(/\n/g, '<br>').replace(/ {2}/g, '&nbsp;&nbsp;');
+
+            return formattedCode;
+        }
+
+
+
+    function write_file_to_cqz_object()
+    {
+      reset_cqz_object(current_cqz_object);
+      reset_cqz_object(next_cqz_object);
+
+      var files = this.files;
+      if (files.length === 0)
+      {
+          console.error('No file is selected');
+          return;
+      }
+
+      var reader = new FileReader();
+      var cqz_string;
+      reader.onload = function(event)
+      {
+        cqz_string = event.target.result.trim();
+        var cqz_string_array = cqz_string.split(/[\r\n]+/);
+
+        current_cqz_object['current_question_index'] =
+          parseInt(cqz_string_array[0].trim(), 10);
+
+        start_index = current_cqz_object['current_question_index'];
+
+        cqz_string_array.shift();
+
+        var number_correct = 0;
+        for (var i = 0; i < cqz_string_array.length; i++)
+        {
+          var question_line = cqz_string_array[i];
+          question_line = question_line.trim();
+          var question_data = question_line.split('\t');
+          if (question_data.length !== 3)
+          {
+            console.error("row does not contain exactly two tabs: " + question_line);
+            return;
+          }
+
+          var is_correct = parseInt(question_data[0].trim(), 10);
+          var question   = question_data[1].trim();
+          var answer     = formatCppCode(question_data[2].trim());
+
+          current_cqz_object['questions'].push(question);
+          current_cqz_object['answers'].push(answer);
+          current_cqz_object['correct'].push(is_correct);
+          number_correct += is_correct;
+          if (!is_correct && i < current_cqz_object['current_question_index'])
+          {
+            next_cqz_object['questions'].push(question);
+            next_cqz_object['answers'].push(answer);
+            next_cqz_object['correct'].push(0);
+          }
+        }
+
+        current_cqz_object['number_correct'] = number_correct;
+        document.getElementById('switch_button').disabled = false;
+        document.getElementById('show_or_next_button').disabled = false;
+        document.getElementById('download_cqz').disabled = false;
+        document.getElementById('download_missed_cqz').disabled = false;
+        if (document.getElementById('shuffle_at_start').checked)
+        {
+          shuffle_cqz();
+        }
+        show_new_question();
+        document.getElementById('upload_cqz_div').style.display = "none";
+      };
+      reader.readAsText(files[0]);
+    }
+
+    function write_missed_cqz_object_to_file()
+    {
+      var string = "0\n";
+      for (var i = start_index; i < current_cqz_object['current_question_index']; i++)
+      {
+        var correct = current_cqz_object['correct'][i].toString().trim();
+        if (correct == 0) {
+          var question    = current_cqz_object['questions'][i].trim();
+          var answer      = current_cqz_object['answers'][i].trim();
+          string += [correct, question, answer].join('\t') + "\n";
+        }
+      }
+
+      var filename = 'codeyva_missed_quiz_' + current_cqz_object['current_question_index'] + '_question.cqz';
+      var csvFile;
+      var downloadLink;
+
+      // CSV file
+      csvFile = new Blob([string], {type: "text/csv"});
+
+      // Download link
+      downloadLink = document.createElement("a");
+
+      // File name
+      downloadLink.download = filename;
+
+      // Create a link to the file
+      downloadLink.href = window.URL.createObjectURL(csvFile);
+
+      // Hide download link
+      downloadLink.style.display = "none";
+
+      // Add the link to DOM
+      document.body.appendChild(downloadLink);
+
+      // Click download link
+      downloadLink.click();
+    }
+
+    function write_cqz_object_to_file()
+    {
+      var string = current_cqz_object['current_question_index'] + "\n";
+      var quiz_length = current_cqz_object['questions'].length;
+      for (var i = 0; i < quiz_length; i++)
+      {
+        var question    = current_cqz_object['questions'][i].trim();
+        var answer      = current_cqz_object['answers'][i].trim();
+        var correct     = current_cqz_object['correct'][i].toString().trim();
+        string += [correct, question, answer].join('\t') + "\n";
+      }
+
+      var filename = quiz_length + '_' + (current_cqz_object['current_question_index'] + 1) + '.cqz';
+      var csvFile;
+      var downloadLink;
+
+      // CSV file
+      csvFile = new Blob([string], {type: "text/csv"});
+
+      // Download link
+      downloadLink = document.createElement("a");
+
+      // File name
+      downloadLink.download = filename;
+
+      // Create a link to the file
+      downloadLink.href = window.URL.createObjectURL(csvFile);
+
+      // Hide download link
+      downloadLink.style.display = "none";
+
+      // Add the link to DOM
+      document.body.appendChild(downloadLink);
+
+      // Click download link
+      downloadLink.click();
+    }
+
+    document.getElementById('upload_cqz').addEventListener('change', write_file_to_cqz_object);
+    document.getElementById('download_cqz').addEventListener('change', write_cqz_object_to_file);
+    document.getElementById('download_missed_cqz').addEventListener('change', write_missed_cqz_object_to_file);
+
+    document.addEventListener
+    (
+      'keypress',
+      function(event)
+      {
+        if (event.keyCode == 13 || event.keyCode == 44)
+        {
+          show_or_next();
+        }
+        else if (event.keyCode == 109)
+        {
+          toggle_correctness();
+        }
+        else if (event.keyCode == 106 ||  event.keyCode == 118)
+        {
+          show_previous_question();
+        }
+      }
+    )
+    document.addEventListener('contextmenu', event => event.preventDefault());
+    window.onbeforeunload = function (e) {
+        e = e || window.event;
+
+        // For IE and Firefox prior to version 4
+        if (e) {
+            e.returnValue = 'Sure?';
+        }
+
+        // For Safari
+        return 'Sure?';
+    };
+  </script>
+
+    <!-- SCRIPTS -->
+  <!-- JQuery -->
+  <script type="text/javascript" src="/js/jquery-3.4.1.min.js"></script>
+  <!-- Bootstrap tooltips -->
+  <script type="text/javascript" src="/js/popper.min.js"></script>
+  <!-- Bootstrap core JavaScript -->
+  <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+  <!-- MDB core JavaScript -->
+  <script type="text/javascript" src="/js/mdb.min.js"></script>
+
+  <!-- Datepicker JavaScript -->
+  <script type="text/javascript" src="/datepickerjs/bootstrap-datepicker.js"></script>
+  <script type="text/javascript" src="/datepickerjs/bootstrap-datepicker.min.js"></script>
+
+
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"  >
+      $(document).ready(function () {
+
+        $('.collapse').on('shown.bs.collapse', function (e) {
+          var id = e.target.id;
+
+          id = 'button_' + id;
+          var el = document.getElementById(id);
+          if (el && el.nodeName == "BUTTON")
+          {
+            el.innerHTML = '&#8722';
+          }
+
+        });
+
+        $('.collapse').on('hidden.bs.collapse', function (e) {
+
+          var id = e.target.id;
+
+          id = 'button_' + id;
+          var el = document.getElementById(id);
+          if (el && el.nodeName == "BUTTON")
+          {
+            el.innerHTML = '+';
+          }
+
+        });
+      });
+  </script>
+
+
+
+  
+  </body>
+</html>
