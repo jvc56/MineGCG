@@ -12,6 +12,7 @@ use Utils;
 use Update;
 
 use NWL23;
+use CSW24;
 use CSW21;
 use NWL20;
 use CSW07;
@@ -148,6 +149,10 @@ sub get_lexicon_ref
   elsif ($lexicon eq 'CSW21')
   {
     $lexicon_ref = CSW21::CSW21_LEXICON;
+  }
+  elsif ($lexicon eq 'CSW24')
+  {
+    $lexicon_ref = CSW24::CSW24_LEXICON;
   }
   elsif ($lexicon eq 'NWL23')
   {

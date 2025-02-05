@@ -13,7 +13,7 @@ use CSW19;
 
 my $dbh = Utils::connect_to_typing_database();
 
-my $dictionary_hash = CSW19::CSW19_LEXICON;
+my $dictionary_hash = CSW24::CSW24_LEXICON;
 my $word_column_name = Constants::WORD_COLUMN_NAME;
 my $word_length_column_name = Constants::WORD_LENGTH_COLUMN_NAME;
 my $word_prob_column_name   = Constants::WORD_PROBABILITY_COLUMN_NAME;
