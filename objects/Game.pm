@@ -24,6 +24,16 @@ sub new
 
   my $filename = $game_id;
 
+  if (!$player_one_real_name)
+  {
+    return format_game_error("Player one has no real name.",$filename, 0, "");
+  }
+
+  if (!$player_two_real_name)
+  {
+    return format_game_error("Player two has no real name.",$filename, 0, "");
+  }
+
   my $player_one_name;
   my $player_two_name;
   my @moves;

@@ -85,6 +85,10 @@ sub addMoves
         }
         if ($c ne '.' && !$this->{'grid'}[$pos]->{'has_tile'})
         {
+          if ($pos < 0 || $pos >= Constants::BOARD_WIDTH * Constants::BOARD_HEIGHT)
+          {
+            return "invalid tile position";
+          }
           $this->__placeNewTile($c, $pos, $turn, $play_number);
           push @added_positions, $pos;
           $dotted_word .= $c;
