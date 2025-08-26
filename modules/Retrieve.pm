@@ -11,6 +11,7 @@ use Constants;
 use Utils;
 use Update;
 
+use WOW24;
 use NWL23;
 use CSW24;
 use CSW21;
@@ -158,7 +159,10 @@ sub get_lexicon_ref
   {
     $lexicon_ref = NWL23::NWL23_LEXICON;
   }
-
+  elsif ($lexicon eq 'WOW24')
+  {
+    $lexicon_ref = WOW24::WOW24_LEXICON;
+  }
   return $lexicon_ref;
 }
 
