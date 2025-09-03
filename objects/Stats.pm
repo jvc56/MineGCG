@@ -1251,7 +1251,10 @@ sub statsList
         my $other = shift;
         $this->{'total_score'} += $other->{'total_score'};
         $this->{'total_turns'} += $other->{'total_turns'};
-        $this->{'total'} = sprintf "%.4f", $this->{'total_score'} / $this->{'total_turns'};
+        if ($this->{'total_turns'} > 0)
+        {
+          $this->{'total'} = sprintf "%.4f", $this->{'total_score'} / $this->{'total_turns'};
+        }
       },
       Constants::STAT_ADD_FUNCTION_NAME =>
       sub
@@ -1262,7 +1265,10 @@ sub statsList
 
         $this->{'total_score'} += $game->getScore($this_player);
         $this->{'total_turns'} += $game->getNumTurns($this_player);
-        $this->{'total'} = sprintf "%.4f", $this->{'total_score'} / $this->{'total_turns'};
+        if ($this->{'total_turns'} > 0)
+        {
+          $this->{'total'} = sprintf "%.4f", $this->{'total_score'} / $this->{'total_turns'};
+        }
       }
     },
     {
@@ -1424,7 +1430,11 @@ sub statsList
         my $other = shift;
         $this->{'total_full_racks'} += $other->{'total_full_racks'};
         $this->{'total_turns'}      += $other->{'total_turns'};
-        $this->{'total'} = sprintf "%.4f", $this->{'total_full_racks'} / $this->{'total_turns'};
+      
+        if ($this->{'total_turns'} > 0)
+        {
+          $this->{'total'} = sprintf "%.4f", $this->{'total_full_racks'} / $this->{'total_turns'};
+        }
       },
       Constants::STAT_ADD_FUNCTION_NAME =>
       sub
@@ -1435,7 +1445,10 @@ sub statsList
 
         $this->{'total_full_racks'} += $game->getNumFullRacks($this_player);
         $this->{'total_turns'}      += $game->getNumTurns($this_player);
-        $this->{'total'} = sprintf "%.4f", $this->{'total_full_racks'} / $this->{'total_turns'};
+        if ($this->{'total_turns'} > 0)
+        {
+          $this->{'total'} = sprintf "%.4f", $this->{'total_full_racks'} / $this->{'total_turns'};
+        }
       }
     },
     {
