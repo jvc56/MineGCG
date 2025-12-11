@@ -324,6 +324,8 @@ sub get_all_annotated_game_info
   while (<ANNOS>)
   {
     chomp $_;
+    $_ =~ s/\\'//g;
+    $_ =~ s/\\\"//g;
     my @data = split /,/, $_;
     if (scalar @data > 10)
     {
