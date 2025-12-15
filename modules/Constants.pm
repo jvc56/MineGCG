@@ -27,13 +27,13 @@ use constant RR_NOTABLE_DEST                  => RR_WORKING_DIR . RR_NOTABLE_NAM
 use constant RR_LEADERBOARD_DEST              => RR_WORKING_DIR . RR_LEADERBOARD_NAME;
 
 use constant WGET_FLAGS                       => '--no-check-certificate';
-use constant CROSS_TABLES_URL                 => 'http://www.cross-tables.com/';
-use constant QUERY_URL_PREFIX                 => 'http://www.cross-tables.com/players.php?query=';
+use constant CROSS_TABLES_URL                 => 'https://www.cross-tables.com/';
+use constant QUERY_URL_PREFIX                 => 'https://www.cross-tables.com/players.php?query=';
 use constant RR_URL_PREFIX                    => 'https://' . RR_HOSTNAME . '/cgi-bin/mine_webapp.pl?name=';
 use constant CACHE_URL_PREFIX                 => 'https://' . RR_HOSTNAME . '/cache/';
-use constant ANNOTATED_GAMES_URL_PREFIX       => 'http://www.cross-tables.com/anno.php?p=';
-use constant SINGLE_ANNOTATED_GAME_URL_PREFIX => 'http://www.cross-tables.com/annotated.php?u=';
-use constant CROSS_TABLES_COUNTRY_PREFIX      => 'http://www.cross-tables.com/bycountry.php?country=';
+use constant ANNOTATED_GAMES_URL_PREFIX       => 'https://www.cross-tables.com/anno.php?p=';
+use constant SINGLE_ANNOTATED_GAME_URL_PREFIX => 'https://www.cross-tables.com/annotated.php?u=';
+use constant CROSS_TABLES_COUNTRY_PREFIX      => 'https://www.cross-tables.com/bycountry.php?country=';
 use constant ANNOTATED_GAMES_PAGE_NAME        => 'anno_page.html';
 use constant QUERY_RESULTS_PAGE_NAME          => 'query_results.html';
 use constant HTML_GAME_NAME                   => 'annotated_game.html';
@@ -57,10 +57,10 @@ use constant CONFIDENCE_LEVEL                 => 0.99;
 use constant OVER_CONFIDENCE_COLOR            => '#6c131c';
 use constant UNDER_CONFIDENCE_COLOR           => '#0f3e1a';
 
-use constant ANNOTATED_GAMES_API_CALL         => 'http://cross-tables.com/rest/allanno.php';
-use constant PLAYER_INFO_API_CALL             => 'http://cross-tables.com/rest/player.php?player=';
-use constant TOURNAMENT_INFO_API_CALL         => 'http://cross-tables.com/rest/tourney.php?tourney=';
-use constant PLAYER_RESULTS_API_CALL          => 'http://cross-tables.com/rest/results.php?player=';
+use constant ANNOTATED_GAMES_API_CALL         => 'https://cross-tables.com/rest/allanno.php';
+use constant PLAYER_INFO_API_CALL             => 'https://cross-tables.com/rest/player.php?player=';
+use constant TOURNAMENT_INFO_API_CALL         => 'https://cross-tables.com/rest/tourney.php?tourney=';
+use constant PLAYER_RESULTS_API_CALL          => 'https://cross-tables.com/rest/results.php?player=';
 
 use constant CGI_WRAPPER_FILENAME             => 'cgi_wrapper.pl';
 use constant INDEX_HTML_FILENAME              => 'index.html';
