@@ -318,48 +318,49 @@ sub get_all_annotated_game_info
 
   system "wget $wget_flags $query_url -O $filename";
 
-  open (ANNOS, '<', $filename);
-  my $header = <ANNOS>;
-  my @annos = ();
-  while (<ANNOS>)
-  {
-    chomp $_;
-    $_ =~ s/\\'//g;
-    $_ =~ s/\\\"//g;
-    my @data = split /,/, $_;
-    if (scalar @data > 10)
-    {
-      my $crap_data = $_;
-      @data = ();
-      my $item;
-      while ($crap_data)
-      {
-        if (substr($crap_data, 0, 1) eq '"')
-	{
-	  $crap_data =~ /^"(.*?)",?/;
-	  $item = $1;
-          $crap_data =~ s/^"(.*?)",?//;
-        }
-	else
-	{
-	  $crap_data =~ /^([^,]*),?/;
-	  $item = $1;
-	  $crap_data =~ s/^([^,]*),?//;
-	}
-	if (! defined $item)
-	{
-	  die "Uncaptured crap: $_\nRemaining:'$crap_data'\n";
-	}
-	push @data, $item;
+  open my $fh, '<', $filename or die "Could not open '$filename': $!";
+
+  my @rows;
+
+  while (my $line = <$fh>) {
+      chomp $line;
+
+      my @fields;
+      my $field = '';
+      my $in_quotes = 0;
+      my @chars = split //, $line;
+
+      for (my $i = 0; $i < @chars; $i++) {
+          my $c = $chars[$i];
+
+          if ($c eq '"') {
+              # If we're in quotes and the next char is also a quote,
+              # this is an escaped quote ("")
+              if ($in_quotes && $chars[$i + 1] && $chars[$i + 1] eq '"') {
+                  $field .= '"';
+                  $i++;  # skip the escaped quote
+              } else {
+                  # Toggle quoted state, do not include the outer quotes
+                  $in_quotes = !$in_quotes;
+              }
+          }
+          elsif ($c eq ',' && !$in_quotes) {
+              push @fields, $field;
+              $field = '';
+          }
+          else {
+              $field .= $c;
+          }
       }
-      if (scalar @data != 10)
-      {
-        die "Too many elements: $_\n" . Dumper(\@data);
-      }
-    }
-    push @annos, \@data;
+
+      # Add the final field
+      push @fields, $field;
+
+      push @rows, \@fields;
   }
-  return @annos;
+
+  close $fh;
+  return \@rows;
 }
 
 sub get_player_cross_tables_id
@@ -789,10 +790,8 @@ sub prepare_anno_data
       my $player_info = $id_name_hashref->{$xt_id};
       if (!$player_info )
       {
-        $player_info = get_player_info($xt_id);
-        $id_name_hashref->{$xt_id} = $player_info;
+        $id_name_hashref->{$xt_id} = [$data->[$index + 2], $data->[$index + 10]];
       }
-      $data->[$index + 2] = $player_info->[0]; # Name index of the player xt index
     }
   }
 
@@ -803,74 +802,14 @@ sub prepare_anno_data
     $date = $tournament_id_date_hashref->{$tournament_id};
     if (!$date)
     {
-      $date = get_tournament_date($tournament_id);
-      $tournament_id_date_hashref->{$tournament_id} = $date;
+      $tournament_id_date_hashref->{$tournament_id} =$data->[10];
     }
   }
-  $data->[10] = $date;
 
   if ($data->[7] && $data->[7] eq 'NSW18')
   {
     $data->[7] = 'NWL18';
   }
-}
-
-sub get_tournament_date
-{
-  my $id = shift;
-
-  my $wget_flags = Constants::WGET_FLAGS; 
-  my $query_url = Constants::TOURNAMENT_INFO_API_CALL . $id;
-  my $filename  = Constants::DOWNLOADS_DIRECTORY_NAME . "/tournament_info_$id.txt";
-  my $month_to_num_hashref = Constants::MONTH_TO_NUMBER_HASHREF;
-
-  system "wget $wget_flags $query_url -O $filename  >/dev/null 2>&1";
-  # Capture 
-  # 		"date": "Feb 23, 2004",
-
-  open(INFO, "<", $filename);
-  while (<INFO>)
-  {
-    if (/"date":\s*"(\w+)\s+(\d+),\s*(\d+)"/)
-    {
-      # print $_;
-      my $date = join "-", ($3, $month_to_num_hashref->{$1}, (sprintf "%02s", $2));
-      # print "$date\n";
-      return $date;
-    }
-  }
-  print "Date not found in $filename for id : $id\n";
-  return "1000-01-01";
-}
-
-sub get_player_info
-{
-  my $xt_id = shift;
- 
-  my $wget_flags = Constants::WGET_FLAGS; 
-  my $query_url = Constants::PLAYER_INFO_API_CALL . $xt_id;
-  my $filename  = Constants::DOWNLOADS_DIRECTORY_NAME . "/player_info_$xt_id.txt";
-
-  system "wget $wget_flags $query_url -O $filename  >/dev/null 2>&1";
-  # Capture 
-  # 		"name": "Seth Lipkin",
-
-  my $name;
-  my $photo;
-
-  open(INFO, "<", $filename);
-  while (<INFO>)
-  {
-    if (/"name":\s*"([^"]*)"/)
-    {
-      $name = $1;
-    }
-    elsif (/"photourl":\s*"([^"]*)"/)
-    {
-      $photo = $1;
-    }
-  }
-  return [$name, $photo];
 }
 
 sub get_color_dot_style
