@@ -42,7 +42,7 @@ sub retrieve
 
   my $dbh = Utils::connect_to_database();
 
-  my @every_annotated_game_info = Utils::get_all_annotated_game_info();
+  my @every_annotated_game_info = @{Utils::get_all_annotated_game_info()};
   my %updated_players = ();
   my %id_name_hash    = ();
   my %tournament_id_date_hash = ();

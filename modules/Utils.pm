@@ -322,6 +322,9 @@ sub get_all_annotated_game_info
 
   my @rows;
 
+  # Skip the first header line
+  <$fh>;
+
   while (my $line = <$fh>) {
       chomp $line;
 
