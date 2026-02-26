@@ -57,10 +57,10 @@ use constant CONFIDENCE_LEVEL                 => 0.99;
 use constant OVER_CONFIDENCE_COLOR            => '#6c131c';
 use constant UNDER_CONFIDENCE_COLOR           => '#0f3e1a';
 
-use constant ANNOTATED_GAMES_API_CALL         => 'https://cross-tables.com/rest/allanno.php';
-use constant PLAYER_INFO_API_CALL             => 'https://cross-tables.com/rest/player.php?player=';
-use constant TOURNAMENT_INFO_API_CALL         => 'https://cross-tables.com/rest/tourney.php?tourney=';
-use constant PLAYER_RESULTS_API_CALL          => 'https://cross-tables.com/rest/results.php?player=';
+use constant ANNOTATED_GAMES_API_CALL         => 'https://api.cross-tables.com/allanno.php';
+use constant PLAYER_INFO_API_CALL             => 'https://api.cross-tables.com/player.php?player=';
+use constant TOURNAMENT_INFO_API_CALL         => 'https://api.cross-tables.com/tourney.php?tourney=';
+use constant PLAYER_RESULTS_API_CALL          => 'https://api.cross-tables.com/results.php?player=';
 
 use constant CGI_WRAPPER_FILENAME             => 'cgi_wrapper.pl';
 use constant INDEX_HTML_FILENAME              => 'index.html';
