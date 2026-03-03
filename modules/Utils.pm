@@ -566,7 +566,7 @@ sub get_gcg_url_suffix
 {
   my $id = shift;
   my $group = int($id / 100);
-  return "annotated/selfgcg/$group/anno$id.gcg";
+  return "annotatedgcg.php?annotatedid=$id";
 }
 
 sub insert_or_set_hash_into_table
