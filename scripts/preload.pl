@@ -3,14 +3,20 @@
 use warnings;
 use strict;
 
+use Getopt::Long;
+
 use lib './modules';
 
 use Constants;
 use Retrieve;
 
-print "Log file for retrieve on " . localtime() . "\n\n"; 
+# --all forces a full fetch of every annotated game for this run only.
+my $all = 0;
+GetOptions('all' => \$all);
 
-Retrieve::retrieve(Constants::UPDATE_OPTION_GCG);
+print "Log file for retrieve on " . localtime() . "\n\n";
+
+Retrieve::retrieve(Constants::UPDATE_OPTION_GCG, $all);
 
 print "\n\n\nFinished on " . localtime() . "\n\n"; 
 

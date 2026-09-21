@@ -39,10 +39,13 @@ sub retrieve
   system "mkdir -p $downloads_dir";
 
   my $update            = shift;
+  my $force_all         = shift;
 
   my $dbh = Utils::connect_to_database();
 
-  my @every_annotated_game_info = @{Utils::get_all_annotated_game_info()};
+  my $fetch_all = $force_all || Utils::should_fetch_all_annotated_games();
+
+  my @every_annotated_game_info = @{Utils::get_all_annotated_game_info($fetch_all)};
   my %updated_players = ();
   my %id_name_hash    = ();
   my %tournament_id_date_hash = ();
@@ -104,6 +107,13 @@ sub retrieve
   }
   print "\n\n$games_to_update games detected in API call\n";
   print "$games_updated new games retrieved\n";
+
+  # Only clear the flag once a full fetch has completed successfully so a
+  # failed run is retried in full on the next attempt.
+  if ($fetch_all)
+  {
+    Utils::clear_full_anno_sync_flag();
+  }
 }
 
 sub get_lexicon_ref

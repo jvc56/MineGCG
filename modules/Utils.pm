@@ -309,14 +309,56 @@ sub query_table
   return $arrayref;
 }
 
+sub should_fetch_all_annotated_games
+{
+  my $flag_file = Constants::FULL_ANNO_SYNC_FLAG_FILE;
+  my $env_var   = Constants::FULL_ANNO_SYNC_ENV_VAR;
+
+  if (-e $flag_file)
+  {
+    print "Full annotated game fetch requested by flag file $flag_file\n";
+    return 1;
+  }
+  if ($ENV{$env_var})
+  {
+    print "Full annotated game fetch requested by environment variable $env_var\n";
+    return 1;
+  }
+  return 0;
+}
+
+sub clear_full_anno_sync_flag
+{
+  my $flag_file = Constants::FULL_ANNO_SYNC_FLAG_FILE;
+
+  if (-e $flag_file)
+  {
+    unlink $flag_file or die "Could not remove '$flag_file': $!";
+    print "Removed flag file $flag_file; subsequent fetches will only retrieve recently modified games\n";
+  }
+}
+
 sub get_all_annotated_game_info
 {
+  my $fetch_all = shift;
+
   my $wget_flags   = Constants::WGET_FLAGS;
   my $query_url    = Constants::ANNOTATED_GAMES_API_CALL;
   my $download_dir = Constants::DOWNLOADS_DIRECTORY_NAME;
   my $filename     = "$download_dir/allanno.php";
 
-  system "wget $wget_flags $query_url -O $filename";
+  if ($fetch_all)
+  {
+    $query_url .= Constants::ANNOTATED_GAMES_ALL_PARAM;
+    $filename   = "$download_dir/allanno_all.php";
+    print "Fetching ALL annotated games from $query_url\n";
+  }
+  else
+  {
+    print "Fetching annotated games modified in the last week from $query_url\n";
+  }
+
+  system "wget $wget_flags '$query_url' -O $filename";
 
   open my $fh, '<', $filename or die "Could not open '$filename': $!";
 

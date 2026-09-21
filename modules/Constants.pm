@@ -58,6 +58,14 @@ use constant OVER_CONFIDENCE_COLOR            => '#6c131c';
 use constant UNDER_CONFIDENCE_COLOR           => '#0f3e1a';
 
 use constant ANNOTATED_GAMES_API_CALL         => 'https://api.cross-tables.com/allanno.php';
+# The bare allanno.php call returns only games added or modified in the
+# last week. Appending this parameter returns every game; use sparingly.
+use constant ANNOTATED_GAMES_ALL_PARAM        => '?all=1';
+# Touch this file in the working directory to make the next retrieve fetch
+# every game. It is removed automatically after a successful full fetch.
+use constant FULL_ANNO_SYNC_FLAG_FILE         => './FULL_ANNO_SYNC';
+# Setting this environment variable to a true value also forces a full fetch.
+use constant FULL_ANNO_SYNC_ENV_VAR           => 'MINEGCG_ALLANNO_ALL';
 use constant PLAYER_INFO_API_CALL             => 'https://api.cross-tables.com/player.php?player=';
 use constant TOURNAMENT_INFO_API_CALL         => 'https://api.cross-tables.com/tourney.php?tourney=';
 use constant PLAYER_RESULTS_API_CALL          => 'https://api.cross-tables.com/results.php?player=';
